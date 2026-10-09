@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 40
     steps:
       - name: Código fuente
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # La corrida nocturna prueba la rama de integración; bajo demanda, la rama elegida.
           ref: ${{ github.event_name == 'schedule' && 'develop' || github.ref }}
