@@ -1,0 +1,53 @@
+name: E2E nocturno · Playwright + axe-core
+
+on:
+  schedule:
+    # 01:00 America/Bogota (06:00 UTC); los resultados se revisan al inicio de la jornada.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: URL del ambiente a probar (vacío = servidor local de desarrollo)
+        required: false
+        default: ''
+
+jobs:
+  e2e:
+    name: Flujos críticos y accesibilidad
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Código fuente
+        uses: actions/checkout@v4
+        with:
+          # La corrida nocturna prueba la rama de integración; bajo demanda, la rama elegida.
+          ref: ${{ github.event_name == 'schedule' && 'develop' || github.ref }}
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: npm 11
+        run: npm install -g npm@11
+
+      - name: Dependencias
+        run: npm ci
+
+      - name: Navegador de referencia (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Pruebas E2E
+        env:
+          E2E_BASE_URL: ${{ github.event.inputs.base_url }}
+        run: npx playwright test --pass-with-no-tests
+
+      - name: Reporte de Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-playwright
+          path: playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
