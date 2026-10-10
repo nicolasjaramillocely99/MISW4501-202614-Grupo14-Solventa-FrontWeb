@@ -7,7 +7,7 @@ Este repositorio es uno de los cuatro componentes de la solución:
 | Componente | Repositorio | Tecnología |
 |---|---|---|
 | **Cliente web (este)** | `MISW4501-202614-Grupo14-Solventa-FrontWeb` | Angular + TypeScript |
-| Cliente móvil | `…-Movil` | Kotlin + Jetpack Compose |
+| Cliente móvil | `MISW4501-202614-Grupo14-Solventa-Mobile` | Kotlin + Jetpack Compose |
 | Microservicios de negocio | `…-Backend` | Go sobre ECS Fargate |
 | Infraestructura | `…-Infra` | Terraform sobre AWS |
 
