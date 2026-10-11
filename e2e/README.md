@@ -7,10 +7,10 @@ Cubren los **tres flujos críticos del cliente web** definidos en la [estrategia
 | `flujos/cotizacion-emision/` | Canal embebido y venta asistida: consentimiento → perfil → oferta → pago → póliza emitida; oferta provisional (HA-D01); pago pendiente o rechazado (HA-D02) |
 | `flujos/siniestros/` | Radicación con soportes, seguimiento del estado, devolución y reenvío, cola por prioridad |
 | `flujos/socios-b2b/` | Alta de socio, generación de credenciales, tablero del socio |
-| `flujos/acceso/` | Acceso al portal (HA-S01): inicio de sesión por rol con su inicio y su menú, credenciales inválidas, sesión que no se puede renovar (sesión expirada) y cierre de sesión con revocación. Cognito se simula con `page.route` (`fixtures/sesion-por-rol.ts`), sin red |
+| `flujos/acceso/` | Acceso al portal (HA-S01): inicio de sesión por rol con su inicio y su menú, credenciales inválidas, sesión que no se puede renovar (sesión expirada) y cierre de sesión con revocación; `idioma.spec.ts`: P0 en inglés y el idioma elegido que se conserva al entrar al portal y al recargar. Cognito se simula con `page.route` (`fixtures/sesion-por-rol.ts`), sin red |
 | `paginas/` | *Page objects*: una clase por pantalla con sus localizadores y acciones (`inicio-sesion.pagina.ts`, `cola-triage.pagina.ts`, …) |
 | `fixtures/` | Usuarios de prueba por rol, datos de clientes, pólizas y siniestros, *fixtures* de Playwright (sesión iniciada por rol) |
-| `accesibilidad/` | Ayudante `verificar-accesibilidad.ts`, que ejecuta axe-core sobre una página y falla ante violaciones de contraste, etiquetas y navegación, y `acceso.spec.ts` (P0 con y sin errores, 403 y sesión expirada) |
+| `accesibilidad/` | Ayudante `verificar-accesibilidad.ts`, que ejecuta axe-core sobre una página y falla ante violaciones de contraste, etiquetas y navegación, y `acceso.spec.ts` (P0 en español y en inglés, con y sin errores, 403 y sesión expirada) |
 | `local-moto/` | Humo del acceso contra el **Cognito local (Moto)** del backend, sin `page.route`: inicio de sesión real por rol con su inicio y su menú, cierre de sesión y contraseña equivocada. Solo existe en el proyecto `local-moto` (`E2E_MOTO=1`); **no corre en el CI** |
 
 Convenciones:

@@ -18,6 +18,8 @@ export function proveerTranslocoPruebas(
     translocoConfig: {
       availableLangs: ['es-CO', 'en-US'],
       defaultLang: 'es-CO',
+      // Igual que la app (core/i18n/transloco.config.ts): cambiar de idioma re-renderiza en caliente.
+      reRenderOnLangChange: true,
       ...opciones.translocoConfig,
     },
   });

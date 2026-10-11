@@ -24,7 +24,7 @@
 | `sesion-expirada.page.ts` (`SesionExpiradaPage`) | 401, token vencido o revocado: mensaje e *Iniciar sesión de nuevo* |
 | `mensaje-acceso.scss` | Estilos compartidos de las dos páginas sin frame (tarjeta centrada) |
 
-Del frame P0 quedan fuera, por ahora: *Mantener la sesión iniciada* (la sesión vive en `sessionStorage`), *Olvidé mi contraseña* (sin frame), el selector de idioma (base técnica T7) y *Ver demo del canal embebido* (llega con el dominio `embebido`).
+Del frame P0 quedan fuera, por ahora: *Mantener la sesión iniciada* (la sesión vive en `sessionStorage`), *Olvidé mi contraseña* (sin frame) y *Ver demo del canal embebido* (llega con el dominio `embebido`). El selector de idioma del frame (globo, `ES`/`EN`) sí está: `shared/ui/selector-idioma`, en la cabecera de la tarjeta; cambia los textos en caliente y la elección se conserva al entrar al portal.
 
 Pruebas: `*.page.spec.ts` (Vitest + Testing Library) y `e2e/flujos/acceso/`, `e2e/accesibilidad/acceso.spec.ts` (Playwright + axe-core).
 

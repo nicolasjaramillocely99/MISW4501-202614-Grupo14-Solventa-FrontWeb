@@ -12,7 +12,7 @@ Todo lo que existe una sola vez en la aplicación y no tiene interfaz visual. Se
 | `api/siniestros/` | Radicación, consulta, triage, evaluación, asistencias | Servicio de siniestros |
 | `api/socios/` | Alta de socios, credenciales, tablero de desempeño | Servicio de gestión de socios B2B |
 | `api/auditoria/` | Consulta de trazabilidad y consentimientos | Servicio de auditoría y consentimientos |
-| `i18n/` | Configuración de Transloco (carga de `public/i18n/*.json`), idioma activo y formateo de moneda, fecha y número con la API `Intl`. **HA-S01:** `transloco.config.ts` (`proveerI18n`: `es-CO` predeterminado, `en-US` alterno y respaldo en `es-CO`) y `cargador-traducciones.ts` | OBJ 12 · soporte multimoneda (COP, MXN, CLP, PEN) |
+| `i18n/` | Configuración de Transloco (carga de `public/i18n/*.json`), idioma activo y formateo de moneda, fecha y número con la API `Intl`. **HA-S01:** `transloco.config.ts` (`proveerI18n`: `es-CO` predeterminado, `en-US` alterno y respaldo en `es-CO`; al arrancar restaura el idioma elegido), `cargador-traducciones.ts` e `idioma.service.ts` (`IdiomaService`: idioma activo, cambio en caliente, atributo `lang` del documento y preferencia en `localStorage`, que se conserva al pasar de P0 al portal) | OBJ 12 · soporte multimoneda (COP, MXN, CLP, PEN) |
 | `navegacion/` | Menú de la barra lateral por rol y ruta de inicio de cada rol. **HA-S01:** `menu-por-rol.ts` (`MENU_POR_ROL`, `RUTA_INICIO_POR_ROL` e `itemActivo`) | Barra lateral «los ítems cambian según el rol» |
 | `errores/` | `ErrorHandler` global, identificador de correlación en las peticiones y manejo uniforme de errores HTTP | Observabilidad con trazas correlacionadas |
 

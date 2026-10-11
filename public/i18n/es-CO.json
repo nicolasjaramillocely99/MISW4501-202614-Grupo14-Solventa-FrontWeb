@@ -5,7 +5,14 @@
   "comun": {
     "cargando": "Cargando…",
     "cerrarSesion": "Cerrar sesión",
-    "usuarioActual": "Usuario actual"
+    "usuarioActual": "Usuario actual",
+    "idioma": {
+      "etiqueta": "Idioma",
+      "esCO": "Español (Colombia)",
+      "enUS": "English (United States)",
+      "esCOCorto": "ES",
+      "enUSCorto": "EN"
+    }
   },
   "acceso": {
     "panel": {

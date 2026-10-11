@@ -12,6 +12,8 @@ import {
 
 import { ErrorIdentidad, MotivoErrorIdentidad } from '@core/auth/proveedor-identidad';
 import { SesionService } from '@core/auth/sesion.service';
+import { IdiomaService } from '@core/i18n/idioma.service';
+import { SelectorIdiomaComponent } from '@shared/ui/selector-idioma/selector-idioma.component';
 
 type Campo = 'correo' | 'contrasena';
 
@@ -29,7 +31,8 @@ const RUTA_PREDETERMINADA = '/inicio';
 
 /**
  * P0 · Inicio de sesión del portal (frame 17-174). Estados: inicial, validación por campo, cargando,
- * error de credenciales y error del servicio.
+ * error de credenciales y error del servicio. El selector de idioma cambia los textos en caliente y la
+ * elección se conserva al entrar al portal.
  */
 @Component({
   selector: 'app-iniciar-sesion-page',
@@ -41,6 +44,7 @@ const RUTA_PREDETERMINADA = '/inicio';
     LucideDatabase,
     LucideLogIn,
     LucideShieldCheck,
+    SelectorIdiomaComponent,
   ],
   templateUrl: './iniciar-sesion.page.html',
   styleUrl: './iniciar-sesion.page.scss',
@@ -51,6 +55,7 @@ export class IniciarSesionPage {
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
   private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
+  protected readonly idiomas = inject(IdiomaService);
 
   protected readonly formulario = inject(NonNullableFormBuilder).group({
     correo: ['', [Validators.required, Validators.email]],

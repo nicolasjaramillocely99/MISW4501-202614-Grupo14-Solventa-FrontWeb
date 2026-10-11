@@ -6,12 +6,14 @@ import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { filter, map } from 'rxjs';
 
 import { SesionService } from '@core/auth/sesion.service';
+import { IdiomaService } from '@core/i18n/idioma.service';
 import { MENU_POR_ROL, itemActivo } from '@core/navegacion/menu-por-rol';
+import { SelectorIdiomaComponent } from '@shared/ui/selector-idioma/selector-idioma.component';
 
 /**
- * Shell del portal (sistema de diseño §5): barra superior de 64 px con logotipo, nombre del módulo y
- * usuario con su rol; barra lateral de 240 px con el menú del rol y «Cerrar sesión» al pie. Si la sesión
- * expira (renovación fallida o 401), lleva a «sesión expirada».
+ * Shell del portal (sistema de diseño §5): barra superior de 64 px con logotipo, nombre del módulo,
+ * selector de idioma y usuario con su rol; barra lateral de 240 px con el menú del rol y «Cerrar
+ * sesión» al pie. Si la sesión expira (renovación fallida o 401), lleva a «sesión expirada».
  */
 @Component({
   selector: 'app-portal-shell',
@@ -22,6 +24,7 @@ import { MENU_POR_ROL, itemActivo } from '@core/navegacion/menu-por-rol';
     TranslocoDirective,
     LucideDynamicIcon,
     LucideLogOut,
+    SelectorIdiomaComponent,
   ],
   templateUrl: './portal-shell.component.html',
   styleUrl: './portal-shell.component.scss',
@@ -29,6 +32,7 @@ import { MENU_POR_ROL, itemActivo } from '@core/navegacion/menu-por-rol';
 })
 export class PortalShellComponent {
   protected readonly sesion = inject(SesionService);
+  protected readonly idiomas = inject(IdiomaService);
   private readonly router = inject(Router);
 
   private readonly url = toSignal(

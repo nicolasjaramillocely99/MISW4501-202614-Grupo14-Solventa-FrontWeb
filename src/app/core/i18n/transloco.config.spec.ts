@@ -36,3 +36,17 @@ describe('proveerI18n', () => {
     expect(transloco.translate('comun.cargando', {}, 'en-US')).toBe('Loading…');
   });
 });
+
+describe('proveerI18n al arrancar', () => {
+  afterEach(() => localStorage.clear());
+
+  it('aplica el idioma que el usuario eligió antes en este navegador', () => {
+    localStorage.setItem('solventa.idioma', 'en-US');
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), proveerI18n()],
+    });
+
+    expect(TestBed.inject(TranslocoService).getActiveLang()).toBe('en-US');
+    expect(document.documentElement.lang).toBe('en-US');
+  });
+});

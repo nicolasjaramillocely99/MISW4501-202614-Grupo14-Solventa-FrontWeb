@@ -82,6 +82,13 @@
   }
 }
 
+.formulario__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-12);
+}
+
 .formulario__titulo {
   margin: 0;
   font-size: 1.5rem;

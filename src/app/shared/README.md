@@ -18,3 +18,8 @@ Reglas del sistema de diseño que todo componente de `ui/` cumple:
 - Textos externalizados con Transloco; ningún texto fijo en español dentro del componente.
 
 Cada componente se nombra `nombre.component.ts` (`NombreComponent`, selector `app-nombre`) y lleva su prueba `nombre.component.spec.ts`.
+
+**Implementados:** `ui/selector-idioma/` (HA-S01): `SelectorIdiomaComponent` (`app-selector-idioma`), globo + código del idioma
+activo (`ES`/`EN`) + chevron sobre un `<select>` nativo con etiqueta permanente («Idioma»/«Language») y cada opción anunciada con
+su nombre completo. Es presentacional (entradas `idioma` e `idiomas`, salida `cambio`); P0 y el shell del portal lo conectan a
+`core/i18n/idioma.service.ts`.

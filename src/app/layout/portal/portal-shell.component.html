@@ -4,6 +4,11 @@
       {{ t('app.nombre') }}<span class="logotipo__punto" aria-hidden="true">.</span>
     </a>
     <span class="barra-superior__modulo">{{ t(modulo()) }}</span>
+    <app-selector-idioma
+      [idioma]="idiomas.idioma()"
+      [idiomas]="idiomas.disponibles"
+      (cambio)="idiomas.cambiar($event)"
+    />
 
     @if (sesion.usuario(); as usuario) {
       <div class="usuario" role="group" [attr.aria-label]="t('comun.usuarioActual')">

@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { TranslocoService } from '@jsverse/transloco';
 import {
   ProveedorIdentidadFalso,
   crearProveedorIdentidadFalso,
@@ -42,7 +43,10 @@ describe('PortalShellComponent', () => {
     return resultado;
   }
 
-  afterEach(() => sessionStorage.clear());
+  afterEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  });
 
   function textosDelMenu(): string[] {
     const navegacion = screen.getByRole('navigation', { name: 'Navegación principal' });
@@ -100,5 +104,21 @@ describe('PortalShellComponent', () => {
     await fixture.whenStable();
 
     expect(TestBed.inject(Router).url).toBe('/acceso/sesion-expirada');
+  });
+
+  it('conserva el idioma elegido antes de entrar y lo cambia en caliente desde la barra superior', async () => {
+    await renderizar('asesor');
+    const transloco = TestBed.inject(TranslocoService);
+    transloco.setActiveLang('en-US');
+
+    expect(await screen.findByRole('link', { name: 'Quotes' })).toBeTruthy();
+    expect(screen.getByRole<HTMLSelectElement>('combobox', { name: 'Language' }).value).toBe('en-US');
+
+    await userEvent
+      .setup()
+      .selectOptions(screen.getByRole('combobox', { name: 'Language' }), 'es-CO');
+
+    expect(await screen.findByRole('link', { name: 'Cotizaciones' })).toBeTruthy();
+    expect(transloco.getActiveLang()).toBe('es-CO');
   });
 });

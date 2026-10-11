@@ -48,7 +48,10 @@ describe('IniciarSesionPage (P0)', () => {
     await usuario.click(screen.getByRole('button', { name: 'Entrar' }));
   }
 
-  afterEach(() => sessionStorage.clear());
+  afterEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  });
 
   it('muestra el formulario con etiquetas permanentes y un único encabezado', async () => {
     await renderizar();
@@ -148,5 +151,18 @@ describe('IniciarSesionPage (P0)', () => {
 
     resolver(crearTokensPrueba('operaciones'));
     expect(await screen.findByRole('button', { name: 'Entrar' })).toBeTruthy();
+  });
+
+  it('cambia los textos a inglés en caliente con el selector de idioma y recuerda la elección', async () => {
+    await renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.selectOptions(screen.getByRole('combobox', { name: 'Idioma' }), 'en-US');
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Sign in' })).toBeTruthy();
+    expect(screen.getByLabelText('Email')).toBeTruthy();
+    expect(screen.getByLabelText('Password')).toBeTruthy();
+    expect(screen.getByRole<HTMLSelectElement>('combobox', { name: 'Language' }).value).toBe('en-US');
+    expect(localStorage.getItem('solventa.idioma')).toBe('en-US');
   });
 });

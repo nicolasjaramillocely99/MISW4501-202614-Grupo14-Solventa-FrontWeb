@@ -11,6 +11,14 @@ test.describe('Accesibilidad del acceso al portal (HA-S01, OBJ 13)', () => {
     await verificarAccesibilidad(page);
   });
 
+  test('P0 · inicio de sesión en inglés', async ({ page }) => {
+    await new InicioSesionPagina(page).abrir();
+    await page.getByLabel('Idioma').selectOption('en-US');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sign in');
+
+    await verificarAccesibilidad(page);
+  });
+
   test('P0 · inicio de sesión con errores de validación y de credenciales', async ({ page }) => {
     await simularCognito(page);
     const inicioSesion = new InicioSesionPagina(page);
