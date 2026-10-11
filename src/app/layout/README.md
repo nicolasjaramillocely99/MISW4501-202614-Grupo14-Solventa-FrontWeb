@@ -16,4 +16,6 @@ Menús por rol según el prototipo:
 | Analista de operaciones | Inicio · Emisiones · Endosos · Siniestros · Asistencias · Socios · Auditoría · Consentimientos |
 | Socio comercial | Tablero · Por producto · Desempeño técnico · Credenciales |
 
+**Portal (HA-S01):** `portal/portal-shell.component.ts` (`PortalShellComponent`, `app-portal-shell`). Barra superior con logotipo, nombre del módulo (el ítem activo del menú) y usuario con su rol; barra lateral con `MENU_POR_ROL[rol]` de `core/navegacion`, `aria-current="page"` en el ítem activo y *Cerrar sesión* al pie (revoca el token y lleva al inicio de sesión). Si la sesión expira, lleva a `/acceso/sesion-expirada`. Se carga de forma perezosa como ruta padre `''` en `app.routes.ts`. Pendiente para T7: selector de idioma y barra lateral colapsada (72 px). En el menú del socio no aparece *Por producto* (HU-W3.2-02, fuera de alcance); las rutas que aún no existen redirigen a `/inicio`.
+
 El shell del portal aplica el *guard* de autenticación a todas sus rutas hijas; el canal embebido es público (el socio autentica con credenciales de API en el gateway, no con Cognito).
