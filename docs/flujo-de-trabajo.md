@@ -6,18 +6,19 @@
 |---|---|---|
 | `main` | Lo que está desplegado en producción (demo). Protegida. | Solo desde `develop`, por *pull request*, en cada entrega |
 | `develop` | Integración del sprint. Protegida. | Solo desde ramas de historia, por *pull request* |
-| `<ID de la historia>` | El trabajo de una historia: `HU-W2.2-01`, `HA-S01` | Quien tomó la historia |
+| `feature/<ID>-<descripcion-en-ingles>` | El trabajo de una historia: `feature/HA-S01-role-based-auth`, `feature/HA-L01-parallel-quoting` | Quien tomó la historia |
+| `fix/<ID>-<descripcion>` · `chore/<descripcion>` | Una corrección o una tarea técnica sin historia | Quien la toma |
 
 Reglas:
 
 - Toda rama de trabajo se crea **desde `develop`** y vuelve a `develop` por *pull request*. Nunca desde `main`.
-- El nombre de la rama es **únicamente el ID de la historia**, sin prefijos ni nombre corto: con más de cincuenta historias, el título sobra. El ID se toma del [plan por sprints](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Plan-de-trabajo-por-sprints) y la carpeta destino de [`pantallas.md`](pantallas.md).
+- El nombre de la rama es **el mismo en los tres repositorios** (backend, cliente web y móvil) y sigue la convención del [`AGENTS.md` del backend](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/blob/develop/AGENTS.md): `feature/<ID>-<descripcion-corta-en-ingles>`. Así una historia que toca varios repositorios se reconoce igual en todos (p. ej. `feature/HA-S01-role-based-auth` en el backend y aquí). Si la rama ya existe en otro repositorio, se usa exactamente el mismo nombre. El ID se toma del [plan por sprints](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Plan-de-trabajo-por-sprints) y la carpeta destino de [`pantallas.md`](pantallas.md).
 - Nadie hace *push* directo a `develop` ni a `main`.
 
 ```bash
 git switch develop
 git pull
-git switch -c HU-W2.2-01
+git switch -c feature/HA-S01-role-based-auth
 ```
 
 ## Commits
