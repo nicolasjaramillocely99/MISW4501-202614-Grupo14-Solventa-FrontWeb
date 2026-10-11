@@ -7,6 +7,6 @@ export const environment = {
   nombre: 'local',
   produccion: false,
   apiGatewayUrl: 'http://localhost:8080',
-  cognito: { region: 'us-east-1', userPoolId: 'local', clienteId: 'local' },
+  cognito: { region: 'us-east-2', userPoolId: 'local', clienteId: 'local' },
   idiomaPredeterminado: 'es-CO',
 };
