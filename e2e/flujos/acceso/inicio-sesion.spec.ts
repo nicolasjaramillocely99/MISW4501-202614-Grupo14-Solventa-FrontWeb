@@ -1,31 +1,14 @@
 import { expect, test } from '@playwright/test';
 
 import { verificarAccesibilidad } from '../../accesibilidad/verificar-accesibilidad';
+import { INICIO_Y_MENU_POR_ROL as ESPERADO } from '../../fixtures/inicio-por-rol';
 import {
   CONTRASENA_PRUEBA,
   ROLES_PRUEBA,
-  RolPrueba,
   USUARIOS_PRUEBA,
   simularCognito,
 } from '../../fixtures/sesion-por-rol';
 import { InicioSesionPagina } from '../../paginas/inicio-sesion.pagina';
-
-/** Inicio y menú propios de cada rol (frames A0, S0, O0 y D-12 para el socio). */
-const ESPERADO: Readonly<Record<RolPrueba, { titulo: string; menu: string[] }>> = {
-  asegurado: {
-    titulo: 'Hola, Carolina',
-    menu: ['Inicio', 'Mis pólizas', 'Mis siniestros', 'Mis solicitudes', 'Mi perfil'],
-  },
-  asesor: {
-    titulo: 'Hola, Laura',
-    menu: ['Inicio', 'Cotizaciones', 'Bandeja de decisión', 'Renovaciones', 'Siniestros'],
-  },
-  operaciones: {
-    titulo: 'Centro de operaciones',
-    menu: ['Inicio', 'Emisiones', 'Endosos', 'Siniestros', 'Asistencias', 'Socios', 'Auditoría', 'Consentimientos'],
-  },
-  socio: { titulo: 'Hola, Banco', menu: ['Tablero', 'Desempeño técnico', 'Credenciales'] },
-};
 
 test.describe('Acceso al portal por rol (HA-S01)', () => {
   for (const rol of ROLES_PRUEBA) {

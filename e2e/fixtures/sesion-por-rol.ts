@@ -1,5 +1,7 @@
 import { Page, Request, Route } from '@playwright/test';
 
+import { environment as ambienteLocal } from '../../src/environments/environment.development';
+
 /**
  * Cognito y gateway simulados para las E2E del acceso (HA-S01): `page.route` responde el API JSON de
  * Cognito User Pools sin salir a la red. Los tokens son de prueba, **sin firma real**: el portal solo lee
@@ -27,7 +29,16 @@ export const USUARIOS_PRUEBA: Readonly<Record<RolPrueba, UsuarioPrueba>> = {
   socio: { correo: 'portal@banco-aliado.co', nombre: 'Banco Aliado', grupo: 'partner' },
 };
 
-export const URL_COGNITO = 'https://cognito-idp.us-east-2.amazonaws.com/';
+/**
+ * Endpoints de Cognito que se interceptan: el regional de AWS (staging y producción) y el del ambiente
+ * local, que apunta al emulador (`cognito.endpoint`). Así estas pruebas nunca dependen de él.
+ */
+export const URLS_COGNITO: readonly string[] = [
+  'https://cognito-idp.us-east-2.amazonaws.com/',
+  ambienteLocal.cognito.endpoint,
+];
+
+const esCognito = (url: URL): boolean => URLS_COGNITO.includes(url.href);
 
 const CABECERAS_CORS = {
   'access-control-allow-origin': '*',
@@ -95,7 +106,7 @@ function rolDeRenovacion(token: unknown): RolPrueba | undefined {
 export async function simularCognito(page: Page): Promise<CognitoSimulado> {
   const estado: CognitoSimulado = { llamadas: [], renovacionRechazada: false };
 
-  await page.route(URL_COGNITO, async (route: Route, request: Request) => {
+  await page.route(esCognito, async (route: Route, request: Request) => {
     if (request.method() === 'OPTIONS') {
       await route.fulfill({ status: 204, headers: CABECERAS_CORS });
       return;
