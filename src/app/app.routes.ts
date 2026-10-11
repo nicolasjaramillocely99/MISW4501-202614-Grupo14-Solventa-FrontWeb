@@ -18,7 +18,10 @@ export const routes: Routes = [
     canActivate: [autenticacionGuard],
     canActivateChild: [autenticacionGuard],
     children: [
-      { path: 'inicio', children: [] },
+      {
+        path: 'inicio',
+        loadChildren: () => import('@features/inicio/inicio.routes').then((m) => m.INICIO_ROUTES),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
     ],
   },

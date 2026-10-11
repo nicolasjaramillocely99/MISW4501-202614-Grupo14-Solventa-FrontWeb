@@ -1,0 +1,20 @@
+@switch (sesion.rol()) {
+  @case ('asegurado') {
+    <app-inicio-asegurado [nombre]="nombre()" [accesos]="accesos()" />
+  }
+  @case ('asesor') {
+    <app-inicio-asesor [nombre]="nombre()" [accesos]="accesos()" />
+  }
+  @case ('operaciones') {
+    <app-centro-operaciones [accesos]="accesos()" />
+  }
+  @case ('socio') {
+    <ng-container *transloco="let t">
+      <header class="encabezado-inicio">
+        <h1 class="encabezado-inicio__titulo">{{ t('inicio.socio.saludo', { nombre: nombre() }) }}</h1>
+        <p class="encabezado-inicio__subtitulo">{{ t('inicio.socio.subtitulo') }}</p>
+      </header>
+      <app-accesos-rapidos [accesos]="accesos()" />
+    </ng-container>
+  }
+}

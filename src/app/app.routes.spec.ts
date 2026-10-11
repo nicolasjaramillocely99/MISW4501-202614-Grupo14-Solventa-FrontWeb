@@ -19,6 +19,7 @@ describe('rutas raíz', () => {
   beforeAll(async () => {
     await import('@features/acceso/acceso.routes');
     await import('@layout/portal/portal-shell.component');
+    await import('@features/inicio/inicio.routes');
   }, 120_000);
 
   beforeEach(async () => {
@@ -49,6 +50,7 @@ describe('rutas raíz', () => {
 
     expect(url()).toBe('/inicio');
     expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Hola, Laura');
   });
 
   it('una pantalla que aún no existe redirige al inicio del rol', async () => {

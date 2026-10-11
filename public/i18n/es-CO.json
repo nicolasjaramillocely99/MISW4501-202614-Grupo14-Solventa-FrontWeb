@@ -68,5 +68,24 @@
     "asesor": "Asesor comercial",
     "operaciones": "Analista de operaciones",
     "socio": "Socio comercial"
+  },
+  "inicio": {
+    "accesosRapidos": "Accesos rápidos",
+    "asegurado": {
+      "saludo": "Hola, {{nombre}}",
+      "subtitulo": "Resumen de tus seguros, pagos y trámites en curso"
+    },
+    "asesor": {
+      "saludo": "Hola, {{nombre}}",
+      "subtitulo": "Tu jornada comercial en un vistazo"
+    },
+    "operaciones": {
+      "titulo": "Centro de operaciones",
+      "subtitulo": "Excepciones y colas que requieren atención"
+    },
+    "socio": {
+      "saludo": "Hola, {{nombre}}",
+      "subtitulo": "Tu integración con Solventa: credenciales y desempeño técnico"
+    }
   }
 }

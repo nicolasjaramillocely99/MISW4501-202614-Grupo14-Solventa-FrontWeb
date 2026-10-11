@@ -68,5 +68,24 @@
     "asesor": "Sales advisor",
     "operaciones": "Operations analyst",
     "socio": "Business partner"
+  },
+  "inicio": {
+    "accesosRapidos": "Quick links",
+    "asegurado": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Overview of your policies, payments and open requests"
+    },
+    "asesor": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Your sales day at a glance"
+    },
+    "operaciones": {
+      "titulo": "Operations center",
+      "subtitulo": "Exceptions and queues that need attention"
+    },
+    "socio": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Your integration with Solventa: credentials and technical performance"
+    }
   }
 }
