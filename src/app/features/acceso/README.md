@@ -16,7 +16,7 @@
 
 ## Cómo trabajar una historia de este dominio
 
-1. Crea la rama desde `develop` con el ID de la historia como único nombre (p. ej. `HA-S01`), sin prefijos ni nombre corto.
+1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HA-S01-role-based-auth`).
 2. Declara la ruta en `acceso.routes.ts` (archivo de rutas del dominio, cargado de forma perezosa desde `app.routes.ts`).
 3. Crea la página en la subcarpeta indicada con el sufijo `.page.ts` y su prueba `.page.spec.ts` al lado.
 4. Los componentes propios de la pantalla van en `componentes/`, los servicios de datos en `servicios/` y los tipos en `modelos/`, dentro de la misma subcarpeta.

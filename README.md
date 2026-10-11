@@ -127,7 +127,7 @@ Cada carpeta principal tiene un `README.md` que explica qué va en ella y cómo 
 ## 4. Tomé una historia de usuario: ¿a qué carpeta voy?
 
 1. Abre [`docs/pantallas.md`](docs/pantallas.md) y busca el ID de la historia (`HU-W2.2-01`, `HA-S01`, …). La tabla indica la **carpeta**, la **ruta** propuesta, el **rol** que la usa, el **frame de Figma** exacto y el **sprint**.
-2. Crea la rama desde `develop` con el ID de la historia como único nombre: `HU-W2.2-01`.
+2. Crea la rama desde `develop` con el mismo nombre que tiene (o tendrá) en el backend: `feature/<ID>-<descripcion-corta-en-ingles>`, p. ej. `feature/HA-S01-role-based-auth`.
 3. Trabaja dentro de `src/app/features/<dominio>/<subcarpeta>/`. El `README.md` del dominio lista sus pantallas y sus historias.
 4. Las llamadas HTTP salen siempre por el cliente del microservicio en `src/app/core/api/<servicio>/`. Si la historia necesita un componente visual reutilizable (botón, insignia, tabla…), va en `src/app/shared/ui/`.
 5. Los textos van en `public/i18n/es-CO.json` y `en-US.json`; los estilos usan los tokens de `src/styles/`.
@@ -160,7 +160,7 @@ El servicio de notificaciones no se consume desde el cliente web: sus eventos ll
 | Prueba E2E | `<flujo>.spec.ts` dentro de `e2e/flujos/<flujo>/` | `radicacion-siniestro.spec.ts` |
 | Claves i18n | `<dominio>.<pantalla>.<texto>` en camelCase | `siniestros.colaTriage.titulo` |
 | Rutas (URL) | `/<dominio>/<recurso>`, con el rol restringido por *guard*, no por la URL | `/siniestros/cola` |
-| Ramas | Únicamente el ID de la historia, creada desde `develop`; sin prefijos ni nombre corto | `HU-W2.2-01`, `HA-S01` |
+| Ramas | `feature/<ID>-<descripcion-corta-en-ingles>`, creada desde `develop`; el mismo nombre en los tres repositorios | `feature/HA-S01-role-based-auth`, `feature/HA-L01-parallel-quoting` |
 | Commits | Conventional Commits con el dominio como alcance | `feat(siniestros): cola por prioridad` |
 
 Reglas de dependencia entre capas del código: `features` → `shared` y `core`; `layout` → `shared` y `core`; `shared` no depende de nadie; `core` solo lo importa `app.config.ts`. Un dominio nunca importa a otro dominio: lo que comparten va a `shared`.

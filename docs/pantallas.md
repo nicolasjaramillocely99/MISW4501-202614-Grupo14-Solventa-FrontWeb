@@ -9,7 +9,7 @@ Cómo usar esta tabla cuando tomas una historia:
 1. Busca el ID de la historia (`HU-W…` o `HA-…`) en la columna **Historias**.
 2. La columna **Carpeta** indica dónde va el código de la pantalla; la **Ruta** es la URL propuesta.
 3. Los enlaces de la columna **Figma** abren el frame exacto del prototipo.
-4. Crea la rama desde `develop` con el ID de la historia como único nombre: `HU-W2.2-01`.
+4. Crea la rama desde `develop` con el mismo nombre que en el backend: `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HA-S01-role-based-auth`).
 
 Convenciones del prototipo: `P` acceso al portal · `A` asegurado · `S` asesor comercial ·
 `O` operaciones y cumplimiento · `B` socio comercial · `E` canal embebido.

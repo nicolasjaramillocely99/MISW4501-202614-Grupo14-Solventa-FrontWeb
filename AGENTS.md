@@ -86,7 +86,7 @@ Si algo falla, se corrige antes de terminar. Nunca se reporta como verificado al
 
 - **Nunca se hace commit ni push directo a `main` ni a `develop`.**
 - Ramas de trabajo, creadas **desde `develop`**:
-  - Historia de usuario o de arquitectura: **únicamente el ID**, sin prefijos ni nombre corto: `HU-W2.2-01`, `HA-S01` (con más de cincuenta historias, el título sobra; el ID se toma del [plan por sprints](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Plan-de-trabajo-por-sprints) y la carpeta destino de `docs/pantallas.md`).
+  - Historia de usuario o de arquitectura: `feature/<ID>-<descripcion-corta-en-ingles>`, **el mismo nombre en los tres repositorios** (convención del `AGENTS.md` del backend): `feature/HA-S01-role-based-auth`, `feature/HA-L01-parallel-quoting`. Si la rama ya existe en otro repositorio, se usa exactamente el mismo nombre. El ID se toma del [plan por sprints](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Plan-de-trabajo-por-sprints) y la carpeta destino de `docs/pantallas.md`.
   - Corrección: `fix/<ID>-<descripcion-corta>` · Tarea técnica sin historia: `chore/<descripcion-corta>`.
 - **Conventional Commits en español**, con el dominio como alcance, en infinitivo o sustantivo, sin punto final:
   - `feat(siniestros): cola de siniestros por prioridad`
@@ -97,12 +97,12 @@ Si algo falla, se corrige antes de terminar. Nunca se reporta como verificado al
 ### 7.1 Pull requests y estrategia de integración
 
 ```
-<ID> · fix/* · chore/*  ──(PR, squash)──▶  develop  ──(PR, merge commit)──▶  main
+feature/* · fix/* · chore/*  ──(PR, squash)──▶  develop  ──(PR, merge commit)──▶  main
 ```
 
 | De → A | Estrategia | Por qué |
 |---|---|---|
-| `<ID>`, `fix/*`, `chore/*` → `develop` | **Squash and merge** | Un commit limpio por PR/historia, fácil de revertir; los commits intermedios («wip», «fix») nunca llegan a `develop` |
+| `feature/*`, `fix/*`, `chore/*` → `develop` | **Squash and merge** | Un commit limpio por PR/historia, fácil de revertir; los commits intermedios («wip», «fix») nunca llegan a `develop` |
 | `develop` → `main` | **Create a merge commit** (nunca squash ni rebase) | Conserva el historial de `develop` y evita que las dos ramas diverjan en cada entrega |
 | Hotfix urgente | Rama desde `main` → PR a `main` con **squash**, y luego el cambio se trae a `develop` | Caso excepcional |
 
