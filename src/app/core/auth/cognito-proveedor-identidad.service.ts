@@ -30,6 +30,21 @@ const ERRORES_ACCION_REQUERIDA = new Set([
 const ERRORES_RECHAZO = new Set(['NotAuthorizedException', 'UserNotFoundException']);
 
 /**
+ * Configuración de Cognito de un ambiente (`src/environments/*.ts`). `endpoint` es opcional: solo lo
+ * define un ambiente que usa otro servidor compatible con el API de Cognito (p. ej. el emulador local);
+ * sin él se usa el endpoint regional de AWS.
+ */
+export interface ConfiguracionCognito {
+  readonly region: string;
+  readonly endpoint?: string;
+}
+
+/** URL del API JSON de Cognito User Pools para la configuración dada. */
+export function urlCognito({ region, endpoint }: ConfiguracionCognito): string {
+  return endpoint ?? `https://cognito-idp.${region}.amazonaws.com/`;
+}
+
+/**
  * Implementación de `ProveedorIdentidad` con el API JSON de Amazon Cognito User Pools (OIDC):
  * `InitiateAuth` con `USER_PASSWORD_AUTH` para iniciar sesión, `REFRESH_TOKEN_AUTH` para renovar y
  * `RevokeToken` al cerrar sesión. Las llamadas van directo al proveedor de identidad, fuera del camino de
@@ -38,7 +53,7 @@ const ERRORES_RECHAZO = new Set(['NotAuthorizedException', 'UserNotFoundExceptio
 @Injectable({ providedIn: 'root' })
 export class CognitoProveedorIdentidadService extends ProveedorIdentidad {
   private readonly http = inject(HttpClient);
-  private readonly url = `https://cognito-idp.${environment.cognito.region}.amazonaws.com/`;
+  private readonly url = urlCognito(environment.cognito);
   private readonly clienteId = environment.cognito.clienteId;
 
   async iniciarSesion(correo: string, contrasena: string): Promise<TokensIdentidad> {

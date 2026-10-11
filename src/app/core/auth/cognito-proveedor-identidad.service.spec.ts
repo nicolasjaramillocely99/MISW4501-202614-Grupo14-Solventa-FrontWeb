@@ -2,10 +2,31 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { CognitoProveedorIdentidadService } from './cognito-proveedor-identidad.service';
+import { environment } from '@env/environment';
+
+import {
+  CognitoProveedorIdentidadService,
+  urlCognito,
+} from './cognito-proveedor-identidad.service';
 import { ErrorIdentidad } from './proveedor-identidad';
 
-const URL_COGNITO = 'https://cognito-idp.us-east-2.amazonaws.com/';
+// Las pruebas unitarias compilan con la configuración de desarrollo:
+// la URL y el cliente salen del ambiente.
+const URL_COGNITO = urlCognito(environment.cognito);
+const CLIENTE = environment.cognito.clienteId;
+
+describe('urlCognito', () => {
+  it('usa el endpoint regional de AWS si el ambiente no define otro', () => {
+    expect(urlCognito({ region: 'us-east-2' })).toBe(
+      'https://cognito-idp.us-east-2.amazonaws.com/',
+    );
+  });
+
+  it('usa el endpoint configurado (p. ej. el emulador local)', () => {
+    const configuracion = { region: 'us-east-2', endpoint: 'http://localhost:5100/' };
+    expect(urlCognito(configuracion)).toBe('http://localhost:5100/');
+  });
+});
 
 describe('CognitoProveedorIdentidadService', () => {
   let servicio: CognitoProveedorIdentidadService;
@@ -35,7 +56,7 @@ describe('CognitoProveedorIdentidadService', () => {
     throw new Error('se esperaba un ErrorIdentidad');
   }
 
-  it('inicia sesión con USER_PASSWORD_AUTH en la región us-east-2 y devuelve los tres tokens', async () => {
+  it('inicia sesión con USER_PASSWORD_AUTH en el endpoint del ambiente y devuelve los tres tokens', async () => {
     const resultado = servicio.iniciarSesion('laura@solventa.co', 'secreto-de-prueba');
 
     const peticion = http.expectOne(URL_COGNITO);
@@ -47,7 +68,7 @@ describe('CognitoProveedorIdentidadService', () => {
     expect(peticion.request.headers.has('Authorization')).toBe(false);
     expect(peticion.request.body).toEqual({
       AuthFlow: 'USER_PASSWORD_AUTH',
-      ClientId: 'local',
+      ClientId: CLIENTE,
       AuthParameters: { USERNAME: 'laura@solventa.co', PASSWORD: 'secreto-de-prueba' },
     });
     peticion.flush({
@@ -67,7 +88,7 @@ describe('CognitoProveedorIdentidadService', () => {
     const peticion = http.expectOne(URL_COGNITO);
     expect(peticion.request.body).toEqual({
       AuthFlow: 'REFRESH_TOKEN_AUTH',
-      ClientId: 'local',
+      ClientId: CLIENTE,
       AuthParameters: { REFRESH_TOKEN: 'renovacion' },
     });
     peticion.flush({ AuthenticationResult: { IdToken: 'id-2', AccessToken: 'acceso-2' } });
@@ -82,7 +103,7 @@ describe('CognitoProveedorIdentidadService', () => {
     expect(peticion.request.headers.get('X-Amz-Target')).toBe(
       'AWSCognitoIdentityProviderService.RevokeToken',
     );
-    expect(peticion.request.body).toEqual({ Token: 'renovacion', ClientId: 'local' });
+    expect(peticion.request.body).toEqual({ Token: 'renovacion', ClientId: CLIENTE });
     peticion.flush({});
 
     await expect(resultado).resolves.toBeUndefined();
