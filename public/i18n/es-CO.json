@@ -4,7 +4,8 @@
   },
   "comun": {
     "cargando": "Cargando…",
-    "cerrarSesion": "Cerrar sesión"
+    "cerrarSesion": "Cerrar sesión",
+    "usuarioActual": "Usuario actual"
   },
   "acceso": {
     "panel": {
@@ -40,5 +41,32 @@
       "mensaje": "Por seguridad cerramos tu sesión. Inicia sesión de nuevo para continuar.",
       "iniciarSesion": "Iniciar sesión de nuevo"
     }
+  },
+  "menu": {
+    "navegacionPrincipal": "Navegación principal",
+    "inicio": "Inicio",
+    "misPolizas": "Mis pólizas",
+    "misSiniestros": "Mis siniestros",
+    "misSolicitudes": "Mis solicitudes",
+    "miPerfil": "Mi perfil",
+    "cotizaciones": "Cotizaciones",
+    "bandejaDecision": "Bandeja de decisión",
+    "renovaciones": "Renovaciones",
+    "siniestros": "Siniestros",
+    "emisiones": "Emisiones",
+    "endosos": "Endosos",
+    "asistencias": "Asistencias",
+    "socios": "Socios",
+    "auditoria": "Auditoría",
+    "consentimientos": "Consentimientos",
+    "tablero": "Tablero",
+    "desempenoTecnico": "Desempeño técnico",
+    "credenciales": "Credenciales"
+  },
+  "roles": {
+    "asegurado": "Asegurado",
+    "asesor": "Asesor comercial",
+    "operaciones": "Analista de operaciones",
+    "socio": "Socio comercial"
   }
 }

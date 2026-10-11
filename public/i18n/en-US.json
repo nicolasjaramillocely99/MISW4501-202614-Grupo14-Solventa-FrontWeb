@@ -4,7 +4,8 @@
   },
   "comun": {
     "cargando": "Loading…",
-    "cerrarSesion": "Sign out"
+    "cerrarSesion": "Sign out",
+    "usuarioActual": "Current user"
   },
   "acceso": {
     "panel": {
@@ -40,5 +41,32 @@
       "mensaje": "For your security we signed you out. Sign in again to continue.",
       "iniciarSesion": "Sign in again"
     }
+  },
+  "menu": {
+    "navegacionPrincipal": "Main navigation",
+    "inicio": "Home",
+    "misPolizas": "My policies",
+    "misSiniestros": "My claims",
+    "misSolicitudes": "My requests",
+    "miPerfil": "My profile",
+    "cotizaciones": "Quotes",
+    "bandejaDecision": "Decision inbox",
+    "renovaciones": "Renewals",
+    "siniestros": "Claims",
+    "emisiones": "Issuances",
+    "endosos": "Endorsements",
+    "asistencias": "Assistance",
+    "socios": "Partners",
+    "auditoria": "Audit",
+    "consentimientos": "Consents",
+    "tablero": "Dashboard",
+    "desempenoTecnico": "Technical performance",
+    "credenciales": "Credentials"
+  },
+  "roles": {
+    "asegurado": "Policyholder",
+    "asesor": "Sales advisor",
+    "operaciones": "Operations analyst",
+    "socio": "Business partner"
   }
 }
