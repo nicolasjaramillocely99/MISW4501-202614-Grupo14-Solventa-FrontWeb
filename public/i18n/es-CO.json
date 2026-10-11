@@ -3,6 +3,42 @@
     "nombre": "Solventa"
   },
   "comun": {
-    "cargando": "Cargando…"
+    "cargando": "Cargando…",
+    "cerrarSesion": "Cerrar sesión"
+  },
+  "acceso": {
+    "panel": {
+      "titular": "Un solo portal para originar, atender y cumplir",
+      "descripcion": "Asesores, operaciones, socios comerciales y asegurados trabajan sobre el mismo estado contractual, en tiempo real.",
+      "beneficioCotizacion": "Cotización y emisión en menos de 5 minutos",
+      "beneficioSiniestros": "Siniestros con triage automático y trazabilidad completa",
+      "beneficioConsentimientos": "Consentimientos Open Finance con revocación efectiva en 5 minutos"
+    },
+    "iniciarSesion": {
+      "titulo": "Iniciar sesión",
+      "descripcion": "Acceso para colaboradores, socios comerciales y asegurados registrados.",
+      "correo": "Correo electrónico",
+      "contrasena": "Contraseña",
+      "entrar": "Entrar",
+      "entrando": "Ingresando…",
+      "correoRequerido": "Escribe tu correo electrónico.",
+      "correoInvalido": "Escribe un correo válido, por ejemplo nombre@empresa.co.",
+      "contrasenaRequerida": "Escribe tu contraseña.",
+      "errorCredenciales": "El correo o la contraseña no son correctos.",
+      "errorServicio": "No pudimos conectar con el servicio de acceso. Intenta de nuevo en unos minutos.",
+      "errorAccionRequerida": "Tu cuenta necesita una acción adicional antes de ingresar. Contacta al administrador del portal.",
+      "errorSinRol": "Tu usuario no tiene un rol asignado en el portal. Contacta al administrador.",
+      "registroAsegurado": "¿Eres asegurado y aún no tienes cuenta? Regístrate desde la app Solventa con tu documento y biometría."
+    },
+    "noAutorizado": {
+      "titulo": "Acceso no autorizado",
+      "mensaje": "Tu rol no tiene permiso para ver esta página. Si crees que es un error, contacta al administrador del portal.",
+      "volverAlInicio": "Volver al inicio"
+    },
+    "sesionExpirada": {
+      "titulo": "Tu sesión expiró",
+      "mensaje": "Por seguridad cerramos tu sesión. Inicia sesión de nuevo para continuar.",
+      "iniciarSesion": "Iniciar sesión de nuevo"
+    }
   }
 }

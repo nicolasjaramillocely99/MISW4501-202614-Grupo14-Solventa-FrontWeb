@@ -1,0 +1,159 @@
+// Clases globales sin lógica del sistema de diseño (§5): botón, campo, aviso, tarjeta y logotipo.
+// Solo usan tokens de _tokens.scss. Los componentes de shared/ui (T7) las reemplazarán.
+
+// Botón: alto 40, ancho mínimo 120, radio 8, texto cuerpo/medio. Un solo primario por pantalla.
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-8);
+  min-width: 120px;
+  min-height: var(--control-alto);
+  padding: var(--espacio-8) var(--espacio-16);
+  border: 1px solid transparent;
+  border-radius: var(--radio-base);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.boton--primario {
+  background: var(--color-azul-700);
+  color: var(--color-texto-inverso);
+
+  &:hover:not(:disabled) {
+    background: var(--color-azul-500);
+  }
+}
+
+.boton--secundario {
+  background: var(--color-fondo-superficie);
+  border-color: var(--color-azul-700);
+  color: var(--color-azul-700);
+
+  &:hover:not(:disabled) {
+    background: var(--color-azul-50);
+  }
+}
+
+.boton--terciario {
+  background: transparent;
+  color: var(--color-azul-700);
+
+  &:hover:not(:disabled) {
+    background: var(--color-azul-50);
+  }
+}
+
+.boton--bloque {
+  width: 100%;
+}
+
+// Campo de texto: etiqueta permanente arriba, error con borde + ícono + mensaje.
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.campo__etiqueta {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.campo__control {
+  min-height: var(--control-alto);
+  padding: var(--espacio-8) var(--espacio-16);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-base);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-primario);
+  font: inherit;
+
+  &:hover {
+    border-color: var(--color-borde-fuerte);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border: 2px solid var(--color-azul-500);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-error-500);
+  }
+}
+
+.campo__error {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-error-600);
+}
+
+// Aviso en línea: fondo 100, borde izquierdo 4 px del tono 500, texto primario.
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-12);
+  padding: var(--espacio-12) var(--espacio-16);
+  border-left: 4px solid var(--color-informacion-500);
+  border-radius: var(--radio-base);
+  background: var(--color-informacion-100);
+  color: var(--color-texto-primario);
+
+  p {
+    margin: 0;
+  }
+}
+
+.aviso--error {
+  border-left-color: var(--color-error-500);
+  background: var(--color-error-100);
+
+  svg {
+    color: var(--color-error-600);
+    flex-shrink: 0;
+  }
+}
+
+// Tarjeta: radio 12, relleno 24, borde base y sombra de elevación.
+.tarjeta {
+  padding: var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+  box-shadow: var(--sombra-elevacion);
+}
+
+// Logotipo: «Solventa» en 700 con el punto en lima (solo sobre azul oscuro) o en azul/700 (sobre claro).
+.logotipo {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.logotipo__punto {
+  color: var(--color-azul-700);
+}
+
+.logotipo--claro {
+  color: var(--color-texto-inverso);
+
+  .logotipo__punto {
+    color: var(--color-lima-500);
+  }
+}

@@ -13,9 +13,13 @@ export function proveerTranslocoPruebas(
 ): ModuleWithProviders<TranslocoTestingModule> {
   return TranslocoTestingModule.forRoot({
     langs: { 'es-CO': esCO, 'en-US': enUS },
-    translocoConfig: { availableLangs: ['es-CO', 'en-US'], defaultLang: 'es-CO' },
     preloadLangs: true,
     ...opciones,
+    translocoConfig: {
+      availableLangs: ['es-CO', 'en-US'],
+      defaultLang: 'es-CO',
+      ...opciones.translocoConfig,
+    },
   });
 }
 

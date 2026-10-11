@@ -1,0 +1,45 @@
+// Pantalla completa con una tarjeta centrada: acceso no autorizado y sesión expirada.
+.mensaje {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--espacio-32);
+}
+
+.mensaje__tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-16);
+  max-width: 480px;
+  padding: var(--espacio-32);
+  text-align: center;
+}
+
+.mensaje__icono {
+  display: inline-flex;
+  padding: var(--espacio-12);
+  border-radius: var(--radio-completo);
+  background: var(--color-azul-100);
+  color: var(--color-azul-700);
+}
+
+.mensaje__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.mensaje__texto {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.mensaje__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espacio-12);
+}

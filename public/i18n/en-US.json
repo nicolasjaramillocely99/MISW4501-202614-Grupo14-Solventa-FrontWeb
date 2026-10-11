@@ -3,6 +3,42 @@
     "nombre": "Solventa"
   },
   "comun": {
-    "cargando": "Loading…"
+    "cargando": "Loading…",
+    "cerrarSesion": "Sign out"
+  },
+  "acceso": {
+    "panel": {
+      "titular": "One portal to originate, serve and comply",
+      "descripcion": "Advisors, operations, business partners and policyholders work on the same contract state, in real time.",
+      "beneficioCotizacion": "Quoting and issuance in under 5 minutes",
+      "beneficioSiniestros": "Claims with automatic triage and full traceability",
+      "beneficioConsentimientos": "Open Finance consents with effective revocation within 5 minutes"
+    },
+    "iniciarSesion": {
+      "titulo": "Sign in",
+      "descripcion": "Access for staff, business partners and registered policyholders.",
+      "correo": "Email",
+      "contrasena": "Password",
+      "entrar": "Sign in",
+      "entrando": "Signing in…",
+      "correoRequerido": "Enter your email.",
+      "correoInvalido": "Enter a valid email, for example name@company.com.",
+      "contrasenaRequerida": "Enter your password.",
+      "errorCredenciales": "The email or password is incorrect.",
+      "errorServicio": "We couldn't reach the sign-in service. Try again in a few minutes.",
+      "errorAccionRequerida": "Your account needs an additional step before signing in. Contact the portal administrator.",
+      "errorSinRol": "Your user has no role assigned in the portal. Contact the administrator.",
+      "registroAsegurado": "Are you a policyholder without an account? Sign up in the Solventa app with your ID document and biometrics."
+    },
+    "noAutorizado": {
+      "titulo": "Access denied",
+      "mensaje": "Your role is not allowed to view this page. If you think this is a mistake, contact the portal administrator.",
+      "volverAlInicio": "Back to home"
+    },
+    "sesionExpirada": {
+      "titulo": "Your session expired",
+      "mensaje": "For your security we signed you out. Sign in again to continue.",
+      "iniciarSesion": "Sign in again"
+    }
   }
 }
