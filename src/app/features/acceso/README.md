@@ -14,6 +14,20 @@
 | sin frame web dedicado | Acceso no autorizado (403) | `/acceso/no-autorizado` | público | HA-S01 | S1 |
 | sin frame web dedicado | Sesión expirada | `/acceso/sesion-expirada` | público | HA-S01 | S1 |
 
+## Implementación (HA-S01)
+
+| Archivo | Qué contiene |
+|---|---|
+| `acceso.routes.ts` | `ACCESO_ROUTES`: `''` → `iniciar-sesion`, `iniciar-sesion`, `no-autorizado` y `sesion-expirada`. Rutas públicas, sin shell, cargadas de forma perezosa desde `app.routes.ts` |
+| `iniciar-sesion.page.ts` (`IniciarSesionPage`) | P0. Formulario reactivo de correo y contraseña. Estados: inicial, validación por campo (`aria-invalid`, mensaje bajo el campo y foco en el primer campo inválido), cargando (botón deshabilitado), error de credenciales con mensaje genérico, error del servicio, cuenta que requiere una acción y usuario sin rol. Inicia sesión con `SesionService` y entra a `returnUrl` solo si es una ruta interna; si no, a `/inicio` |
+| `no-autorizado.page.ts` (`NoAutorizadoPage`) | 403: mensaje, *Volver al inicio* y, con sesión, *Cerrar sesión* |
+| `sesion-expirada.page.ts` (`SesionExpiradaPage`) | 401, token vencido o revocado: mensaje e *Iniciar sesión de nuevo* |
+| `mensaje-acceso.scss` | Estilos compartidos de las dos páginas sin frame (tarjeta centrada) |
+
+Del frame P0 quedan fuera, por ahora: *Mantener la sesión iniciada* (la sesión vive en `sessionStorage`), *Olvidé mi contraseña* (sin frame) y *Ver demo del canal embebido* (llega con el dominio `embebido`). El selector de idioma del frame (globo, `ES`/`EN`) sí está: `shared/ui/selector-idioma`, en la cabecera de la tarjeta; cambia los textos en caliente y la elección se conserva al entrar al portal.
+
+Pruebas: `*.page.spec.ts` (Vitest + Testing Library) y `e2e/flujos/acceso/`, `e2e/accesibilidad/acceso.spec.ts` (Playwright + axe-core).
+
 ## Cómo trabajar una historia de este dominio
 
 1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HA-S01-role-based-auth`).

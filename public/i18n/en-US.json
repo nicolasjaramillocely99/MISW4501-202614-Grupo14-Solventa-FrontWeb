@@ -1,1 +1,98 @@
-{}
+{
+  "app": {
+    "nombre": "Solventa"
+  },
+  "comun": {
+    "cargando": "Loading…",
+    "cerrarSesion": "Sign out",
+    "usuarioActual": "Current user",
+    "idioma": {
+      "etiqueta": "Language",
+      "esCO": "Español (Colombia)",
+      "enUS": "English (United States)",
+      "esCOCorto": "ES",
+      "enUSCorto": "EN"
+    }
+  },
+  "acceso": {
+    "panel": {
+      "titular": "One portal to originate, serve and comply",
+      "descripcion": "Advisors, operations, business partners and policyholders work on the same contract state, in real time.",
+      "beneficioCotizacion": "Quoting and issuance in under 5 minutes",
+      "beneficioSiniestros": "Claims with automatic triage and full traceability",
+      "beneficioConsentimientos": "Open Finance consents with effective revocation within 5 minutes"
+    },
+    "iniciarSesion": {
+      "titulo": "Sign in",
+      "descripcion": "Access for staff, business partners and registered policyholders.",
+      "correo": "Email",
+      "contrasena": "Password",
+      "entrar": "Sign in",
+      "entrando": "Signing in…",
+      "correoRequerido": "Enter your email.",
+      "correoInvalido": "Enter a valid email, for example name@company.com.",
+      "contrasenaRequerida": "Enter your password.",
+      "errorCredenciales": "The email or password is incorrect.",
+      "errorServicio": "We couldn't reach the sign-in service. Try again in a few minutes.",
+      "errorAccionRequerida": "Your account needs an additional step before signing in. Contact the portal administrator.",
+      "errorSinRol": "Your user has no role assigned in the portal. Contact the administrator.",
+      "registroAsegurado": "Are you a policyholder without an account? Sign up in the Solventa app with your ID document and biometrics."
+    },
+    "noAutorizado": {
+      "titulo": "Access denied",
+      "mensaje": "Your role is not allowed to view this page. If you think this is a mistake, contact the portal administrator.",
+      "volverAlInicio": "Back to home"
+    },
+    "sesionExpirada": {
+      "titulo": "Your session expired",
+      "mensaje": "For your security we signed you out. Sign in again to continue.",
+      "iniciarSesion": "Sign in again"
+    }
+  },
+  "menu": {
+    "navegacionPrincipal": "Main navigation",
+    "inicio": "Home",
+    "misPolizas": "My policies",
+    "misSiniestros": "My claims",
+    "misSolicitudes": "My requests",
+    "miPerfil": "My profile",
+    "cotizaciones": "Quotes",
+    "bandejaDecision": "Decision inbox",
+    "renovaciones": "Renewals",
+    "siniestros": "Claims",
+    "emisiones": "Issuances",
+    "endosos": "Endorsements",
+    "asistencias": "Assistance",
+    "socios": "Partners",
+    "auditoria": "Audit",
+    "consentimientos": "Consents",
+    "tablero": "Dashboard",
+    "desempenoTecnico": "Technical performance",
+    "credenciales": "Credentials"
+  },
+  "roles": {
+    "asegurado": "Policyholder",
+    "asesor": "Sales advisor",
+    "operaciones": "Operations analyst",
+    "socio": "Business partner"
+  },
+  "inicio": {
+    "accesosRapidos": "Quick links",
+    "asegurado": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Overview of your policies, payments and open requests"
+    },
+    "asesor": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Your sales day at a glance"
+    },
+    "operaciones": {
+      "titulo": "Operations center",
+      "subtitulo": "Exceptions and queues that need attention"
+    },
+    "socio": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Your integration with Solventa: credentials and technical performance"
+    }
+  }
+}

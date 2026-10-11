@@ -1,0 +1,39 @@
+// Base mínima del portal: tipografía, fondo y foco visible (sistema de diseño §3 y §8).
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente-familia);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-texto-primario);
+  background: var(--color-fondo-pagina);
+}
+
+// Foco visible: anillo azul/500 de 2 px con desplazamiento de 2 px en todo elemento interactivo (§8).
+:focus-visible {
+  outline: 2px solid var(--color-azul-500);
+  outline-offset: 2px;
+}
+
+// Texto solo para lectores de pantalla.
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

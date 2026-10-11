@@ -1,0 +1,51 @@
+<div class="shell" *transloco="let t">
+  <header class="barra-superior">
+    <a class="logotipo barra-superior__logotipo" routerLink="/inicio">
+      {{ t('app.nombre') }}<span class="logotipo__punto" aria-hidden="true">.</span>
+    </a>
+    <span class="barra-superior__modulo">{{ t(modulo()) }}</span>
+    <app-selector-idioma
+      [idioma]="idiomas.idioma()"
+      [idiomas]="idiomas.disponibles"
+      (cambio)="idiomas.cambiar($event)"
+    />
+
+    @if (sesion.usuario(); as usuario) {
+      <div class="usuario" role="group" [attr.aria-label]="t('comun.usuarioActual')">
+        <span class="usuario__avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <span class="usuario__datos">
+          <span class="usuario__nombre">{{ usuario.nombre }}</span>
+          <span class="usuario__rol">{{ t('roles.' + usuario.rol) }}</span>
+        </span>
+      </div>
+    }
+  </header>
+
+  <nav class="barra-lateral" [attr.aria-label]="t('menu.navegacionPrincipal')">
+    <ul class="menu">
+      @for (item of menu(); track item.ruta) {
+        <li>
+          <a
+            class="menu__item"
+            [routerLink]="item.ruta"
+            routerLinkActive="menu__item--activo"
+            ariaCurrentWhenActive="page"
+          >
+            <svg [lucideIcon]="item.icono" [size]="20"></svg>
+            {{ t(item.clave) }}
+          </a>
+        </li>
+      }
+    </ul>
+    <button type="button" class="menu__item menu__cerrar" (click)="cerrarSesion()">
+      <svg lucideLogOut [size]="20"></svg>
+      {{ t('comun.cerrarSesion') }}
+    </button>
+  </nav>
+
+  <main class="contenido">
+    <div class="contenido__contenedor">
+      <router-outlet />
+    </div>
+  </main>
+</div>

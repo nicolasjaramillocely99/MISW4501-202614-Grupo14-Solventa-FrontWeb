@@ -1,0 +1,25 @@
+// Encabezado de los inicios por rol: título de página (titulo/h1 en azul/900) y subtítulo secundario.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-32);
+}
+
+.encabezado-inicio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.encabezado-inicio__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.encabezado-inicio__subtitulo {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}

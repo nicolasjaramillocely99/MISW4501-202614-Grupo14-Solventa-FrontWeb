@@ -1,0 +1,12 @@
+<main class="mensaje" *transloco="let t">
+  <section class="tarjeta mensaje__tarjeta" aria-labelledby="titulo-sesion-expirada">
+    <span class="mensaje__icono"><svg lucideClock [size]="32"></svg></span>
+    <h1 id="titulo-sesion-expirada" class="mensaje__titulo">{{ t('acceso.sesionExpirada.titulo') }}</h1>
+    <p class="mensaje__texto">{{ t('acceso.sesionExpirada.mensaje') }}</p>
+    <div class="mensaje__acciones">
+      <a class="boton boton--primario" routerLink="/acceso/iniciar-sesion">
+        {{ t('acceso.sesionExpirada.iniciarSesion') }}
+      </a>
+    </div>
+  </section>
+</main>

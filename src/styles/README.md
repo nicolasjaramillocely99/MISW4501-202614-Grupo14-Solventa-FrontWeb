@@ -2,7 +2,7 @@
 
 Fuente única: [Sistema de Diseño Solventa](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Sistema-de-Dise%C3%B1o_Solventa) y la colección de variables `Solventa` de Figma. Los nombres de las variables CSS replican los de Figma: `color/azul/700` → `--color-azul-700`.
 
-Archivos previstos (se importan desde `src/styles.scss` en este orden):
+Archivos (se importan desde `src/styles.scss` en este orden). HA-S01 creó los tres con el subconjunto que usan el acceso, el shell del portal y los inicios; el resto de tokens y clases llega con T7:
 
 | Archivo | Contenido |
 |---|---|
