@@ -215,6 +215,132 @@
         "reintentar": "Try again",
         "volverConsentimiento": "Back to consent"
       }
+    },
+    "aceptacionOferta": {
+      "cargando": {
+        "titulo": "We are checking your offer"
+      },
+      "oferta": {
+        "titulo": "Your personalized offer",
+        "numero": "Offer No. {{oferta}}",
+        "insignia": {
+          "normal": "Personalized",
+          "provisional": "Provisional"
+        },
+        "primaMensual": "Monthly premium",
+        "primaNota": "Added to your monthly loan payment",
+        "valorAsegurado": "Sum insured",
+        "vigencia": "Term",
+        "vigenciaValor": "{{anios}} years · same as the loan term",
+        "beneficiario": "Loss payee",
+        "beneficiarioValor": "{{banco}} (outstanding balance) · remainder to your heirs",
+        "perfilAplicado": "Applied profile",
+        "perfilAplicadoValor": "Category {{categoria}} · calculated on {{fecha}}",
+        "perfilBase": "Base actuarial profile",
+        "coberturas": "Included coverages",
+        "cobertura": {
+          "fallecimiento": "Death from any cause",
+          "incapacidad": "Total and permanent disability",
+          "enfermedadesGraves": "Critical illness (advance)"
+        },
+        "coberturaSaldo": "{{porcentaje}}% of the outstanding loan balance",
+        "coberturaSaldoTope": "{{porcentaje}}% of the balance, up to {{tope}}",
+        "avisoPrecio": "Your price is calculated with your individual profile (age, financial habits and public sources), not with a standard rate by age and amount.",
+        "terminos": "I accept the general and specific terms of the mortgage life policy and authorize charging the premium with my loan payment.",
+        "terminosError": "You must accept the terms to continue."
+      },
+      "noRegistrada": {
+        "titulo": "We could not register your acceptance",
+        "texto": "Please try again. Retrying is safe: your acceptance is never registered twice."
+      },
+      "acciones": {
+        "noMeInteresa": "I am not interested",
+        "aceptar": "Accept offer and pay",
+        "aceptando": "Registering your acceptance…",
+        "reintentar": "Try again",
+        "verEstado": "View request status",
+        "continuarCredito": "Continue with my loan",
+        "noGracias": "No, thanks",
+        "nuevaOferta": "Generate a new offer",
+        "volverCotizar": "Get a new quote"
+      },
+      "datos": {
+        "numeroSolicitud": "Request number",
+        "estado": "Status",
+        "motivo": "Reason",
+        "aceptacion": "Acceptance",
+        "aceptacionValor": "Registered · {{fecha}}",
+        "proximoIntento": "Next attempt",
+        "proximoIntentoValor": "{{hora}} · automatic",
+        "ofertaAnterior": "Previous offer",
+        "ofertaAnteriorValor": "{{prima}} / month",
+        "vencio": "Expired"
+      },
+      "insignia": {
+        "validando": "Validating",
+        "conservada": "Resuming",
+        "revision": "Under review",
+        "emision": "Issuance started",
+        "vencida": "Expired"
+      },
+      "validando": {
+        "titulo": "We registered your acceptance",
+        "texto": "Your acceptance was registered on {{fecha}}. We are validating your request…",
+        "progreso": "Request validation in progress"
+      },
+      "conservada": {
+        "titulo": "Your acceptance is saved",
+        "texto": "Your acceptance from {{fecha}} is saved. We had an issue and are resuming the process automatically; you do not need to repeat it.",
+        "lineaEtiqueta": "Process progress",
+        "linea": {
+          "registrada": "Acceptance registered",
+          "fallas": "Underwriting validation",
+          "fallasDetalle": "Unsuccessful attempts: {{intentos}} · last at {{hora}}",
+          "proximo": "Next automatic attempt",
+          "proximoDetalle": "scheduled {{hora}}",
+          "enCurso": "in progress"
+        },
+        "avisoTitulo": "What happens next",
+        "avisoTexto": "We keep trying without you having to do anything. If you close this window, you will see the status of your process when you return to this flow."
+      },
+      "revision": {
+        "titulo": "Your request is under review",
+        "texto": "We registered your acceptance on {{fecha}}. Automatic underwriting asked for an additional validation, so a Solventa advisor will review your case. We usually respond within 4 business hours.",
+        "motivo": {
+          "ofertaProvisional": "Your offer was calculated with provisional information",
+          "perfilAdicional": "Your profile requires an additional review",
+          "generico": "Additional underwriting validation"
+        },
+        "avisoTitulo": "Your price is reserved",
+        "avisoTexto": "Offer {{oferta}} and its premium of {{prima}} are kept while the review lasts. No charge is made until the risk is accepted."
+      },
+      "emision": {
+        "titulo": "Underwriting approved",
+        "texto": "We registered your acceptance on {{fecha}} and underwriting approved your risk. We have started issuing your policy."
+      },
+      "vencida": {
+        "titulo": "This offer has expired",
+        "texto": "Offer {{oferta}} expired on {{fecha}} and can no longer be accepted. We can generate a new one with your current profile; the price may vary.",
+        "textoSinFecha": "Offer {{oferta}} has expired and can no longer be accepted. We can generate a new one with your current profile; the price may vary."
+      },
+      "error": {
+        "sinOferta": {
+          "titulo": "We could not find an offer to continue",
+          "texto": "Get a new quote to receive an offer."
+        },
+        "ofertaNoExiste": {
+          "titulo": "This offer does not exist or is no longer available",
+          "texto": "Get a new quote to receive a valid offer."
+        },
+        "noDisponible": {
+          "titulo": "We could not check your process",
+          "texto": "If you already accepted the offer, your acceptance is still saved. Please try again in a few seconds."
+        },
+        "generico": {
+          "titulo": "We could not process your request",
+          "texto": "An unexpected problem occurred. Please try again later."
+        }
+      }
     }
   }
 }

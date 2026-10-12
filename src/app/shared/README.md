@@ -5,7 +5,7 @@ Código sin estado de negocio que puede usar cualquier dominio o el layout. `sha
 | Carpeta | Contenido |
 |---|---|
 | `ui/` | Componentes del sistema de diseño (página `00 · Componentes` de Figma), **una carpeta por componente**: `boton/`, `campo-texto/`, `selector/`, `casilla-interruptor/`, `tarjeta/`, `tabla/`, `insignia-estado/`, `paso-flujo/`, `aviso/`, `estado-vacio/`, `logotipo/`, `selector-idioma/` |
-| `pipes/` | Formateo con `Intl` según el idioma activo: `moneda` (`$ 1.250.000 COP` / `COP 1,250,000`), `fecha` (`16/09/2026` / `09/16/2026`), `numero`, `porcentaje`. **HU-W1.2-02:** `formato-moneda.pipe.ts` (`formatoMoneda`: monto + código, p. ej. `$ 250.000.000 COP`) y `formato-fecha.pipe.ts` (`formatoFecha`: `11 de octubre de 2026` / `October 11, 2026`); se reevalúan al cambiar de idioma |
+| `pipes/` | Formateo con `Intl` según el idioma activo: `moneda` (`$ 1.250.000 COP` / `COP 1,250,000`), `fecha` (`16/09/2026` / `09/16/2026`), `numero`, `porcentaje`. **HU-W1.2-02:** `formato-moneda.pipe.ts` (`formatoMoneda`: monto + código, p. ej. `$ 250.000.000 COP`) y `formato-fecha.pipe.ts` (`formatoFecha`: `11 de octubre de 2026` / `October 11, 2026`); se reevalúan al cambiar de idioma. **HU-W1.3-01:** `formato-fecha-hora.pipe.ts` (`formatoFechaHora`: `16/09/2026, 14:05` / `09/16/2026, 14:05`, en la zona horaria del usuario; con `'hora'`, solo `14:05`) |
 | `directivas/` | Comportamientos reutilizables (foco inicial, cierre al hacer clic fuera, etc.) |
 | `modelos/` | Tipos transversales: paginación, respuesta de error del gateway, estados (`Activa`, `Por vencer`, …) |
 | `utilidades/` | Funciones puras (validadores de documento, fechas, etc.) |

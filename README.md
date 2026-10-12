@@ -51,7 +51,7 @@ npm ci
 npm start
 ```
 
-El portal queda en `http://localhost:4200` usando `src/environments/environment.development.ts` (ambiente **local**).
+El portal queda en `http://localhost:4200` usando `src/environments/environment.development.ts` (ambiente **local**). El servicio de originación no responde CORS, así que en local el navegador llama al mismo origen y el proxy de desarrollo ([`proxy.conf.json`](proxy.conf.json)) reenvía `/v1` a `http://localhost:8080`.
 
 | Comando | Qué hace |
 |---|---|

@@ -69,6 +69,15 @@ export class SesionService {
     if (this.sesionActual()) {
       return Promise.resolve(true);
     }
+    return this.renovarAhora();
+  }
+
+  /**
+   * Renueva el ID token ya, sin esperar al temporizador. El interceptor la usa cuando el API Gateway
+   * rechaza el token con 401 (renovar y reintentar una vez). Las llamadas simultáneas comparten la misma
+   * renovación. Devuelve `false` si no se pudo renovar.
+   */
+  renovarAhora(): Promise<boolean> {
     this.restauracion ??= this.renovar().finally(() => (this.restauracion = null));
     return this.restauracion;
   }

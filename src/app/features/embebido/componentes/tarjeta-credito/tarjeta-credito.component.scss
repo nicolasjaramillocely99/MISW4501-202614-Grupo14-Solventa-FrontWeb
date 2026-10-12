@@ -1,0 +1,53 @@
+:host {
+  display: block;
+  flex: 0 0 352px;
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.credito {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.credito__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.credito__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: 2px 0 0;
+  }
+}
+
+.credito__monto {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  :host {
+    flex-basis: auto;
+  }
+}

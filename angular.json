@@ -95,7 +95,8 @@
               "buildTarget": "solventa-front-web:build:staging"
             },
             "development": {
-              "buildTarget": "solventa-front-web:build:development"
+              "buildTarget": "solventa-front-web:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
