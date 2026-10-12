@@ -1,0 +1,57 @@
+<ng-container *transloco="let t; prefix: 'embebido.aceptacionOferta.oferta'">
+  <div class="resumen">
+    <div class="resumen__prima">
+      <p class="dato__etiqueta">{{ t('primaMensual') }}</p>
+      <p class="resumen__monto">{{ detalle().primaMensual | formatoMoneda: detalle().moneda }}</p>
+      <p class="resumen__nota">{{ t('primaNota') }}</p>
+    </div>
+    <dl class="resumen__datos">
+      <div>
+        <dt class="dato__etiqueta">{{ t('valorAsegurado') }}</dt>
+        <dd class="resumen__destacado">{{ detalle().valorAsegurado | formatoMoneda: detalle().moneda }}</dd>
+      </div>
+      <div>
+        <dt class="dato__etiqueta">{{ t('vigencia') }}</dt>
+        <dd>{{ t('vigenciaValor', { anios: detalle().vigenciaAnios }) }}</dd>
+      </div>
+      <div>
+        <dt class="dato__etiqueta">{{ t('beneficiario') }}</dt>
+        <dd>{{ t('beneficiarioValor', { banco: detalle().beneficiario }) }}</dd>
+      </div>
+      @if (perfil(); as perfilAplicado) {
+        <div>
+          <dt class="dato__etiqueta">{{ t('perfilAplicado') }}</dt>
+          <dd>
+            @if (perfilAplicado.fechaPerfil) {
+              {{ t('perfilAplicadoValor', { categoria: perfilAplicado.categoria, fecha: perfilAplicado.fechaPerfil | formatoFechaHora }) }}
+            } @else {
+              {{ t('perfilBase') }}
+            }
+          </dd>
+        </div>
+      }
+    </dl>
+  </div>
+
+  <h2 class="coberturas__titulo">{{ t('coberturas') }}</h2>
+  <ul class="coberturas">
+    @for (cobertura of detalle().coberturas; track cobertura.clave) {
+      <li class="cobertura">
+        <svg lucideCircleCheck [size]="18" aria-hidden="true"></svg>
+        <span class="cobertura__nombre">{{ t('cobertura.' + cobertura.clave) }}</span>
+        <span class="cobertura__valor">
+          @if (cobertura.tope !== null) {
+            {{ t('coberturaSaldoTope', { porcentaje: cobertura.porcentaje, tope: cobertura.tope | formatoMoneda: detalle().moneda }) }}
+          } @else {
+            {{ t('coberturaSaldo', { porcentaje: cobertura.porcentaje }) }}
+          }
+        </span>
+      </li>
+    }
+  </ul>
+
+  <div class="aviso aviso--informacion">
+    <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+    <p>{{ t('avisoPrecio') }}</p>
+  </div>
+</ng-container>

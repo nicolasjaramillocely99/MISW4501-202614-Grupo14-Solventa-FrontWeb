@@ -11,9 +11,9 @@
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
 | [E1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=9-169) | Paso 1 · Consentimiento | `/embebido/consentimiento` | público (canal del aliado) | HU-W1.2-01 | S1 |
-| [E6](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-691) | Solicitud en revisión (decisión humana) | `/embebido/en-revision` | público (canal del aliado) | HU-W1.3-01, HU-W1.1-02 | S1 |
-| [E3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-434), [E3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-478), [E3c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=433-745) | Paso 3 · Oferta personalizada (y provisional) | `/embebido/oferta` | público (canal del aliado) | HU-W1.2-03, HU-W1.3-01, HA-D01 | S1 |
-| [E7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-1002) | Oferta vencida | `/embebido/oferta-vencida` | público (canal del aliado) | HU-W1.3-01 | S1 |
+| [E6](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-691) | Solicitud en revisión (decisión humana) · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01, HU-W1.1-02 | S1 |
+| [E3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-434), [E3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-478), [E3c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=433-745) | Paso 3 · Oferta personalizada (y provisional) y aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.2-03, HU-W1.3-01, HA-D01 | S1 |
+| [E7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-1002) | Oferta vencida · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01 | S1 |
 | [E4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-337), [E4b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-578), [E4c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-783) | Paso 4 · Pago de la prima (pendiente / rechazado) | `/embebido/pago` | público (canal del aliado) | HU-W1.3-02, HA-D02 | S1 |
 | [E2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-231), [E2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=643-8582) | Paso 2 · Cálculo del perfil de riesgo | `/embebido/perfil-riesgo/:clienteId` | público (canal del aliado) | HU-W1.2-02, HA-L01, HA-D01 | S1 |
 | [E5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-556) | Paso 5 · Póliza emitida | `/embebido/poliza-emitida` | público (canal del aliado) | HU-W1.3-03 | S1 |
@@ -36,6 +36,36 @@
   para HU-W1.2-03. El aliado se publica en `core/aliado` para la barra del shell.
 - «Ver mi oferta» lleva a `/embebido/oferta` y «Cancelar» a `/embebido/consentimiento`; ambas rutas llegan con sus historias.
 - E2E: `e2e/flujos/cotizacion-emision/perfil-riesgo.spec.ts` (API Gateway simulado con `page.route`, axe-core en cada estado).
+
+**Paso 3 · Aceptación de la oferta y disparo de la emisión (HU-W1.3-01)** — `aceptacion-oferta/aceptacion-oferta.page.ts`
+(`AceptacionOfertaPage`), rutas `/embebido/oferta/:ofertaId` y `/embebido/oferta` (retoma la oferta guardada en
+`sessionStorage`). Contrato: `HU-W1.3-01-api.md` del backend (servicio `origination`, `openapi.yaml` v0.4.0).
+
+- **Pide sesión, a diferencia del resto del canal:** aceptar exige el ID token de un asegurado dueño de la oferta, así que
+  `oferta` lleva `autenticacionGuard` y, en los hijos, `rolGuard('asegurado')` (los hijos corren después de recuperar la
+  sesión al recargar). Sin sesión lleva al inicio de sesión y regresa con `returnUrl`.
+- Llama a `OriginacionApiService` (`core/api/originacion/`): `consultarAceptacionDeOferta` al entrar (retomar el trámite;
+  `acceptance_not_found` = mostrar la oferta con «Aceptar»), `aceptarOferta` (`POST` con `{"channel":"web"}`, idempotente por
+  oferta; «Aceptar» se deshabilita mientras está en curso) y `consultarAceptacion` para el polling.
+- Estados dentro de la misma página: **oferta** (E3, con la casilla de condiciones), **registrada / validando**,
+  **aceptación conservada** (`registered` con `attempts > 0` o más de 2 minutos), **en revisión** (E6, `in_review`, motivo
+  según `underwriting.reason`), **emisión iniciada** (`issuance_pending`), **oferta vencida** (E7, `422 offer_expired` con
+  `expires_at`) y errores (`offer_not_found`, sin servicio, sin oferta, genérico). Los textos salen del código `error`, nunca de
+  `message`; `acceptance_not_registered` muestra el aviso junto a la oferta y «Reintentar» reenvía el mismo `POST`.
+- `servicios/seguimiento-aceptacion.service.ts` (`SeguimientoAceptacionService`, provisto por la página): polling del §6 del
+  contrato (primera consulta a 1 s, luego cada 2 s; hasta `next_attempt_at` + 1 s si el backend reintenta más tarde, con
+  tope de 61 s; cada 15 s tras 2 minutos; se detiene en `issuance_pending`, `in_review`, 400, 401 o 403; ante
+  `acceptance_unavailable` o error de red conserva la última pantalla; ante `acceptance_not_found` vuelve a consultar por
+  oferta). `servicios/tramite-aceptacion.service.ts` guarda `offer_id` y `acceptance_id` en `sessionStorage`.
+- `aceptacion-oferta.config.ts`: `ACCIONES_ACEPTACION_OFERTA` deja configurables «Generar una nueva oferta» / «Volver a
+  cotizar» (hoy `/embebido/consentimiento`, hasta que HU-W1.2-03 publique el endpoint de nuevas ofertas) y «No me interesa»
+  / «Continuar con mi crédito» (`/inicio`). `DETALLE_OFERTA` entrega el contenido de la oferta.
+- **Datos de prueba provisionales:** `modelos/detalle-oferta.provisional.ts` (prima 89 500 COP de las ofertas simuladas del
+  backend; valor asegurado, vigencia, beneficiario y coberturas del frame E3). Se elimina cuando HU-W1.2-03 exponga el
+  detalle de la oferta.
+- `componentes/tarjeta-credito/` (`TarjetaCreditoComponent`): la tarjeta «Tu crédito», reutilizable por los pasos del canal.
+- E2E: `e2e/flujos/cotizacion-emision/aceptacion-oferta.spec.ts` (Cognito y API Gateway simulados con `page.route`,
+  axe-core en cada estado).
 
 ## Cómo trabajar una historia de este dominio
 

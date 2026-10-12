@@ -215,6 +215,132 @@
         "reintentar": "Reintentar",
         "volverConsentimiento": "Volver al consentimiento"
       }
+    },
+    "aceptacionOferta": {
+      "cargando": {
+        "titulo": "Estamos consultando tu oferta"
+      },
+      "oferta": {
+        "titulo": "Tu oferta personalizada",
+        "numero": "Oferta N.º {{oferta}}",
+        "insignia": {
+          "normal": "Personalizada",
+          "provisional": "Provisional"
+        },
+        "primaMensual": "Prima mensual",
+        "primaNota": "Se suma a la cuota mensual de tu crédito",
+        "valorAsegurado": "Valor asegurado",
+        "vigencia": "Vigencia",
+        "vigenciaValor": "{{anios}} años · igual al plazo del crédito",
+        "beneficiario": "Beneficiario oneroso",
+        "beneficiarioValor": "{{banco}} (saldo insoluto) · remanente a tus herederos",
+        "perfilAplicado": "Perfil aplicado",
+        "perfilAplicadoValor": "Categoría {{categoria}} · calculado el {{fecha}}",
+        "perfilBase": "Perfil actuarial base",
+        "coberturas": "Coberturas incluidas",
+        "cobertura": {
+          "fallecimiento": "Fallecimiento por cualquier causa",
+          "incapacidad": "Incapacidad total y permanente",
+          "enfermedadesGraves": "Enfermedades graves (anticipo)"
+        },
+        "coberturaSaldo": "{{porcentaje}} % del saldo insoluto del crédito",
+        "coberturaSaldoTope": "{{porcentaje}} % del saldo, hasta {{tope}}",
+        "avisoPrecio": "Tu precio se calcula con tu perfil individual (edad, hábitos financieros y fuentes públicas), no con una tarifa estándar por edad y monto.",
+        "terminos": "Acepto las condiciones generales y particulares de la póliza de vida hipotecario y autorizo el cobro de la prima con la cuota de mi crédito.",
+        "terminosError": "Debes aceptar las condiciones para continuar."
+      },
+      "noRegistrada": {
+        "titulo": "No pudimos registrar tu aceptación",
+        "texto": "Intenta de nuevo. Reintentar es seguro: tu aceptación nunca se registra dos veces."
+      },
+      "acciones": {
+        "noMeInteresa": "No me interesa",
+        "aceptar": "Aceptar oferta y pagar",
+        "aceptando": "Registrando tu aceptación…",
+        "reintentar": "Reintentar",
+        "verEstado": "Ver estado de la solicitud",
+        "continuarCredito": "Continuar con mi crédito",
+        "noGracias": "No, gracias",
+        "nuevaOferta": "Generar una nueva oferta",
+        "volverCotizar": "Volver a cotizar"
+      },
+      "datos": {
+        "numeroSolicitud": "Número de solicitud",
+        "estado": "Estado",
+        "motivo": "Motivo",
+        "aceptacion": "Aceptación",
+        "aceptacionValor": "Registrada · {{fecha}}",
+        "proximoIntento": "Próximo intento",
+        "proximoIntentoValor": "{{hora}} · automático",
+        "ofertaAnterior": "Oferta anterior",
+        "ofertaAnteriorValor": "{{prima}} / mes",
+        "vencio": "Venció"
+      },
+      "insignia": {
+        "validando": "Validando",
+        "conservada": "Reanudando",
+        "revision": "En revisión",
+        "emision": "Emisión iniciada",
+        "vencida": "Vencida"
+      },
+      "validando": {
+        "titulo": "Registramos tu aceptación",
+        "texto": "Tu aceptación quedó registrada el {{fecha}}. Estamos validando tu solicitud…",
+        "progreso": "Validación de la solicitud en curso"
+      },
+      "conservada": {
+        "titulo": "Tu aceptación está guardada",
+        "texto": "Tu aceptación del {{fecha}} está guardada. Tuvimos un inconveniente y estamos retomando el trámite automáticamente; no necesitas repetirlo.",
+        "lineaEtiqueta": "Avance del trámite",
+        "linea": {
+          "registrada": "Aceptación registrada",
+          "fallas": "Validación de la suscripción",
+          "fallasDetalle": "Intentos sin éxito: {{intentos}} · último a las {{hora}}",
+          "proximo": "Próximo intento automático",
+          "proximoDetalle": "programado {{hora}}",
+          "enCurso": "en curso"
+        },
+        "avisoTitulo": "Qué pasa después",
+        "avisoTexto": "Seguimos intentando sin que tengas que hacer nada. Si cierras esta ventana, al volver a este flujo verás el estado de tu trámite."
+      },
+      "revision": {
+        "titulo": "Tu solicitud está en revisión",
+        "texto": "Registramos tu aceptación el {{fecha}}. La suscripción automática pidió una validación adicional, así que un asesor de Solventa revisará tu caso. Normalmente respondemos en menos de 4 horas hábiles.",
+        "motivo": {
+          "ofertaProvisional": "Tu oferta se calculó con información provisional",
+          "perfilAdicional": "Tu perfil requiere una revisión adicional",
+          "generico": "Validación adicional de suscripción"
+        },
+        "avisoTitulo": "Tu precio queda reservado",
+        "avisoTexto": "La oferta {{oferta}} y su prima de {{prima}} se mantienen mientras dura la revisión. No se realiza ningún cobro hasta que el riesgo sea aceptado."
+      },
+      "emision": {
+        "titulo": "Suscripción aprobada",
+        "texto": "Registramos tu aceptación el {{fecha}} y la suscripción aprobó tu riesgo. Ya iniciamos la emisión de tu póliza."
+      },
+      "vencida": {
+        "titulo": "Esta oferta venció",
+        "texto": "La oferta {{oferta}} venció el {{fecha}} y ya no puede aceptarse. Podemos generar una nueva con tu perfil actual; el precio puede variar.",
+        "textoSinFecha": "La oferta {{oferta}} venció y ya no puede aceptarse. Podemos generar una nueva con tu perfil actual; el precio puede variar."
+      },
+      "error": {
+        "sinOferta": {
+          "titulo": "No encontramos una oferta para continuar",
+          "texto": "Vuelve a cotizar para recibir una oferta."
+        },
+        "ofertaNoExiste": {
+          "titulo": "Esta oferta no existe o ya no está disponible",
+          "texto": "Vuelve a cotizar para recibir una oferta vigente."
+        },
+        "noDisponible": {
+          "titulo": "No pudimos consultar tu trámite",
+          "texto": "Si ya aceptaste la oferta, tu aceptación sigue guardada. Intenta de nuevo en unos segundos."
+        },
+        "generico": {
+          "titulo": "No pudimos procesar tu solicitud",
+          "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
+        }
+      }
     }
   }
 }
