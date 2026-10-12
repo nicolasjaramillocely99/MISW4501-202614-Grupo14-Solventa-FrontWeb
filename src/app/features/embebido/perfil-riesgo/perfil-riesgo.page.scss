@@ -1,0 +1,211 @@
+// Paso 2 del canal embebido (E2 / E2b): contexto, tarjeta «Tu crédito» de 352 px y tarjeta del cálculo.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 8vw, 120px);
+}
+
+.pagina__contexto {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.pagina__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.credito {
+  display: flex;
+  flex: 0 0 352px;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.credito__titulo,
+.calculo__titulo {
+  margin: 0;
+  font-weight: 600;
+}
+
+.credito__titulo {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.credito__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: 2px 0 0;
+  }
+}
+
+.credito__monto {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.calculo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.calculo__titulo {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.calculo__descripcion {
+  margin: var(--espacio-12) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.progreso {
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radio-completo);
+  background: var(--color-borde-base);
+}
+
+.progreso__barra {
+  width: 100%;
+  height: 100%;
+  background: var(--color-azul-700);
+}
+
+// Mientras se espera la respuesta no hay avance real que mostrar: barra indeterminada.
+.progreso__barra--indeterminada {
+  width: 40%;
+  animation: progreso-indeterminado 1.4s ease-in-out infinite;
+}
+
+@keyframes progreso-indeterminado {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progreso__barra--indeterminada {
+    width: 60%;
+    animation: none;
+  }
+}
+
+.filas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  padding: var(--espacio-12) 0;
+
+  & + & {
+    border-top: 1px solid var(--color-borde-base);
+  }
+}
+
+.fila__icono {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-texto-secundario);
+}
+
+.fila__icono--listo {
+  color: var(--color-exito-500);
+}
+
+.fila__icono--enCurso {
+  color: var(--color-azul-700);
+}
+
+.fila__icono--alerta {
+  color: var(--color-advertencia-600);
+}
+
+.fila__texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.fila__nombre,
+.fila__detalle {
+  margin: 0;
+}
+
+.fila__nombre {
+  font-weight: 500;
+}
+
+.fila__detalle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.fila--atenuada .fila__nombre {
+  color: var(--color-texto-secundario);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+@media (max-width: 1024px) {
+  .pagina__cuerpo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .credito {
+    flex-basis: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .calculo :is(app-indicador-pasos) {
+    overflow-x: auto;
+  }
+
+  .acciones .boton {
+    flex: 1 1 100%;
+  }
+}
