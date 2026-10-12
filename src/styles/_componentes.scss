@@ -130,6 +130,35 @@
   }
 }
 
+.aviso--exito {
+  border-left-color: var(--color-exito-500);
+  background: var(--color-exito-100);
+
+  svg {
+    color: var(--color-exito-600);
+    flex-shrink: 0;
+  }
+}
+
+.aviso--advertencia {
+  border-left-color: var(--color-advertencia-500);
+  background: var(--color-advertencia-100);
+
+  svg {
+    color: var(--color-advertencia-600);
+    flex-shrink: 0;
+  }
+}
+
+.aviso--informacion svg {
+  color: var(--color-informacion-500);
+  flex-shrink: 0;
+}
+
+.aviso__titulo {
+  font-weight: 500;
+}
+
 // Tarjeta: radio 12, relleno 24, borde base y sombra de elevación.
 .tarjeta {
   padding: var(--espacio-24);

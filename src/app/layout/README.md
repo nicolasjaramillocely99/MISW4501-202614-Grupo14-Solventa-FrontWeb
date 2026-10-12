@@ -19,3 +19,8 @@ Menús por rol según el prototipo:
 **Portal (HA-S01):** `portal/portal-shell.component.ts` (`PortalShellComponent`, `app-portal-shell`). Barra superior con logotipo, nombre del módulo (el ítem activo del menú), selector de idioma (`shared/ui/selector-idioma`, conserva el idioma elegido en P0) y usuario con su rol; barra lateral con `MENU_POR_ROL[rol]` de `core/navegacion`, `aria-current="page"` en el ítem activo y *Cerrar sesión* al pie (revoca el token y lleva al inicio de sesión). Si la sesión expira, lleva a `/acceso/sesion-expirada`. Se carga de forma perezosa como ruta padre `''` en `app.routes.ts`. Pendiente para T7: barra lateral colapsada (72 px). En el menú del socio no aparece *Por producto* (HU-W3.2-02, fuera de alcance); las rutas que aún no existen redirigen a `/inicio`.
 
 El shell del portal aplica el *guard* de autenticación a todas sus rutas hijas; el canal embebido es público (el socio autentica con credenciales de API en el gateway, no con Cognito).
+
+**Embebido (HU-W1.2-02):** `embebido/embebido-shell.component.ts` (`EmbebidoShellComponent`, `app-embebido-shell`). Barra de 64 px
+con el marcador del aliado (nombre desde `core/aliado`; «Aliado» mientras no se conozca) y «Protegido por Solventa». Se carga
+como ruta pública `embebido` en `app.routes.ts`, fuera del shell del portal. El indicador de pasos no vive en el shell: cada
+pantalla del flujo lo compone con `shared/ui/indicador-pasos` porque va dentro de la tarjeta (E2).

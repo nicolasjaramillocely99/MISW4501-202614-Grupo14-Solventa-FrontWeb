@@ -1,0 +1,60 @@
+// Shell embebido: barra del aliado de 64 px y cuerpo sobre fondo de página (sistema de diseño §5).
+.embebido {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-fondo-pagina);
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-24);
+  min-height: var(--shell-barra-superior);
+  padding: 0 var(--espacio-32);
+  border-bottom: 1px solid var(--color-borde-base);
+  background: var(--color-fondo-superficie);
+}
+
+// Marcador del logotipo del aliado: 120 × 32, gris. El texto usa texto/primario: texto/secundario sobre
+// borde/base no alcanza el contraste AA (4,5:1).
+.barra__aliado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 32px;
+  margin: 0;
+  padding: 0 var(--espacio-8);
+  border-radius: 4px;
+  background: var(--color-borde-base);
+  color: var(--color-texto-primario);
+  font-weight: 500;
+}
+
+.barra__protegido {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.barra__logotipo {
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.embebido__cuerpo {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .barra {
+    padding: 0 var(--espacio-16);
+  }
+}

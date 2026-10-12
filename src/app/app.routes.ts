@@ -3,13 +3,19 @@ import { Routes } from '@angular/router';
 import { autenticacionGuard } from '@core/auth/guards/autenticacion.guard';
 
 /**
- * Rutas raíz. `acceso` es público y sin shell; todo lo demás vive dentro del shell del portal, protegido
+ * Rutas raíz. `acceso` es público y sin shell; `embebido` es público con su propio shell; todo lo demás vive dentro del shell del portal, protegido
  * por sesión (los dominios restringen el rol con `rolGuard`). Una ruta que no existe lleva al inicio del rol.
  */
 export const routes: Routes = [
   {
     path: 'acceso',
     loadChildren: () => import('@features/acceso/acceso.routes').then((m) => m.ACCESO_ROUTES),
+  },
+  {
+    path: 'embebido',
+    loadComponent: () =>
+      import('@layout/embebido/embebido-shell.component').then((m) => m.EmbebidoShellComponent),
+    loadChildren: () => import('@features/embebido/embebido.routes').then((m) => m.EMBEBIDO_ROUTES),
   },
   {
     path: '',

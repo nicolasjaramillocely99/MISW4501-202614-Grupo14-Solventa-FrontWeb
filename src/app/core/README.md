@@ -8,7 +8,8 @@ Todo lo que existe una sola vez en la aplicación y no tiene interfaz visual. Se
 | `auth/guards/` | `autenticacion.guard.ts` (recupera la sesión con el token de renovación; sin sesión → `/acceso/iniciar-sesion?returnUrl=…`; sesión vencida sin renovación → `/acceso/sesion-expirada`) y `rol.guard.ts` (`rolGuard(...roles)`; rol insuficiente → `/acceso/no-autorizado`) | 401 / 403 definidos en HA-S01 |
 | `auth/interceptores/` | `autenticacion.interceptor.ts`: adjunta el ID token (`Authorization: Bearer`) **solo** a las peticiones a `apiGatewayUrl`; ante 401 expira la sesión y lleva a `/acceso/sesion-expirada`; ante 403 lleva a `/acceso/no-autorizado` | El *authorizer* de Cognito valida el token en el gateway |
 | `api/` | Cliente HTTP base (URL del API Gateway desde `environments/`) y **un cliente por microservicio** | Conector «solicitudes del portal» → API Gateway «Facade» |
-| `api/originacion/` | Cotización, emisión, cobro, endosos, renovación, cancelación | Servicio de originación |
+| `api/originacion/` | Cotización, emisión, cobro, endosos, renovación, cancelación. **HU-W1.2-02:** `originacion-api.service.ts` (`OriginacionApiService.resolverPerfilRiesgo`, `POST /v1/risk-profiles/resolve`) y `perfil-riesgo.modelos.ts` (tipos según el `openapi.yaml` del backend v0.3.0 y traducción snake_case → camelCase) | Servicio de originación |
+| `aliado/` | **HU-W1.2-02:** `contexto-aliado.service.ts` (`ContextoAliadoService`): nombre del banco aliado que publica la pantalla del flujo y lee el shell embebido, para no importar `features` desde `layout` | Canal embebido |
 | `api/siniestros/` | Radicación, consulta, triage, evaluación, asistencias | Servicio de siniestros |
 | `api/socios/` | Alta de socios, credenciales, tablero de desempeño | Servicio de gestión de socios B2B |
 | `api/auditoria/` | Consulta de trazabilidad y consentimientos | Servicio de auditoría y consentimientos |

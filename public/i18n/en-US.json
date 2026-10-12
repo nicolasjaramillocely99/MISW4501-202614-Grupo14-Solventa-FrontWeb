@@ -12,6 +12,11 @@
       "enUS": "English (United States)",
       "esCOCorto": "ES",
       "enUSCorto": "EN"
+    },
+    "pasos": {
+      "completado": "completed",
+      "actual": "current step",
+      "pendiente": "pending"
     }
   },
   "acceso": {
@@ -93,6 +98,123 @@
     "socio": {
       "saludo": "Hi, {{nombre}}",
       "subtitulo": "Your integration with Solventa: credentials and technical performance"
+    }
+  },
+  "embebido": {
+    "barra": {
+      "aliado": "Partner",
+      "aliadoPredeterminado": "Partner",
+      "protegidoPor": "Protected by"
+    },
+    "contexto": {
+      "conSolicitud": "Home loan · Application No. {{numero}} · Mortgage life insurance",
+      "sinSolicitud": "Home loan · Mortgage life insurance"
+    },
+    "pasos": {
+      "navegacion": "Application steps",
+      "consentimiento": "Consent",
+      "perfilRiesgo": "Risk profile",
+      "oferta": "Offer",
+      "pago": "Payment",
+      "poliza": "Policy"
+    },
+    "credito": {
+      "titulo": "Your loan",
+      "banco": "Bank",
+      "montoAprobado": "Approved amount",
+      "plazo": "Term",
+      "plazoAnios": "{{anios}} years",
+      "cuotaEstimada": "Estimated installment",
+      "cuotaMensual": "{{valor}} / month"
+    },
+    "perfilRiesgo": {
+      "titulo": {
+        "calculando": "We are calculating your risk profile",
+        "listo": "Your offer is ready",
+        "error": "We could not calculate your risk profile"
+      },
+      "descripcion": {
+        "calculando": "We query the sources you authorized and apply the pricing rules. This takes a few seconds; please keep this window open.",
+        "listo": "We finished querying the sources you authorized and applying the pricing rules. Review your personalized offer whenever you like.",
+        "error": "Your progress is saved. Review the notice and continue."
+      },
+      "progreso": "Risk profile calculation progress",
+      "fuente": {
+        "openFinance": "Open Finance",
+        "openData": "Open Data",
+        "kyc": "Identity validation (KYC)"
+      },
+      "detalleFuente": {
+        "consultando": "Querying…",
+        "consultado": "Queried · {{ms}} ms",
+        "consultadoSinLatencia": "Queried",
+        "tiempoAgotado": "Did not respond in time · {{ms}} ms",
+        "error": "We could not query it · {{ms}} ms",
+        "aislada": "Temporarily isolated; not queried"
+      },
+      "insignia": {
+        "listo": "Done",
+        "enCurso": "In progress",
+        "sinRespuesta": "No response",
+        "conFalla": "Failed",
+        "noDisponible": "Unavailable",
+        "provisional": "Provisional"
+      },
+      "motor": {
+        "nombre": "Pricing engine",
+        "aplicando": "Applying underwriting rules…",
+        "listo": "Rules applied"
+      },
+      "oferta": {
+        "nombre": "Offer generation",
+        "pendiente": "Pending",
+        "lista": "Ready to review"
+      },
+      "perfilVigente": {
+        "nombre": "Current risk profile",
+        "detalle": "Calculated on {{fecha}} · no external sources were queried"
+      },
+      "perfilBase": {
+        "nombre": "Base actuarial profile",
+        "detalle": "You have no previous profile yet; it does not depend on external sources"
+      },
+      "avisos": {
+        "fuentesNoResponden": {
+          "titulo": "If a source does not respond",
+          "texto": "If a source takes more than 700 ms or is unavailable, we continue with your latest available profile or the base profile and let you know in the offer. You will never lose your progress."
+        },
+        "lista": {
+          "titulo": "Your offer is ready",
+          "texto": "We generated your personalized offer with the information we queried. Nothing is sent or charged until you review and accept it."
+        },
+        "parcial": {
+          "titulo": "We calculated your profile with the sources that responded",
+          "texto": "One or more sources did not respond in time, so your profile was calculated with the information available. You did not lose your progress."
+        },
+        "ultimoPerfil": {
+          "titulo": "We are continuing with your latest profile",
+          "texto": "We could not query {{fuente}} right now. We used your latest profile, calculated on {{fecha}}, and your offer will be marked as provisional."
+        },
+        "perfilBase": {
+          "titulo": "We are using the base profile",
+          "texto": "We do not have a profile for you yet and could not query your sources right now. Your offer uses the base actuarial profile and will be marked as provisional; we will personalize it once the query is restored."
+        },
+        "consentimiento": {
+          "titulo": "We need your consent",
+          "texto": "To calculate your profile you must authorize querying your sources. We query nothing without your authorization."
+        },
+        "error": {
+          "titulo": "We could not calculate your profile",
+          "texto": "A problem occurred while calculating your profile. Your progress is saved; please try again."
+        }
+      },
+      "acciones": {
+        "cancelar": "Cancel",
+        "calculando": "Calculating…",
+        "verOferta": "View my offer",
+        "reintentar": "Try again",
+        "volverConsentimiento": "Back to consent"
+      }
     }
   }
 }

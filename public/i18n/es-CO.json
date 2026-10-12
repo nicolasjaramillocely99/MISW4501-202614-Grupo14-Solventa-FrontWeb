@@ -12,6 +12,11 @@
       "enUS": "English (United States)",
       "esCOCorto": "ES",
       "enUSCorto": "EN"
+    },
+    "pasos": {
+      "completado": "completado",
+      "actual": "paso actual",
+      "pendiente": "pendiente"
     }
   },
   "acceso": {
@@ -93,6 +98,123 @@
     "socio": {
       "saludo": "Hola, {{nombre}}",
       "subtitulo": "Tu integración con Solventa: credenciales y desempeño técnico"
+    }
+  },
+  "embebido": {
+    "barra": {
+      "aliado": "Aliado",
+      "aliadoPredeterminado": "Aliado",
+      "protegidoPor": "Protegido por"
+    },
+    "contexto": {
+      "conSolicitud": "Crédito de vivienda · Solicitud N.º {{numero}} · Seguro de vida hipotecario",
+      "sinSolicitud": "Crédito de vivienda · Seguro de vida hipotecario"
+    },
+    "pasos": {
+      "navegacion": "Pasos de la solicitud",
+      "consentimiento": "Consentimiento",
+      "perfilRiesgo": "Perfil de riesgo",
+      "oferta": "Oferta",
+      "pago": "Pago",
+      "poliza": "Póliza"
+    },
+    "credito": {
+      "titulo": "Tu crédito",
+      "banco": "Banco",
+      "montoAprobado": "Monto aprobado",
+      "plazo": "Plazo",
+      "plazoAnios": "{{anios}} años",
+      "cuotaEstimada": "Cuota estimada",
+      "cuotaMensual": "{{valor}} / mes"
+    },
+    "perfilRiesgo": {
+      "titulo": {
+        "calculando": "Estamos calculando tu perfil de riesgo",
+        "listo": "Tu oferta está lista",
+        "error": "No pudimos calcular tu perfil de riesgo"
+      },
+      "descripcion": {
+        "calculando": "Consultamos las fuentes que autorizaste y aplicamos las reglas de tarifación. Esto toma unos segundos; no cierres esta ventana.",
+        "listo": "Terminamos de consultar las fuentes que autorizaste y de aplicar las reglas de tarifación. Revisa tu oferta personalizada cuando quieras.",
+        "error": "Tu avance está guardado. Revisa el aviso y continúa."
+      },
+      "progreso": "Progreso del cálculo del perfil",
+      "fuente": {
+        "openFinance": "Open Finance",
+        "openData": "Open Data",
+        "kyc": "Validación de identidad (KYC)"
+      },
+      "detalleFuente": {
+        "consultando": "Consultando…",
+        "consultado": "Consultado · {{ms}} ms",
+        "consultadoSinLatencia": "Consultado",
+        "tiempoAgotado": "No respondió a tiempo · {{ms}} ms",
+        "error": "No pudimos consultarla · {{ms}} ms",
+        "aislada": "Aislada temporalmente; no se consultó"
+      },
+      "insignia": {
+        "listo": "Listo",
+        "enCurso": "En curso",
+        "sinRespuesta": "Sin respuesta",
+        "conFalla": "Con falla",
+        "noDisponible": "No disponible",
+        "provisional": "Provisional"
+      },
+      "motor": {
+        "nombre": "Motor de tarifación",
+        "aplicando": "Aplicando reglas de suscripción…",
+        "listo": "Reglas aplicadas"
+      },
+      "oferta": {
+        "nombre": "Generación de la oferta",
+        "pendiente": "Pendiente",
+        "lista": "Lista para revisar"
+      },
+      "perfilVigente": {
+        "nombre": "Perfil de riesgo vigente",
+        "detalle": "Calculado el {{fecha}} · no se consultaron fuentes externas"
+      },
+      "perfilBase": {
+        "nombre": "Perfil actuarial base",
+        "detalle": "Aún no tienes un perfil previo; no depende de fuentes externas"
+      },
+      "avisos": {
+        "fuentesNoResponden": {
+          "titulo": "Si una fuente no responde",
+          "texto": "Si una fuente tarda más de 700 ms o no está disponible, continuamos con tu último perfil disponible o con el perfil base y te lo indicaremos en la oferta. Nunca perderás tu avance."
+        },
+        "lista": {
+          "titulo": "Tu oferta está lista",
+          "texto": "Generamos tu oferta personalizada con la información consultada. Nada se envía ni se cobra hasta que la revises y la aceptes."
+        },
+        "parcial": {
+          "titulo": "Calculamos tu perfil con las fuentes que respondieron",
+          "texto": "Una o más fuentes no respondieron a tiempo, así que tu perfil se calculó con la información disponible. No perdiste tu avance."
+        },
+        "ultimoPerfil": {
+          "titulo": "Continuamos con tu último perfil",
+          "texto": "No pudimos consultar {{fuente}} en este momento. Usamos tu último perfil, calculado el {{fecha}}, y tu oferta quedará marcada como provisional."
+        },
+        "perfilBase": {
+          "titulo": "Usamos el perfil base",
+          "texto": "Aún no tenemos un perfil tuyo y no pudimos consultar tus fuentes en este momento. Tu oferta usa el perfil actuarial base y quedará marcada como provisional; la personalizaremos cuando se restablezca la consulta."
+        },
+        "consentimiento": {
+          "titulo": "Necesitamos tu consentimiento",
+          "texto": "Para calcular tu perfil debes autorizar la consulta de tus fuentes. No consultamos nada sin tu autorización."
+        },
+        "error": {
+          "titulo": "No pudimos calcular tu perfil",
+          "texto": "Ocurrió un problema al calcular tu perfil. Tu avance está guardado; intenta de nuevo."
+        }
+      },
+      "acciones": {
+        "cancelar": "Cancelar",
+        "calculando": "Calculando…",
+        "verOferta": "Ver mi oferta",
+        "reintentar": "Reintentar",
+        "volverConsentimiento": "Volver al consentimiento"
+      }
     }
   }
 }
