@@ -60,6 +60,29 @@
 |---|---|---|---|---|---|
 | [O1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=31-2707), [O1b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=31-3141) | Monitoreo de emisiones y detalle de excepción | `/originacion/emisiones` | Analista de operaciones | HU-W1.3-04, HA-D02 | S2 |
 
+## Implementado
+
+**Cotización asistida por asesor (HU-W1.1-01)** — `cotizacion-asistida/datos-cliente.page.ts` (`DatosClientePage`, S1) y
+`cotizacion-asistida/resultado-cotizacion.page.ts` (`ResultadoCotizacionPage`, S2 / S2b), rutas `/originacion/cotizaciones/nueva` y
+`/originacion/cotizaciones/:id` declaradas en `originacion.routes.ts` (`ORIGINACION_ROUTES`, `rolGuard('asesor')`; `nueva` va antes de
+`:id`) y registradas en `app.routes.ts` dentro del shell del portal. Contrato: `docs/contratos/HU-W1.1-01-api.md` del backend
+(servicio `origination`, `openapi.yaml` v0.6.0). Los frames de Figma no se pudieron abrir en esta sesión: las pantallas siguen la
+historia y los criterios de aceptación, y quedan pendientes de revisión contra el prototipo.
+
+- Llama a `OriginacionApiService` (`core/api/originacion/`): `buscarClientePorDocumento` (`GET /v1/customers`),
+  `crearCotizacionAsistida` (`POST /v1/assisted-quotes`) y `consultarCotizacionAsistida` (`GET /v1/assisted-quotes/{id}`). Los errores
+  llegan como `ErrorCotizacionAsistida` con el código estable del contrato; `validation_failed` trae **todos** los campos con error.
+- **S1:** formulario reactivo (documento con «Buscar cliente», nombre, correo, fecha de nacimiento, monto asegurado, plazo y el
+  consentimiento que afirma el asesor). Cada campo muestra su error específico (`required`, `invalid_format`, `out_of_range`), el que
+  detecta el navegador o el que devuelve el backend, y no se cotiza mientras haya un campo inválido. Con `?documento=` precarga y busca
+  al cliente (es el destino de «Generar una nueva cotización»).
+- **S2 / S2b:** los estados viven en la misma página: **vigente** (prima mensual, coberturas, vigencia de 24 h y datos del cliente),
+  **modo degradado** (`mode: provisional`: último perfil en caché o perfil actuarial base, con su aviso) y **vencida** (`status:
+  expired`: no se puede formalizar, se informa el motivo y se ofrece generar una nueva). Textos en
+  `originacion.cotizacionAsistida.*`; la web no calcula precios, vigencias ni degradación.
+- Pendiente: «Formalizar la compra» (HU-W1.1-03, ruta `:id/formalizar`).
+- E2E: `e2e/flujos/cotizacion-emision/cotizacion-asistida.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
+
 ## Cómo trabajar una historia de este dominio
 
 1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HU-W1.1-01-<descripcion-en-ingles>`).

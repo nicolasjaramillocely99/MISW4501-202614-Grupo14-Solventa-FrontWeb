@@ -28,6 +28,10 @@ export const routes: Routes = [
         path: 'inicio',
         loadChildren: () => import('@features/inicio/inicio.routes').then((m) => m.INICIO_ROUTES),
       },
+      {
+        path: 'originacion',
+        loadChildren: () => import('@features/originacion/originacion.routes').then((m) => m.ORIGINACION_ROUTES),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
     ],
   },

@@ -2,9 +2,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '@env/environment';
+import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
 
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
 import { OriginacionApiService } from './originacion-api.service';
+import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
 
 const DTO: PerfilRiesgoDto = {
@@ -144,6 +146,117 @@ describe('OriginacionApiService', () => {
         .flush(null, { status: 504, statusText: 'Gateway Timeout' });
 
       expect(codigos).toEqual(['acceptance_not_found', 'acceptance_unavailable']);
+    });
+  });
+
+  describe('cotización asistida (HU-W1.1-01)', () => {
+    const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+    const SOLICITUD = {
+      documento: '1032456789',
+      nombreCompleto: 'Ana María Pérez',
+      correo: 'ana@example.com',
+      fechaNacimiento: '1990-05-20',
+      montoAsegurado: 250000000,
+      plazoMeses: 180,
+      consentimientoActivo: true,
+    };
+
+    it('crea la cotización con el cuerpo del contrato y devuelve el modelo del cliente', () => {
+      let resultado: unknown;
+      servicio.crearCotizacionAsistida(SOLICITUD).subscribe((c) => (resultado = c));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/assisted-quotes`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toEqual({
+        document_id: '1032456789',
+        full_name: 'Ana María Pérez',
+        email: 'ana@example.com',
+        birth_date: '1990-05-20',
+        insured_amount: 250000000,
+        term_months: 180,
+        consent_active: true,
+      });
+      peticion.flush(COTIZACION_DTO, { status: 201, statusText: 'Created' });
+
+      expect(resultado).toEqual(mapearCotizacionAsistida(COTIZACION_DTO));
+    });
+
+    it('traduce el 422 validation_failed a un error con todos los campos', () => {
+      let error: unknown;
+      servicio.crearCotizacionAsistida(SOLICITUD).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes`)
+        .flush(
+          { error: 'validation_failed', message: 'x', fields: [{ field: 'email', code: 'invalid_format' }] },
+          { status: 422, statusText: 'Unprocessable' },
+        );
+
+      expect(error).toBeInstanceOf(ErrorCotizacionAsistida);
+      expect((error as ErrorCotizacionAsistida).campos).toEqual([{ campo: 'correo', codigo: 'invalid_format' }]);
+    });
+
+    it('un fallo de red al cotizar es quote_unavailable', () => {
+      let error: unknown;
+      servicio.crearCotizacionAsistida(SOLICITUD).subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/assisted-quotes`).error(new ProgressEvent('error'));
+
+      expect((error as ErrorCotizacionAsistida).codigo).toBe('quote_unavailable');
+    });
+
+    it('consulta una cotización por id, codificando el identificador', () => {
+      let resultado: unknown;
+      servicio.consultarCotizacionAsistida('a/b').subscribe((c) => (resultado = c));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/assisted-quotes/a%2Fb`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush({ ...COTIZACION_DTO, status: 'expired', can_formalize: false, blocked_reason: 'quote_expired' });
+
+      expect(resultado).toMatchObject({ estado: 'expired', puedeFormalizar: false });
+    });
+
+    it('una cotización inexistente es quote_not_found', () => {
+      let error: unknown;
+      servicio.consultarCotizacionAsistida('nope').subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/assisted-quotes/nope`).flush({ error: 'quote_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect((error as ErrorCotizacionAsistida).codigo).toBe('quote_not_found');
+    });
+
+    it('busca al cliente por documento y devuelve sus datos', () => {
+      let resultado: unknown;
+      servicio.buscarClientePorDocumento('1032456789').subscribe((c) => (resultado = c));
+
+      const peticion = http.expectOne((r) => r.url === `${GATEWAY}/v1/customers`);
+      expect(peticion.request.params.get('document_id')).toBe('1032456789');
+      peticion.flush({
+        customer_id: 'c1',
+        document_id: '1032456789',
+        full_name: 'Ana',
+        email: 'a@x.co',
+        birth_date: '1990-05-20',
+      });
+
+      expect(resultado).toEqual({
+        clienteId: 'c1',
+        documento: '1032456789',
+        nombreCompleto: 'Ana',
+        correo: 'a@x.co',
+        fechaNacimiento: '1990-05-20',
+      });
+    });
+
+    it('un documento sin cliente es customer_not_found', () => {
+      let error: unknown;
+      servicio.buscarClientePorDocumento('999999999').subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne((r) => r.url === `${GATEWAY}/v1/customers`)
+        .flush({ error: 'customer_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect((error as ErrorCotizacionAsistida).codigo).toBe('customer_not_found');
     });
   });
 });
