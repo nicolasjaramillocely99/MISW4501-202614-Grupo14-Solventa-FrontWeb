@@ -388,5 +388,166 @@
         "reintentar": "Retry"
       }
     }
+  },
+  "originacion": {
+    "cotizacionAsistida": {
+      "datosCliente": {
+        "titulo": "New assisted quote",
+        "descripcion": "Enter the customer's details, or recover them by document id, and get their quote with the same profiling engine as the embedded channels.",
+        "seccionCliente": "Customer details",
+        "buscar": "Find customer",
+        "buscando": "Searching…",
+        "ayudaDocumento": "Type the document without dots or hyphens. If the customer already exists, their data loads by itself.",
+        "ayudaEdad": "Between {{min}} and {{max}} years old.",
+        "ayudaMonto": "Outstanding mortgage balance to insure, in COP.",
+        "ayudaPlazo": "Between {{min}} and {{max}} months.",
+        "consentimiento": "The customer authorized access to their financial data to calculate their risk profile.",
+        "cotizar": "Generate quote",
+        "cotizando": "Quoting…",
+        "errorGeneral": {
+          "servicio": "We could not generate the quote. Check your connection and try again in a few minutes.",
+          "permiso": "Your session is not allowed to quote. Sign in again or contact the administrator."
+        },
+        "busqueda": {
+          "encontrado": "Customer found: we loaded their data so you do not have to type it again.",
+          "noEncontrado": "No customer has that document. Fill in their details to register them when you quote.",
+          "error": "We could not look the customer up. Try again or fill in their details."
+        }
+      },
+      "campos": {
+        "documento": "Identity document",
+        "nombreCompleto": "Full name",
+        "correo": "Email",
+        "fechaNacimiento": "Date of birth",
+        "montoAsegurado": "Insured amount (COP)",
+        "plazoMeses": "Term (months)"
+      },
+      "errores": {
+        "documento": {
+          "required": "Enter the customer's document.",
+          "invalid_format": "The document must have 5 to 20 letters or digits, without dots or hyphens.",
+          "out_of_range": "The document is not valid."
+        },
+        "nombreCompleto": {
+          "required": "Enter the customer's full name.",
+          "invalid_format": "Enter the full name, with letters (3 to 120 characters).",
+          "out_of_range": "The name is not valid."
+        },
+        "correo": {
+          "required": "Enter the customer's email.",
+          "invalid_format": "Enter a valid email, for example name@company.co.",
+          "out_of_range": "The email is not valid."
+        },
+        "fechaNacimiento": {
+          "required": "Enter the customer's date of birth.",
+          "invalid_format": "Enter a valid date.",
+          "out_of_range": "The customer must be between {{min}} and {{max}} years old for this insurance."
+        },
+        "montoAsegurado": {
+          "required": "Enter the amount to insure.",
+          "invalid_format": "Enter a valid amount.",
+          "out_of_range": "The amount must be between $ 10,000,000 and $ 2,000,000,000 COP."
+        },
+        "plazoMeses": {
+          "required": "Enter the loan term in months.",
+          "invalid_format": "The term must be a whole number of months.",
+          "out_of_range": "The term must be between {{min}} and {{max}} months."
+        },
+        "consentimiento": {
+          "required": "Confirm the customer's consent to be able to quote.",
+          "invalid_format": "Confirm the customer's consent.",
+          "out_of_range": "Confirm the customer's consent."
+        }
+      },
+      "reglas": {
+        "titulo": "Quote rules",
+        "mismoMotor": "The price uses the same profiling and rating engine as the embedded channel: no standard age-and-amount tariff.",
+        "vigencia": "The quote is saved with an identifier and a 24-hour validity so it can be formalized later.",
+        "degradado": "If an external source does not respond, the quote is generated in degraded mode with the last cached profile and you are told.",
+        "camposConError": "Fields with errors prevent the quote from being generated."
+      },
+      "resultado": {
+        "cargando": "Loading the quote…",
+        "titulo": "Assisted quote",
+        "codigo": "Code {{id}}",
+        "insignia": {
+          "vigente": "Valid",
+          "provisional": "Provisional",
+          "vencida": "Expired"
+        },
+        "avisos": {
+          "generada": {
+            "titulo": "Quote generated",
+            "texto": "It is valid until {{fecha}}. After that it cannot be formalized."
+          },
+          "ultimoPerfil": {
+            "titulo": "Quote in degraded mode",
+            "texto": "An external source did not respond, so the customer's last cached profile, from {{fecha}}, was used. The price is provisional."
+          },
+          "perfilBase": {
+            "titulo": "Quote in degraded mode",
+            "texto": "The external sources did not respond and the customer has no earlier profile, so the base actuarial profile was used. The price is not personalized."
+          },
+          "vencida": {
+            "titulo": "The quote has expired",
+            "texto": "Its validity ended on {{fecha}}, so it cannot be formalized. Generate a new quote with the customer's data."
+          }
+        },
+        "prima": {
+          "titulo": "Premium",
+          "mensual": "Monthly premium"
+        },
+        "coberturas": {
+          "titulo": "Coverages",
+          "death": "Death of the insured",
+          "total_permanent_disability": "Total and permanent disability"
+        },
+        "vigencia": {
+          "creada": "Generated",
+          "vence": "Valid until"
+        },
+        "cliente": {
+          "titulo": "Customer and loan",
+          "nombre": "Name",
+          "documento": "Document",
+          "correo": "Email",
+          "montoAsegurado": "Insured amount",
+          "plazo": "Term",
+          "plazoMeses": "{{meses}} months"
+        },
+        "perfil": {
+          "titulo": "Risk profile",
+          "categoria": "Category",
+          "origen": "Profile source",
+          "fecha": "Profile date",
+          "tarifa": "Rating version",
+          "categorias": {
+            "preferred": "Preferred",
+            "standard": "Standard",
+            "high_risk": "High risk",
+            "base_actuarial": "Base actuarial"
+          },
+          "origenes": {
+            "open_finance": "Open Finance",
+            "external_sources": "External sources, online",
+            "cache": "Recent cached profile",
+            "base_actuarial": "Base actuarial profile"
+          }
+        },
+        "acciones": {
+          "nueva": "New quote",
+          "generarNueva": "Generate a new quote",
+          "reintentar": "Retry"
+        },
+        "noEncontrada": {
+          "titulo": "We could not find the quote",
+          "texto": "The quote does not exist or the code is wrong. Generate a new one."
+        },
+        "error": {
+          "titulo": "We could not load the quote",
+          "texto": "There was a problem fetching the quote. Try again."
+        }
+      }
+    }
   }
 }

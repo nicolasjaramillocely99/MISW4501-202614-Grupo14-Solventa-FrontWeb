@@ -12,6 +12,18 @@ import {
   traducirErrorAceptacion,
 } from './aceptacion.modelos';
 import {
+  ClienteCotizacion,
+  ClienteDto,
+  CotizacionAsistida,
+  CotizacionAsistidaDto,
+  RespaldoErrorCotizacion,
+  SolicitudCotizacionAsistida,
+  aSolicitudDto,
+  mapearCliente,
+  mapearCotizacionAsistida,
+  traducirErrorCotizacion,
+} from './cotizacion-asistida.modelos';
+import {
   EmisionContractual,
   EmisionContractualDto,
   mapearEmisionContractual,
@@ -34,10 +46,21 @@ const RESPALDO_CONSULTAR: RespaldoErrorAceptacion = {
   indisponible: 'acceptance_unavailable',
 };
 
+const RESPALDO_COTIZAR: RespaldoErrorCotizacion = {
+  noEncontrado: 'quote_not_found',
+  indisponible: 'quote_unavailable',
+};
+
+const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
+  noEncontrado: 'customer_not_found',
+  indisponible: 'customer_unavailable',
+};
+
 /**
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
- * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02) y la
- * aceptación de la oferta (HU-W1.3-01); cotización, emisión y cobro se suman aquí con sus historias.
+ * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
+ * aceptación de la oferta (HU-W1.3-01) y la cotización asistida por asesor (HU-W1.1-01); emisión y cobro
+ * se suman aquí con sus historias.
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -90,6 +113,47 @@ export class OriginacionApiService {
       map(mapearAceptacion),
       catchError((error: unknown) => throwError(() => traducirErrorAceptacion(error, RESPALDO_CONSULTAR))),
     );
+  }
+
+  /**
+   * Genera la cotización asistida (`POST /v1/assisted-quotes`, solo asesor): 201 con la cotización, vigente
+   * 24 horas. Con las fuentes caídas también es 201, con `modo: provisional`. Falla con
+   * `ErrorCotizacionAsistida`: `validation_failed` trae todos los campos inválidos a la vez y
+   * `consent_required` indica que falta el consentimiento.
+   */
+  crearCotizacionAsistida(solicitud: SolicitudCotizacionAsistida): Observable<CotizacionAsistida> {
+    return this.http
+      .post<CotizacionAsistidaDto>(`${this.base}/v1/assisted-quotes`, aSolicitudDto(solicitud))
+      .pipe(
+        map(mapearCotizacionAsistida),
+        catchError((error: unknown) => throwError(() => traducirErrorCotizacion(error, RESPALDO_COTIZAR))),
+      );
+  }
+
+  /**
+   * Consulta una cotización asistida (`GET /v1/assisted-quotes/{quote_id}`). Una cotización vencida sigue
+   * siendo legible: llega con `estado: expired` y `puedeFormalizar: false`.
+   */
+  consultarCotizacionAsistida(cotizacionId: string): Observable<CotizacionAsistida> {
+    return this.http
+      .get<CotizacionAsistidaDto>(`${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}`)
+      .pipe(
+        map(mapearCotizacionAsistida),
+        catchError((error: unknown) => throwError(() => traducirErrorCotizacion(error, RESPALDO_COTIZAR))),
+      );
+  }
+
+  /**
+   * Recupera un cliente por su documento (`GET /v1/customers?document_id=`) para no digitar sus datos de
+   * nuevo. `customer_not_found` significa que el documento aún no está registrado.
+   */
+  buscarClientePorDocumento(documento: string): Observable<ClienteCotizacion> {
+    return this.http
+      .get<ClienteDto>(`${this.base}/v1/customers`, { params: { document_id: documento } })
+      .pipe(
+        map(mapearCliente),
+        catchError((error: unknown) => throwError(() => traducirErrorCotizacion(error, RESPALDO_CLIENTE))),
+      );
   }
 
   /**
