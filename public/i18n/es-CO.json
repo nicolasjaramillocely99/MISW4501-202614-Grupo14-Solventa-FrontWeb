@@ -342,5 +342,166 @@
         }
       }
     }
+  },
+  "originacion": {
+    "cotizacionAsistida": {
+      "datosCliente": {
+        "titulo": "Nueva cotización asistida",
+        "descripcion": "Registra los datos del cliente o recupéralos por su documento y obtén su cotización con el mismo motor de perfilamiento de los canales embebidos.",
+        "seccionCliente": "Datos del cliente",
+        "buscar": "Buscar cliente",
+        "buscando": "Buscando…",
+        "ayudaDocumento": "Escribe el documento sin puntos ni guiones. Si el cliente ya existe, sus datos se cargan solos.",
+        "ayudaEdad": "Entre {{min}} y {{max}} años.",
+        "ayudaMonto": "Saldo del crédito hipotecario a asegurar, en COP.",
+        "ayudaPlazo": "Entre {{min}} y {{max}} meses.",
+        "consentimiento": "El cliente autorizó la consulta de sus datos financieros para calcular su perfil de riesgo.",
+        "cotizar": "Generar cotización",
+        "cotizando": "Cotizando…",
+        "errorGeneral": {
+          "servicio": "No pudimos generar la cotización. Revisa la conexión e inténtalo de nuevo en unos minutos.",
+          "permiso": "Tu sesión no tiene permiso para cotizar. Vuelve a iniciar sesión o contacta al administrador."
+        },
+        "busqueda": {
+          "encontrado": "Cliente encontrado: cargamos sus datos para que no los digites de nuevo.",
+          "noEncontrado": "No hay un cliente con ese documento. Completa sus datos para registrarlo al cotizar.",
+          "error": "No pudimos buscar al cliente. Inténtalo de nuevo o completa sus datos."
+        }
+      },
+      "campos": {
+        "documento": "Documento de identidad",
+        "nombreCompleto": "Nombre completo",
+        "correo": "Correo electrónico",
+        "fechaNacimiento": "Fecha de nacimiento",
+        "montoAsegurado": "Monto asegurado (COP)",
+        "plazoMeses": "Plazo (meses)"
+      },
+      "errores": {
+        "documento": {
+          "required": "Escribe el documento del cliente.",
+          "invalid_format": "El documento debe tener entre 5 y 20 letras o números, sin puntos ni guiones.",
+          "out_of_range": "El documento no es válido."
+        },
+        "nombreCompleto": {
+          "required": "Escribe el nombre completo del cliente.",
+          "invalid_format": "Escribe el nombre completo, con letras (entre 3 y 120 caracteres).",
+          "out_of_range": "El nombre no es válido."
+        },
+        "correo": {
+          "required": "Escribe el correo electrónico del cliente.",
+          "invalid_format": "Escribe un correo válido, por ejemplo nombre@empresa.co.",
+          "out_of_range": "El correo no es válido."
+        },
+        "fechaNacimiento": {
+          "required": "Indica la fecha de nacimiento del cliente.",
+          "invalid_format": "Escribe una fecha válida.",
+          "out_of_range": "El cliente debe tener entre {{min}} y {{max}} años para este seguro."
+        },
+        "montoAsegurado": {
+          "required": "Indica el monto a asegurar.",
+          "invalid_format": "Escribe un monto válido.",
+          "out_of_range": "El monto debe estar entre $ 10.000.000 y $ 2.000.000.000 COP."
+        },
+        "plazoMeses": {
+          "required": "Indica el plazo del crédito en meses.",
+          "invalid_format": "El plazo debe ser un número entero de meses.",
+          "out_of_range": "El plazo debe estar entre {{min}} y {{max}} meses."
+        },
+        "consentimiento": {
+          "required": "Confirma el consentimiento del cliente para poder cotizar.",
+          "invalid_format": "Confirma el consentimiento del cliente.",
+          "out_of_range": "Confirma el consentimiento del cliente."
+        }
+      },
+      "reglas": {
+        "titulo": "Reglas de la cotización",
+        "mismoMotor": "El precio se calcula con el mismo perfilamiento y motor de rating del canal embebido: sin tarifa estándar por edad y monto.",
+        "vigencia": "La cotización se guarda con identificador y vigencia de 24 horas para formalizarla después.",
+        "degradado": "Si una fuente externa no responde, se genera en modo degradado con el último perfil en caché y se te informa.",
+        "camposConError": "Los campos con error impiden generar la cotización."
+      },
+      "resultado": {
+        "cargando": "Cargando la cotización…",
+        "titulo": "Cotización asistida",
+        "codigo": "Código {{id}}",
+        "insignia": {
+          "vigente": "Vigente",
+          "provisional": "Provisional",
+          "vencida": "Vencida"
+        },
+        "avisos": {
+          "generada": {
+            "titulo": "Cotización generada",
+            "texto": "Está vigente hasta el {{fecha}}. Pasado ese momento no se podrá formalizar."
+          },
+          "ultimoPerfil": {
+            "titulo": "Cotización en modo degradado",
+            "texto": "Una fuente externa no respondió, así que se usó el último perfil del cliente en caché, del {{fecha}}. El precio es provisional."
+          },
+          "perfilBase": {
+            "titulo": "Cotización en modo degradado",
+            "texto": "Las fuentes externas no respondieron y el cliente no tiene un perfil previo, así que se usó el perfil actuarial base. El precio no está personalizado."
+          },
+          "vencida": {
+            "titulo": "La cotización venció",
+            "texto": "Su vigencia terminó el {{fecha}}, por eso no se puede formalizar. Genera una cotización nueva con los datos del cliente."
+          }
+        },
+        "prima": {
+          "titulo": "Prima",
+          "mensual": "Prima mensual"
+        },
+        "coberturas": {
+          "titulo": "Coberturas",
+          "death": "Fallecimiento del asegurado",
+          "total_permanent_disability": "Incapacidad total y permanente"
+        },
+        "vigencia": {
+          "creada": "Generada",
+          "vence": "Vigente hasta"
+        },
+        "cliente": {
+          "titulo": "Cliente y crédito",
+          "nombre": "Nombre",
+          "documento": "Documento",
+          "correo": "Correo electrónico",
+          "montoAsegurado": "Monto asegurado",
+          "plazo": "Plazo",
+          "plazoMeses": "{{meses}} meses"
+        },
+        "perfil": {
+          "titulo": "Perfil de riesgo",
+          "categoria": "Categoría",
+          "origen": "Origen del perfil",
+          "fecha": "Fecha del perfil",
+          "tarifa": "Versión de la tarifa",
+          "categorias": {
+            "preferred": "Preferente",
+            "standard": "Estándar",
+            "high_risk": "Riesgo alto",
+            "base_actuarial": "Actuarial base"
+          },
+          "origenes": {
+            "open_finance": "Open Finance",
+            "external_sources": "Fuentes externas en línea",
+            "cache": "Perfil reciente en caché",
+            "base_actuarial": "Perfil actuarial base"
+          }
+        },
+        "acciones": {
+          "nueva": "Nueva cotización",
+          "generarNueva": "Generar una nueva cotización",
+          "reintentar": "Reintentar"
+        },
+        "noEncontrada": {
+          "titulo": "No encontramos la cotización",
+          "texto": "La cotización no existe o el código no es correcto. Genera una nueva."
+        },
+        "error": {
+          "titulo": "No pudimos cargar la cotización",
+          "texto": "Hubo un problema al consultar la cotización. Inténtalo de nuevo."
+        }
+      }
+    }
   }
 }
