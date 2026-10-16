@@ -341,6 +341,52 @@
           "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
         }
       }
+    },
+    "polizaEmitida": {
+      "titulo": {
+        "cargando": "Consultando tu póliza",
+        "esperando": "Estamos preparando tu documento",
+        "listo": "Tu póliza fue emitida",
+        "error": "No pudimos mostrar tu póliza"
+      },
+      "descripcion": {
+        "cargando": "Un momento, estamos consultando el estado de tu emisión.",
+        "esperando": "Tu cobertura ya está activa. En menos de un minuto tendrás tu documento contractual y te avisaremos por correo.",
+        "listo": "Tu cobertura está activa y tu documento contractual está disponible.",
+        "error": "Revisa los datos e inténtalo de nuevo."
+      },
+      "documento": {
+        "nombre": "Documento contractual",
+        "generando": "Estamos generando el documento con tus condiciones, coberturas, prima y vigencia.",
+        "disponible": "Versión {{version}}, disponible desde el {{fecha}}."
+      },
+      "notificacion": {
+        "nombre": "Notificación de emisión",
+        "pendiente": "Te enviaremos un correo con un enlace seguro al documento.",
+        "reintentando": "El envío del correo está tardando; lo seguimos intentando.",
+        "enviada": "Te enviamos un correo con un enlace seguro el {{fecha}}.",
+        "noEntregada": "No pudimos entregar el correo, pero puedes descargar tu documento aquí."
+      },
+      "insignia": {
+        "disponible": "Disponible",
+        "enCurso": "En curso",
+        "enviada": "Enviada",
+        "noEntregada": "No entregada"
+      },
+      "avisos": {
+        "correoFallido": "No logramos enviarte el correo con el enlace. Tu documento está disponible: descárgalo desde este botón."
+      },
+      "error": {
+        "noEncontrada": "Aún no encontramos una emisión para esta póliza. Si acabas de pagar, espera unos segundos y reintenta.",
+        "permiso": "Esta póliza no está asociada a tu sesión. Inicia sesión con la cuenta del asegurado.",
+        "generico": "Hubo un problema al consultar tu póliza. Inténtalo de nuevo.",
+        "descarga": "No pudimos descargar el documento. Inténtalo de nuevo."
+      },
+      "acciones": {
+        "descargar": "Descargar documento",
+        "descargando": "Descargando…",
+        "reintentar": "Reintentar"
+      }
     }
   }
 }

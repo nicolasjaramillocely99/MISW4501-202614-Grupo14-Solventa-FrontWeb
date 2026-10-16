@@ -5,6 +5,7 @@ import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { AceptacionOfertaPage } from './aceptacion-oferta/aceptacion-oferta.page';
 import { PerfilRiesgoPage } from './perfil-riesgo/perfil-riesgo.page';
+import { PolizaEmitidaPage } from './poliza-emitida/poliza-emitida.page';
 
 /**
  * Canal embebido (demo en el sitio del banco aliado). Rutas públicas: el socio autentica con credenciales
@@ -24,5 +25,12 @@ export const EMBEBIDO_ROUTES: Routes = [
       { path: '', component: AceptacionOfertaPage },
       { path: ':ofertaId', component: AceptacionOfertaPage },
     ],
+  },
+  // Póliza emitida (HU-W1.3-03): el backend solo deja leer la póliza a su dueño, así que también pide un asegurado.
+  {
+    path: 'poliza-emitida/:polizaId',
+    canActivate: [autenticacionGuard],
+    canActivateChild: [rolGuard('asegurado')],
+    children: [{ path: '', component: PolizaEmitidaPage }],
   },
 ];

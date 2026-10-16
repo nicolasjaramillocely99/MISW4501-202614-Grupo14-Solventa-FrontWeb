@@ -12,6 +12,12 @@ import {
   traducirErrorAceptacion,
 } from './aceptacion.modelos';
 import {
+  EmisionContractual,
+  EmisionContractualDto,
+  mapearEmisionContractual,
+  traducirErrorEmision,
+} from './emision-contractual.modelos';
+import {
   PerfilRiesgo,
   PerfilRiesgoDto,
   SolicitudPerfilRiesgo,
@@ -84,5 +90,26 @@ export class OriginacionApiService {
       map(mapearAceptacion),
       catchError((error: unknown) => throwError(() => traducirErrorAceptacion(error, RESPALDO_CONSULTAR))),
     );
+  }
+
+  /**
+   * Estado de la emisión contractual de una póliza (`GET /v1/policies/{policy_id}/issuance-status`,
+   * HU-W1.3-03): documento disponible y notificación. Falla con `ErrorEmisionContractual`;
+   * `policy_not_found` significa que la cobertura aún no se activó.
+   */
+  consultarEmisionContractual(polizaId: string): Observable<EmisionContractual> {
+    return this.http
+      .get<EmisionContractualDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/issuance-status`)
+      .pipe(
+        map(mapearEmisionContractual),
+        catchError((error: unknown) => throwError(() => traducirErrorEmision(error))),
+      );
+  }
+
+  /** Descarga el documento contractual en PDF (`GET /v1/policies/{policy_id}/contract-document`). */
+  descargarDocumentoContractual(polizaId: string): Observable<Blob> {
+    return this.http
+      .get(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/contract-document`, { responseType: 'blob' })
+      .pipe(catchError((error: unknown) => throwError(() => traducirErrorEmision(error))));
   }
 }

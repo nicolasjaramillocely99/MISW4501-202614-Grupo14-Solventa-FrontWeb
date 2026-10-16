@@ -1,0 +1,100 @@
+<div class="pagina" *transloco="let t; prefix: 'embebido.polizaEmitida'">
+  <section class="tarjeta emision" aria-labelledby="titulo-emision" [attr.aria-busy]="fase() === 'cargando' || fase() === 'esperando'">
+    <app-indicador-pasos [pasos]="pasos()" etiqueta="embebido.pasos.navegacion" />
+
+    <div class="emision__encabezado" role="status">
+      <h1 id="titulo-emision" class="emision__titulo">{{ t('titulo.' + fase()) }}</h1>
+      <p class="emision__descripcion">{{ t('descripcion.' + fase()) }}</p>
+    </div>
+
+    @if (fase() === 'error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <p>{{ t('error.' + motivoError()) }}</p>
+      </div>
+      <div class="acciones">
+        @if (motivoError() !== 'permiso') {
+          <button type="button" class="boton boton--primario" (click)="consultar()">{{ t('acciones.reintentar') }}</button>
+        }
+      </div>
+    } @else if (fase() !== 'cargando') {
+      @if (emision(); as datos) {
+        <ul class="filas">
+          <li class="fila">
+            <span class="fila__icono" [class.fila__icono--listo]="datos.documento" aria-hidden="true">
+              @if (datos.documento) {
+                <svg lucideCircleCheck [size]="20"></svg>
+              } @else {
+                <svg lucideClock [size]="20"></svg>
+              }
+            </span>
+            <div class="fila__texto">
+              <p class="fila__nombre">{{ t('documento.nombre') }}</p>
+              <p class="fila__detalle">
+                @if (datos.documento) {
+                  {{ t('documento.disponible', { version: datos.documento.version, fecha: datos.disponibleEn | formatoFechaHora }) }}
+                } @else {
+                  {{ t('documento.generando') }}
+                }
+              </p>
+            </div>
+            <app-insignia-estado [tono]="insigniaDocumento().tono">{{ t(insigniaDocumento().texto) }}</app-insignia-estado>
+          </li>
+          <li class="fila">
+            <span class="fila__icono" [class.fila__icono--listo]="datos.notificacion.estado === 'sent'" aria-hidden="true">
+              @switch (datos.notificacion.estado) {
+                @case ('sent') {
+                  <svg lucideCircleCheck [size]="20"></svg>
+                }
+                @case ('failed') {
+                  <svg lucideTriangleAlert [size]="20"></svg>
+                }
+                @default {
+                  <svg lucideClock [size]="20"></svg>
+                }
+              }
+            </span>
+            <div class="fila__texto">
+              <p class="fila__nombre">{{ t('notificacion.nombre') }}</p>
+              <p class="fila__detalle">
+                @switch (datos.notificacion.estado) {
+                  @case ('sent') {
+                    {{ t('notificacion.enviada', { fecha: datos.notificacion.enviadaEn | formatoFechaHora }) }}
+                  }
+                  @case ('failed') {
+                    {{ t('notificacion.noEntregada') }}
+                  }
+                  @default {
+                    {{ datos.notificacion.intentos > 0 ? t('notificacion.reintentando') : t('notificacion.pendiente') }}
+                  }
+                }
+              </p>
+            </div>
+            <app-insignia-estado [tono]="insigniaNotificacion().tono">{{ t(insigniaNotificacion().texto) }}</app-insignia-estado>
+          </li>
+        </ul>
+
+        @if (datos.estado === 'failed') {
+          <div class="aviso aviso--advertencia">
+            <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('avisos.correoFallido') }}</p>
+          </div>
+        }
+
+        @if (errorDescarga()) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('error.descarga') }}</p>
+          </div>
+        }
+
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" [disabled]="!datos.documento || descargando()" (click)="descargar()">
+            <svg lucideDownload [size]="16" aria-hidden="true"></svg>
+            {{ descargando() ? t('acciones.descargando') : t('acciones.descargar') }}
+          </button>
+        </div>
+      }
+    }
+  </section>
+</div>
