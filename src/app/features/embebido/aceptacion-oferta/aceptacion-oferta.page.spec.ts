@@ -175,6 +175,9 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
       expect(titulo()).toBe('Suscripción aprobada');
       expect(screen.getByText('Emisión iniciada')).toBeTruthy();
       expect(screen.getByRole('link', { name: /Continuar con mi crédito/ })).toBeTruthy();
+      expect(screen.getByRole('link', { name: 'Ver el estado de tu pago' }).getAttribute('href')).toBe(
+        '/embebido/pago/b310b02b-9820-4725-bded-586d263dd16e',
+      );
     });
 
     it('con el polling muestra la solicitud en revisión dentro del mismo flujo (E6)', async () => {

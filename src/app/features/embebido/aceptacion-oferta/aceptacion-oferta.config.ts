@@ -12,11 +12,16 @@ export interface AccionesAceptacionOferta {
   nuevaOferta: string;
   /** «No me interesa», «No, gracias» y «Continuar con mi crédito»: salir del flujo del seguro. */
   salir: string;
+  /**
+   * «Ver el estado de tu pago» tras aprobarse la suscripción: el paso de pago (E4b, HA-D02). Se le agrega el
+   * identificador de la aceptación.
+   */
+  pago: string;
 }
 
 export const ACCIONES_ACEPTACION_OFERTA = new InjectionToken<AccionesAceptacionOferta>(
   'ACCIONES_ACEPTACION_OFERTA',
-  { factory: () => ({ nuevaOferta: '/embebido/consentimiento', salir: '/inicio' }) },
+  { factory: () => ({ nuevaOferta: '/embebido/consentimiento', salir: '/inicio', pago: '/embebido/pago' }) },
 );
 
 /** Contenido de la oferta. Hoy son datos de prueba provisionales (ver `detalle-oferta.provisional.ts`). */
