@@ -263,7 +263,8 @@
         "continuarCredito": "Continuar con mi crédito",
         "noGracias": "No, gracias",
         "nuevaOferta": "Generar una nueva oferta",
-        "volverCotizar": "Volver a cotizar"
+        "volverCotizar": "Volver a cotizar",
+        "verNuevaOferta": "Ver la nueva oferta"
       },
       "datos": {
         "numeroSolicitud": "Número de solicitud",
@@ -275,14 +276,23 @@
         "proximoIntentoValor": "{{hora}} · automático",
         "ofertaAnterior": "Oferta anterior",
         "ofertaAnteriorValor": "{{prima}} / mes",
-        "vencio": "Venció"
+        "vencio": "Venció",
+        "nuevaPrima": "Nueva prima mensual",
+        "nuevaPrimaValor": "{{nueva}} · antes {{anterior}}",
+        "vigenciaNueva": "Vigencia de la nueva oferta",
+        "vigenciaNuevaValor": "Hasta el {{fecha}} (24 horas)",
+        "decision": "Decisión",
+        "decisionRechazo": "Riesgo no aceptado por el asesor",
+        "fechaDecision": "Fecha de la decisión"
       },
       "insignia": {
         "validando": "Validando",
         "conservada": "Reanudando",
         "revision": "En revisión",
         "emision": "Emisión iniciada",
-        "vencida": "Vencida"
+        "vencida": "Vencida",
+        "ajustada": "Ajustada",
+        "rechazada": "Rechazada"
       },
       "validando": {
         "titulo": "Registramos tu aceptación",
@@ -341,6 +351,18 @@
           "titulo": "No pudimos procesar tu solicitud",
           "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
         }
+      },
+      "ajustada": {
+        "titulo": "Un asesor ajustó las condiciones de tu oferta",
+        "texto": "Un asesor de Solventa revisó tu solicitud el {{fecha}} y ajustó la prima. Tu aceptación anterior no se cobra. Si estás de acuerdo con las nuevas condiciones, revisa y acepta la nueva oferta para continuar. También te lo enviamos a tu correo.",
+        "avisoTitulo": "Aún no se ha hecho ningún cobro",
+        "avisoTexto": "La nueva oferta reemplaza a {{oferta}}. Solo se cobrará la prima cuando aceptes la nueva oferta."
+      },
+      "rechazada": {
+        "titulo": "No pudimos aceptar tu solicitud de seguro",
+        "texto": "Un asesor de Solventa revisó tu solicitud el {{fecha}} y el riesgo no fue aceptado. No se realizó ningún cobro. Puedes continuar con tu crédito y el banco te indicará los siguientes pasos. También te lo enviamos a tu correo.",
+        "avisoTitulo": "No se realizó ningún cobro",
+        "avisoTexto": "Tu solicitud {{numero}} quedó cerrada. Si tienes preguntas, comunícate con tu banco o con Solventa."
       }
     },
     "pago": {

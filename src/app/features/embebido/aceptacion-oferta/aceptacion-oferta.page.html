@@ -93,6 +93,12 @@
                   @case ('conservada') {
                     <svg lucideRefreshCw [size]="28"></svg>
                   }
+                  @case ('ajustada') {
+                    <svg lucideSlidersHorizontal [size]="28"></svg>
+                  }
+                  @case ('rechazada') {
+                    <svg lucideCircleX [size]="28"></svg>
+                  }
                   @default {
                     <svg lucideClock [size]="28"></svg>
                   }
@@ -100,12 +106,12 @@
               </span>
               <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.' + vista() + '.titulo') }}</h1>
               <p class="resultado__texto">
-                {{ t('aceptacionOferta.' + vista() + '.texto', { fecha: actual.aceptadaEn | formatoFechaHora }) }}
+                {{ t('aceptacionOferta.' + vista() + '.texto', { fecha: fechaTexto() | formatoFechaHora }) }}
               </p>
             </div>
 
             <dl class="datos">
-              @if (vista() === 'revision' || vista() === 'emision') {
+              @if (vista() !== 'validando' && vista() !== 'conservada') {
                 <div>
                   <dt>{{ t('aceptacionOferta.datos.numeroSolicitud') }}</dt>
                   <dd class="datos__identificador">{{ actual.aceptacionId }}</dd>
@@ -123,10 +129,39 @@
                   <dd>{{ t('aceptacionOferta.revision.motivo.' + motivoRevision()) }}</dd>
                 </div>
               }
-              <div>
-                <dt>{{ t('aceptacionOferta.datos.aceptacion') }}</dt>
-                <dd>{{ t('aceptacionOferta.datos.aceptacionValor', { fecha: actual.aceptadaEn | formatoFechaHora }) }}</dd>
-              </div>
+              @if (vista() === 'ajustada' && actual.revision?.ofertaAjustada; as nueva) {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.nuevaPrima') }}</dt>
+                  <dd>
+                    {{
+                      t('aceptacionOferta.datos.nuevaPrimaValor', {
+                        nueva: nueva.prima | formatoMoneda: nueva.moneda,
+                        anterior: detalle.primaMensual | formatoMoneda: detalle.moneda
+                      })
+                    }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.vigenciaNueva') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.vigenciaNuevaValor', { fecha: nueva.venceEn | formatoFechaHora }) }}</dd>
+                </div>
+              }
+              @if (vista() === 'rechazada') {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.decision') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.decisionRechazo') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.fechaDecision') }}</dt>
+                  <dd>{{ fechaTexto() | formatoFechaHora }}</dd>
+                </div>
+              }
+              @if (vista() !== 'ajustada' && vista() !== 'rechazada') {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.aceptacion') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.aceptacionValor', { fecha: actual.aceptadaEn | formatoFechaHora }) }}</dd>
+                </div>
+              }
               @if (vista() === 'conservada' && actual.procesamiento.proximoIntentoEn) {
                 <div>
                   <dt>{{ t('aceptacionOferta.datos.proximoIntento') }}</dt>
@@ -182,6 +217,24 @@
                   </div>
                 </div>
               }
+              @case ('ajustada') {
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('aceptacionOferta.ajustada.avisoTitulo') }}</p>
+                    <p>{{ t('aceptacionOferta.ajustada.avisoTexto', { oferta: actual.ofertaId }) }}</p>
+                  </div>
+                </div>
+              }
+              @case ('rechazada') {
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('aceptacionOferta.rechazada.avisoTitulo') }}</p>
+                    <p>{{ t('aceptacionOferta.rechazada.avisoTexto', { numero: actual.aceptacionId }) }}</p>
+                  </div>
+                </div>
+              }
               @case ('revision') {
                 <div class="aviso aviso--informacion">
                   <svg lucideInfo [size]="20" aria-hidden="true"></svg>
@@ -212,10 +265,20 @@
                     {{ t('aceptacionOferta.acciones.verPago') }}
                   </a>
                 }
-                <a class="boton boton--primario" [routerLink]="acciones.salir">
-                  <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
-                  {{ t('aceptacionOferta.acciones.continuarCredito') }}
-                </a>
+                @if (vista() === 'ajustada' && actual.revision?.ofertaAjustada; as nueva) {
+                  <a class="boton boton--secundario" [routerLink]="acciones.salir">
+                    {{ t('aceptacionOferta.acciones.continuarCredito') }}
+                  </a>
+                  <a class="boton boton--primario" [routerLink]="[acciones.oferta, nueva.ofertaId]">
+                    <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                    {{ t('aceptacionOferta.acciones.verNuevaOferta') }}
+                  </a>
+                } @else {
+                  <a class="boton boton--primario" [routerLink]="acciones.salir">
+                    <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                    {{ t('aceptacionOferta.acciones.continuarCredito') }}
+                  </a>
+                }
               </div>
             }
           }

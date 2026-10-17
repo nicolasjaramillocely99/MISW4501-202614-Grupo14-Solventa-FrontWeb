@@ -1,9 +1,9 @@
 import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, ParamMap, convertToParamMap, provideRouter } from '@angular/router';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
-import { Observable, Subject, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, throwError } from 'rxjs';
 
 import { Aceptacion, ErrorAceptacion, MotivoRevision } from '@core/api/originacion/aceptacion.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
@@ -42,6 +42,8 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
   let consultar: Llamada;
   let consultarDeOferta: Llamada;
   let manejador: { handleError: ReturnType<typeof vi.fn> };
+  /** Parámetros de la ruta: la página los sigue porque Angular la reutiliza al cambiar de oferta (E6b). */
+  let parametros: BehaviorSubject<ParamMap>;
 
   async function renderizar({
     ofertaId = 'demo-active-1' as string | null,
@@ -51,6 +53,7 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
     consultar = vi.fn();
     consultarDeOferta = vi.fn().mockReturnValue(deOferta);
     manejador = { handleError: vi.fn() };
+    parametros = new BehaviorSubject(convertToParamMap(ofertaId ? { ofertaId } : {}));
     return render(AceptacionOfertaPage, {
       imports: [proveerTranslocoPruebas()],
       providers: [
@@ -66,7 +69,7 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap(ofertaId ? { ofertaId } : {}) } },
+          useValue: { snapshot: { paramMap: convertToParamMap(ofertaId ? { ofertaId } : {}) }, paramMap: parametros },
         },
       ],
     });
@@ -397,6 +400,94 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
       expect(titulo()).toBe('Tu solicitud está en revisión');
       expect(screen.getByText('Validación adicional de suscripción')).toBeTruthy();
       expect(screen.queryByText(/aceptacionOferta\.revision\.motivo/)).toBeNull();
+    });
+  });
+
+  describe('decisión del asesor (E6b, E6c · HU-W1.1-02)', () => {
+    const DECIDIDA_EN = '2026-10-17T04:42:20.022742Z';
+    const AJUSTADA = aceptacion({
+      ofertaId: 'demo-review-1',
+      estado: 'adjusted',
+      suscripcion: { resultado: 'human_review', motivo: 'provisional_offer', decididaEn: '2026-10-12T01:54:42Z' },
+      revision: {
+        resultado: 'adjust',
+        decididaEn: DECIDIDA_EN,
+        ofertaAjustada: {
+          ofertaId: 'adj-b310b02b-9820-4725-bded-586d263dd16e',
+          prima: 98_450,
+          moneda: 'COP',
+          venceEn: '2026-10-18T04:42:20.022742Z',
+        },
+      },
+    });
+    const RECHAZADA = aceptacion({
+      ofertaId: 'demo-highrisk-1',
+      estado: 'rejected',
+      suscripcion: { resultado: 'human_review', motivo: 'high_risk_score', decididaEn: '2026-10-12T01:54:42Z' },
+      revision: { resultado: 'reject', decididaEn: DECIDIDA_EN, ofertaAjustada: null },
+    });
+
+    function pasoActual(): string {
+      return document.querySelector('[aria-current="step"]')?.textContent?.trim() ?? '';
+    }
+
+    it('E6b: muestra la nueva prima, la vigencia de 24 h, que no hay cobro y «Ver la nueva oferta»', async () => {
+      await renderizar({ ofertaId: 'demo-review-1', deOferta: of(AJUSTADA) });
+
+      expect(titulo()).toBe('Un asesor ajustó las condiciones de tu oferta');
+      expect(screen.getByText(/revisó tu solicitud el .* y ajustó la prima\. Tu aceptación anterior no se cobra/)).toBeTruthy();
+      expect(screen.getByText(/También te lo enviamos a tu correo\./)).toBeTruthy();
+      expect(screen.getByText('Ajustada')).toBeTruthy();
+      expect(screen.getByText(AJUSTADA.aceptacionId)).toBeTruthy();
+      expect(screen.getByText(/98\.450 COP · antes .*89\.500 COP/)).toBeTruthy();
+      expect(screen.getByText(/^Hasta el .* \(24 horas\)$/)).toBeTruthy();
+      expect(screen.getByText('Aún no se ha hecho ningún cobro')).toBeTruthy();
+      expect(screen.getByText('La nueva oferta reemplaza a demo-review-1. Solo se cobrará la prima cuando aceptes la nueva oferta.')).toBeTruthy();
+      expect(screen.queryByText('Aceptación')).toBeNull();
+      expect(screen.getByRole('link', { name: 'Continuar con mi crédito' }).getAttribute('href')).toBe('/inicio');
+      expect(screen.getByRole('link', { name: 'Ver la nueva oferta' }).getAttribute('href')).toBe(
+        '/embebido/oferta/adj-b310b02b-9820-4725-bded-586d263dd16e',
+      );
+      expect(pasoActual()).toContain('Oferta');
+    });
+
+    it('E6c: informa que el riesgo no fue aceptado, sin cobro, y cierra la solicitud', async () => {
+      await renderizar({ ofertaId: 'demo-highrisk-1', deOferta: of(RECHAZADA) });
+
+      expect(titulo()).toBe('No pudimos aceptar tu solicitud de seguro');
+      expect(screen.getByText(/revisó tu solicitud el .* y el riesgo no fue aceptado\. No se realizó ningún cobro/)).toBeTruthy();
+      expect(screen.getByText(/También te lo enviamos a tu correo\./)).toBeTruthy();
+      expect(screen.getByText('Rechazada')).toBeTruthy();
+      expect(screen.getByText('Riesgo no aceptado por el asesor')).toBeTruthy();
+      expect(screen.getByText('Fecha de la decisión')).toBeTruthy();
+      expect(screen.getByText('No se realizó ningún cobro')).toBeTruthy();
+      expect(screen.getByText(`Tu solicitud ${RECHAZADA.aceptacionId} quedó cerrada. Si tienes preguntas, comunícate con tu banco o con Solventa.`)).toBeTruthy();
+      expect(screen.getByRole('link', { name: 'Continuar con mi crédito' }).getAttribute('href')).toBe('/inicio');
+      expect(screen.queryByRole('link', { name: 'Ver la nueva oferta' })).toBeNull();
+      expect(pasoActual()).toContain('Pago');
+    });
+
+    it('«Ver estado de la solicitud» desde la revisión muestra la decisión del asesor', async () => {
+      await renderizar({ ofertaId: 'demo-review-1', deOferta: of(EN_REVISION) });
+      consultarDeOferta.mockReturnValue(of(AJUSTADA));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Ver estado de la solicitud' }));
+
+      expect(titulo()).toBe('Un asesor ajustó las condiciones de tu oferta');
+    });
+
+    it('al abrir la nueva oferta, la misma página la muestra con «Aceptar» y los términos sin marcar', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'demo-review-1', deOferta: of(AJUSTADA) });
+      consultarDeOferta.mockReturnValue(NO_ACEPTADA());
+
+      parametros.next(convertToParamMap({ ofertaId: 'adj-b310b02b-9820-4725-bded-586d263dd16e' }));
+      detectChanges();
+
+      expect(consultarDeOferta).toHaveBeenLastCalledWith('adj-b310b02b-9820-4725-bded-586d263dd16e');
+      expect(titulo()).toBe('Tu oferta personalizada');
+      expect(screen.getByText('Oferta N.º adj-b310b02b-9820-4725-bded-586d263dd16e')).toBeTruthy();
+      expect((screen.getByRole('checkbox', { name: /Acepto las condiciones generales/ }) as HTMLInputElement).checked).toBe(false);
+      expect(botonAceptar().disabled).toBe(false);
     });
   });
 

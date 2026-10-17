@@ -17,11 +17,23 @@ export interface AccionesAceptacionOferta {
    * identificador de la aceptación.
    */
   pago: string;
+  /**
+   * «Ver la nueva oferta» de una solicitud ajustada por el asesor (E6b, HU-W1.1-02): esta misma página con la
+   * oferta ajustada. Se le agrega el identificador de la oferta.
+   */
+  oferta: string;
 }
 
 export const ACCIONES_ACEPTACION_OFERTA = new InjectionToken<AccionesAceptacionOferta>(
   'ACCIONES_ACEPTACION_OFERTA',
-  { factory: () => ({ nuevaOferta: '/embebido/consentimiento', salir: '/inicio', pago: '/embebido/pago' }) },
+  {
+    factory: () => ({
+      nuevaOferta: '/embebido/consentimiento',
+      salir: '/inicio',
+      pago: '/embebido/pago',
+      oferta: '/embebido/oferta',
+    }),
+  },
 );
 
 /** Contenido de la oferta. Hoy son datos de prueba provisionales (ver `detalle-oferta.provisional.ts`). */

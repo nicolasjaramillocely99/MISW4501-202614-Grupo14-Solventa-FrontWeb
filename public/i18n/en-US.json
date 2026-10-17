@@ -263,7 +263,8 @@
         "continuarCredito": "Continue with my loan",
         "noGracias": "No, thanks",
         "nuevaOferta": "Generate a new offer",
-        "volverCotizar": "Get a new quote"
+        "volverCotizar": "Get a new quote",
+        "verNuevaOferta": "View the new offer"
       },
       "datos": {
         "numeroSolicitud": "Request number",
@@ -275,14 +276,23 @@
         "proximoIntentoValor": "{{hora}} · automatic",
         "ofertaAnterior": "Previous offer",
         "ofertaAnteriorValor": "{{prima}} / month",
-        "vencio": "Expired"
+        "vencio": "Expired",
+        "nuevaPrima": "New monthly premium",
+        "nuevaPrimaValor": "{{nueva}} · previously {{anterior}}",
+        "vigenciaNueva": "New offer validity",
+        "vigenciaNuevaValor": "Until {{fecha}} (24 hours)",
+        "decision": "Decision",
+        "decisionRechazo": "Risk not accepted by the advisor",
+        "fechaDecision": "Decision date"
       },
       "insignia": {
         "validando": "Validating",
         "conservada": "Resuming",
         "revision": "Under review",
         "emision": "Issuance started",
-        "vencida": "Expired"
+        "vencida": "Expired",
+        "ajustada": "Adjusted",
+        "rechazada": "Rejected"
       },
       "validando": {
         "titulo": "We registered your acceptance",
@@ -341,6 +351,18 @@
           "titulo": "We could not process your request",
           "texto": "An unexpected problem occurred. Please try again later."
         }
+      },
+      "ajustada": {
+        "titulo": "An advisor adjusted the terms of your offer",
+        "texto": "A Solventa advisor reviewed your request on {{fecha}} and adjusted the premium. Your previous acceptance is not charged. If you agree with the new terms, review and accept the new offer to continue. We also sent it to your email.",
+        "avisoTitulo": "Nothing has been charged yet",
+        "avisoTexto": "The new offer replaces {{oferta}}. The premium is only charged when you accept the new offer."
+      },
+      "rechazada": {
+        "titulo": "We could not accept your insurance request",
+        "texto": "A Solventa advisor reviewed your request on {{fecha}} and the risk was not accepted. Nothing was charged. You can continue with your loan and the bank will tell you the next steps. We also sent it to your email.",
+        "avisoTitulo": "Nothing was charged",
+        "avisoTexto": "Your request {{numero}} is closed. If you have questions, contact your bank or Solventa."
       }
     },
     "pago": {

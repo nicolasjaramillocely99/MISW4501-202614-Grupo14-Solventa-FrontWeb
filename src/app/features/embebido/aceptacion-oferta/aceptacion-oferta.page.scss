@@ -85,12 +85,14 @@ p {
 }
 
 .resultado__icono--conservada,
-.resultado__icono--vencida {
+.resultado__icono--vencida,
+.resultado__icono--ajustada {
   background: var(--color-advertencia-100);
   color: var(--color-advertencia-600);
 }
 
-.resultado__icono--error {
+.resultado__icono--error,
+.resultado__icono--rechazada {
   background: var(--color-error-100);
   color: var(--color-error-600);
 }
