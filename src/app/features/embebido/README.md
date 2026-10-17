@@ -11,7 +11,7 @@
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
 | [E1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=9-169) | Paso 1 · Consentimiento | `/embebido/consentimiento` | público (canal del aliado) | HU-W1.2-01 | S1 |
-| [E6](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-691) | Solicitud en revisión (decisión humana) · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01, HU-W1.1-02 | S1 |
+| [E6](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-691), [E6b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=1361-9594), [E6c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=1361-9736) | Solicitud en revisión (decisión humana) · estado de la aceptación; E6b ajustada y E6c rechazada por el asesor | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01, HU-W1.1-02 | S1 |
 | [E3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-434), [E3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-478), [E3c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=433-745) | Paso 3 · Oferta personalizada (y provisional) y aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.2-03, HU-W1.3-01, HA-D01 | S1 |
 | [E7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-1002) | Oferta vencida · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01 | S1 |
 | [E4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-337), [E4b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-578), [E4c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-783) | Paso 4 · Pago de la prima (pendiente / rechazado) | `/embebido/pago/:aceptacionId` | Asegurado (sesión) | HU-W1.3-02, HA-D02 | S1 |
@@ -68,8 +68,12 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
   oferta; «Aceptar» se deshabilita mientras está en curso) y `consultarAceptacion` para el polling.
 - Estados dentro de la misma página: **oferta** (E3, con la casilla de condiciones), **registrada / validando**,
   **aceptación conservada** (`registered` con `attempts > 0` o más de 2 minutos), **en revisión** (E6, `in_review`, motivo
-  según `underwriting.reason`), **emisión iniciada** (`issuance_pending`), **oferta vencida** (E7, `422 offer_expired` con
-  `expires_at`) y errores (`offer_not_found`, sin servicio, sin oferta, genérico). Los textos salen del código `error`, nunca de
+  según `underwriting.reason`), **emisión iniciada** (`issuance_pending`), **solicitud ajustada** (E6b, `adjusted`, HU-W1.1-02:
+  nueva prima frente a la anterior, vigencia de 24 h, aviso sin cobro y «Ver la nueva oferta» → `/embebido/oferta/{review.adjusted_offer.offer_id}`),
+  **solicitud rechazada** (E6c, `rejected`: riesgo no aceptado, sin cobro, «Continuar con mi crédito»), **oferta vencida** (E7,
+  `422 offer_expired` con `expires_at`) y errores (`offer_not_found`, sin servicio, sin oferta, genérico). E6b y E6c dicen
+  «También te lo enviamos a tu correo»: el backend avisa por correo el ajuste y el rechazo (decisión D-3 c). El cliente ve la
+  decisión al volver a consultar («Ver estado de la solicitud» o al regresar al flujo); `in_review` no se sigue con polling. Los textos salen del código `error`, nunca de
   `message`; `acceptance_not_registered` muestra el aviso junto a la oferta y «Reintentar» reenvía el mismo `POST`.
 - `servicios/seguimiento-aceptacion.service.ts` (`SeguimientoAceptacionService`, provisto por la página): polling del §6 del
   contrato (primera consulta a 1 s, luego cada 2 s; hasta `next_attempt_at` + 1 s si el backend reintenta más tarde, con
@@ -77,8 +81,12 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
   `acceptance_unavailable` o error de red conserva la última pantalla; ante `acceptance_not_found` vuelve a consultar por
   oferta). `servicios/tramite-aceptacion.service.ts` guarda `offer_id` y `acceptance_id` en `sessionStorage`.
 - `aceptacion-oferta.config.ts`: `ACCIONES_ACEPTACION_OFERTA` deja configurables «Generar una nueva oferta» / «Volver a
-  cotizar» (hoy `/embebido/consentimiento`, hasta que HU-W1.2-03 publique el endpoint de nuevas ofertas) y «No me interesa»
-  / «Continuar con mi crédito» (`/inicio`). `DETALLE_OFERTA` entrega el contenido de la oferta.
+  cotizar» (hoy `/embebido/consentimiento`, hasta que HU-W1.2-03 publique el endpoint de nuevas ofertas), «No me interesa»
+  / «Continuar con mi crédito» (`/inicio`) y «Ver la nueva oferta» (`oferta`: `/embebido/oferta`, HU-W1.1-02). `DETALLE_OFERTA`
+  entrega el contenido de la oferta (la oferta ajustada se muestra con estos mismos datos de prueba hasta HU-W1.2-03; E6b sí
+  muestra su prima real).
+- La página sigue `paramMap`, no el `snapshot`: Angular la reutiliza al pasar de `/embebido/oferta/A` a la oferta ajustada, y
+  cada cambio de parámetro la abre desde cero (detiene el seguimiento y desmarca las condiciones).
 - **Datos de prueba provisionales:** `modelos/detalle-oferta.provisional.ts` (prima 89 500 COP de las ofertas simuladas del
   backend; valor asegurado, vigencia, beneficiario y coberturas del frame E3). Se elimina cuando HU-W1.2-03 exponga el
   detalle de la oferta.
