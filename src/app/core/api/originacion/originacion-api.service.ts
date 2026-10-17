@@ -11,6 +11,7 @@ import {
   mapearAceptacion,
   traducirErrorAceptacion,
 } from './aceptacion.modelos';
+import { Cobro, CobroDto, mapearCobro, traducirErrorCobro } from './cobro.modelos';
 import {
   ClienteCotizacion,
   ClienteDto,
@@ -53,8 +54,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
 /**
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
- * aceptación de la oferta (HU-W1.3-01) y la cotización asistida por asesor (HU-W1.1-01); emisión y cobro
- * se suman aquí con sus historias.
+ * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01) y el estado del cobro
+ * de la prima (HA-D02); la emisión se suma aquí con su historia.
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -148,5 +149,18 @@ export class OriginacionApiService {
         map(mapearCliente),
         catchError((error: unknown) => throwError(() => traducirErrorCotizacion(error, RESPALDO_CLIENTE))),
       );
+  }
+
+  /**
+   * Consulta el cobro de la prima de una aceptación (`GET /v1/acceptances/{acceptance_id}/charge`, HA-D02): el
+   * estado que pinta el paso de pago (pendiente con sus reintentos, confirmado con la póliza o en excepción).
+   * `charge_not_found` significa que la aceptación aún no tiene cobro (suscripción en curso o en revisión).
+   * Falla con `ErrorCobro`.
+   */
+  consultarCobro(aceptacionId: string): Observable<Cobro> {
+    return this.http.get<CobroDto>(`${this.base}/v1/acceptances/${encodeURIComponent(aceptacionId)}/charge`).pipe(
+      map(mapearCobro),
+      catchError((error: unknown) => throwError(() => traducirErrorCobro(error))),
+    );
   }
 }

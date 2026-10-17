@@ -4,7 +4,10 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '@env/environment';
 import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
 
+import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
+
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
+import { ErrorCobro, mapearCobro } from './cobro.modelos';
 import { OriginacionApiService } from './originacion-api.service';
 import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
@@ -257,6 +260,32 @@ describe('OriginacionApiService', () => {
         .flush({ error: 'customer_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect((error as ErrorCotizacionAsistida).codigo).toBe('customer_not_found');
+    });
+  });
+
+  describe('cobro de la prima (HA-D02)', () => {
+    const URL_COBRO = `${environment.apiGatewayUrl.replace(/\/+$/, '')}/v1/acceptances/acc%2F1/charge`;
+
+    it('consulta el cobro codificando la aceptación y devuelve el modelo del cliente', () => {
+      let recibido: unknown;
+      servicio.consultarCobro('acc/1').subscribe((cobro) => (recibido = cobro));
+
+      const peticion = http.expectOne(URL_COBRO);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(COBRO_PENDIENTE_DTO);
+
+      expect(recibido).toEqual(mapearCobro(COBRO_PENDIENTE_DTO));
+    });
+
+    it('traduce charge_not_found y la falta de servicio a ErrorCobro', () => {
+      const codigos: string[] = [];
+      servicio.consultarCobro('acc/1').subscribe({ error: (e: ErrorCobro) => codigos.push(e.codigo) });
+      http.expectOne(URL_COBRO).flush({ error: 'charge_not_found', message: 'x' }, { status: 404, statusText: 'Not Found' });
+
+      servicio.consultarCobro('acc/1').subscribe({ error: (e: ErrorCobro) => codigos.push(e.codigo) });
+      http.expectOne(URL_COBRO).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['charge_not_found', 'charge_unavailable']);
     });
   });
 });
