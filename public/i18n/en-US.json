@@ -341,6 +341,84 @@
           "texto": "An unexpected problem occurred. Please try again later."
         }
       }
+    },
+    "pago": {
+      "cargando": {
+        "titulo": "Checking the status of your payment"
+      },
+      "insignia": {
+        "procesando": "Processing",
+        "pendiente": "Payment pending",
+        "confirmado": "Payment confirmed",
+        "excepcion": "Being handled"
+      },
+      "procesando": {
+        "titulo": "We are processing your payment",
+        "texto": "Your acceptance was saved on {{fecha}}. We are charging the premium with an idempotency key that guarantees exactly one charge.",
+        "progreso": "Processing the payment"
+      },
+      "pendiente": {
+        "titulo": "Your payment is pending",
+        "texto": "The payment gateway did not respond. Your acceptance was saved and we will retry the charge automatically until {{fin}}, with an idempotency key that guarantees exactly one charge. You do not need to repeat the process.",
+        "lineaEtiqueta": "Charge history",
+        "linea": {
+          "registrada": "Acceptance registered",
+          "solicitado": "Charge requested from the gateway",
+          "sinRespuesta": "No response",
+          "fallas": "Attempts without response: {{intentos}}",
+          "fallasDetalle": "Last at {{hora}}",
+          "proximo": "Next retry scheduled",
+          "proximoDetalle": "{{hora}}"
+        }
+      },
+      "confirmado": {
+        "titulo": "Payment confirmed",
+        "texto": "Your coverage became active on {{fecha}} and we are issuing your policy. We will send you the document by e-mail.",
+        "activando": "We received your payment. We are activating your coverage."
+      },
+      "excepcion": {
+        "titulo": "We could not complete the charge",
+        "ventana": "The payment gateway did not respond during the retry period. An operations analyst will handle your case with you without losing your acceptance.",
+        "rechazo": "The gateway did not approve the payment. An operations analyst will contact you to continue without losing your acceptance."
+      },
+      "datos": {
+        "aceptacion": "Acceptance",
+        "aceptacionValor": "Registered · {{fecha}}",
+        "clave": "Operation key",
+        "claveValor": "{{clave}} (idempotent)",
+        "prima": "Premium",
+        "proximo": "Next retry",
+        "proximoValor": "{{hora}} · growing waits",
+        "enCurso": "In progress",
+        "poliza": "Policy",
+        "estado": "Status",
+        "cobertura": "Coverage",
+        "coberturaPendiente": "Activated once the payment is confirmed",
+        "coberturaActiva": "Active since {{fecha}}"
+      },
+      "aviso": {
+        "titulo": "What happens next",
+        "texto": "We will let you know by e-mail when the payment is confirmed and the coverage is active. If it does not succeed by {{fin}}, the case goes to an operations analyst who will handle it with you without losing your acceptance."
+      },
+      "error": {
+        "sinAceptacion": {
+          "titulo": "We could not find your request",
+          "texto": "Go back to the offer step to resume your process."
+        },
+        "sinCobro": {
+          "titulo": "Your payment has not started yet",
+          "texto": "The charge starts once your request is approved. Check the status of your acceptance."
+        },
+        "generico": {
+          "titulo": "We could not check your payment",
+          "texto": "Your acceptance is still saved. Try again in a few minutes."
+        }
+      },
+      "acciones": {
+        "continuarCredito": "Continue with my loan",
+        "reintentar": "Retry",
+        "verAceptacion": "Check the status of your acceptance"
+      }
     }
   },
   "originacion": {

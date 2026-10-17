@@ -341,6 +341,84 @@
           "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
         }
       }
+    },
+    "pago": {
+      "cargando": {
+        "titulo": "Consultando el estado de tu pago"
+      },
+      "insignia": {
+        "procesando": "Procesando",
+        "pendiente": "Pago pendiente",
+        "confirmado": "Pago confirmado",
+        "excepcion": "En gestión"
+      },
+      "procesando": {
+        "titulo": "Estamos procesando tu pago",
+        "texto": "Tu aceptación quedó guardada el {{fecha}}. Estamos cobrando la prima con una clave de idempotencia que garantiza exactamente un cobro.",
+        "progreso": "Procesando el pago"
+      },
+      "pendiente": {
+        "titulo": "Tu pago está pendiente",
+        "texto": "La pasarela de pago no respondió. Tu aceptación quedó guardada y reintentaremos el cobro de forma automática hasta el {{fin}}, con una clave de idempotencia que garantiza exactamente un cobro. No necesitas repetir el trámite.",
+        "lineaEtiqueta": "Historial del cobro",
+        "linea": {
+          "registrada": "Aceptación registrada",
+          "solicitado": "Cobro solicitado a la pasarela",
+          "sinRespuesta": "Sin respuesta",
+          "fallas": "Intentos sin respuesta: {{intentos}}",
+          "fallasDetalle": "Último a las {{hora}}",
+          "proximo": "Próximo reintento programado",
+          "proximoDetalle": "{{hora}}"
+        }
+      },
+      "confirmado": {
+        "titulo": "Pago confirmado",
+        "texto": "Tu cobertura quedó activa el {{fecha}} y estamos emitiendo tu póliza. Te enviaremos el documento por correo.",
+        "activando": "Recibimos tu pago. Estamos activando tu cobertura."
+      },
+      "excepcion": {
+        "titulo": "No pudimos completar el cobro",
+        "ventana": "La pasarela de pago no respondió durante el tiempo de reintentos. Un analista de operaciones gestionará tu caso contigo sin perder tu aceptación.",
+        "rechazo": "La pasarela no aprobó el pago. Un analista de operaciones se comunicará contigo para continuar sin perder tu aceptación."
+      },
+      "datos": {
+        "aceptacion": "Aceptación",
+        "aceptacionValor": "Registrada · {{fecha}}",
+        "clave": "Clave de operación",
+        "claveValor": "{{clave}} (idempotente)",
+        "prima": "Prima",
+        "proximo": "Próximo reintento",
+        "proximoValor": "{{hora}} · esperas crecientes",
+        "enCurso": "En curso",
+        "poliza": "Póliza",
+        "estado": "Estado",
+        "cobertura": "Cobertura",
+        "coberturaPendiente": "Se activa al confirmarse el pago",
+        "coberturaActiva": "Activa desde {{fecha}}"
+      },
+      "aviso": {
+        "titulo": "Qué pasa después",
+        "texto": "Te avisaremos por correo cuando el pago se confirme y la cobertura quede activa. Si hasta el {{fin}} no se logra, el caso pasa a un analista de operaciones que lo gestionará contigo sin perder tu aceptación."
+      },
+      "error": {
+        "sinAceptacion": {
+          "titulo": "No encontramos tu solicitud",
+          "texto": "Vuelve al paso de la oferta para retomar tu trámite."
+        },
+        "sinCobro": {
+          "titulo": "Tu pago aún no se ha iniciado",
+          "texto": "El cobro empieza cuando se aprueba tu solicitud. Revisa el estado de tu aceptación."
+        },
+        "generico": {
+          "titulo": "No pudimos consultar tu pago",
+          "texto": "Tu aceptación sigue guardada. Intenta de nuevo en unos minutos."
+        }
+      },
+      "acciones": {
+        "continuarCredito": "Continuar con mi crédito",
+        "reintentar": "Reintentar",
+        "verAceptacion": "Ver el estado de tu aceptación"
+      }
     }
   },
   "originacion": {
