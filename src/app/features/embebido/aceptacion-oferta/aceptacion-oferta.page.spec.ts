@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/angular';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, Subject, of, throwError } from 'rxjs';
 
-import { Aceptacion, ErrorAceptacion } from '@core/api/originacion/aceptacion.modelos';
+import { Aceptacion, ErrorAceptacion, MotivoRevision } from '@core/api/originacion/aceptacion.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
@@ -367,6 +367,32 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
       detectChanges();
 
       expect(titulo()).toBe('Tu oferta personalizada');
+    });
+  });
+
+  describe('motivo de la revisión (E6)', () => {
+    function enRevisionPor(motivo: MotivoRevision): Aceptacion {
+      return aceptacion({
+        estado: 'in_review',
+        suscripcion: { resultado: 'human_review', motivo, decididaEn: '2026-10-12T01:54:42Z' },
+      });
+    }
+
+    it('con high_risk_score muestra que el perfil requiere una revisión adicional', async () => {
+      await retomarCon(enRevisionPor('high_risk_score'), ['setTimeout', 'clearTimeout']);
+
+      expect(titulo()).toBe('Tu solicitud está en revisión');
+      expect(screen.getByText('Tu perfil requiere una revisión adicional')).toBeTruthy();
+    });
+
+    it('con un motivo que no conoce muestra el texto genérico, nunca la clave sin traducir', async () => {
+      const desconocido = 'motivo_nuevo_del_motor' as string as MotivoRevision;
+
+      await retomarCon(enRevisionPor(desconocido), ['setTimeout', 'clearTimeout']);
+
+      expect(titulo()).toBe('Tu solicitud está en revisión');
+      expect(screen.getByText('Validación adicional de suscripción')).toBeTruthy();
+      expect(screen.queryByText(/aceptacionOferta\.revision\.motivo/)).toBeNull();
     });
   });
 

@@ -20,7 +20,7 @@ export type EstadoAceptacion = 'registered' | 'issuance_pending' | 'in_review';
 export type ResultadoSuscripcion = 'approved' | 'human_review';
 
 /** Motivo del enrutamiento a revisión humana; `null` si la suscripción aprobó. */
-export type MotivoRevision = 'provisional_offer' | 'low_risk_score';
+export type MotivoRevision = 'provisional_offer' | 'high_risk_score';
 
 export interface SuscripcionAceptacion {
   resultado: ResultadoSuscripcion;
