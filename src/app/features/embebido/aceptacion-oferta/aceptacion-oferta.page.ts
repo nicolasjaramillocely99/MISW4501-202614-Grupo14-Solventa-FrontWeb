@@ -19,10 +19,12 @@ import {
   LucideArrowRight,
   LucideCircleAlert,
   LucideCircleCheck,
+  LucideCircleX,
   LucideClock,
   LucideInfo,
   LucideLandmark,
   LucideRefreshCw,
+  LucideSlidersHorizontal,
   LucideTriangleAlert,
 } from '@lucide/angular';
 import { finalize } from 'rxjs';
@@ -62,15 +64,18 @@ type MotivoError = 'sinOferta' | 'ofertaNoExiste' | 'noDisponible' | 'generico';
 
 /**
  * Vista de la aceptación registrada (contrato §4): `validando` (registered, sin fallas), `conservada`
- * (registered con intentos fallidos o más de 2 minutos), `revision` (in_review) y `emision` (issuance_pending).
+ * (registered con intentos fallidos o más de 2 minutos), `revision` (in_review), `emision` (issuance_pending) y,
+ * tras la decisión del asesor (HU-W1.1-02), `ajustada` (adjusted, E6b) y `rechazada` (rejected, E6c).
  */
-export type VistaSeguimiento = 'validando' | 'conservada' | 'revision' | 'emision';
+export type VistaSeguimiento = 'validando' | 'conservada' | 'revision' | 'emision' | 'ajustada' | 'rechazada';
 
 const TONO_POR_VISTA: Readonly<Record<VistaSeguimiento, TonoInsignia>> = {
   validando: 'informacion',
   conservada: 'advertencia',
   revision: 'informacion',
   emision: 'exito',
+  ajustada: 'advertencia',
+  rechazada: 'error',
 };
 
 const CLAVE_MOTIVO_REVISION: Readonly<Record<MotivoRevision, string>> = {
@@ -84,6 +89,11 @@ const CLAVE_MOTIVO_REVISION: Readonly<Record<MotivoRevision, string>> = {
  * con «Aceptar» (`POST /v1/offers/{id}/acceptance`) y luego sigue su estado con polling hasta
  * `issuance_pending` o `in_review`. Todos los estados viven en esta página; los textos salen del código
  * estable `error` del contrato, nunca de `message`. 401 y 403 los resuelve el interceptor.
+ *
+ * HU-W1.1-02: cuando el asesor decide, el cliente lo ve al volver a consultar: E6b «Solicitud ajustada» (nueva
+ * prima, vigencia y «Ver la nueva oferta», que abre la oferta ajustada en esta misma página) y E6c «Solicitud
+ * rechazada». Por eso la página sigue los cambios del parámetro de la ruta: Angular la reutiliza al pasar de
+ * `/embebido/oferta/A` a `/embebido/oferta/B`.
  *
  * Ruta: `/embebido/oferta/:ofertaId` (o `/embebido/oferta`, que retoma la oferta guardada en la sesión del
  * navegador). Exige la sesión de un asegurado dueño de la oferta.
@@ -102,10 +112,12 @@ const CLAVE_MOTIVO_REVISION: Readonly<Record<MotivoRevision, string>> = {
     LucideArrowRight,
     LucideCircleAlert,
     LucideCircleCheck,
+    LucideCircleX,
     LucideClock,
     LucideInfo,
     LucideLandmark,
     LucideRefreshCw,
+    LucideSlidersHorizontal,
     LucideTriangleAlert,
   ],
   providers: [SeguimientoAceptacionService],
@@ -149,6 +161,10 @@ export class AceptacionOfertaPage implements OnInit {
         return 'emision';
       case 'in_review':
         return 'revision';
+      case 'adjusted':
+        return 'ajustada';
+      case 'rejected':
+        return 'rechazada';
       default:
         return (aceptacion?.procesamiento.intentos ?? 0) > 0 || this.seguimiento.lento()
           ? 'conservada'
@@ -157,6 +173,15 @@ export class AceptacionOfertaPage implements OnInit {
   });
 
   protected readonly tonoInsignia = TONO_POR_VISTA;
+
+  /** Fecha del texto principal: la de la decisión del asesor en E6b/E6c; si no, la de la aceptación. */
+  protected readonly fechaTexto = computed(() => {
+    const aceptacion = this.aceptacion();
+    const vista = this.vista();
+    return (vista === 'ajustada' || vista === 'rechazada') && aceptacion?.revision
+      ? aceptacion.revision.decididaEn
+      : (aceptacion?.aceptadaEn ?? null);
+  });
 
   /**
    * Clave del motivo de la revisión (`underwriting.reason`); solo varía el texto, contrato §4. Un motivo
@@ -169,7 +194,8 @@ export class AceptacionOfertaPage implements OnInit {
   });
 
   protected readonly pasos = computed<readonly PasoFlujo[]>(() => {
-    const aceptada = this.fase() === 'seguimiento';
+    // Con la oferta ajustada (E6b) el cliente vuelve al paso de la oferta: debe aceptar la nueva.
+    const aceptada = this.fase() === 'seguimiento' && this.vista() !== 'ajustada';
     return [
       { etiqueta: 'embebido.pasos.consentimiento', estado: 'completado' },
       { etiqueta: 'embebido.pasos.perfilRiesgo', estado: 'completado' },
@@ -190,7 +216,19 @@ export class AceptacionOfertaPage implements OnInit {
 
   ngOnInit(): void {
     this.aliado.establecer(this.solicitud()?.aliado ?? null);
-    const ofertaId = this.ruta.snapshot.paramMap.get('ofertaId') ?? this.tramite.leer()?.ofertaId ?? null;
+    this.ruta.paramMap
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe((parametros) => this.abrir(parametros.get('ofertaId')));
+  }
+
+  /** Abre la oferta de la ruta (o la guardada en la sesión del navegador) desde cero. */
+  private abrir(desdeRuta: string | null): void {
+    const ofertaId = desdeRuta ?? this.tramite.leer()?.ofertaId ?? null;
+    this.seguimiento.detener();
+    this.terminosAceptados.set(false);
+    this.errorTerminos.set(false);
+    this.errorRegistro.set(false);
+    this.venceEn.set(null);
     this.ofertaId.set(ofertaId);
     if (ofertaId) {
       this.reanudar();

@@ -83,6 +83,29 @@ historia y los criterios de aceptación, y quedan pendientes de revisión contra
 - Pendiente: «Formalizar la compra» (HU-W1.1-03, ruta `:id/formalizar`).
 - E2E: `e2e/flujos/cotizacion-emision/cotizacion-asistida.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 
+**Bandeja de decisión humana (HU-W1.1-02)** — `bandeja-decision/bandeja-decision.page.ts` (`BandejaDecisionPage`, S4 / S4b) y
+`bandeja-decision/detalle-solicitud.page.ts` (`DetalleSolicitudPage`, S5), rutas `/originacion/bandeja-decision` y
+`/originacion/bandeja-decision/:aceptacionId` en `originacion.routes.ts` (`rolGuard('asesor')`; el menú del asesor ya enlazaba la
+bandeja). Contrato: `docs/contratos/HU-W1.1-02-api.md` del backend (servicio `origination`, `openapi.yaml` v0.8.0).
+
+- Llama a `OriginacionApiService`: `listarSolicitudesRevision`, `consultarSolicitudRevision` y `registrarDecision`. Los errores
+  llegan como `ErrorRevision` con el código estable del contrato.
+- **S4:** pestañas accesibles «Pendientes (n)» / «Decididas (m)» con los conteos del backend, selector de motivo (los motivos del
+  dominio; uno desconocido se muestra como «Validación adicional de suscripción»), orden por llegada y la tabla
+  `componentes/tabla-solicitudes/` (solicitud, solicitante, oferta, motivo, llegada y «Revisar»; en «Decididas», decisión, asesor y
+  fecha). Estados de carga, vacío (también con filtro) y error con reintento. **S4b:** al volver del detalle tras registrar, la
+  misma página anuncia «Decisión registrada» (`servicios/aviso-decision.service.ts`, una sola vez).
+- **S5:** número, estado, solicitante, llegada, oferta implicada (prima, vigencia y modo), aviso del motivo y el bloque «Decisión»
+  (`componentes/formulario-decision/`: aceptar, ajustar o rechazar; «Ajuste de prima (%)» solo al ajustar, de 0,01 a 100 con dos
+  decimales; observaciones obligatorias al ajustar o rechazar, hasta 1 000 caracteres; errores con `aria-describedby` y foco en el
+  primero). Un caso decidido se ve en solo lectura con el registro completo (tipo, asesor, fecha y hora, observaciones, ajuste y
+  oferta nueva). 404, 409 (otro asesor se adelantó: recarga y muestra lo decidido), 400 por campo y 503 con reintento.
+- Quedan fuera (ningún criterio los pide o el dominio no tiene los datos): las tarjetas de indicadores, «Exportar», el filtro de
+  llegada y «Contexto del cliente» de S4/S5, y la edad, la ciudad y los ingresos del solicitante.
+- El resultado para el cliente (E6b/E6c) vive en `features/embebido/aceptacion-oferta/`.
+- E2E: `e2e/flujos/cotizacion-emision/bandeja-decision.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en
+  cada estado).
+
 ## Cómo trabajar una historia de este dominio
 
 1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HU-W1.1-01-<descripcion-en-ingles>`).

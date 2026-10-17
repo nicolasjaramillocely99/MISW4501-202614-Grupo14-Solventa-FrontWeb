@@ -263,7 +263,8 @@
         "continuarCredito": "Continuar con mi crédito",
         "noGracias": "No, gracias",
         "nuevaOferta": "Generar una nueva oferta",
-        "volverCotizar": "Volver a cotizar"
+        "volverCotizar": "Volver a cotizar",
+        "verNuevaOferta": "Ver la nueva oferta"
       },
       "datos": {
         "numeroSolicitud": "Número de solicitud",
@@ -275,14 +276,23 @@
         "proximoIntentoValor": "{{hora}} · automático",
         "ofertaAnterior": "Oferta anterior",
         "ofertaAnteriorValor": "{{prima}} / mes",
-        "vencio": "Venció"
+        "vencio": "Venció",
+        "nuevaPrima": "Nueva prima mensual",
+        "nuevaPrimaValor": "{{nueva}} · antes {{anterior}}",
+        "vigenciaNueva": "Vigencia de la nueva oferta",
+        "vigenciaNuevaValor": "Hasta el {{fecha}} (24 horas)",
+        "decision": "Decisión",
+        "decisionRechazo": "Riesgo no aceptado por el asesor",
+        "fechaDecision": "Fecha de la decisión"
       },
       "insignia": {
         "validando": "Validando",
         "conservada": "Reanudando",
         "revision": "En revisión",
         "emision": "Emisión iniciada",
-        "vencida": "Vencida"
+        "vencida": "Vencida",
+        "ajustada": "Ajustada",
+        "rechazada": "Rechazada"
       },
       "validando": {
         "titulo": "Registramos tu aceptación",
@@ -341,6 +351,18 @@
           "titulo": "No pudimos procesar tu solicitud",
           "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
         }
+      },
+      "ajustada": {
+        "titulo": "Un asesor ajustó las condiciones de tu oferta",
+        "texto": "Un asesor de Solventa revisó tu solicitud el {{fecha}} y ajustó la prima. Tu aceptación anterior no se cobra. Si estás de acuerdo con las nuevas condiciones, revisa y acepta la nueva oferta para continuar. También te lo enviamos a tu correo.",
+        "avisoTitulo": "Aún no se ha hecho ningún cobro",
+        "avisoTexto": "La nueva oferta reemplaza a {{oferta}}. Solo se cobrará la prima cuando aceptes la nueva oferta."
+      },
+      "rechazada": {
+        "titulo": "No pudimos aceptar tu solicitud de seguro",
+        "texto": "Un asesor de Solventa revisó tu solicitud el {{fecha}} y el riesgo no fue aceptado. No se realizó ningún cobro. Puedes continuar con tu crédito y el banco te indicará los siguientes pasos. También te lo enviamos a tu correo.",
+        "avisoTitulo": "No se realizó ningún cobro",
+        "avisoTexto": "Tu solicitud {{numero}} quedó cerrada. Si tienes preguntas, comunícate con tu banco o con Solventa."
       }
     },
     "pago": {
@@ -631,6 +653,186 @@
         "error": {
           "titulo": "No pudimos cargar la cotización",
           "texto": "Hubo un problema al consultar la cotización. Inténtalo de nuevo."
+        }
+      }
+    },
+    "bandejaDecision": {
+      "bandeja": {
+        "titulo": "Bandeja de decisión humana",
+        "descripcion": "Solicitudes que la suscripción automática enrutó a revisión. Ordenadas por fecha de llegada; el flujo de origen continúa automáticamente según tu decisión.",
+        "registrada": {
+          "titulo": "Decisión registrada",
+          "descripcion": "La decisión de {{solicitante}} quedó registrada con fecha, asesor y motivo. El caso salió de pendientes y el flujo de origen continúa automáticamente."
+        },
+        "pestanas": {
+          "etiqueta": "Estado de las solicitudes",
+          "pending": "Pendientes",
+          "decided": "Decididas",
+          "pendingConteo": "Pendientes ({{n}})",
+          "decidedConteo": "Decididas ({{n}})"
+        },
+        "filtros": {
+          "motivo": "Motivo",
+          "todos": "Todos",
+          "orden": "Orden por llegada",
+          "ordenAsc": "La más antigua primero",
+          "ordenDesc": "La más reciente primero"
+        },
+        "cargando": "Cargando las solicitudes…",
+        "vacio": {
+          "pending": "No hay solicitudes pendientes de decisión.",
+          "decided": "Todavía no hay solicitudes decididas.",
+          "filtrado": "No hay solicitudes con este motivo."
+        },
+        "error": {
+          "titulo": "No pudimos cargar la bandeja",
+          "texto": "Intenta de nuevo en unos segundos."
+        },
+        "acciones": {
+          "reintentar": "Reintentar"
+        }
+      },
+      "tabla": {
+        "leyenda": {
+          "pending": "Solicitudes pendientes de decisión",
+          "decided": "Solicitudes decididas"
+        },
+        "columnas": {
+          "solicitud": "Solicitud",
+          "solicitante": "Solicitante",
+          "oferta": "Oferta",
+          "motivo": "Motivo del enrutamiento",
+          "llegada": "Llegada",
+          "decision": "Decisión",
+          "asesor": "Asesor",
+          "decididaEn": "Decidida",
+          "acciones": "Acciones"
+        },
+        "primaMes": "{{prima}} / mes",
+        "revisar": "Revisar",
+        "revisarEtiqueta": "Revisar la solicitud {{id}}",
+        "verDetalle": "Ver detalle",
+        "verDetalleEtiqueta": "Ver detalle de la solicitud {{id}}"
+      },
+      "motivos": {
+        "provisional_offer": "Perfil provisional (fuente caída)",
+        "high_risk_score": "Puntaje de riesgo alto",
+        "generico": "Validación adicional de suscripción"
+      },
+      "decisiones": {
+        "accept": "Aceptada",
+        "adjust": "Ajustada",
+        "reject": "Rechazada"
+      },
+      "detalle": {
+        "volver": "Bandeja de decisión",
+        "cargando": "Cargando la solicitud…",
+        "titulo": "Solicitud {{id}}",
+        "estados": {
+          "pending": "Pendiente",
+          "decided": "Decidida"
+        },
+        "resumen": "{{solicitante}} · {{documento}} · llegó el {{llegada}} · Oferta {{oferta}}",
+        "yaDecidida": "Otro asesor ya registró la decisión de este caso. Esta es la decisión vigente.",
+        "motivo": {
+          "titulo": "Motivo del enrutamiento: {{motivo}}",
+          "explicacion": {
+            "provisional_offer": "La oferta se calculó en modo provisional porque una fuente externa no respondió. El cliente ve su solicitud en revisión y su precio queda reservado.",
+            "high_risk_score": "El puntaje de riesgo del perfil supera el umbral de revisión de la suscripción automática. El cliente ve su solicitud en revisión y su precio queda reservado.",
+            "generico": "La suscripción automática pidió una validación adicional. El cliente ve su solicitud en revisión y su precio queda reservado."
+          }
+        },
+        "solicitante": {
+          "titulo": "Solicitante",
+          "nombre": "Nombre",
+          "documento": "Documento",
+          "correo": "Correo"
+        },
+        "oferta": {
+          "titulo": "Oferta implicada",
+          "oferta": "Oferta",
+          "prima": "Prima mensual",
+          "vigencia": "Vigencia de la oferta",
+          "perfil": "Perfil",
+          "modos": {
+            "normal": "Calculado con las fuentes en línea",
+            "provisional": "Provisional (fuente externa caída)"
+          }
+        },
+        "decision": {
+          "titulo": "Decisión registrada",
+          "tipo": "Decisión",
+          "asesor": "Asesor",
+          "fecha": "Fecha y hora",
+          "ajuste": "Ajuste de prima",
+          "ajusteValor": "{{pct}} %",
+          "nuevaOferta": "Nueva oferta",
+          "nuevaPrima": "Nueva prima mensual",
+          "nuevaVigencia": "Vigencia de la nueva oferta",
+          "observaciones": "Observaciones",
+          "sinObservaciones": "Sin observaciones"
+        },
+        "alRegistrar": {
+          "titulo": "Al registrar la decisión",
+          "texto": "El flujo de origen continúa automáticamente: si aceptas, inicia la emisión; si ajustas, el cliente recibe la nueva condición; si rechazas, se le notifica. La decisión queda registrada con tu nombre, la fecha y el motivo, y el caso sale de la lista de pendientes."
+        },
+        "errorRegistro": {
+          "titulo": "No pudimos registrar la decisión",
+          "servicio": "El servicio no respondió. Puedes reintentar con seguridad: el caso nunca queda con dos decisiones.",
+          "generico": "Ocurrió un error inesperado. Recarga la página e intenta de nuevo."
+        },
+        "noEncontrada": {
+          "titulo": "La solicitud no existe",
+          "texto": "No encontramos esta solicitud en la bandeja. Vuelve a la bandeja para ver las solicitudes vigentes."
+        },
+        "error": {
+          "titulo": "No pudimos cargar la solicitud",
+          "texto": "Intenta de nuevo en unos segundos."
+        },
+        "acciones": {
+          "reintentar": "Reintentar"
+        }
+      },
+      "formulario": {
+        "leyenda": "Decisión",
+        "opciones": {
+          "accept": {
+            "titulo": "Aceptar el riesgo",
+            "descripcion": "Continúa la emisión con las condiciones ofertadas"
+          },
+          "adjust": {
+            "titulo": "Ajustar",
+            "descripcion": "Recargo sobre la prima · observaciones obligatorias"
+          },
+          "reject": {
+            "titulo": "Rechazar",
+            "descripcion": "Se notifica al cliente · observaciones obligatorias"
+          }
+        },
+        "campos": {
+          "ajustePrimaPct": "Ajuste de prima (%)",
+          "observaciones": "Observaciones"
+        },
+        "ayudas": {
+          "ajustePrimaPct": "Solo al ajustar: recargo de 0,01 % a 100 %",
+          "observaciones": "Obligatorias al ajustar o rechazar"
+        },
+        "errores": {
+          "tipo": {
+            "required": "Elige una decisión."
+          },
+          "ajustePrimaPct": {
+            "required": "Indica el recargo para ajustar la prima.",
+            "rango": "El recargo debe ser mayor que 0 y hasta 100, con máximo dos decimales."
+          },
+          "observaciones": {
+            "required": "Escribe las observaciones: son obligatorias al ajustar o rechazar.",
+            "maxlength": "Las observaciones admiten máximo {{max}} caracteres."
+          }
+        },
+        "acciones": {
+          "registrar": "Registrar decisión",
+          "registrando": "Registrando la decisión…"
         }
       }
     }

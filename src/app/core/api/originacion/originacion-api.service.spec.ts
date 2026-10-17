@@ -5,12 +5,14 @@ import { environment } from '@env/environment';
 import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
 
 import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
+import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
 
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
 import { ErrorCobro, mapearCobro } from './cobro.modelos';
 import { OriginacionApiService } from './originacion-api.service';
 import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
+import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
 
 const DTO: PerfilRiesgoDto = {
   customer_id: 'cli-1',
@@ -286,6 +288,99 @@ describe('OriginacionApiService', () => {
       http.expectOne(URL_COBRO).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual(['charge_not_found', 'charge_unavailable']);
+    });
+  });
+
+  describe('bandeja de decisión humana (HU-W1.1-02)', () => {
+    const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('lista la bandeja con el estado, el orden y el motivo como parámetros', () => {
+      let recibido: unknown;
+      servicio
+        .listarSolicitudesRevision({ estado: 'decided', motivo: 'high_risk_score', orden: 'desc' })
+        .subscribe((lista) => (recibido = lista));
+
+      const peticion = http.expectOne((r) => r.url === `${GATEWAY}/v1/review-requests`);
+      expect(peticion.request.method).toBe('GET');
+      expect(peticion.request.params.get('status')).toBe('decided');
+      expect(peticion.request.params.get('order')).toBe('desc');
+      expect(peticion.request.params.get('reason')).toBe('high_risk_score');
+      peticion.flush({ items: [SOLICITUD_RECHAZADA_DTO], counts: { pending: 0, decided: 1 } });
+
+      expect(recibido).toEqual(
+        mapearListaSolicitudesRevision({ items: [SOLICITUD_RECHAZADA_DTO], counts: { pending: 0, decided: 1 } }),
+      );
+    });
+
+    it('sin motivo no envía el parámetro reason', () => {
+      servicio.listarSolicitudesRevision({ estado: 'pending', motivo: null, orden: 'asc' }).subscribe();
+
+      const peticion = http.expectOne((r) => r.url === `${GATEWAY}/v1/review-requests`);
+      expect(peticion.request.params.has('reason')).toBe(false);
+      expect(peticion.request.params.get('status')).toBe('pending');
+      peticion.flush({ items: [], counts: { pending: 0, decided: 0 } });
+    });
+
+    it('la bandeja sin servicio falla con review_unavailable', () => {
+      let codigo: string | undefined;
+      servicio
+        .listarSolicitudesRevision({ estado: 'pending', motivo: null, orden: 'asc' })
+        .subscribe({ error: (e: ErrorRevision) => (codigo = e.codigo) });
+      http.expectOne((r) => r.url === `${GATEWAY}/v1/review-requests`).error(new ProgressEvent('error'));
+
+      expect(codigo).toBe('review_unavailable');
+    });
+
+    it('abre un caso codificando la aceptación y traduce review_request_not_found', () => {
+      let recibido: unknown;
+      servicio.consultarSolicitudRevision('acc/1').subscribe((solicitud) => (recibido = solicitud));
+      const peticion = http.expectOne(`${GATEWAY}/v1/review-requests/acc%2F1`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(SOLICITUD_PENDIENTE_DTO);
+      expect(recibido).toEqual(mapearSolicitudRevision(SOLICITUD_PENDIENTE_DTO));
+
+      let codigo: string | undefined;
+      servicio.consultarSolicitudRevision('acc/1').subscribe({ error: (e: ErrorRevision) => (codigo = e.codigo) });
+      http
+        .expectOne(`${GATEWAY}/v1/review-requests/acc%2F1`)
+        .flush({ error: 'review_request_not_found', message: 'x' }, { status: 404, statusText: 'Not Found' });
+      expect(codigo).toBe('review_request_not_found');
+    });
+
+    it('registra la decisión con el cuerpo del contrato y devuelve el caso decidido', () => {
+      let recibido: unknown;
+      servicio
+        .registrarDecision('acc/1', { tipo: 'adjust', observaciones: 'Ingreso declarado sin verificar', ajustePrimaPct: 10 })
+        .subscribe((solicitud) => (recibido = solicitud));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/review-requests/acc%2F1/decision`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toEqual({
+        type: 'adjust',
+        observations: 'Ingreso declarado sin verificar',
+        premium_adjustment_pct: 10,
+      });
+      peticion.flush(SOLICITUD_AJUSTADA_DTO, { status: 201, statusText: 'Created' });
+
+      expect(recibido).toEqual(mapearSolicitudRevision(SOLICITUD_AJUSTADA_DTO));
+    });
+
+    it('traduce los errores de la decisión; sin cuerpo es decision_not_registered', () => {
+      const codigos: string[] = [];
+      const registrar = () =>
+        servicio
+          .registrarDecision('acc-1', { tipo: 'reject' })
+          .subscribe({ error: (e: ErrorRevision) => codigos.push(e.codigo) });
+      const url = `${GATEWAY}/v1/review-requests/acc-1/decision`;
+
+      registrar();
+      http.expectOne(url).flush({ error: 'observations_required', message: 'x' }, { status: 400, statusText: 'Bad Request' });
+      registrar();
+      http.expectOne(url).flush({ error: 'review_request_already_decided', message: 'x' }, { status: 409, statusText: 'Conflict' });
+      registrar();
+      http.expectOne(url).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['observations_required', 'review_request_already_decided', 'decision_not_registered']);
     });
   });
 });

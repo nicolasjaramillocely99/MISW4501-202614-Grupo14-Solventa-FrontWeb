@@ -9,6 +9,7 @@ Contenido:
 | `transloco-pruebas.ts` | `proveerTranslocoPruebas()`: `TranslocoTestingModule` con los diccionarios reales de `public/i18n/` precargados y re-renderizado al cambiar de idioma (como la app), para verificar textos externalizados; `DICCIONARIOS` para comparar las claves de ambos idiomas (HA-S01) |
 | `sesion-pruebas.ts` | Sesión simulada por rol (asegurado, asesor, operaciones, socio) para probar *guards*, menú y páginas protegidas: `crearJwtPrueba` y `crearTokensPrueba` (tokens sin firma real), `crearProveedorIdentidadFalso` (espías de Vitest), `proveerSesionPrueba()` y `iniciarSesionComo(rol)` (HA-S01) |
 | `cobro-pruebas.ts` | `COBRO_PENDIENTE_DTO`: cobro de la prima pendiente con la forma del contrato de HA-D02, base para los demás estados en las pruebas del cliente y del paso de pago |
+| `revision-pruebas.ts` | `SOLICITUD_PENDIENTE_DTO`, `SOLICITUD_AJUSTADA_DTO` y `SOLICITUD_RECHAZADA_DTO`: solicitudes de la bandeja de decisión humana con la forma del contrato de HU-W1.1-02, para el cliente y las páginas de la bandeja |
 | `fabricas/` | Fábricas de datos de prueba (póliza, siniestro, socio, consentimiento) |
 
 Las pruebas se escriben con Vitest y Testing Library: se consulta el DOM por rol y texto accesible (`screen.getByRole`), no por clases ni selectores internos.
