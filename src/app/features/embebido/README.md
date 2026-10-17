@@ -16,7 +16,7 @@
 | [E7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-1002) | Oferta vencida · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01 | S1 |
 | [E4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-337), [E4b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-578), [E4c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-783) | Paso 4 · Pago de la prima (pendiente / rechazado) | `/embebido/pago/:aceptacionId` | Asegurado (sesión) | HU-W1.3-02, HA-D02 | S1 |
 | [E2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-231), [E2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=643-8582) | Paso 2 · Cálculo del perfil de riesgo | `/embebido/perfil-riesgo/:clienteId` | público (canal del aliado) | HU-W1.2-02, HA-L01, HA-D01 | S1 |
-| [E5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-556) | Paso 5 · Póliza emitida | `/embebido/poliza-emitida` | público (canal del aliado) | HU-W1.3-03 | S1 |
+| [E5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-556) | Paso 5 · Póliza emitida | `/embebido/poliza-emitida/:polizaId` | Asegurado (sesión) | HU-W1.3-03 | S1 |
 
 ## Implementado
 
@@ -36,6 +36,25 @@
   para HU-W1.2-03. El aliado se publica en `core/aliado` para la barra del shell.
 - «Ver mi oferta» lleva a `/embebido/oferta` y «Cancelar» a `/embebido/consentimiento`; ambas rutas llegan con sus historias.
 - E2E: `e2e/flujos/cotizacion-emision/perfil-riesgo.spec.ts` (API Gateway simulado con `page.route`, axe-core en cada estado).
+
+**Paso 5 · Póliza emitida: documento y notificación (HU-W1.3-03)** — `poliza-emitida/poliza-emitida.page.ts` (`PolizaEmitidaPage`, E5),
+ruta `/embebido/poliza-emitida/:polizaId`. Contrato: `docs/contratos/HU-W1.3-03-api.md` del backend (servicio `origination`,
+`openapi.yaml` v0.6.0). Sigue el frame E5 del prototipo: contexto y tarjeta «Tu crédito» (si el flujo trajo la solicitud),
+póliza activa, documento con «Descargar», confirmación al correo y tarjeta de la app.
+
+- **Pide sesión de asegurado**, como la aceptación de la oferta: el backend solo deja leer la póliza a su dueño, así que la ruta lleva
+  `autenticacionGuard` y `rolGuard('asegurado')` (a diferencia de lo que lista `docs/pantallas.md` como «público»).
+- Llama a `OriginacionApiService` (`core/api/originacion/`): `consultarEmisionContractual` (`GET /v1/policies/{id}/issuance-status`, con
+  polling cada 2 s hasta que la emisión termina) y `descargarDocumentoContractual` (`GET /v1/policies/{id}/contract-document`, blob: el
+  JWT lo adjunta el interceptor, por eso no es un enlace directo). El `polizaId` hoy es `pol-` + el `acceptance_id` de la aceptación.
+- Estados dentro de la misma página: **esperando** (documento en generación, descarga deshabilitada), **listo** (documento disponible
+  y correo enviado; si el correo falló, aviso y el documento sigue descargable) y **error** (póliza sin emisión, de otro asegurado o
+  fallo del servicio, con «Reintentar» salvo el 403). Textos en `embebido.polizaEmitida.*`.
+- **Fuera del frame E5 por falta de datos o destino** (el contrato `issuance-status` solo trae documento y notificación): la cuadrícula con
+  asegurado, prima, valor asegurado, vigencia, pago y beneficiario; el aviso por SMS; el QR y el enlace de «Descargar la app»; y
+  «Volver a mi crédito» (no hay URL del aliado). «Ver mi póliza en el portal» lleva a `/inicio` hasta que exista «Mis pólizas».
+- Pendiente: enlazar esta pantalla desde el cobro (HU-W1.3-02 / HA-D02) cuando exista; hoy se abre con la URL.
+- E2E: `e2e/flujos/cotizacion-emision/poliza-emitida.spec.ts` (Cognito y API Gateway simulados, axe-core en cada estado).
 
 **Paso 3 · Aceptación de la oferta y disparo de la emisión (HU-W1.3-01)** — `aceptacion-oferta/aceptacion-oferta.page.ts`
 (`AceptacionOfertaPage`), rutas `/embebido/oferta/:ofertaId` y `/embebido/oferta` (retoma la oferta guardada en

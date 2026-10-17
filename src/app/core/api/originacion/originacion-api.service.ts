@@ -25,6 +25,12 @@ import {
   traducirErrorCotizacion,
 } from './cotizacion-asistida.modelos';
 import {
+  EmisionContractual,
+  EmisionContractualDto,
+  mapearEmisionContractual,
+  traducirErrorEmision,
+} from './emision-contractual.modelos';
+import {
   PerfilRiesgo,
   PerfilRiesgoDto,
   SolicitudPerfilRiesgo,
@@ -54,8 +60,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
 /**
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
- * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01) y el estado del cobro
- * de la prima (HA-D02); la emisión se suma aquí con su historia.
+ * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
+ * (HU-W1.3-03) y el estado del cobro de la prima (HA-D02).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -149,6 +155,27 @@ export class OriginacionApiService {
         map(mapearCliente),
         catchError((error: unknown) => throwError(() => traducirErrorCotizacion(error, RESPALDO_CLIENTE))),
       );
+  }
+
+  /**
+   * Estado de la emisión contractual de una póliza (`GET /v1/policies/{policy_id}/issuance-status`,
+   * HU-W1.3-03): documento disponible y notificación. Falla con `ErrorEmisionContractual`;
+   * `policy_not_found` significa que la cobertura aún no se activó.
+   */
+  consultarEmisionContractual(polizaId: string): Observable<EmisionContractual> {
+    return this.http
+      .get<EmisionContractualDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/issuance-status`)
+      .pipe(
+        map(mapearEmisionContractual),
+        catchError((error: unknown) => throwError(() => traducirErrorEmision(error))),
+      );
+  }
+
+  /** Descarga el documento contractual en PDF (`GET /v1/policies/{policy_id}/contract-document`). */
+  descargarDocumentoContractual(polizaId: string): Observable<Blob> {
+    return this.http
+      .get(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/contract-document`, { responseType: 'blob' })
+      .pipe(catchError((error: unknown) => throwError(() => traducirErrorEmision(error))));
   }
 
   /**
