@@ -75,7 +75,7 @@ const TONO_POR_VISTA: Readonly<Record<VistaSeguimiento, TonoInsignia>> = {
 
 const CLAVE_MOTIVO_REVISION: Readonly<Record<MotivoRevision, string>> = {
   provisional_offer: 'ofertaProvisional',
-  low_risk_score: 'perfilAdicional',
+  high_risk_score: 'perfilAdicional',
 };
 
 /**
@@ -158,10 +158,14 @@ export class AceptacionOfertaPage implements OnInit {
 
   protected readonly tonoInsignia = TONO_POR_VISTA;
 
-  /** Clave del motivo de la revisión (`underwriting.reason`); solo varía el texto, contrato §4. */
+  /**
+   * Clave del motivo de la revisión (`underwriting.reason`); solo varía el texto, contrato §4. Un motivo
+   * que el cliente no conoce (p. ej. uno nuevo del motor de suscripción) muestra el texto genérico, nunca
+   * la clave sin traducir.
+   */
   protected readonly motivoRevision = computed(() => {
     const motivo = this.aceptacion()?.suscripcion?.motivo;
-    return motivo ? CLAVE_MOTIVO_REVISION[motivo] : 'generico';
+    return motivo ? (CLAVE_MOTIVO_REVISION[motivo] ?? 'generico') : 'generico';
   });
 
   protected readonly pasos = computed<readonly PasoFlujo[]>(() => {

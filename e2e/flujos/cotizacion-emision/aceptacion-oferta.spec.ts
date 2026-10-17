@@ -71,13 +71,13 @@ test.describe('Aceptación de la oferta (HU-W1.3-01)', () => {
     await simularCognito(page);
     const oferta = new AceptacionOfertaPagina(page);
     await oferta.simularGateway(
-      guion('demo-review-e2e', {
+      guion('demo-highrisk-e2e', {
         consultas: [
           {
             estado: 200,
-            cuerpo: aceptacion('demo-review-e2e', {
+            cuerpo: aceptacion('demo-highrisk-e2e', {
               status: 'in_review',
-              underwriting: { outcome: 'human_review', reason: 'low_risk_score', decided_at: '2026-10-12T01:54:42Z' },
+              underwriting: { outcome: 'human_review', reason: 'high_risk_score', decided_at: '2026-10-12T01:54:42Z' },
               ...TERMINADA,
             }),
           },
@@ -85,7 +85,7 @@ test.describe('Aceptación de la oferta (HU-W1.3-01)', () => {
       }),
     );
 
-    await oferta.abrirConSesion('demo-review-e2e');
+    await oferta.abrirConSesion('demo-highrisk-e2e');
     await oferta.aceptarOferta();
 
     await expect(oferta.titulo).toHaveText('Tu solicitud está en revisión');
