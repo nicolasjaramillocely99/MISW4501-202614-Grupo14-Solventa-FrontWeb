@@ -341,6 +341,57 @@
           "texto": "An unexpected problem occurred. Please try again later."
         }
       }
+    },
+    "polizaEmitida": {
+      "titulo": {
+        "cargando": "Checking your policy",
+        "esperando": "We are preparing your document",
+        "listo": "Your policy is active!",
+        "error": "We could not show your policy"
+      },
+      "descripcion": {
+        "cargando": "One moment, we are checking the status of your issuance.",
+        "esperando": "Your coverage is active. In less than a minute you will have your contractual document and we will let you know by email.",
+        "listo": "Policy No. {{poliza}} · Coverage active since {{fecha}} · Issued without manual intervention",
+        "error": "Check the details and try again."
+      },
+      "documento": {
+        "nombre": "Policy contractual document",
+        "generando": "We are generating the document with your terms, coverages, premium and validity.",
+        "disponible": "General and special conditions · PDF · {{tamano}} · version {{version}} · also available in your portal"
+      },
+      "notificacion": {
+        "enviada": {
+          "titulo": "Confirmation sent",
+          "texto": "We emailed you the issuance notification and the document on {{fecha}}."
+        },
+        "pendiente": {
+          "titulo": "Confirmation on its way",
+          "texto": "We will email you a secure link to the document."
+        },
+        "reintentando": "Sending the email is taking longer; we keep trying.",
+        "noEntregada": {
+          "titulo": "We could not deliver the email",
+          "texto": "We could not email you the link. Your document is available: download it with this button."
+        }
+      },
+      "app": {
+        "titulo": "Manage your policy from the Solventa app",
+        "texto": "View your certificate offline, report claims with evidence from the place of the event and manage your data consents. Sign up with your ID and your biometrics."
+      },
+      "pie": "You will continue in Solventa's insured portal.",
+      "acciones": {
+        "descargar": "Download",
+        "descargando": "Downloading…",
+        "reintentar": "Retry",
+        "verPoliza": "View my policy in the portal"
+      },
+      "error": {
+        "noEncontrada": "We cannot find an issuance for this policy yet. If you just paid, wait a few seconds and retry.",
+        "permiso": "This policy is not linked to your session. Sign in with the insured's account.",
+        "generico": "There was a problem checking your policy. Try again.",
+        "descarga": "We could not download the document. Try again."
+      }
     }
   },
   "originacion": {
