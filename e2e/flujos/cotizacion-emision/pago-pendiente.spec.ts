@@ -4,6 +4,7 @@ import { verificarAccesibilidad } from '../../accesibilidad/verificar-accesibili
 import { simularCognito } from '../../fixtures/sesion-por-rol';
 import { AceptacionOfertaPagina } from '../../paginas/aceptacion-oferta.pagina';
 import { PagoPagina } from '../../paginas/pago.pagina';
+import { PolizaEmitidaPagina } from '../../paginas/poliza-emitida.pagina';
 
 const ACEPTACION = '6f1c2a9e-1b2c-4d5e-8f90-123456789abc';
 
@@ -68,6 +69,37 @@ test.describe('Pago pendiente (HA-D02)', () => {
     await expect(pago.titulo).toHaveText('Pago confirmado', { timeout: 15_000 });
     await expect(page.getByText(`pol-${ACEPTACION}`)).toBeVisible();
     expect(llamadas.consultas[0]).toBe(`/v1/acceptances/${ACEPTACION}/charge`);
+    await verificarAccesibilidad(page);
+  });
+
+  test('con el pago confirmado, «Ver mi póliza» abre la póliza emitida', async ({ page }) => {
+    await simularCognito(page);
+    const pago = new PagoPagina(page);
+    await pago.simularGateway([{ estado: 200, cuerpo: CONFIRMADO }]);
+    const poliza = new PolizaEmitidaPagina(page);
+    const emision = await poliza.simularGateway([
+      {
+        estado: 200,
+        cuerpo: {
+          policy_id: `pol-${ACEPTACION}`,
+          status: 'completed',
+          activated_at: '2026-10-16T19:06:00Z',
+          available_at: '2026-10-16T19:06:01Z',
+          within_slo: true,
+          document: { document_id: 'b1e2', version: 1, size_bytes: 2310, generated_at: '2026-10-16T19:06:01Z' },
+          notification: { channel: 'email', status: 'sent', attempts: 0, sent_at: '2026-10-16T19:06:01Z' },
+        },
+      },
+    ]);
+
+    await pago.abrirConSesion(ACEPTACION);
+    await expect(pago.titulo).toHaveText('Pago confirmado');
+    await verificarAccesibilidad(page);
+    await page.getByRole('link', { name: 'Ver mi póliza' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/embebido/poliza-emitida/pol-${ACEPTACION}$`));
+    await expect(poliza.titulo).toHaveText('¡Tu póliza está activa!');
+    expect(emision.consultas).toBeGreaterThan(0);
     await verificarAccesibilidad(page);
   });
 
