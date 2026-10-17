@@ -416,6 +416,7 @@
         }
       },
       "acciones": {
+        "verPoliza": "View my policy",
         "continuarCredito": "Continue with my loan",
         "reintentar": "Retry",
         "verAceptacion": "Check the status of your acceptance"

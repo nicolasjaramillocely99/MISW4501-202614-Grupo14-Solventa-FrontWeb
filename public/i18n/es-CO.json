@@ -416,6 +416,7 @@
         }
       },
       "acciones": {
+        "verPoliza": "Ver mi póliza",
         "continuarCredito": "Continuar con mi crédito",
         "reintentar": "Reintentar",
         "verAceptacion": "Ver el estado de tu aceptación"

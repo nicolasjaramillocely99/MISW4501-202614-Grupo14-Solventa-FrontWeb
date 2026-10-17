@@ -180,10 +180,18 @@
             }
 
             <div class="acciones">
-              <a class="boton boton--primario" [routerLink]="acciones.salir">
-                <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
-                {{ t('pago.acciones.continuarCredito') }}
-              </a>
+              @if (vista() === 'confirmado' && actual.polizaId) {
+                <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('pago.acciones.continuarCredito') }}</a>
+                <a class="boton boton--primario" [routerLink]="[acciones.verPoliza, actual.polizaId]">
+                  <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                  {{ t('pago.acciones.verPoliza') }}
+                </a>
+              } @else {
+                <a class="boton boton--primario" [routerLink]="acciones.salir">
+                  <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                  {{ t('pago.acciones.continuarCredito') }}
+                </a>
+              }
             </div>
           }
         }

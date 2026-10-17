@@ -11,6 +11,7 @@ import { OriginacionApiService } from '@core/api/originacion/originacion-api.ser
 
 import { CLAVE_TRAMITE_ACEPTACION } from '../aceptacion-oferta/servicios/tramite-aceptacion.service';
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
+import { ACCIONES_PAGO, AccionesPago } from './pago.config';
 import { PagoPage } from './pago.page';
 
 type Llamada = ReturnType<typeof vi.fn<(id: string) => Observable<Cobro>>>;
@@ -39,6 +40,7 @@ describe('PagoPage (E4b · HA-D02)', () => {
   async function renderizar({
     aceptacionId = '6f1c2a9e-1b2c-4d5e-8f90-123456789abc' as string | null,
     respuesta = of(PENDIENTE) as Observable<Cobro>,
+    acciones = null as AccionesPago | null,
   } = {}) {
     consultar = vi.fn().mockReturnValue(respuesta);
     manejador = { handleError: vi.fn() };
@@ -48,6 +50,7 @@ describe('PagoPage (E4b · HA-D02)', () => {
         provideRouter([]),
         { provide: ErrorHandler, useValue: manejador },
         { provide: OriginacionApiService, useValue: { consultarCobro: consultar } },
+        ...(acciones ? [{ provide: ACCIONES_PAGO, useValue: acciones }] : []),
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap(aceptacionId ? { aceptacionId } : {}) } },
@@ -83,6 +86,17 @@ describe('PagoPage (E4b · HA-D02)', () => {
     expect(screen.queryByRole('link', { name: /Ver mi póliza/ })).toBeNull();
   });
 
+  it('el destino de «Ver mi póliza» es configurable', async () => {
+    await renderizar({
+      respuesta: of(CONFIRMADO),
+      acciones: { verPoliza: '/otra/poliza', salir: '/inicio', verAceptacion: '/embebido/oferta' },
+    });
+
+    expect(screen.getByRole('link', { name: /Ver mi póliza/ }).getAttribute('href')).toBe(
+      '/otra/poliza/pol-6f1c2a9e-1b2c-4d5e-8f90-123456789abc',
+    );
+  });
+
   it('muestra el próximo reintento en curso cuando el backend no informa la hora', async () => {
     await renderizar({ respuesta: of(cobro({ proximoIntentoEn: null })) });
 
@@ -105,6 +119,10 @@ describe('PagoPage (E4b · HA-D02)', () => {
     expect(screen.getByText('pol-6f1c2a9e-1b2c-4d5e-8f90-123456789abc')).toBeTruthy();
     expect(screen.getByText(/Activa desde/)).toBeTruthy();
     expect(screen.queryByText('Qué pasa después')).toBeNull();
+    expect(screen.getByRole('link', { name: /Ver mi póliza/ }).getAttribute('href')).toBe(
+      '/embebido/poliza-emitida/pol-6f1c2a9e-1b2c-4d5e-8f90-123456789abc',
+    );
+    expect(screen.getByRole('link', { name: /Continuar con mi crédito/ }).getAttribute('href')).toBe('/inicio');
   });
 
   it('confirmado sin póliza todavía informa que se activa la cobertura y sigue consultando', async () => {
@@ -114,6 +132,7 @@ describe('PagoPage (E4b · HA-D02)', () => {
     consultar.mockReturnValue(of(CONFIRMADO));
 
     expect(screen.getByText('Recibimos tu pago. Estamos activando tu cobertura.')).toBeTruthy();
+    expect(screen.queryByRole('link', { name: /Ver mi póliza/ })).toBeNull();
     await vi.advanceTimersByTimeAsync(1_000);
 
     expect(consultar).toHaveBeenCalledTimes(2);

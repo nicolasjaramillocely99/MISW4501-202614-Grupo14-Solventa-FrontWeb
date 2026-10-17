@@ -57,7 +57,7 @@ const TONO_POR_VISTA: Readonly<Record<VistaCobro, TonoInsignia>> = {
  * esperas crecientes durante 24 horas si la pasarela no responde; esta página lo sigue con
  * `GET /v1/acceptances/{id}/charge` y muestra que la aceptación quedó guardada. Todos los estados viven aquí; los
  * textos salen del estado y del código `error` del contrato, nunca de `message`. 401 y 403 los resuelve el
- * interceptor.
+ * interceptor. Con el pago confirmado y la póliza, «Ver mi póliza» abre la póliza emitida (E5, HU-W1.3-03).
  *
  * Ruta: `/embebido/pago/:aceptacionId` (o `/embebido/pago`, que toma la aceptación guardada en la sesión del
  * navegador). Exige la sesión del asegurado dueño de la aceptación.
