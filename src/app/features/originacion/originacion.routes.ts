@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { BandejaDecisionPage } from './bandeja-decision/bandeja-decision.page';
+import { DetalleSolicitudPage } from './bandeja-decision/detalle-solicitud.page';
 import { DatosClientePage } from './cotizacion-asistida/datos-cliente.page';
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
 
@@ -24,6 +25,9 @@ export const ORIGINACION_ROUTES: Routes = [
   {
     path: 'bandeja-decision',
     canActivateChild: [rolGuard('asesor')],
-    children: [{ path: '', component: BandejaDecisionPage }],
+    children: [
+      { path: '', component: BandejaDecisionPage },
+      { path: ':aceptacionId', component: DetalleSolicitudPage },
+    ],
   },
 ];

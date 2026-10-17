@@ -11,6 +11,8 @@ import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { of } from 'rxjs';
 
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import { mapearSolicitudRevision } from '@core/api/originacion/revision.modelos';
+import { SOLICITUD_PENDIENTE_DTO } from '@testing/revision-pruebas';
 
 import { routes } from '../../app.routes';
 
@@ -95,6 +97,7 @@ describe('rutas de la bandeja de decisión humana (HU-W1.1-02)', () => {
           provide: OriginacionApiService,
           useValue: {
             listarSolicitudesRevision: () => of({ solicitudes: [], conteos: { pendientes: 0, decididas: 0 } }),
+            consultarSolicitudRevision: () => of(mapearSolicitudRevision(SOLICITUD_PENDIENTE_DTO)),
           },
         },
       ],
@@ -122,13 +125,24 @@ describe('rutas de la bandeja de decisión humana (HU-W1.1-02)', () => {
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Bandeja de decisión humana');
   });
 
-  it('asegurado, operaciones y socio reciben «acceso no autorizado»', async () => {
+  it('el asesor abre el detalle de una solicitud dentro del shell del portal', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/originacion/bandeja-decision/acc-1');
+
+    expect(url()).toBe('/originacion/bandeja-decision/acc-1');
+    expect(harness.routeNativeElement?.querySelector('app-detalle-solicitud-page')).not.toBeNull();
+  });
+
+  it('asegurado, operaciones y socio reciben «acceso no autorizado» en la bandeja y en el detalle', async () => {
     for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
-      await iniciarSesionComo(rol);
+      for (const destino of ['/originacion/bandeja-decision', '/originacion/bandeja-decision/acc-1']) {
+        await iniciarSesionComo(rol);
 
-      await harness.navigateByUrl('/originacion/bandeja-decision');
+        await harness.navigateByUrl(destino);
 
-      expect(url()).toBe('/acceso/no-autorizado');
+        expect(url()).toBe('/acceso/no-autorizado');
+      }
     }
   });
 });

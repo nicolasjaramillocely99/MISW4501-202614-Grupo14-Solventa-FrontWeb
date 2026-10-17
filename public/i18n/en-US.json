@@ -701,6 +701,117 @@
         "accept": "Accepted",
         "adjust": "Adjusted",
         "reject": "Rejected"
+      },
+      "detalle": {
+        "volver": "Decision inbox",
+        "cargando": "Loading the request…",
+        "titulo": "Request {{id}}",
+        "estados": {
+          "pending": "Pending",
+          "decided": "Decided"
+        },
+        "resumen": "{{solicitante}} · {{documento}} · arrived on {{llegada}} · Offer {{oferta}}",
+        "yaDecidida": "Another advisor already recorded the decision for this case. This is the decision in force.",
+        "motivo": {
+          "titulo": "Routing reason: {{motivo}}",
+          "explicacion": {
+            "provisional_offer": "The offer was priced in provisional mode because an external source did not answer. The customer sees the request under review and the price stays reserved.",
+            "high_risk_score": "The risk score of the profile is above the review threshold of automatic underwriting. The customer sees the request under review and the price stays reserved.",
+            "generico": "Automatic underwriting asked for an additional validation. The customer sees the request under review and the price stays reserved."
+          }
+        },
+        "solicitante": {
+          "titulo": "Applicant",
+          "nombre": "Name",
+          "documento": "Document",
+          "correo": "Email"
+        },
+        "oferta": {
+          "titulo": "Offer involved",
+          "oferta": "Offer",
+          "prima": "Monthly premium",
+          "vigencia": "Offer validity",
+          "perfil": "Profile",
+          "modos": {
+            "normal": "Priced with the online sources",
+            "provisional": "Provisional (external source down)"
+          }
+        },
+        "decision": {
+          "titulo": "Recorded decision",
+          "tipo": "Decision",
+          "asesor": "Advisor",
+          "fecha": "Date and time",
+          "ajuste": "Premium adjustment",
+          "ajusteValor": "{{pct}} %",
+          "nuevaOferta": "New offer",
+          "nuevaPrima": "New monthly premium",
+          "nuevaVigencia": "New offer validity",
+          "observaciones": "Notes",
+          "sinObservaciones": "No notes"
+        },
+        "alRegistrar": {
+          "titulo": "When you record the decision",
+          "texto": "The origination flow continues automatically: if you accept, issuance starts; if you adjust, the customer gets the new terms; if you reject, the customer is notified. The decision is recorded with your name, the date and the reason, and the case leaves the pending list."
+        },
+        "errorRegistro": {
+          "titulo": "We could not record the decision",
+          "servicio": "The service did not answer. You can safely retry: a case never ends up with two decisions.",
+          "generico": "An unexpected error occurred. Reload the page and try again."
+        },
+        "noEncontrada": {
+          "titulo": "The request does not exist",
+          "texto": "We could not find this request in the inbox. Go back to the inbox to see the current requests."
+        },
+        "error": {
+          "titulo": "We could not load the request",
+          "texto": "Try again in a few seconds."
+        },
+        "acciones": {
+          "reintentar": "Retry"
+        }
+      },
+      "formulario": {
+        "leyenda": "Decision",
+        "opciones": {
+          "accept": {
+            "titulo": "Accept the risk",
+            "descripcion": "Issuance continues with the offered terms"
+          },
+          "adjust": {
+            "titulo": "Adjust",
+            "descripcion": "Surcharge on the premium · notes required"
+          },
+          "reject": {
+            "titulo": "Reject",
+            "descripcion": "The customer is notified · notes required"
+          }
+        },
+        "campos": {
+          "ajustePrimaPct": "Premium adjustment (%)",
+          "observaciones": "Notes"
+        },
+        "ayudas": {
+          "ajustePrimaPct": "Only to adjust: surcharge from 0.01% to 100%",
+          "observaciones": "Required to adjust or reject"
+        },
+        "errores": {
+          "tipo": {
+            "required": "Choose a decision."
+          },
+          "ajustePrimaPct": {
+            "required": "Enter the surcharge to adjust the premium.",
+            "rango": "The surcharge must be greater than 0 and up to 100, with at most two decimals."
+          },
+          "observaciones": {
+            "required": "Write the notes: they are required to adjust or reject.",
+            "maxlength": "Notes allow at most {{max}} characters."
+          }
+        },
+        "acciones": {
+          "registrar": "Record decision",
+          "registrando": "Recording the decision…"
+        }
       }
     }
   }
