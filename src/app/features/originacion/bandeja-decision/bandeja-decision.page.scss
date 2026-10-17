@@ -1,0 +1,108 @@
+// S4 / S4b · Bandeja de decisión humana: encabezado, pestañas con conteo a la izquierda y filtros a la derecha.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__descripcion {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--color-texto-secundario);
+}
+
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+}
+
+.pestanas {
+  display: flex;
+  border-bottom: 1px solid var(--color-borde-base);
+}
+
+.pestanas__pestana {
+  min-height: var(--control-alto);
+  padding: var(--espacio-8) var(--espacio-16);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-texto-secundario);
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: -2px;
+  }
+}
+
+.pestanas__pestana--activa {
+  border-bottom-color: var(--color-azul-700);
+  color: var(--color-azul-700);
+  font-weight: 500;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-16);
+
+  .campo {
+    min-width: 220px;
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.vacio {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  padding: var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-secundario);
+
+  p {
+    margin: 0;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: var(--color-exito-500);
+  }
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+}

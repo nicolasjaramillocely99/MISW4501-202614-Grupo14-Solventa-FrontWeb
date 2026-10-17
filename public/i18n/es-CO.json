@@ -633,6 +633,75 @@
           "texto": "Hubo un problema al consultar la cotización. Inténtalo de nuevo."
         }
       }
+    },
+    "bandejaDecision": {
+      "bandeja": {
+        "titulo": "Bandeja de decisión humana",
+        "descripcion": "Solicitudes que la suscripción automática enrutó a revisión. Ordenadas por fecha de llegada; el flujo de origen continúa automáticamente según tu decisión.",
+        "registrada": {
+          "titulo": "Decisión registrada",
+          "descripcion": "La decisión de {{solicitante}} quedó registrada con fecha, asesor y motivo. El caso salió de pendientes y el flujo de origen continúa automáticamente."
+        },
+        "pestanas": {
+          "etiqueta": "Estado de las solicitudes",
+          "pending": "Pendientes",
+          "decided": "Decididas",
+          "pendingConteo": "Pendientes ({{n}})",
+          "decidedConteo": "Decididas ({{n}})"
+        },
+        "filtros": {
+          "motivo": "Motivo",
+          "todos": "Todos",
+          "orden": "Orden por llegada",
+          "ordenAsc": "La más antigua primero",
+          "ordenDesc": "La más reciente primero"
+        },
+        "cargando": "Cargando las solicitudes…",
+        "vacio": {
+          "pending": "No hay solicitudes pendientes de decisión.",
+          "decided": "Todavía no hay solicitudes decididas.",
+          "filtrado": "No hay solicitudes con este motivo."
+        },
+        "error": {
+          "titulo": "No pudimos cargar la bandeja",
+          "texto": "Intenta de nuevo en unos segundos."
+        },
+        "acciones": {
+          "reintentar": "Reintentar"
+        }
+      },
+      "tabla": {
+        "leyenda": {
+          "pending": "Solicitudes pendientes de decisión",
+          "decided": "Solicitudes decididas"
+        },
+        "columnas": {
+          "solicitud": "Solicitud",
+          "solicitante": "Solicitante",
+          "oferta": "Oferta",
+          "motivo": "Motivo del enrutamiento",
+          "llegada": "Llegada",
+          "decision": "Decisión",
+          "asesor": "Asesor",
+          "decididaEn": "Decidida",
+          "acciones": "Acciones"
+        },
+        "primaMes": "{{prima}} / mes",
+        "revisar": "Revisar",
+        "revisarEtiqueta": "Revisar la solicitud {{id}}",
+        "verDetalle": "Ver detalle",
+        "verDetalleEtiqueta": "Ver detalle de la solicitud {{id}}"
+      },
+      "motivos": {
+        "provisional_offer": "Perfil provisional (fuente caída)",
+        "high_risk_score": "Puntaje de riesgo alto",
+        "generico": "Validación adicional de suscripción"
+      },
+      "decisiones": {
+        "accept": "Aceptada",
+        "adjust": "Ajustada",
+        "reject": "Rechazada"
+      }
     }
   }
 }

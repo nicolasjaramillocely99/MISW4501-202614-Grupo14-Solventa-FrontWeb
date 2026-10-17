@@ -633,6 +633,75 @@
           "texto": "There was a problem fetching the quote. Try again."
         }
       }
+    },
+    "bandejaDecision": {
+      "bandeja": {
+        "titulo": "Human decision inbox",
+        "descripcion": "Requests that automatic underwriting routed to review. Sorted by arrival date; the origination flow continues automatically according to your decision.",
+        "registrada": {
+          "titulo": "Decision recorded",
+          "descripcion": "The decision for {{solicitante}} was recorded with its date, advisor and reason. The case left the pending list and the origination flow continues automatically."
+        },
+        "pestanas": {
+          "etiqueta": "Request status",
+          "pending": "Pending",
+          "decided": "Decided",
+          "pendingConteo": "Pending ({{n}})",
+          "decidedConteo": "Decided ({{n}})"
+        },
+        "filtros": {
+          "motivo": "Reason",
+          "todos": "All",
+          "orden": "Order by arrival",
+          "ordenAsc": "Oldest first",
+          "ordenDesc": "Newest first"
+        },
+        "cargando": "Loading the requests…",
+        "vacio": {
+          "pending": "There are no requests pending a decision.",
+          "decided": "There are no decided requests yet.",
+          "filtrado": "There are no requests with this reason."
+        },
+        "error": {
+          "titulo": "We could not load the inbox",
+          "texto": "Try again in a few seconds."
+        },
+        "acciones": {
+          "reintentar": "Retry"
+        }
+      },
+      "tabla": {
+        "leyenda": {
+          "pending": "Requests pending a decision",
+          "decided": "Decided requests"
+        },
+        "columnas": {
+          "solicitud": "Request",
+          "solicitante": "Applicant",
+          "oferta": "Offer",
+          "motivo": "Routing reason",
+          "llegada": "Arrival",
+          "decision": "Decision",
+          "asesor": "Advisor",
+          "decididaEn": "Decided",
+          "acciones": "Actions"
+        },
+        "primaMes": "{{prima}} / month",
+        "revisar": "Review",
+        "revisarEtiqueta": "Review request {{id}}",
+        "verDetalle": "View details",
+        "verDetalleEtiqueta": "View details of request {{id}}"
+      },
+      "motivos": {
+        "provisional_offer": "Provisional profile (source down)",
+        "high_risk_score": "High risk score",
+        "generico": "Additional underwriting validation"
+      },
+      "decisiones": {
+        "accept": "Accepted",
+        "adjust": "Adjusted",
+        "reject": "Rejected"
+      }
     }
   }
 }
