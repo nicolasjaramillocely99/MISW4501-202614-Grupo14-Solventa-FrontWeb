@@ -14,7 +14,7 @@
 | [E6](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-691) | Solicitud en revisión (decisión humana) · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01, HU-W1.1-02 | S1 |
 | [E3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-434), [E3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=15-478), [E3c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=433-745) | Paso 3 · Oferta personalizada (y provisional) y aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.2-03, HU-W1.3-01, HA-D01 | S1 |
 | [E7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-1002) | Oferta vencida · estado de la aceptación | `/embebido/oferta/:ofertaId` | Asegurado (sesión) | HU-W1.3-01 | S1 |
-| [E4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-337), [E4b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-578), [E4c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-783) | Paso 4 · Pago de la prima (pendiente / rechazado) | `/embebido/pago` | público (canal del aliado) | HU-W1.3-02, HA-D02 | S1 |
+| [E4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-337), [E4b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-578), [E4c](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=16-783) | Paso 4 · Pago de la prima (pendiente / rechazado) | `/embebido/pago/:aceptacionId` | Asegurado (sesión) | HU-W1.3-02, HA-D02 | S1 |
 | [E2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=12-231), [E2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=643-8582) | Paso 2 · Cálculo del perfil de riesgo | `/embebido/perfil-riesgo/:clienteId` | público (canal del aliado) | HU-W1.2-02, HA-L01, HA-D01 | S1 |
 | [E5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=14-556) | Paso 5 · Póliza emitida | `/embebido/poliza-emitida/:polizaId` | Asegurado (sesión) | HU-W1.3-03 | S1 |
 
@@ -53,7 +53,7 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
 - **Fuera del frame E5 por falta de datos o destino** (el contrato `issuance-status` solo trae documento y notificación): la cuadrícula con
   asegurado, prima, valor asegurado, vigencia, pago y beneficiario; el aviso por SMS; el QR y el enlace de «Descargar la app»; y
   «Volver a mi crédito» (no hay URL del aliado). «Ver mi póliza en el portal» lleva a `/inicio` hasta que exista «Mis pólizas».
-- Pendiente: enlazar esta pantalla desde el cobro (HU-W1.3-02 / HA-D02) cuando exista; hoy se abre con la URL.
+- Se abre desde el pago confirmado con «Ver mi póliza» (HA-D02, paso 4), con el `policy_id` que devuelve el cobro.
 - E2E: `e2e/flujos/cotizacion-emision/poliza-emitida.spec.ts` (Cognito y API Gateway simulados, axe-core en cada estado).
 
 **Paso 3 · Aceptación de la oferta y disparo de la emisión (HU-W1.3-01)** — `aceptacion-oferta/aceptacion-oferta.page.ts`
@@ -85,6 +85,32 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
 - `componentes/tarjeta-credito/` (`TarjetaCreditoComponent`): la tarjeta «Tu crédito», reutilizable por los pasos del canal.
 - E2E: `e2e/flujos/cotizacion-emision/aceptacion-oferta.spec.ts` (Cognito y API Gateway simulados con `page.route`,
   axe-core en cada estado).
+
+**Paso 4 · Pago de la prima: estado del cobro (HA-D02, frame E4b)** — `pago/pago.page.ts` (`PagoPage`), rutas
+`/embebido/pago/:aceptacionId` y `/embebido/pago` (toma la aceptación guardada en `sessionStorage` por el paso 3). Contrato:
+`HA-D02-api.md` del backend (servicio `origination`, `openapi.yaml` v0.7.0).
+
+- **Pide sesión de asegurado**, como `oferta`: el cobro solo lo consulta el dueño de la aceptación (`autenticacionGuard` y,
+  en los hijos, `rolGuard('asegurado')`).
+- Tras aprobarse la suscripción, originación cobra la prima en segundo plano con una clave de idempotencia
+  (`cobro-<aceptación>`) y, si la pasarela no responde, reintenta con esperas crecientes durante 24 horas; la página no cobra
+  nada: solo consulta `OriginacionApiService.consultarCobro` (`GET /v1/acceptances/{id}/charge`).
+- Estados dentro de la misma página: **procesando** (primer intento en curso), **pago pendiente** (E4b: aceptación guardada,
+  clave de operación idempotente, intentos sin respuesta con la hora del último, próximo reintento, cobertura que se activa al
+  confirmarse el pago y el aviso «Qué pasa después», que promete el correo de la póliza emitida de HU-W1.3-03), **pago
+  confirmado** (cobertura activa, número de póliza y «Ver mi póliza» hacia la E5; sin póliza todavía, «estamos activando tu
+  cobertura»), **excepción**
+  (ventana vencida o pago rechazado: lo gestiona un analista de operaciones sin perder la aceptación) y errores (sin
+  aceptación, sin cobro, genérico con «Reintentar»).
+- `pago/servicios/seguimiento-cobro.service.ts` (`SeguimientoCobroService`): consulta al entrar, otra vez a 1 s y luego cada
+  2 s, o hasta el próximo reintento del backend + 1 s (tope de 61 s); se detiene con el cobro confirmado con póliza, en
+  excepción o ante 400, 401, 403 y 404; ante `charge_unavailable` o error de red conserva la última pantalla.
+- `pago/pago.config.ts`: `ACCIONES_PAGO` deja configurables «Ver mi póliza» (`/embebido/poliza-emitida`, a la que se agrega
+  el `policy_id` del cobro: la E5 de HU-W1.3-03), «Continuar con mi crédito» (`/inicio`) y «Ver el estado de tu aceptación»
+  (`/embebido/oferta`). **Pendiente:** «Intentar con otro medio de pago» llega con E4 (HU-W1.3-02).
+- Desde la vista «Suscripción aprobada» del paso 3 se llega con «Ver el estado de tu pago» (`ACCIONES_ACEPTACION_OFERTA.pago`).
+- E2E: `e2e/flujos/cotizacion-emision/pago-pendiente.spec.ts` (Cognito y API Gateway simulados con `page.route`, axe-core
+  en cada estado), incluido «pago confirmado → Ver mi póliza → E5».
 
 ## Cómo trabajar una historia de este dominio
 

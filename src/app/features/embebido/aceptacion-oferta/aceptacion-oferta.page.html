@@ -207,6 +207,11 @@
                     {{ t('aceptacionOferta.acciones.verEstado') }}
                   </button>
                 }
+                @if (vista() === 'emision') {
+                  <a class="boton boton--secundario" [routerLink]="[acciones.pago, actual.aceptacionId]">
+                    {{ t('aceptacionOferta.acciones.verPago') }}
+                  </a>
+                }
                 <a class="boton boton--primario" [routerLink]="acciones.salir">
                   <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
                   {{ t('aceptacionOferta.acciones.continuarCredito') }}
