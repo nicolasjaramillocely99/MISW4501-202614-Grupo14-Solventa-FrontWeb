@@ -53,7 +53,7 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
 - **Fuera del frame E5 por falta de datos o destino** (el contrato `issuance-status` solo trae documento y notificación): la cuadrícula con
   asegurado, prima, valor asegurado, vigencia, pago y beneficiario; el aviso por SMS; el QR y el enlace de «Descargar la app»; y
   «Volver a mi crédito» (no hay URL del aliado). «Ver mi póliza en el portal» lleva a `/inicio` hasta que exista «Mis pólizas».
-- Pendiente: enlazar esta pantalla desde el cobro (HU-W1.3-02 / HA-D02) cuando exista; hoy se abre con la URL.
+- Se abre desde el pago confirmado con «Ver mi póliza» (HA-D02, paso 4), con el `policy_id` que devuelve el cobro.
 - E2E: `e2e/flujos/cotizacion-emision/poliza-emitida.spec.ts` (Cognito y API Gateway simulados, axe-core en cada estado).
 
 **Paso 3 · Aceptación de la oferta y disparo de la emisión (HU-W1.3-01)** — `aceptacion-oferta/aceptacion-oferta.page.ts`
@@ -98,18 +98,19 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
 - Estados dentro de la misma página: **procesando** (primer intento en curso), **pago pendiente** (E4b: aceptación guardada,
   clave de operación idempotente, intentos sin respuesta con la hora del último, próximo reintento, cobertura que se activa al
   confirmarse el pago y el aviso «Qué pasa después», que promete el correo de la póliza emitida de HU-W1.3-03), **pago
-  confirmado** (cobertura activa y número de póliza; sin póliza todavía, «estamos activando tu cobertura»), **excepción**
+  confirmado** (cobertura activa, número de póliza y «Ver mi póliza» hacia la E5; sin póliza todavía, «estamos activando tu
+  cobertura»), **excepción**
   (ventana vencida o pago rechazado: lo gestiona un analista de operaciones sin perder la aceptación) y errores (sin
   aceptación, sin cobro, genérico con «Reintentar»).
 - `pago/servicios/seguimiento-cobro.service.ts` (`SeguimientoCobroService`): consulta al entrar, otra vez a 1 s y luego cada
   2 s, o hasta el próximo reintento del backend + 1 s (tope de 61 s); se detiene con el cobro confirmado con póliza, en
   excepción o ante 400, 401, 403 y 404; ante `charge_unavailable` o error de red conserva la última pantalla.
-- `pago/pago.config.ts`: `ACCIONES_PAGO` deja configurables «Continuar con mi crédito» (`/inicio`) y «Ver el estado de tu
-  aceptación» (`/embebido/oferta`). **Pendientes:** «Intentar con otro medio de pago» llega con E4 (HU-W1.3-02) y «Ver mi
-  póliza» (hacia la E5 de HU-W1.3-03) se agrega cuando su pantalla esté en `develop` (PR #16).
+- `pago/pago.config.ts`: `ACCIONES_PAGO` deja configurables «Ver mi póliza» (`/embebido/poliza-emitida`, a la que se agrega
+  el `policy_id` del cobro: la E5 de HU-W1.3-03), «Continuar con mi crédito» (`/inicio`) y «Ver el estado de tu aceptación»
+  (`/embebido/oferta`). **Pendiente:** «Intentar con otro medio de pago» llega con E4 (HU-W1.3-02).
 - Desde la vista «Suscripción aprobada» del paso 3 se llega con «Ver el estado de tu pago» (`ACCIONES_ACEPTACION_OFERTA.pago`).
 - E2E: `e2e/flujos/cotizacion-emision/pago-pendiente.spec.ts` (Cognito y API Gateway simulados con `page.route`, axe-core
-  en cada estado).
+  en cada estado), incluido «pago confirmado → Ver mi póliza → E5».
 
 ## Cómo trabajar una historia de este dominio
 
