@@ -36,6 +36,18 @@ import {
   SolicitudPerfilRiesgo,
   mapearPerfilRiesgo,
 } from './perfil-riesgo.modelos';
+import {
+  FiltroBandeja,
+  ListaSolicitudesRevision,
+  ListaSolicitudesRevisionDto,
+  RegistroDecision,
+  SolicitudRevision,
+  SolicitudRevisionDto,
+  aRegistroDecisionDto,
+  mapearListaSolicitudesRevision,
+  mapearSolicitudRevision,
+  traducirErrorRevision,
+} from './revision.modelos';
 
 const RESPALDO_ACEPTAR: RespaldoErrorAceptacion = {
   noEncontrado: 'offer_not_found',
@@ -61,7 +73,7 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
- * (HU-W1.3-03) y el estado del cobro de la prima (HA-D02).
+ * (HU-W1.3-03), el estado del cobro de la prima (HA-D02) y la bandeja de decisión humana del asesor (HU-W1.1-02).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -189,5 +201,51 @@ export class OriginacionApiService {
       map(mapearCobro),
       catchError((error: unknown) => throwError(() => traducirErrorCobro(error))),
     );
+  }
+
+  /**
+   * Lista la bandeja de decisión humana (`GET /v1/review-requests`, solo asesor; HU-W1.1-02) filtrada por estado y,
+   * opcionalmente, por motivo, en el orden de llegada pedido. Los conteos alimentan las dos pestañas. Falla con
+   * `ErrorRevision`.
+   */
+  listarSolicitudesRevision(filtro: FiltroBandeja): Observable<ListaSolicitudesRevision> {
+    const params: Record<string, string> = { status: filtro.estado, order: filtro.orden };
+    if (filtro.motivo) {
+      params['reason'] = filtro.motivo;
+    }
+    return this.http.get<ListaSolicitudesRevisionDto>(`${this.base}/v1/review-requests`, { params }).pipe(
+      map(mapearListaSolicitudesRevision),
+      catchError((error: unknown) => throwError(() => traducirErrorRevision(error, 'review_unavailable'))),
+    );
+  }
+
+  /**
+   * Abre un caso de la bandeja (`GET /v1/review-requests/{acceptance_id}`): la solicitud con el modo y la vigencia
+   * de la oferta y, si ya se decidió, el registro completo de la decisión. `review_request_not_found` si no existe.
+   */
+  consultarSolicitudRevision(aceptacionId: string): Observable<SolicitudRevision> {
+    return this.http
+      .get<SolicitudRevisionDto>(`${this.base}/v1/review-requests/${encodeURIComponent(aceptacionId)}`)
+      .pipe(
+        map(mapearSolicitudRevision),
+        catchError((error: unknown) => throwError(() => traducirErrorRevision(error, 'review_unavailable'))),
+      );
+  }
+
+  /**
+   * Registra la decisión del asesor (`POST /v1/review-requests/{acceptance_id}/decision`): 201 con el caso decidido.
+   * `review_request_already_decided` (409) si otro asesor se adelantó; `decision_continuation_pending` (503) pide
+   * reenviar la misma decisión, que completa el flujo. Falla con `ErrorRevision`.
+   */
+  registrarDecision(aceptacionId: string, registro: RegistroDecision): Observable<SolicitudRevision> {
+    return this.http
+      .post<SolicitudRevisionDto>(
+        `${this.base}/v1/review-requests/${encodeURIComponent(aceptacionId)}/decision`,
+        aRegistroDecisionDto(registro),
+      )
+      .pipe(
+        map(mapearSolicitudRevision),
+        catchError((error: unknown) => throwError(() => traducirErrorRevision(error, 'decision_not_registered'))),
+      );
   }
 }

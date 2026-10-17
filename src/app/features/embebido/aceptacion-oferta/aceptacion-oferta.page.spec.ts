@@ -25,6 +25,7 @@ function aceptacion(cambios: Partial<Aceptacion> = {}): Aceptacion {
     aceptadaEn: '2026-10-12T01:54:41.0909319Z',
     estado: 'registered',
     suscripcion: null,
+    revision: null,
     procesamiento: { intentos: 0, ultimaFallaEn: null, proximoIntentoEn: null },
     actualizadaEn: '2026-10-12T01:54:41.0909319Z',
     ...cambios,

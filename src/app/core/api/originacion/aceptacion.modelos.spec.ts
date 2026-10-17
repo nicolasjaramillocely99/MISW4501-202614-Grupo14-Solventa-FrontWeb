@@ -6,6 +6,7 @@ import {
   RespaldoErrorAceptacion,
   esEstadoFinal,
   mapearAceptacion,
+  mapearOfertaAjustada,
   traducirErrorAceptacion,
 } from './aceptacion.modelos';
 
@@ -41,6 +42,7 @@ describe('mapearAceptacion', () => {
       aceptadaEn: '2026-10-12T01:54:42.7390974Z',
       estado: 'in_review',
       suscripcion: { resultado: 'human_review', motivo: 'provisional_offer', decididaEn: '2026-10-12T01:54:42.7390974Z' },
+      revision: null,
       procesamiento: { intentos: 0, ultimaFallaEn: null, proximoIntentoEn: null },
       actualizadaEn: '2026-10-12T01:54:42.7390974Z',
     });
@@ -67,11 +69,69 @@ describe('mapearAceptacion', () => {
   });
 });
 
+describe('mapearAceptacion con la decisión del asesor (HU-W1.1-02)', () => {
+  /** Respuesta capturada del binario (contrato HU-W1.1-02, §2.4). */
+  const AJUSTADA: AceptacionDto = {
+    ...EN_REVISION,
+    status: 'adjusted',
+    review: {
+      outcome: 'adjust',
+      decided_at: '2026-10-17T04:42:20.022742Z',
+      adjusted_offer: {
+        offer_id: 'adj-6af8ce61-2424-4ed2-8375-57eaf9f9ee67',
+        premium: 98450,
+        currency: 'COP',
+        expires_at: '2026-10-18T04:42:20.022742Z',
+      },
+    },
+  };
+
+  it('traduce el ajuste con la oferta nueva', () => {
+    const aceptacion = mapearAceptacion(AJUSTADA);
+
+    expect(aceptacion.estado).toBe('adjusted');
+    expect(aceptacion.revision).toEqual({
+      resultado: 'adjust',
+      decididaEn: '2026-10-17T04:42:20.022742Z',
+      ofertaAjustada: {
+        ofertaId: 'adj-6af8ce61-2424-4ed2-8375-57eaf9f9ee67',
+        prima: 98450,
+        moneda: 'COP',
+        venceEn: '2026-10-18T04:42:20.022742Z',
+      },
+    });
+  });
+
+  it('traduce el rechazo sin oferta nueva', () => {
+    const aceptacion = mapearAceptacion({
+      ...EN_REVISION,
+      status: 'rejected',
+      review: { outcome: 'reject', decided_at: '2026-10-17T04:42:20.2845185Z', adjusted_offer: null },
+    });
+
+    expect(aceptacion.estado).toBe('rejected');
+    expect(aceptacion.revision).toEqual({ resultado: 'reject', decididaEn: '2026-10-17T04:42:20.2845185Z', ofertaAjustada: null });
+  });
+
+  it('trata como nula una revisión ausente (contrato anterior a 0.8.0) o nula', () => {
+    expect(mapearAceptacion(EN_REVISION).revision).toBeNull();
+    expect(mapearAceptacion({ ...EN_REVISION, review: null }).revision).toBeNull();
+  });
+});
+
+describe('mapearOfertaAjustada', () => {
+  it('devuelve null sin oferta', () => {
+    expect(mapearOfertaAjustada(null)).toBeNull();
+  });
+});
+
 describe('esEstadoFinal', () => {
   it.each([
     ['registered', false],
     ['issuance_pending', true],
     ['in_review', true],
+    ['adjusted', true],
+    ['rejected', true],
   ] as const)('%s → %s', (estado, esperado) => {
     expect(esEstadoFinal(estado)).toBe(esperado);
   });
