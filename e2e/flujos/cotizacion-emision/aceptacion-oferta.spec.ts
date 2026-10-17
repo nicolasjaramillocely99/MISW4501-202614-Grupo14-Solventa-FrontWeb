@@ -175,6 +175,73 @@ test.describe('Aceptación de la oferta (HU-W1.3-01)', () => {
     expect(llamadas.aceptar).toHaveLength(2);
   });
 
+  test('E6b: ve que el asesor ajustó su solicitud y abre la nueva oferta (HU-W1.1-02)', async ({ page }) => {
+    await simularCognito(page);
+    const oferta = new AceptacionOfertaPagina(page);
+    const ajustada = `adj-${'b310b02b-9820-4725-bded-586d263dd16e'}`;
+    const g = guion('demo-review-ajuste', {
+      deOferta: {
+        estado: 200,
+        cuerpo: aceptacion('demo-review-ajuste', {
+          status: 'adjusted',
+          underwriting: { outcome: 'human_review', reason: 'provisional_offer', decided_at: '2026-10-12T01:54:42Z' },
+          review: {
+            outcome: 'adjust',
+            decided_at: '2026-10-17T04:42:20.022742Z',
+            adjusted_offer: { offer_id: ajustada, premium: 98450, currency: 'COP', expires_at: '2026-10-18T04:42:20.022742Z' },
+          },
+          ...TERMINADA,
+        }),
+      },
+    });
+    await oferta.simularGateway(g);
+
+    await oferta.abrirConSesion('demo-review-ajuste');
+
+    await expect(oferta.titulo).toHaveText('Un asesor ajustó las condiciones de tu oferta');
+    await expect(page.getByText(/También te lo enviamos a tu correo\./)).toBeVisible();
+    await expect(page.getByText(/98\.450 COP · antes/)).toBeVisible();
+    await expect(page.getByText('Aún no se ha hecho ningún cobro')).toBeVisible();
+    await verificarAccesibilidad(page);
+
+    g.deOferta = NO_ACEPTADA;
+    await oferta.verNuevaOferta.click();
+
+    await expect(page).toHaveURL(`/embebido/oferta/${ajustada}`);
+    await expect(oferta.titulo).toHaveText('Tu oferta personalizada');
+    await expect(page.getByText(`Oferta N.º ${ajustada}`)).toBeVisible();
+    await expect(oferta.terminos).not.toBeChecked();
+    await verificarAccesibilidad(page);
+  });
+
+  test('E6c: ve que el asesor rechazó su solicitud, sin cobro (HU-W1.1-02)', async ({ page }) => {
+    await simularCognito(page);
+    const oferta = new AceptacionOfertaPagina(page);
+    await oferta.simularGateway(
+      guion('demo-highrisk-rechazo', {
+        deOferta: {
+          estado: 200,
+          cuerpo: aceptacion('demo-highrisk-rechazo', {
+            status: 'rejected',
+            underwriting: { outcome: 'human_review', reason: 'high_risk_score', decided_at: '2026-10-12T01:54:42Z' },
+            review: { outcome: 'reject', decided_at: '2026-10-17T04:42:20.2845185Z', adjusted_offer: null },
+            ...TERMINADA,
+          }),
+        },
+      }),
+    );
+
+    await oferta.abrirConSesion('demo-highrisk-rechazo');
+
+    await expect(oferta.titulo).toHaveText('No pudimos aceptar tu solicitud de seguro');
+    await expect(page.getByText(/También te lo enviamos a tu correo\./)).toBeVisible();
+    await expect(page.getByText('Riesgo no aceptado por el asesor')).toBeVisible();
+    await expect(page.getByText('No se realizó ningún cobro', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Continuar con mi crédito' })).toBeVisible();
+    await expect(oferta.verNuevaOferta).toHaveCount(0);
+    await verificarAccesibilidad(page);
+  });
+
   test('un asesor no puede aceptar ofertas: ve acceso no autorizado', async ({ page }) => {
     await simularCognito(page);
     const oferta = new AceptacionOfertaPagina(page);

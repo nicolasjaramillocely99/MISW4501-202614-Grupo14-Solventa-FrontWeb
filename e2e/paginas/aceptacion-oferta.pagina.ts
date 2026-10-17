@@ -31,11 +31,14 @@ export class AceptacionOfertaPagina {
   readonly titulo: Locator;
   readonly terminos: Locator;
   readonly aceptar: Locator;
+  /** E6b (HU-W1.1-02): abre la oferta ajustada por el asesor. */
+  readonly verNuevaOferta: Locator;
 
   constructor(private readonly page: Page) {
     this.titulo = page.getByRole('heading', { level: 1 });
     this.terminos = page.getByRole('checkbox', { name: /Acepto las condiciones generales/ });
     this.aceptar = page.getByRole('button', { name: /Aceptar oferta y pagar/ });
+    this.verNuevaOferta = page.getByRole('link', { name: 'Ver la nueva oferta' });
   }
 
   /** Responde las tres rutas de aceptación según el guion. */
