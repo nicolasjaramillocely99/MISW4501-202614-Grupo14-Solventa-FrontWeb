@@ -1,7 +1,10 @@
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { EMISION_COMPLETADA_DTO, EMISION_PENDIENTE_DTO } from '@testing/emision-contractual-pruebas';
+import {
+  EMISION_COMPLETADA_DTO,
+  EMISION_PENDIENTE_DTO,
+} from '@testing/emision-contractual-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, Subject, of, throwError } from 'rxjs';
 
@@ -12,6 +15,7 @@ import {
 } from '@core/api/originacion/emision-contractual.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 
+import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
 import { INTERVALO_CONSULTA_MS, PolizaEmitidaPage } from './poliza-emitida.page';
 
 const COMPLETADA = mapearEmisionContractual(EMISION_COMPLETADA_DTO);
@@ -26,7 +30,12 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
   let consultar: ReturnType<typeof vi.fn<(id: string) => Observable<EmisionContractual>>>;
   let descargar: ReturnType<typeof vi.fn<(id: string) => Observable<Blob>>>;
 
-  async function renderizar(...respuestas: Observable<EmisionContractual>[]) {
+  async function renderizar(
+    respuesta: Observable<EmisionContractual>,
+    { solicitud = false } = {},
+    ...siguientes: Observable<EmisionContractual>[]
+  ) {
+    const respuestas = [respuesta, ...siguientes];
     consultar = vi.fn();
     for (const r of respuestas) {
       consultar.mockReturnValueOnce(r);
@@ -37,9 +46,28 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
       imports: [proveerTranslocoPruebas()],
       providers: [
         provideRouter([]),
-        { provide: OriginacionApiService, useValue: { consultarEmisionContractual: consultar, descargarDocumentoContractual: descargar } },
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            consultarEmisionContractual: consultar,
+            descargarDocumentoContractual: descargar,
+          },
+        },
         { provide: ActivatedRoute, useValue: { snapshot: { params: { polizaId: 'pol-3f1c' } } } },
       ],
+      configureTestBed: (bed) => {
+        if (solicitud) {
+          bed.inject(FlujoEmbebidoService).solicitud.set({
+            numero: '48213',
+            aliado: 'Banco Aliado',
+            banco: 'Banco Aliado',
+            montoAprobado: 250_000_000,
+            plazoAnios: 20,
+            cuotaEstimada: 2_180_000,
+            moneda: 'COP',
+          });
+        }
+      },
     });
   }
 
@@ -53,12 +81,41 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
   it('con la emisión completada muestra el documento disponible, el correo enviado y permite descargar', async () => {
     await renderizar(of(COMPLETADA));
 
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Tu póliza fue emitida');
-    expect(screen.getByText(/Versión 1, disponible desde/)).toBeTruthy();
-    expect(screen.getByText(/Te enviamos un correo con un enlace seguro el/)).toBeTruthy();
-    expect(screen.getByText('Disponible')).toBeTruthy();
-    expect(screen.getByText('Enviada')).toBeTruthy();
-    expect((screen.getByRole('button', { name: 'Descargar documento' }) as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('¡Tu póliza está activa!');
+    expect(screen.getByText(/Póliza N\.º pol-3f1c · Cobertura activa desde el/)).toBeTruthy();
+    expect(screen.getByText(/Condiciones generales y particulares · PDF · 2,3 KB/)).toBeTruthy();
+    expect(screen.getByText('Confirmación enviada')).toBeTruthy();
+    expect(
+      screen.getByText(
+        /Enviamos la notificación de emisión y el documento a tu correo electrónico/,
+      ),
+    ).toBeTruthy();
+    expect(screen.getByText('Administra tu póliza desde la app Solventa')).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Descargar' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+  });
+
+  it('lleva al portal del asegurado desde «Ver mi póliza en el portal»', async () => {
+    await renderizar(of(COMPLETADA));
+
+    expect(
+      screen.getByRole('link', { name: 'Ver mi póliza en el portal' }).getAttribute('href'),
+    ).toBe('/inicio');
+  });
+
+  it('sin la solicitud del aliado muestra el contexto genérico y no dibuja la tarjeta «Tu crédito»', async () => {
+    await renderizar(of(COMPLETADA));
+
+    expect(screen.getByText('Crédito de vivienda · Seguro de vida hipotecario')).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Tu crédito' })).toBeNull();
+  });
+
+  it('con la solicitud del flujo muestra «Tu crédito» y el número de la solicitud', async () => {
+    await renderizar(of(COMPLETADA), { solicitud: true });
+
+    expect(screen.getByRole('heading', { name: 'Tu crédito' })).toBeTruthy();
+    expect(screen.getByText(/Solicitud N\.º 48213/)).toBeTruthy();
   });
 
   it('descarga el PDF de la póliza al pulsar el botón', async () => {
@@ -69,7 +126,7 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
     const clic = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     await renderizar(of(COMPLETADA));
 
-    await usuario.click(screen.getByRole('button', { name: 'Descargar documento' }));
+    await usuario.click(screen.getByRole('button', { name: 'Descargar' }));
 
     expect(descargar).toHaveBeenCalledWith('pol-3f1c');
     expect(crear).toHaveBeenCalled();
@@ -82,20 +139,26 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
   it('un fallo al descargar muestra la alerta y deja reintentar', async () => {
     const usuario = userEvent.setup();
     await renderizar(of(COMPLETADA));
-    descargar.mockReturnValue(throwError(() => new ErrorEmisionContractual('document_unavailable')));
+    descargar.mockReturnValue(
+      throwError(() => new ErrorEmisionContractual('document_unavailable')),
+    );
 
-    await usuario.click(screen.getByRole('button', { name: 'Descargar documento' }));
+    await usuario.click(screen.getByRole('button', { name: 'Descargar' }));
 
     expect(screen.getByRole('alert').textContent).toContain('No pudimos descargar el documento');
-    expect((screen.getByRole('button', { name: 'Descargar documento' }) as HTMLButtonElement).disabled).toBe(false);
+    expect((screen.getByRole('button', { name: 'Descargar' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
   });
 
   it('si el correo no se pudo entregar avisa, pero el documento sigue disponible', async () => {
     await renderizar(of(LISTO_SIN_CORREO));
 
-    expect(screen.getByText('No entregada')).toBeTruthy();
+    expect(screen.getByText('No pudimos entregar el correo')).toBeTruthy();
     expect(screen.getByText(/No logramos enviarte el correo/)).toBeTruthy();
-    expect((screen.getByRole('button', { name: 'Descargar documento' }) as HTMLButtonElement).disabled).toBe(false);
+    expect((screen.getByRole('button', { name: 'Descargar' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
   });
 
   describe('seguimiento (polling)', () => {
@@ -103,11 +166,15 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
     afterEach(() => vi.useRealTimers());
 
     it('mientras el documento no está listo deshabilita la descarga y consulta cada 2 s hasta completar', async () => {
-      const { fixture } = await renderizar(of(PENDIENTE), of(PENDIENTE), of(COMPLETADA));
+      const { fixture } = await renderizar(of(PENDIENTE), {}, of(PENDIENTE), of(COMPLETADA));
 
-      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Estamos preparando tu documento');
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+        'Estamos preparando tu documento',
+      );
       expect(screen.getByText(/Estamos generando el documento/)).toBeTruthy();
-      expect((screen.getByRole('button', { name: 'Descargar documento' }) as HTMLButtonElement).disabled).toBe(true);
+      expect(
+        (screen.getByRole('button', { name: 'Descargar' }) as HTMLButtonElement).disabled,
+      ).toBe(true);
       expect(consultar).toHaveBeenCalledTimes(1);
 
       await vi.advanceTimersByTimeAsync(INTERVALO_CONSULTA_MS);
@@ -116,7 +183,7 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
       expect(consultar).toHaveBeenCalledTimes(3);
 
       fixture.detectChanges();
-      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Tu póliza fue emitida');
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('¡Tu póliza está activa!');
       await vi.advanceTimersByTimeAsync(10 * INTERVALO_CONSULTA_MS);
       expect(consultar).toHaveBeenCalledTimes(3);
     });
@@ -130,7 +197,9 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
       await renderizar(of(reintentando));
 
       expect(screen.getByText(/lo seguimos intentando/)).toBeTruthy();
-      expect((screen.getByRole('button', { name: 'Descargar documento' }) as HTMLButtonElement).disabled).toBe(false);
+      expect(
+        (screen.getByRole('button', { name: 'Descargar' }) as HTMLButtonElement).disabled,
+      ).toBe(false);
     });
   });
 
@@ -145,7 +214,7 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
       await usuario.click(screen.getByRole('button', { name: 'Reintentar' }));
 
       expect(consultar).toHaveBeenCalledTimes(2);
-      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Tu póliza fue emitida');
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('¡Tu póliza está activa!');
     });
 
     it('una póliza de otro asegurado no ofrece reintentar', async () => {
@@ -158,7 +227,9 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
     it('un fallo del servicio muestra el error genérico', async () => {
       await renderizar(throwError(() => new ErrorEmisionContractual('document_unavailable')));
 
-      expect(screen.getByRole('alert').textContent).toContain('Hubo un problema al consultar tu póliza');
+      expect(screen.getByRole('alert').textContent).toContain(
+        'Hubo un problema al consultar tu póliza',
+      );
     });
   });
 });

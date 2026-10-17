@@ -1,8 +1,29 @@
-// Paso 5 del canal embebido (E5): tarjeta con el estado del documento contractual y de la notificación.
+// Paso 5 del canal embebido (E5): contexto, tarjeta «Tu crédito» y póliza emitida con documento y notificación.
 .pagina {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--espacio-16);
   padding: var(--espacio-32) clamp(var(--espacio-16), 8vw, 120px);
+}
+
+.pagina__contexto {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.pagina__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+p {
+  margin: 0;
 }
 
 .tarjeta {
@@ -14,8 +35,25 @@
   flex: 1;
   flex-direction: column;
   gap: 20px;
-  max-width: 760px;
   min-width: 0;
+}
+
+.emision__encabezado {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-12);
+}
+
+.emision__sello {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radio-completo);
+  background: var(--color-exito-100);
+  color: var(--color-exito-600);
 }
 
 .emision__titulo {
@@ -26,20 +64,19 @@
 }
 
 .emision__descripcion {
-  margin: var(--espacio-4) 0 0;
+  margin-top: var(--espacio-4);
   color: var(--color-texto-secundario);
 }
 
-.filas {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-12);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.emision__pie {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  text-align: right;
+  color: var(--color-texto-secundario);
 }
 
-.fila {
+// Documento contractual: icono, nombre y detalle a la izquierda; descarga a la derecha.
+.documento {
   display: flex;
   align-items: center;
   gap: var(--espacio-12);
@@ -48,29 +85,55 @@
   border-radius: var(--radio-base);
 }
 
-.fila__icono {
+.documento__icono {
   display: inline-flex;
   color: var(--color-texto-secundario);
 }
 
-.fila__icono--listo {
-  color: var(--color-exito-500);
+.documento__icono--listo {
+  color: var(--color-azul-700);
 }
 
-.fila__texto {
+.documento__texto {
   flex: 1;
   min-width: 0;
-
-  p {
-    margin: 0;
-  }
 }
 
-.fila__nombre {
+.documento__nombre {
   font-weight: 500;
 }
 
-.fila__detalle {
+.documento__detalle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+// Tarjeta de la app: fondo azul claro y borde izquierdo azul, como los avisos.
+.app {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-16);
+  padding: var(--espacio-16) var(--espacio-24);
+  border-left: 4px solid var(--color-azul-700);
+  border-radius: var(--radio-base);
+  background: var(--color-azul-50);
+}
+
+.app__icono {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-azul-700);
+}
+
+.app__titulo {
+  margin: 0 0 var(--espacio-4);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+
+.app__texto {
   font-size: 0.875rem;
   line-height: 1.25rem;
   color: var(--color-texto-secundario);
@@ -78,5 +141,17 @@
 
 .acciones {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+@media (max-width: 900px) {
+  .pagina__cuerpo {
+    flex-direction: column;
+  }
+
+  .documento {
+    flex-wrap: wrap;
+  }
 }

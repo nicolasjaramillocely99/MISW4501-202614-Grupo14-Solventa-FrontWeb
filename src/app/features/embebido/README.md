@@ -39,7 +39,8 @@
 
 **Paso 5 · Póliza emitida: documento y notificación (HU-W1.3-03)** — `poliza-emitida/poliza-emitida.page.ts` (`PolizaEmitidaPage`, E5),
 ruta `/embebido/poliza-emitida/:polizaId`. Contrato: `docs/contratos/HU-W1.3-03-api.md` del backend (servicio `origination`,
-`openapi.yaml` v0.6.0). No hay un frame de Figma dedicado a este estado (pendiente en el prototipo).
+`openapi.yaml` v0.6.0). Sigue el frame E5 del prototipo: contexto y tarjeta «Tu crédito» (si el flujo trajo la solicitud),
+póliza activa, documento con «Descargar», confirmación al correo y tarjeta de la app.
 
 - **Pide sesión de asegurado**, como la aceptación de la oferta: el backend solo deja leer la póliza a su dueño, así que la ruta lleva
   `autenticacionGuard` y `rolGuard('asegurado')` (a diferencia de lo que lista `docs/pantallas.md` como «público»).
@@ -49,6 +50,9 @@ ruta `/embebido/poliza-emitida/:polizaId`. Contrato: `docs/contratos/HU-W1.3-03-
 - Estados dentro de la misma página: **esperando** (documento en generación, descarga deshabilitada), **listo** (documento disponible
   y correo enviado; si el correo falló, aviso y el documento sigue descargable) y **error** (póliza sin emisión, de otro asegurado o
   fallo del servicio, con «Reintentar» salvo el 403). Textos en `embebido.polizaEmitida.*`.
+- **Fuera del frame E5 por falta de datos o destino** (el contrato `issuance-status` solo trae documento y notificación): la cuadrícula con
+  asegurado, prima, valor asegurado, vigencia, pago y beneficiario; el aviso por SMS; el QR y el enlace de «Descargar la app»; y
+  «Volver a mi crédito» (no hay URL del aliado). «Ver mi póliza en el portal» lleva a `/inicio` hasta que exista «Mis pólizas».
 - Pendiente: enlazar esta pantalla desde el cobro (HU-W1.3-02 / HA-D02) cuando exista; hoy se abre con la URL.
 - E2E: `e2e/flujos/cotizacion-emision/poliza-emitida.spec.ts` (Cognito y API Gateway simulados, axe-core en cada estado).
 

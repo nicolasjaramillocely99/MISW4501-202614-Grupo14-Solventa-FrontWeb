@@ -17,12 +17,15 @@ export class PolizaEmitidaPagina {
 
   constructor(private readonly page: Page) {
     this.titulo = page.getByRole('heading', { level: 1 });
-    this.descargar = page.getByRole('button', { name: 'Descargar documento' });
+    this.descargar = page.getByRole('button', { name: 'Descargar' });
     this.alerta = page.getByRole('alert');
   }
 
   /** Responde el estado de la emisión en orden (repite el último) y el PDF; devuelve cuántas consultas hubo. */
-  async simularGateway(estados: RespuestaSimulada[], pdf = '%PDF-1 e2e'): Promise<{ consultas: number }> {
+  async simularGateway(
+    estados: RespuestaSimulada[],
+    pdf = '%PDF-1 e2e',
+  ): Promise<{ consultas: number }> {
     const llamadas = { consultas: 0 };
     await this.page.route('**/v1/policies/*/issuance-status', async (ruta: Route) => {
       const respuesta = estados[Math.min(llamadas.consultas, estados.length - 1)];
@@ -43,6 +46,9 @@ export class PolizaEmitidaPagina {
   /** Abre la póliza; sin sesión el guard lleva al inicio de sesión y, al entrar, regresa a ella. */
   async abrirConSesion(polizaId: string): Promise<void> {
     await this.page.goto(`/embebido/poliza-emitida/${polizaId}`);
-    await new InicioSesionPagina(this.page).ingresar(USUARIOS_PRUEBA.asegurado.correo, CONTRASENA_PRUEBA);
+    await new InicioSesionPagina(this.page).ingresar(
+      USUARIOS_PRUEBA.asegurado.correo,
+      CONTRASENA_PRUEBA,
+    );
   }
 }

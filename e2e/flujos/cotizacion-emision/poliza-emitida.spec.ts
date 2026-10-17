@@ -10,7 +10,12 @@ const COMPLETADA = {
   activated_at: '2026-10-16T15:00:00Z',
   available_at: '2026-10-16T15:00:01Z',
   within_slo: true,
-  document: { document_id: 'b1e2', version: 1, size_bytes: 2310, generated_at: '2026-10-16T15:00:01Z' },
+  document: {
+    document_id: 'b1e2',
+    version: 1,
+    size_bytes: 2310,
+    generated_at: '2026-10-16T15:00:01Z',
+  },
   notification: { channel: 'email', status: 'sent', attempts: 0, sent_at: '2026-10-16T15:00:01Z' },
 };
 
@@ -38,8 +43,10 @@ test.describe('Póliza emitida: documento y notificación (HU-W1.3-03)', () => {
     await expect(poliza.descargar).toBeDisabled();
     await verificarAccesibilidad(page);
 
-    await expect(poliza.titulo).toHaveText('Tu póliza fue emitida', { timeout: 10_000 });
-    await expect(page.getByText(/Te enviamos un correo con un enlace seguro/)).toBeVisible();
+    await expect(poliza.titulo).toHaveText('¡Tu póliza está activa!', { timeout: 10_000 });
+    await expect(
+      page.getByText(/Enviamos la notificación de emisión y el documento/),
+    ).toBeVisible();
     await expect(poliza.descargar).toBeEnabled();
     expect(llamadas.consultas).toBeGreaterThanOrEqual(2);
     await verificarAccesibilidad(page);
@@ -48,13 +55,19 @@ test.describe('Póliza emitida: documento y notificación (HU-W1.3-03)', () => {
     expect(descarga.suggestedFilename()).toBe('poliza-pol-e2e.pdf');
   });
 
-  test('avisa si el correo no pudo entregarse pero deja descargar el documento', async ({ page }) => {
+  test('avisa si el correo no pudo entregarse pero deja descargar el documento', async ({
+    page,
+  }) => {
     await simularCognito(page);
     const poliza = new PolizaEmitidaPagina(page);
     await poliza.simularGateway([
       {
         estado: 200,
-        cuerpo: { ...COMPLETADA, status: 'failed', notification: { channel: 'email', status: 'failed', attempts: 12, sent_at: null } },
+        cuerpo: {
+          ...COMPLETADA,
+          status: 'failed',
+          notification: { channel: 'email', status: 'failed', attempts: 12, sent_at: null },
+        },
       },
     ]);
 
@@ -68,7 +81,9 @@ test.describe('Póliza emitida: documento y notificación (HU-W1.3-03)', () => {
   test('una póliza que aún no tiene emisión se informa y permite reintentar', async ({ page }) => {
     await simularCognito(page);
     const poliza = new PolizaEmitidaPagina(page);
-    await poliza.simularGateway([{ estado: 404, cuerpo: { error: 'policy_not_found', message: 'x' } }]);
+    await poliza.simularGateway([
+      { estado: 404, cuerpo: { error: 'policy_not_found', message: 'x' } },
+    ]);
 
     await poliza.abrirConSesion('pol-e2e');
 
