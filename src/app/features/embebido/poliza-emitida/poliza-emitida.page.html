@@ -1,4 +1,8 @@
-<div class="pagina" *transloco="let t; prefix: 'embebido.polizaEmitida'">
+<div
+  class="pagina"
+  [class.pagina--sola]="!solicitud()"
+  *transloco="let t; prefix: 'embebido.polizaEmitida'"
+>
   <p class="pagina__contexto" *transloco="let c; prefix: 'embebido.contexto'">
     <svg lucideLandmark [size]="16" aria-hidden="true"></svg>
     @if (solicitud(); as datos) {

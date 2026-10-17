@@ -109,6 +109,7 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
 
     expect(screen.getByText('Crédito de vivienda · Seguro de vida hipotecario')).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Tu crédito' })).toBeNull();
+    expect(document.querySelector('.pagina--sola')).not.toBeNull();
   });
 
   it('con la solicitud del flujo muestra «Tu crédito» y el número de la solicitud', async () => {
@@ -116,6 +117,7 @@ describe('PolizaEmitidaPage (E5 · HU-W1.3-03)', () => {
 
     expect(screen.getByRole('heading', { name: 'Tu crédito' })).toBeTruthy();
     expect(screen.getByText(/Solicitud N\.º 48213/)).toBeTruthy();
+    expect(document.querySelector('.pagina--sola')).toBeNull();
   });
 
   it('descarga el PDF de la póliza al pulsar el botón', async () => {

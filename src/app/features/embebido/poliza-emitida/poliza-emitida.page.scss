@@ -6,6 +6,16 @@
   padding: var(--espacio-32) clamp(var(--espacio-16), 8vw, 120px);
 }
 
+// Sin la tarjeta «Tu crédito» (la URL se abrió directo) el contenido se centra en una columna de lectura, no a todo el ancho.
+.pagina--sola {
+  align-items: center;
+
+  > * {
+    width: 100%;
+    max-width: 760px;
+  }
+}
+
 .pagina__contexto {
   display: flex;
   align-items: center;
