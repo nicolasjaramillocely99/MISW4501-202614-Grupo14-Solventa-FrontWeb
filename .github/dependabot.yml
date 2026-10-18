@@ -2,6 +2,11 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    # Las actualizaciones entran por develop, como todo cambio (docs/flujo-de-trabajo.md). develop es la rama por
+    # defecto del repo (decisión del 2026-10-17): Dependabot lee de ahí este archivo y abre contra ella las
+    # actualizaciones de seguridad. target-branch lo deja explícito para las de versión por si la rama por defecto
+    # vuelve a cambiar; las de seguridad siempre van a la rama por defecto.
+    target-branch: develop
     schedule:
       interval: weekly
       day: monday
@@ -20,5 +25,6 @@ updates:
 
   - package-ecosystem: github-actions
     directory: /
+    target-branch: develop
     schedule:
       interval: weekly
