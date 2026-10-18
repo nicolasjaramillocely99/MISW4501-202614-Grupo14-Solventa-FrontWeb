@@ -4,6 +4,7 @@ import { autenticacionGuard } from '@core/auth/guards/autenticacion.guard';
 import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { AceptacionOfertaPage } from './aceptacion-oferta/aceptacion-oferta.page';
+import { ConsentimientoPage } from './consentimiento/consentimiento.page';
 import { PagoPage } from './pago/pago.page';
 import { PerfilRiesgoPage } from './perfil-riesgo/perfil-riesgo.page';
 import { PolizaEmitidaPage } from './poliza-emitida/poliza-emitida.page';
@@ -18,6 +19,8 @@ import { PolizaEmitidaPage } from './poliza-emitida/poliza-emitida.page';
  * la aceptación.
  */
 export const EMBEBIDO_ROUTES: Routes = [
+  // Paso 1 (HU-W1.2-01): público. El aliado entrega el contexto del cliente y del crédito en `?contexto=`.
+  { path: 'consentimiento', component: ConsentimientoPage },
   { path: 'perfil-riesgo/:clienteId', component: PerfilRiesgoPage },
   {
     path: 'oferta',
