@@ -1,0 +1,130 @@
+<form *transloco="let t; read: 'embebido.pago.medioDePago'" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+  <fieldset class="metodos">
+    <legend>{{ t('titulo') }}</legend>
+
+    <label class="metodo" [class.metodo--elegido]="esTarjeta">
+      <input type="radio" formControlName="metodo" value="card" (change)="elegirMetodo('card')" />
+      <svg lucideCreditCard [size]="20" aria-hidden="true"></svg>
+      <span>
+        <strong>{{ t('tarjeta') }}</strong>
+        <small>{{ t('tarjetaDetalle') }}</small>
+      </span>
+    </label>
+
+    <label class="metodo" [class.metodo--elegido]="!esTarjeta">
+      <input type="radio" formControlName="metodo" value="pse" (change)="elegirMetodo('pse')" />
+      <svg lucideLandmark [size]="20" aria-hidden="true"></svg>
+      <span>
+        <strong>{{ t('pse') }}</strong>
+        <small>{{ t('pseDetalle') }}</small>
+      </span>
+    </label>
+  </fieldset>
+
+  @if (esTarjeta) {
+    <div class="campo">
+      <label for="numero">{{ t('numero') }}</label>
+      <input
+        id="numero"
+        formControlName="numero"
+        inputmode="numeric"
+        autocomplete="cc-number"
+        [attr.aria-invalid]="invalido('numero') || null"
+        [attr.aria-describedby]="invalido('numero') ? 'numero-error' : 'numero-ayuda'"
+      />
+      @if (invalido('numero')) {
+        <p id="numero-error" class="error" role="alert">{{ t('numeroInvalido') }}</p>
+      } @else {
+        <p id="numero-ayuda" class="ayuda">{{ t('numeroAyuda') }}</p>
+      }
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="vencimiento">{{ t('vencimiento') }}</label>
+        <input
+          id="vencimiento"
+          formControlName="vencimiento"
+          inputmode="numeric"
+          autocomplete="cc-exp"
+          placeholder="MM/AA"
+          [attr.aria-invalid]="invalido('vencimiento') || null"
+          [attr.aria-describedby]="invalido('vencimiento') ? 'vencimiento-error' : 'vencimiento-ayuda'"
+        />
+        @if (invalido('vencimiento')) {
+          <p id="vencimiento-error" class="error" role="alert">
+            {{ formulario.controls.vencimiento.hasError('vencida') ? t('vencida') : t('vencimientoInvalido') }}
+          </p>
+        } @else {
+          <p id="vencimiento-ayuda" class="ayuda">{{ t('vencimientoAyuda') }}</p>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="codigo">{{ t('codigo') }}</label>
+        <input
+          id="codigo"
+          type="password"
+          formControlName="codigo"
+          inputmode="numeric"
+          autocomplete="cc-csc"
+          [attr.aria-invalid]="invalido('codigo') || null"
+          [attr.aria-describedby]="invalido('codigo') ? 'codigo-error' : 'codigo-ayuda'"
+        />
+        @if (invalido('codigo')) {
+          <p id="codigo-error" class="error" role="alert">{{ t('codigoInvalido') }}</p>
+        } @else {
+          <p id="codigo-ayuda" class="ayuda">{{ t('codigoAyuda') }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="titular">{{ t('titular') }}</label>
+      <input
+        id="titular"
+        formControlName="titular"
+        autocomplete="cc-name"
+        [attr.aria-invalid]="invalido('titular') || null"
+        [attr.aria-describedby]="invalido('titular') ? 'titular-error' : null"
+      />
+      @if (invalido('titular')) {
+        <p id="titular-error" class="error" role="alert">{{ t('titularInvalido') }}</p>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="cuotas">{{ t('cuotas') }}</label>
+      <select id="cuotas" formControlName="cuotas">
+        @for (n of cuotas; track n) {
+          <option [value]="n">{{ n === 1 ? t('unaCuota') : t('variasCuotas', { n }) }}</option>
+        }
+      </select>
+    </div>
+  } @else {
+    <div class="campo">
+      <label for="banco">{{ t('banco') }}</label>
+      <select id="banco" formControlName="banco">
+        @for (b of bancos; track b.codigo) {
+          <option [value]="b.codigo">{{ b.nombre }}</option>
+        }
+      </select>
+      <p class="ayuda">{{ t('pseAyuda') }}</p>
+    </div>
+  }
+
+  @if (errorPasarela(); as motivo) {
+    <p class="error error--bloque" role="alert">
+      {{ motivo === 'tarjeta_invalida' ? t('errorTarjeta') : t('errorPasarela') }}
+    </p>
+  }
+
+  <p class="cifrado">
+    <svg lucideLock [size]="16" aria-hidden="true"></svg>
+    {{ t('cifrado') }}
+  </p>
+
+  <button type="submit" class="confirmar" [disabled]="ocupado()">
+    {{ ocupado() ? t('enviando') : reintento() ? t('reintentar') : t('confirmar') }}
+  </button>
+</form>

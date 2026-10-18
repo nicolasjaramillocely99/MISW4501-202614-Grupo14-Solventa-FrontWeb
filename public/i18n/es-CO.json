@@ -373,7 +373,8 @@
         "procesando": "Procesando",
         "pendiente": "Pago pendiente",
         "confirmado": "Pago confirmado",
-        "excepcion": "En gestión"
+        "excepcion": "En gestión",
+        "rechazado": "Rechazado"
       },
       "procesando": {
         "titulo": "Estamos procesando tu pago",
@@ -442,6 +443,46 @@
         "continuarCredito": "Continuar con mi crédito",
         "reintentar": "Reintentar",
         "verAceptacion": "Ver el estado de tu aceptación"
+      },
+      "medioDePago": {
+        "titulo": "Medio de pago",
+        "tarjeta": "Tarjeta débito o crédito",
+        "tarjetaDetalle": "Visa, Mastercard, Amex",
+        "pse": "PSE",
+        "pseDetalle": "Débito desde tu cuenta bancaria",
+        "numero": "Número de tarjeta",
+        "numeroAyuda": "16 dígitos, sin espacios obligatorios",
+        "numeroInvalido": "Revisa el número: no corresponde a una tarjeta válida",
+        "vencimiento": "Vencimiento",
+        "vencimientoAyuda": "MM/AA",
+        "vencimientoInvalido": "Escribe el vencimiento como MM/AA",
+        "vencida": "La tarjeta está vencida",
+        "codigo": "Código de seguridad",
+        "codigoAyuda": "3 o 4 dígitos",
+        "codigoInvalido": "El código tiene 3 o 4 dígitos",
+        "titular": "Nombre del titular",
+        "titularInvalido": "Escribe el nombre como aparece en la tarjeta",
+        "cuotas": "Cuotas",
+        "unaCuota": "1 cuota · sin intereses",
+        "variasCuotas": "{{n}} cuotas",
+        "banco": "Banco",
+        "pseAyuda": "Te llevaremos al portal de tu banco para autorizar el débito.",
+        "cifrado": "Pago cifrado · pasarela certificada PCI DSS · exactamente un cobro por aceptación",
+        "confirmar": "Pagar mi primera prima",
+        "reintentar": "Pagar con esta tarjeta",
+        "enviando": "Procesando…",
+        "errorTarjeta": "La pasarela no aceptó la tarjeta. Revisa los datos e inténtalo de nuevo.",
+        "errorPasarela": "No pudimos contactar la pasarela de pago. Inténtalo de nuevo en un momento."
+      },
+      "capturando": {
+        "titulo": "Paga tu primera prima",
+        "texto": "Tu aceptación quedó registrada el {{fecha}}. El cobro se procesa a través de la pasarela de pago y la cobertura se activa en cuanto se confirme.",
+        "yaNoAdmite": "Este cobro ya no admite otro medio de pago. Espera un momento: la pantalla se actualiza sola con su estado."
+      },
+      "rechazado": {
+        "titulo": "Tu pago fue rechazado",
+        "texto": "Tu aceptación se conserva. Puedes intentar con otro medio de pago sin volver a empezar.",
+        "conLaTarjeta": "Rechazada: {{marca}} ···{{ultimos}}"
       }
     },
     "polizaEmitida": {

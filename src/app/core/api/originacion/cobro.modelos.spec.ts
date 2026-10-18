@@ -30,6 +30,15 @@ describe('mapearCobro', () => {
       coberturaActivadaEn: null,
       activacionPublicadaEn: null,
       reanudaciones: 0,
+      medioDePago: {
+        tipo: 'card',
+        marca: 'visa',
+        ultimosCuatro: '1111',
+        cuotas: 1,
+        codigoBanco: null,
+        capturadoEn: '2026-10-16T19:05:05Z',
+      },
+      intentoDePago: 1,
       actualizadoEn: '2026-10-16T19:05:13.2Z',
     });
   });

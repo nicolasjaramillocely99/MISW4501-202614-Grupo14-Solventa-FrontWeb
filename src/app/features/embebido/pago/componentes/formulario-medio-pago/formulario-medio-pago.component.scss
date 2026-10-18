@@ -1,0 +1,100 @@
+// Formulario del medio de pago (E4, HU-W1.3-02).
+:host {
+  display: block;
+}
+
+.metodos {
+  border: 0;
+  margin: 0 0 var(--espacio-16);
+  padding: 0;
+
+  legend {
+    font-weight: 600;
+    margin-bottom: var(--espacio-8);
+    padding: 0;
+  }
+}
+
+.metodo {
+  align-items: center;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-base);
+  cursor: pointer;
+  display: flex;
+  gap: var(--espacio-12);
+  margin-bottom: var(--espacio-8);
+  padding: var(--espacio-12);
+
+  &--elegido {
+    border-color: var(--primario);
+    box-shadow: inset 0 0 0 1px var(--primario);
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+  }
+
+  small {
+    color: var(--texto-secundario);
+  }
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin-bottom: var(--espacio-16);
+
+  label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  input,
+  select {
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-base);
+    padding: var(--espacio-12);
+  }
+
+  input[aria-invalid='true'] {
+    border-color: var(--error);
+  }
+}
+
+.fila {
+  display: grid;
+  gap: var(--espacio-12);
+  grid-template-columns: 1fr 1fr;
+}
+
+.ayuda {
+  color: var(--texto-secundario);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.8125rem;
+  margin: 0;
+
+  &--bloque {
+    margin-bottom: var(--espacio-12);
+  }
+}
+
+.cifrado {
+  align-items: center;
+  color: var(--texto-secundario);
+  display: flex;
+  font-size: 0.8125rem;
+  gap: var(--espacio-8);
+}
+
+.confirmar {
+  width: 100%;
+}

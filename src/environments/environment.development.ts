@@ -15,6 +15,8 @@ export const environment = {
   nombre: 'local',
   produccion: false,
   apiGatewayUrl: 'http://localhost:4200',
+  /** La tokenizacion va directo a la pasarela: el numero de tarjeta no pasa por Solventa. */
+  pasarelaPagosUrl: 'http://localhost:4200/pasarela',
   cognito: {
     region: 'us-east-2',
     endpoint: 'http://localhost:5100/',

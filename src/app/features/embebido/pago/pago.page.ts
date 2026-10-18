@@ -22,7 +22,8 @@ import {
 } from '@lucide/angular';
 
 import { ContextoAliadoService } from '@core/aliado/contexto-aliado.service';
-import { Cobro, ErrorCobro } from '@core/api/originacion/cobro.modelos';
+import { Cobro, ErrorCobro, MedioDePagoNuevo } from '@core/api/originacion/cobro.modelos';
+import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
 import { IndicadorPasosComponent, PasoFlujo } from '@shared/ui/indicador-pasos/indicador-pasos.component';
@@ -30,6 +31,7 @@ import { InsigniaEstadoComponent, TonoInsignia } from '@shared/ui/insignia-estad
 
 import { TramiteAceptacionService } from '../aceptacion-oferta/servicios/tramite-aceptacion.service';
 import { TarjetaCreditoComponent } from '../componentes/tarjeta-credito/tarjeta-credito.component';
+import { FormularioMedioPagoComponent } from './componentes/formulario-medio-pago/formulario-medio-pago.component';
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
 import { ACCIONES_PAGO } from './pago.config';
 import { SeguimientoCobroService } from './servicios/seguimiento-cobro.service';
@@ -42,10 +44,21 @@ type MotivoError = 'sinAceptacion' | 'sinCobro' | 'generico';
  * respondió y se reintenta con la misma clave), `confirmado` (pago confirmado; con la póliza, cobertura activa) y
  * `excepcion` (ventana vencida o pago rechazado: lo gestiona operaciones).
  */
-export type VistaCobro = 'procesando' | 'pendiente' | 'confirmado' | 'excepcion';
+export type VistaCobro =
+  /** E4: el cobro espera a que el cliente entregue un medio de pago. */
+  | 'capturando'
+  | 'procesando'
+  /** E4b: la pasarela no responde y el cobro se reintenta solo. */
+  | 'pendiente'
+  /** E4c: la pasarela rechazó la tarjeta; el cliente puede intentar con otra. */
+  | 'rechazado'
+  | 'confirmado'
+  | 'excepcion';
 
 const TONO_POR_VISTA: Readonly<Record<VistaCobro, TonoInsignia>> = {
+  capturando: 'informacion',
   procesando: 'informacion',
+  rechazado: 'error',
   pendiente: 'advertencia',
   confirmado: 'exito',
   excepcion: 'error',
@@ -70,6 +83,7 @@ const TONO_POR_VISTA: Readonly<Record<VistaCobro, TonoInsignia>> = {
     IndicadorPasosComponent,
     InsigniaEstadoComponent,
     TarjetaCreditoComponent,
+    FormularioMedioPagoComponent,
     FormatoFechaHoraPipe,
     FormatoMonedaPipe,
     LucideArrowRight,
@@ -91,6 +105,7 @@ export class PagoPage implements OnInit {
   private readonly tramite = inject(TramiteAceptacionService);
   private readonly flujo = inject(FlujoEmbebidoService);
   private readonly aliado = inject(ContextoAliadoService);
+  private readonly api = inject(OriginacionApiService);
   private readonly manejadorErrores = inject(ErrorHandler);
 
   protected readonly acciones = inject(ACCIONES_PAGO);
@@ -100,6 +115,10 @@ export class PagoPage implements OnInit {
 
   protected readonly aceptacionId = signal<string | null>(null);
   protected readonly motivoError = signal<MotivoError | null>(null);
+  /** Mientras originación registra el medio de pago que E4 acaba de entregar. */
+  protected readonly entregandoMedioDePago = signal(false);
+  /** El cobro ya no admite otro medio de pago: alguien pagó o el cobro avanzó. */
+  protected readonly medioDePagoRechazado = signal(false);
 
   protected readonly fase = computed(() => {
     if (this.motivoError()) {
@@ -165,15 +184,62 @@ export class PagoPage implements OnInit {
         this.motivoError.set('generico');
     }
   }
+
+  /**
+   * E4 · el cliente confirmó su medio de pago.
+   *
+   * Lo que llega aquí **ya está tokenizado**: el formulario habló con la
+   * pasarela y el número de tarjeta no salió de él. Entregarlo hace vencer el
+   * intento del cobro, así que la pantalla pasa enseguida a «procesando» sin
+   * esperar al siguiente sondeo.
+   */
+  protected entregarMedioDePago(medio: MedioDePagoNuevo): void {
+    const id = this.aceptacionId();
+    if (!id || this.entregandoMedioDePago()) {
+      return;
+    }
+    this.entregandoMedioDePago.set(true);
+    this.medioDePagoRechazado.set(false);
+    this.api.entregarMedioDePago(id, medio).subscribe({
+      next: (cobro) => {
+        this.entregandoMedioDePago.set(false);
+        this.seguimiento.adelantar(cobro);
+      },
+      error: (error: unknown) => {
+        this.entregandoMedioDePago.set(false);
+        if (error instanceof ErrorCobro && error.codigo === 'charge_not_payable') {
+          // El cobro avanzó por su cuenta: el seguimiento traerá el estado real.
+          this.medioDePagoRechazado.set(true);
+          return;
+        }
+        if (error instanceof ErrorCobro) {
+          this.alDetenerse(error);
+          return;
+        }
+        this.manejadorErrores.handleError(error);
+        this.motivoError.set('generico');
+      },
+    });
+  }
 }
 
+/**
+ * Qué pantalla corresponde al cobro.
+ *
+ * El medio de pago se mira **explícitamente** y no se deduce de `intentos`:
+ * esperando la tarjeta (E4) y la pasarela fallando (E4b) son los dos `pending`,
+ * y distinguirlas por el contador acopla la pantalla a cuándo el backend
+ * decide incrementarlo.
+ */
 function vistaDe(cobro: Cobro | null): VistaCobro {
-  switch (cobro?.estado) {
+  if (!cobro) return 'procesando';
+  switch (cobro.estado) {
     case 'failed':
-      return 'excepcion';
+      return cobro.motivoFalla === 'payment_rejected' ? 'rechazado' : 'excepcion';
     case 'confirmed':
       return 'confirmado';
     default:
-      return (cobro?.intentos ?? 0) > 0 ? 'pendiente' : 'procesando';
+      if (!cobro.medioDePago) return 'capturando';
+      return cobro.intentos > 0 ? 'pendiente' : 'procesando';
   }
 }

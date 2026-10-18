@@ -54,6 +54,16 @@ export class SeguimientoCobroService {
   }
 
   /** Empieza (o reinicia) el seguimiento: consulta ya y luego según el estado del cobro. */
+  /**
+   * Adelanta el cobro que una acción acaba de devolver, sin esperar al
+   * siguiente sondeo. Es lo que hace que E4 pase a «procesando» en cuanto se
+   * entrega el medio de pago, en vez de quedarse hasta dos segundos quieta.
+   */
+  adelantar(cobro: Cobro): void {
+    this.cobroActual.set(cobro);
+    this.errorActual.set(null);
+  }
+
   seguir(aceptacionId: string): void {
     this.detener();
     this.aceptacionId = aceptacionId;

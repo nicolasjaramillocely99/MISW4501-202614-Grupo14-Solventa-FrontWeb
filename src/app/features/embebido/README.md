@@ -113,6 +113,20 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
 - `pago/servicios/seguimiento-cobro.service.ts` (`SeguimientoCobroService`): consulta al entrar, otra vez a 1 s y luego cada
   2 s, o hasta el próximo reintento del backend + 1 s (tope de 61 s); se detiene con el cobro confirmado con póliza, en
   excepción o ante 400, 401, 403 y 404; ante `charge_unavailable` o error de red conserva la última pantalla.
+**Paso 4 · Pago de la prima: captura del medio de pago (HU-W1.3-02, frames E4 y E4c)** — `pago/componentes/formulario-medio-pago/`.
+Contrato: `HU-W1.3-02-api.md` del backend (`openapi.yaml` v0.9.0).
+
+- **El número de tarjeta no sale del componente.** Lo tokeniza contra la pasarela (`core/api/pasarela/`, la única salida HTTP
+  que no va al API Gateway) y lo que emite es el token con la marca y los últimos cuatro. Así Solventa queda fuera del alcance
+  de PCI-DSS, que es lo que la propia pantalla promete. En local la pasarela se alcanza por el proxy de desarrollo
+  (`/pasarela` → `localhost:9040`).
+- **La vista se decide por `medioDePago`, no por `intentos`**: esperando la tarjeta (E4) y la pasarela fallando (E4b) son las
+  dos `pending`, y distinguirlas por el contador acoplaría la pantalla a cuándo el backend lo incrementa.
+- **Un rechazo ya no manda al cliente a esperar a operaciones.** `failed` con `payment_rejected` pinta E4c y ofrece otra
+  tarjeta; originación la cobra con una clave de idempotencia nueva. Los demás `failed` siguen siendo excepción de operaciones.
+- Valida la tarjeta con Luhn y el vencimiento antes de llamar a la pasarela: un dedazo se contesta al instante en vez de con un
+  viaje a la red.
+
 - `pago/pago.config.ts`: `ACCIONES_PAGO` deja configurables «Ver mi póliza» (`/embebido/poliza-emitida`, a la que se agrega
   el `policy_id` del cobro: la E5 de HU-W1.3-03), «Continuar con mi crédito» (`/inicio`) y «Ver el estado de tu aceptación»
   (`/embebido/oferta`). **Pendiente:** «Intentar con otro medio de pago» llega con E4 (HU-W1.3-02).
