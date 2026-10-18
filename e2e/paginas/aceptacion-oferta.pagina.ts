@@ -1,5 +1,6 @@
 import { Locator, Page, Route } from '@playwright/test';
 
+import { ofertaNormal } from '../fixtures/ofertas';
 import { CONTRASENA_PRUEBA, RolPrueba, USUARIOS_PRUEBA } from '../fixtures/sesion-por-rol';
 import { InicioSesionPagina } from './inicio-sesion.pagina';
 
@@ -11,12 +12,14 @@ export interface RespuestaSimulada {
 
 /**
  * Guion del servicio de originación para HU-W1.3-01. `consultas` responde el polling en orden y repite la
- * última. Se puede cambiar durante la prueba.
+ * última. Se puede cambiar durante la prueba. `oferta` responde `GET /v1/offers/{id}` (HU-W1.2-03): sin él, una
+ * oferta normal vigente con el identificador pedido.
  */
 export interface GuionAceptacion {
   deOferta: RespuestaSimulada;
   aceptar: RespuestaSimulada;
   consultas: RespuestaSimulada[];
+  oferta?: RespuestaSimulada;
 }
 
 /** Peticiones recibidas por el gateway simulado. */
@@ -52,6 +55,11 @@ export class AceptacionOfertaPagina {
         body: JSON.stringify(respuesta.cuerpo),
       });
 
+    // Más específica que `/v1/offers/*/acceptance`: solo el detalle de la oferta (HU-W1.2-03).
+    await this.page.route('**/v1/offers/*', async (ruta: Route) => {
+      const id = new URL(ruta.request().url()).pathname.split('/').pop() ?? '';
+      await responder(ruta, guion.oferta ?? { estado: 200, cuerpo: ofertaNormal(id) });
+    });
     await this.page.route('**/v1/offers/*/acceptance', async (ruta: Route) => {
       if (ruta.request().method() === 'POST') {
         llamadas.aceptar.push(ruta.request().postDataJSON());

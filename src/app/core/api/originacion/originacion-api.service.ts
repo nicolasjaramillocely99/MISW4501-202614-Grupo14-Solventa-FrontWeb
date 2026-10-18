@@ -31,6 +31,14 @@ import {
   traducirErrorEmision,
 } from './emision-contractual.modelos';
 import {
+  Oferta,
+  OfertaDto,
+  SolicitudOferta,
+  aSolicitudOfertaDto,
+  mapearOferta,
+  traducirErrorOferta,
+} from './oferta.modelos';
+import {
   PerfilRiesgo,
   PerfilRiesgoDto,
   SolicitudPerfilRiesgo,
@@ -73,7 +81,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
- * (HU-W1.3-03), el estado del cobro de la prima (HA-D02) y la bandeja de decisión humana del asesor (HU-W1.1-02).
+ * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02) y la
+ * oferta personalizada (HU-W1.2-03).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -92,6 +101,42 @@ export class OriginacionApiService {
         consent_active: solicitud.consentimientoActivo,
       })
       .pipe(map(mapearPerfilRiesgo));
+  }
+
+  /**
+   * Genera la oferta personalizada (`POST /v1/offers`, canal del aliado, sin sesión): 201 con la oferta, vigente
+   * 24 horas; con las fuentes caídas también es 201, con `modo: provisional`. Exige el consentimiento activo del
+   * cliente: `consent_required` y `consent_mismatch` (422) no consultan ninguna fuente. Falla con `ErrorOferta`.
+   */
+  generarOferta(solicitud: SolicitudOferta): Observable<Oferta> {
+    return this.http.post<OfertaDto>(`${this.base}/v1/offers`, aSolicitudOfertaDto(solicitud)).pipe(
+      map(mapearOferta),
+      catchError((error: unknown) => throwError(() => traducirErrorOferta(error))),
+    );
+  }
+
+  /**
+   * Consulta la oferta (`GET /v1/offers/{offer_id}`). El primer asegurado que la abre con sesión la reclama; otro
+   * recibe 403. Una vencida o reemplazada sigue siendo legible (`estado`). Las ofertas ajustadas y de
+   * demostración llegan con una vista reducida. Falla con `ErrorOferta`.
+   */
+  consultarOferta(ofertaId: string): Observable<Oferta> {
+    return this.http.get<OfertaDto>(`${this.base}/v1/offers/${encodeURIComponent(ofertaId)}`).pipe(
+      map(mapearOferta),
+      catchError((error: unknown) => throwError(() => traducirErrorOferta(error))),
+    );
+  }
+
+  /**
+   * Renueva una oferta vencida (`POST /v1/offers/{offer_id}/renewal`, solo su dueño): 201 con la oferta nueva o
+   * 200 con la que ya existía (idempotente). `offer_still_valid` y `offer_superseded` (409) piden volver a la
+   * oferta o abrir la que la reemplazó. Falla con `ErrorOferta`.
+   */
+  renovarOferta(ofertaId: string): Observable<Oferta> {
+    return this.http.post<OfertaDto>(`${this.base}/v1/offers/${encodeURIComponent(ofertaId)}/renewal`, null).pipe(
+      map(mapearOferta),
+      catchError((error: unknown) => throwError(() => traducirErrorOferta(error))),
+    );
   }
 
   /**
