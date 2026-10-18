@@ -47,3 +47,41 @@ jobs:
           name: cobertura-unitarias
           path: coverage/
           if-no-files-found: ignore
+
+  # Flujos críticos con Playwright y axe-core (OBJ 06 y OBJ 13). Cognito y el API Gateway se simulan con
+  # page.route: no necesita backend ni secretos. El nombre del job es un check obligatorio de «Proteger develop»
+  # y «Proteger main»: si se cambia, hay que actualizar las reglas en GitHub.
+  e2e:
+    name: E2E · Playwright + axe
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Código fuente
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: npm 11
+        run: npm install -g npm@11
+
+      - name: Dependencias
+        run: npm ci
+
+      - name: Navegador de referencia (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Pruebas E2E con accesibilidad (axe-core)
+        run: npx playwright test
+
+      - name: Reporte de Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-playwright
+          path: playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
