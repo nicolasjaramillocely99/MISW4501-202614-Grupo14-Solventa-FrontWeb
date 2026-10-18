@@ -2,8 +2,11 @@ name: E2E nocturno · Playwright + axe-core
 
 on:
   schedule:
-    # 01:00 America/Bogota (06:00 UTC); los resultados se revisan al inicio de la jornada.
-    - cron: '0 6 * * *'
+    # 01:23 America/Bogota (06:23 UTC), fuera de la hora en punto: GitHub retrasa los programados al inicio de cada
+    # hora cuando hay carga. Los programados usan este archivo tal como está en la rama por defecto del repo, que es
+    # develop (decisión del 2026-10-17), así que un cambio aquí rige al integrarse en develop. Cada job descarga develop
+    # de forma explícita. Los resultados se revisan al inicio de la jornada.
+    - cron: '23 6 * * *'
   workflow_dispatch:
     inputs:
       base_url:
