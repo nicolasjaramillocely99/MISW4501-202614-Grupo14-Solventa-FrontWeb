@@ -1,4 +1,9 @@
 // Formulario del medio de pago (E4, HU-W1.3-02).
+//
+// Solo lo que el sistema de diseño no cubre: la elección de método y la
+// rejilla de vencimiento y código. Lo demás usa `.campo`, `.campo__control`,
+// `.campo__error` y `.boton` de `src/styles/_componentes.scss`.
+
 :host {
   display: block;
 }
@@ -7,27 +12,36 @@
   border: 0;
   margin: 0 0 var(--espacio-16);
   padding: 0;
+}
 
-  legend {
-    font-weight: 600;
-    margin-bottom: var(--espacio-8);
-    padding: 0;
-  }
+.metodos__titulo {
+  margin-bottom: var(--espacio-8);
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
 }
 
 .metodo {
-  align-items: center;
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-base);
-  cursor: pointer;
   display: flex;
+  align-items: center;
   gap: var(--espacio-12);
   margin-bottom: var(--espacio-8);
-  padding: var(--espacio-12);
+  padding: var(--espacio-12) var(--espacio-16);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-base);
+  background: var(--color-fondo-superficie);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-borde-fuerte);
+  }
 
   &--elegido {
-    border-color: var(--primario);
-    box-shadow: inset 0 0 0 1px var(--primario);
+    border-color: var(--color-azul-500);
+    background: var(--color-azul-50);
   }
 
   span {
@@ -36,33 +50,12 @@
   }
 
   small {
-    color: var(--texto-secundario);
+    color: var(--color-texto-secundario);
   }
 }
 
 .campo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-4);
   margin-bottom: var(--espacio-16);
-
-  label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  input,
-  select {
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-base);
-    padding: var(--espacio-12);
-  }
-
-  input[aria-invalid='true'] {
-    border-color: var(--error);
-  }
 }
 
 .fila {
@@ -72,29 +65,16 @@
 }
 
 .ayuda {
-  color: var(--texto-secundario);
-  font-size: 0.8125rem;
   margin: 0;
-}
-
-.error {
-  color: var(--error);
   font-size: 0.8125rem;
-  margin: 0;
-
-  &--bloque {
-    margin-bottom: var(--espacio-12);
-  }
+  color: var(--color-texto-secundario);
 }
 
 .cifrado {
-  align-items: center;
-  color: var(--texto-secundario);
   display: flex;
-  font-size: 0.8125rem;
+  align-items: center;
   gap: var(--espacio-8);
-}
-
-.confirmar {
-  width: 100%;
+  margin: var(--espacio-16) 0;
+  font-size: 0.8125rem;
+  color: var(--color-texto-secundario);
 }
