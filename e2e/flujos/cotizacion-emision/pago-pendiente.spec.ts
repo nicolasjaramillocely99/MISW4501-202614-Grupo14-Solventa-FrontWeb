@@ -8,7 +8,7 @@ import { PolizaEmitidaPagina } from '../../paginas/poliza-emitida.pagina';
 
 const ACEPTACION = '6f1c2a9e-1b2c-4d5e-8f90-123456789abc';
 
-/** Cobro con la forma de `GET /v1/acceptances/{id}/charge` (contrato HA-D02, `HA-D02-api.md`). */
+/** Cobro con la forma de `GET /v1/acceptances/{id}/charge` (contratos `HA-D02-api.md` y `HU-W1.3-02-api.md`). */
 function cobro(cambios: Record<string, unknown> = {}) {
   return {
     acceptance_id: ACEPTACION,
@@ -30,6 +30,18 @@ function cobro(cambios: Record<string, unknown> = {}) {
     coverage_activated_at: null,
     activation_published_at: null,
     resume_count: 0,
+    // Con medio de pago entregado: es E4b, el cobro ya arrancó y la pasarela
+    // no responde. Sin él la pantalla pediría la tarjeta, que es E4
+    // (HU-W1.3-02).
+    payment_method: {
+      method: 'card',
+      brand: 'visa',
+      last4: '1111',
+      installments: 1,
+      bank_code: null,
+      captured_at: '2026-10-16T19:05:05Z',
+    },
+    payment_attempt: 1,
     updated_at: '2026-10-16T19:05:13.2Z',
     ...cambios,
   };

@@ -8,6 +8,7 @@ import { Observable, of, throwError } from 'rxjs';
 
 import { Cobro, ErrorCobro, mapearCobro } from '@core/api/originacion/cobro.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import { PasarelaPagosService } from '@core/api/pasarela/pasarela.service';
 
 import { CLAVE_TRAMITE_ACEPTACION } from '../aceptacion-oferta/servicios/tramite-aceptacion.service';
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
@@ -23,6 +24,15 @@ function cobro(cambios: Partial<Cobro> = {}): Cobro {
 }
 
 const PROCESANDO = cobro({ intentos: 0, ultimaFallaEn: null, proximoIntentoEn: null });
+/** E4: el cobro existe desde la aceptación pero espera el medio de pago. */
+const ESPERANDO_TARJETA = cobro({
+  intentos: 0,
+  ultimoIntentoEn: null,
+  ultimaFallaEn: null,
+  proximoIntentoEn: null,
+  medioDePago: null,
+  intentoDePago: 0,
+});
 const CONFIRMADO = cobro({
   estado: 'confirmed',
   intentos: 3,
@@ -35,6 +45,8 @@ const CONFIRMADO = cobro({
 
 describe('PagoPage (E4b · HA-D02)', () => {
   let consultar: Llamada;
+  let entregar: ReturnType<typeof vi.fn>;
+  let tokenizar: ReturnType<typeof vi.fn>;
   let manejador: { handleError: ReturnType<typeof vi.fn> };
 
   async function renderizar({
@@ -43,13 +55,16 @@ describe('PagoPage (E4b · HA-D02)', () => {
     acciones = null as AccionesPago | null,
   } = {}) {
     consultar = vi.fn().mockReturnValue(respuesta);
+    entregar = vi.fn().mockReturnValue(of(PENDIENTE));
+    tokenizar = vi.fn().mockReturnValue(of({ token: 'tok_pruebas', marca: 'visa', ultimosCuatro: '1111' }));
     manejador = { handleError: vi.fn() };
     return render(PagoPage, {
       imports: [proveerTranslocoPruebas()],
       providers: [
         provideRouter([]),
         { provide: ErrorHandler, useValue: manejador },
-        { provide: OriginacionApiService, useValue: { consultarCobro: consultar } },
+        { provide: OriginacionApiService, useValue: { consultarCobro: consultar, entregarMedioDePago: entregar } },
+        { provide: PasarelaPagosService, useValue: { tokenizar } },
         ...(acciones ? [{ provide: ACCIONES_PAGO, useValue: acciones }] : []),
         {
           provide: ActivatedRoute,
@@ -149,10 +164,13 @@ describe('PagoPage (E4b · HA-D02)', () => {
     expect(screen.getByText('En gestión')).toBeTruthy();
   });
 
-  it('un pago rechazado muestra el texto del rechazo', async () => {
+  // HU-W1.3-02: un rechazo ya no manda al cliente a esperar a operaciones.
+  // Es E4c, y puede intentar con otra tarjeta sin perder su aceptación.
+  it('un pago rechazado ofrece intentar con otro medio de pago', async () => {
     await renderizar({ respuesta: of(cobro({ estado: 'failed', motivoFalla: 'payment_rejected' })) });
 
-    expect(screen.getByRole('alert').textContent).toContain('La pasarela no aprobó el pago');
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Tu pago fue rechazado');
+    expect(screen.getByRole('button', { name: /Pagar con esta tarjeta/i })).toBeTruthy();
   });
 
   it('sin identificador en la URL usa la aceptación guardada en sessionStorage', async () => {
@@ -212,5 +230,54 @@ describe('PagoPage (E4b · HA-D02)', () => {
     });
 
     expect(await screen.findByText(/48213/)).toBeTruthy();
+  });
+
+  // --- E4 · captura del medio de pago (HU-W1.3-02) -------------------------
+
+  it('sin medio de pago pide la tarjeta en vez de decir que se está cobrando', async () => {
+    await renderizar({ respuesta: of(ESPERANDO_TARJETA) });
+
+    expect(titulo()).toContain('Paga tu primera prima');
+    expect(screen.getByLabelText(/Número de tarjeta/i)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Pagar mi primera prima/i })).toBeTruthy();
+  });
+
+  // El estado se decide por el medio de pago, no por el contador de intentos:
+  // esperando la tarjeta y la pasarela fallando son los dos `pending`.
+  it('con medio de pago y la pasarela fallando muestra el pago pendiente, no el formulario', async () => {
+    await renderizar({ respuesta: of(PENDIENTE) });
+
+    expect(screen.queryByLabelText(/Número de tarjeta/i)).toBeNull();
+  });
+
+  it('entrega a originación solo el token, nunca el número de la tarjeta', async () => {
+    await renderizar({ respuesta: of(ESPERANDO_TARJETA) });
+
+    fireEvent.input(screen.getByLabelText(/Número de tarjeta/i), { target: { value: '4111 1111 1111 1111' } });
+    fireEvent.input(screen.getByLabelText(/Vencimiento/i), { target: { value: '11/28' } });
+    fireEvent.input(screen.getByLabelText(/Código de seguridad/i), { target: { value: '123' } });
+    fireEvent.input(screen.getByLabelText(/Nombre del titular/i), { target: { value: 'CAROLINA PEREZ' } });
+    fireEvent.click(screen.getByRole('button', { name: /Pagar mi primera prima/i }));
+    await new Promise((listo) => setTimeout(listo, 0));
+
+    expect(entregar).toHaveBeenCalledTimes(1);
+    const [, medio] = entregar.mock.calls[0] as [string, Record<string, unknown>];
+    expect(medio['token']).toBe('tok_pruebas');
+    expect(JSON.stringify(medio)).not.toContain('4111');
+  });
+
+  it('una tarjeta que no pasa la comprobación no llega a la pasarela', async () => {
+    await renderizar({ respuesta: of(ESPERANDO_TARJETA) });
+
+    fireEvent.input(screen.getByLabelText(/Número de tarjeta/i), { target: { value: '4111 1111 1111 1112' } });
+    fireEvent.input(screen.getByLabelText(/Vencimiento/i), { target: { value: '11/28' } });
+    fireEvent.input(screen.getByLabelText(/Código de seguridad/i), { target: { value: '123' } });
+    fireEvent.input(screen.getByLabelText(/Nombre del titular/i), { target: { value: 'CAROLINA PEREZ' } });
+    fireEvent.click(screen.getByRole('button', { name: /Pagar mi primera prima/i }));
+    await new Promise((listo) => setTimeout(listo, 0));
+
+    expect(tokenizar).not.toHaveBeenCalled();
+    expect(entregar).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert').textContent).toContain('no corresponde a una tarjeta válida');
   });
 });

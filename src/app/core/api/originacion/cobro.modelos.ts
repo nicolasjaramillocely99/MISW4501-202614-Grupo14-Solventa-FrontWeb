@@ -14,7 +14,30 @@ import { HttpErrorResponse } from '@angular/common/http';
 export type EstadoCobro = 'pending' | 'in_progress' | 'confirmed' | 'failed';
 
 /** Por qué el cobro terminó en excepción: la ventana de reintentos venció o la pasarela lo rechazó. */
-export type MotivoFallaCobro = 'retry_window_expired' | 'payment_rejected';
+export type MotivoFallaCobro =
+  | 'retry_window_expired'
+  | 'payment_rejected'
+  /** La ventana venció sin que el cliente entregara un medio de pago: nunca se intentó cobrar. */
+  | 'payment_method_missing';
+
+/** Cómo paga el cliente la prima (E4). */
+export type TipoMedioDePago = 'card' | 'pse';
+
+/**
+ * Medio de pago que el cliente entregó en E4.
+ *
+ * El número de tarjeta nunca está aquí ni llega a nuestro backend: el navegador
+ * lo tokeniza contra la pasarela y solo viajan el token, la marca y los últimos
+ * cuatro dígitos.
+ */
+export interface MedioDePago {
+  tipo: TipoMedioDePago;
+  marca: string | null;
+  ultimosCuatro: string | null;
+  cuotas: number;
+  codigoBanco: string | null;
+  capturadoEn: string;
+}
 
 /** Ventana de reintentos automáticos (24 h desde que se inició el cobro o se reanudó). */
 export interface VentanaReintentos {
@@ -48,10 +71,29 @@ export interface Cobro {
   coberturaActivadaEn: string | null;
   activacionPublicadaEn: string | null;
   reanudaciones: number;
+  /**
+   * Medio de pago, o `null` mientras el cliente no haya entregado uno.
+   *
+   * **Es el campo que decide qué pantalla se pinta**, y no se deduce de
+   * `intentos` ni de `proximoIntentoEn`: esperando la tarjeta (E4) y la
+   * pasarela fallando (E4b) son los dos `pending`.
+   */
+  medioDePago: MedioDePago | null;
+  /** Cuántos medios de pago entregó el cliente. No es `intentos`, que son los de la pasarela. */
+  intentoDePago: number;
   actualizadoEn: string;
 }
 
 /** Respuesta cruda del contrato (snake_case). */
+export interface MedioDePagoDto {
+  method: TipoMedioDePago;
+  brand: string | null;
+  last4: string | null;
+  installments: number;
+  bank_code: string | null;
+  captured_at: string;
+}
+
 export interface CobroDto {
   acceptance_id: string;
   offer_id: string;
@@ -72,6 +114,8 @@ export interface CobroDto {
   coverage_activated_at: string | null;
   activation_published_at: string | null;
   resume_count: number;
+  payment_method: MedioDePagoDto | null;
+  payment_attempt: number;
   updated_at: string;
 }
 
@@ -97,6 +141,17 @@ export function mapearCobro(dto: CobroDto): Cobro {
     coberturaActivadaEn: dto.coverage_activated_at,
     activacionPublicadaEn: dto.activation_published_at,
     reanudaciones: dto.resume_count,
+    medioDePago: dto.payment_method
+      ? {
+          tipo: dto.payment_method.method,
+          marca: dto.payment_method.brand,
+          ultimosCuatro: dto.payment_method.last4,
+          cuotas: dto.payment_method.installments,
+          codigoBanco: dto.payment_method.bank_code,
+          capturadoEn: dto.payment_method.captured_at,
+        }
+      : null,
+    intentoDePago: dto.payment_attempt,
     actualizadoEn: dto.updated_at,
   };
 }
@@ -112,9 +167,12 @@ export type CodigoErrorCobro =
   | 'unauthorized'
   | 'forbidden'
   | 'charge_not_found'
+  /** El cobro ya no admite otro medio de pago: se está cobrando, se confirmó o solo operaciones puede reanudarlo. */
+  | 'charge_not_payable'
   | 'charge_unavailable';
 
 const CODIGOS_ERROR: readonly string[] = [
+  'charge_not_payable',
   'invalid_request',
   'unauthorized',
   'forbidden',
@@ -161,4 +219,29 @@ export function traducirErrorCobro(error: unknown): ErrorCobro {
     default:
       return new ErrorCobro('charge_unavailable');
   }
+}
+
+/**
+ * Medio de pago que E4 entrega a originación.
+ *
+ * Para una tarjeta lleva el **token** que devolvió la pasarela, nunca el
+ * número: el navegador tokeniza antes y a Solventa solo llega el token con la
+ * marca y los últimos cuatro.
+ */
+export type MedioDePagoNuevo =
+  | { tipo: 'card'; token: string; marca: string; ultimosCuatro: string; cuotas: number }
+  | { tipo: 'pse'; codigoBanco: string };
+
+/** Cuerpo del contrato (snake_case) para entregar el medio de pago. */
+export function aCuerpoMedioDePago(medio: MedioDePagoNuevo): Record<string, unknown> {
+  if (medio.tipo === 'pse') {
+    return { method: 'pse', bank_code: medio.codigoBanco };
+  }
+  return {
+    method: 'card',
+    payment_token: medio.token,
+    brand: medio.marca,
+    last4: medio.ultimosCuatro,
+    installments: medio.cuotas,
+  };
 }

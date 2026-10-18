@@ -539,7 +539,8 @@
         "procesando": "Processing",
         "pendiente": "Payment pending",
         "confirmado": "Payment confirmed",
-        "excepcion": "Being handled"
+        "excepcion": "Being handled",
+        "rechazado": "Declined"
       },
       "procesando": {
         "titulo": "We are processing your payment",
@@ -608,6 +609,46 @@
         "continuarCredito": "Continue with my loan",
         "reintentar": "Retry",
         "verAceptacion": "Check the status of your acceptance"
+      },
+      "medioDePago": {
+        "titulo": "Payment method",
+        "tarjeta": "Debit or credit card",
+        "tarjetaDetalle": "Visa, Mastercard, Amex",
+        "pse": "PSE",
+        "pseDetalle": "Debit from your bank account",
+        "numero": "Card number",
+        "numeroAyuda": "16 digits, spaces optional",
+        "numeroInvalido": "Check the number: it is not a valid card",
+        "vencimiento": "Expiry",
+        "vencimientoAyuda": "MM/YY",
+        "vencimientoInvalido": "Write the expiry as MM/YY",
+        "vencida": "The card has expired",
+        "codigo": "Security code",
+        "codigoAyuda": "3 or 4 digits",
+        "codigoInvalido": "The code has 3 or 4 digits",
+        "titular": "Cardholder name",
+        "titularInvalido": "Write the name as it appears on the card",
+        "cuotas": "Instalments",
+        "unaCuota": "1 instalment · interest free",
+        "variasCuotas": "{{n}} instalments",
+        "banco": "Bank",
+        "pseAyuda": "We will take you to your bank's portal to authorise the debit.",
+        "cifrado": "Encrypted payment · PCI DSS certified gateway · exactly one charge per acceptance",
+        "confirmar": "Pay my first premium",
+        "reintentar": "Pay with this card",
+        "enviando": "Processing…",
+        "errorTarjeta": "The gateway did not accept the card. Check the details and try again.",
+        "errorPasarela": "We could not reach the payment gateway. Please try again in a moment."
+      },
+      "capturando": {
+        "titulo": "Pay your first premium",
+        "texto": "Your acceptance was registered on {{fecha}}. The charge is processed through the payment gateway and your coverage activates as soon as it is confirmed.",
+        "yaNoAdmite": "This charge no longer takes another payment method. Hold on: the screen updates itself with its state."
+      },
+      "rechazado": {
+        "titulo": "Your payment was declined",
+        "texto": "Your acceptance is kept. You can try another payment method without starting over.",
+        "conLaTarjeta": "Declined: {{marca}} ···{{ultimos}}"
       }
     },
     "polizaEmitida": {

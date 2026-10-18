@@ -1,0 +1,80 @@
+// Formulario del medio de pago (E4, HU-W1.3-02).
+//
+// Solo lo que el sistema de diseño no cubre: la elección de método y la
+// rejilla de vencimiento y código. Lo demás usa `.campo`, `.campo__control`,
+// `.campo__error` y `.boton` de `src/styles/_componentes.scss`.
+
+:host {
+  display: block;
+}
+
+.metodos {
+  border: 0;
+  margin: 0 0 var(--espacio-16);
+  padding: 0;
+}
+
+.metodos__titulo {
+  margin-bottom: var(--espacio-8);
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.metodo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  margin-bottom: var(--espacio-8);
+  padding: var(--espacio-12) var(--espacio-16);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-base);
+  background: var(--color-fondo-superficie);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-borde-fuerte);
+  }
+
+  &--elegido {
+    border-color: var(--color-azul-500);
+    background: var(--color-azul-50);
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+  }
+
+  small {
+    color: var(--color-texto-secundario);
+  }
+}
+
+.campo {
+  margin-bottom: var(--espacio-16);
+}
+
+.fila {
+  display: grid;
+  gap: var(--espacio-12);
+  grid-template-columns: 1fr 1fr;
+}
+
+.ayuda {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-texto-secundario);
+}
+
+.cifrado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: var(--espacio-16) 0;
+  font-size: 0.8125rem;
+  color: var(--color-texto-secundario);
+}

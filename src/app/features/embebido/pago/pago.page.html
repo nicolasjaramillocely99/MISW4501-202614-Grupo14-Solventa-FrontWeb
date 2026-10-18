@@ -27,6 +27,49 @@
         @case ('cobro') {
           @if (cobro(); as actual) {
             @switch (vista()) {
+              @case ('capturando') {
+                <div class="flujo__encabezado">
+                  <div class="flujo__fila">
+                    <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.capturando.titulo') }}</h1>
+                  </div>
+                  <p class="flujo__texto">
+                    {{ t('pago.capturando.texto', { fecha: actual.aceptadaEn | formatoFechaHora }) }}
+                  </p>
+                </div>
+                <app-formulario-medio-pago
+                  [enviando]="entregandoMedioDePago()"
+                  (medioElegido)="entregarMedioDePago($event)"
+                />
+                @if (medioDePagoRechazado()) {
+                  <p class="aviso aviso--error" role="alert">{{ t('pago.capturando.yaNoAdmite') }}</p>
+                }
+              }
+
+              @case ('rechazado') {
+                <div class="flujo__encabezado" role="status">
+                  <div class="flujo__fila">
+                    <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.rechazado.titulo') }}</h1>
+                    <app-insignia-estado [tono]="tonoInsignia.rechazado">
+                      {{ t('pago.insignia.rechazado') }}
+                    </app-insignia-estado>
+                  </div>
+                  <p class="flujo__texto">{{ t('pago.rechazado.texto') }}</p>
+                  @if (actual.medioDePago; as medio) {
+                    <p class="flujo__texto flujo__texto--debil">
+                      {{ t('pago.rechazado.conLaTarjeta', { marca: medio.marca, ultimos: medio.ultimosCuatro }) }}
+                    </p>
+                  }
+                </div>
+                <app-formulario-medio-pago
+                  [enviando]="entregandoMedioDePago()"
+                  [reintento]="true"
+                  (medioElegido)="entregarMedioDePago($event)"
+                />
+                @if (medioDePagoRechazado()) {
+                  <p class="aviso aviso--error" role="alert">{{ t('pago.capturando.yaNoAdmite') }}</p>
+                }
+              }
+
               @case ('procesando') {
                 <div class="flujo__encabezado" role="status">
                   <div class="flujo__fila">

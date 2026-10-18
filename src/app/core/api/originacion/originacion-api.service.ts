@@ -11,7 +11,14 @@ import {
   mapearAceptacion,
   traducirErrorAceptacion,
 } from './aceptacion.modelos';
-import { Cobro, CobroDto, mapearCobro, traducirErrorCobro } from './cobro.modelos';
+import {
+  Cobro,
+  CobroDto,
+  MedioDePagoNuevo,
+  aCuerpoMedioDePago,
+  mapearCobro,
+  traducirErrorCobro,
+} from './cobro.modelos';
 import {
   ClienteCotizacion,
   ClienteDto,
@@ -246,6 +253,26 @@ export class OriginacionApiService {
       map(mapearCobro),
       catchError((error: unknown) => throwError(() => traducirErrorCobro(error))),
     );
+  }
+
+  /**
+   * Entrega el medio de pago de E4 (`POST /v1/acceptances/{id}/charge/payment-method`, HU-W1.3-02) y con eso
+   * hace vencer el intento del cobro, que hasta entonces esperaba. Devuelve el cobro ya con su `medioDePago`.
+   *
+   * **El número de tarjeta no viaja por aquí**: el navegador lo tokeniza antes contra la pasarela
+   * (`PasarelaPagosService`) y lo único que llega a Solventa es el token. Falla con `ErrorCobro`;
+   * `charge_not_payable` significa que ese cobro ya no admite otro medio de pago.
+   */
+  entregarMedioDePago(aceptacionId: string, medio: MedioDePagoNuevo): Observable<Cobro> {
+    return this.http
+      .post<CobroDto>(
+        `${this.base}/v1/acceptances/${encodeURIComponent(aceptacionId)}/charge/payment-method`,
+        aCuerpoMedioDePago(medio),
+      )
+      .pipe(
+        map(mapearCobro),
+        catchError((error: unknown) => throwError(() => traducirErrorCobro(error))),
+      );
   }
 
   /**
