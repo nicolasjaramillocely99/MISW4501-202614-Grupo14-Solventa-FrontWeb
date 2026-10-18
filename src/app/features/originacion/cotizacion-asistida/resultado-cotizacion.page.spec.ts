@@ -70,7 +70,7 @@ describe('ResultadoCotizacionPage (S2 / S2b · HU-W1.1-01)', () => {
 
       expect(screen.getByRole('heading', { level: 1, name: 'Cotización asistida' })).toBeTruthy();
       expect(screen.getByText(`Código ${VIGENTE.cotizacionId}`)).toBeTruthy();
-      expect(screen.getByText('Vigente')).toBeTruthy();
+      expect(screen.getByText('Vigente 24 h')).toBeTruthy();
       expect(screen.getByText(/132\.800 COP/)).toBeTruthy();
       expect(screen.getByText('Prima mensual')).toBeTruthy();
       expect(screen.getByText('Fallecimiento del asegurado')).toBeTruthy();

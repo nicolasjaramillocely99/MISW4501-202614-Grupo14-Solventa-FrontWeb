@@ -66,8 +66,9 @@
 `cotizacion-asistida/resultado-cotizacion.page.ts` (`ResultadoCotizacionPage`, S2 / S2b), rutas `/originacion/cotizaciones/nueva` y
 `/originacion/cotizaciones/:id` declaradas en `originacion.routes.ts` (`ORIGINACION_ROUTES`, `rolGuard('asesor')`; `nueva` va antes de
 `:id`) y registradas en `app.routes.ts` dentro del shell del portal. Contrato: `docs/contratos/HU-W1.1-01-api.md` del backend
-(servicio `origination`, `openapi.yaml` v0.6.0). Los frames de Figma no se pudieron abrir en esta sesión: las pantallas siguen la
-historia y los criterios de aceptación, y quedan pendientes de revisión contra el prototipo.
+(servicio `origination`, `openapi.yaml` v0.6.0). Las pantallas siguen la historia y los criterios de
+aceptación y se contrastaron con los frames S1 y S2 del prototipo (acciones en el encabezado de S1; en S2, insignia de vigencia, bloque
+destacado de la prima, coberturas y explicación del precio).
 
 - Llama a `OriginacionApiService` (`core/api/originacion/`): `buscarClientePorDocumento` (`GET /v1/customers`),
   `crearCotizacionAsistida` (`POST /v1/assisted-quotes`) y `consultarCotizacionAsistida` (`GET /v1/assisted-quotes/{id}`). Los errores
@@ -80,6 +81,11 @@ historia y los criterios de aceptación, y quedan pendientes de revisión contra
   **modo degradado** (`mode: provisional`: último perfil en caché o perfil actuarial base, con su aviso) y **vencida** (`status:
   expired`: no se puede formalizar, se informa el motivo y se ofrece generar una nueva). Textos en
   `originacion.cotizacionAsistida.*`; la web no calcula precios, vigencias ni degradación.
+- **Fuera de los frames por falta de datos en el contrato o por ser de otra historia:** en S1, apellidos separados, celular, ciudad,
+  producto, entidad crediticia, fecha de desembolso, el consentimiento vigente por SMS y el panel «Fuentes del motor»; en S2,
+  «Guardar y enviar al cliente», «Formalizar compra», «Fuentes consultadas» y «Siguientes pasos». La vigencia es de 24 h (la historia y
+  el backend); el prototipo muestra 72 h y está pendiente de acordar con el equipo. La insignia de S2 toma las horas de las fechas de la
+  cotización, así que sigue al backend si cambia.
 - Pendiente: «Formalizar la compra» (HU-W1.1-03, ruta `:id/formalizar`).
 - E2E: `e2e/flujos/cotizacion-emision/cotizacion-asistida.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 

@@ -711,6 +711,7 @@
         "seccionCliente": "Customer details",
         "buscar": "Find customer",
         "buscando": "Searching…",
+        "cancelar": "Cancel",
         "ayudaDocumento": "Type the document without dots or hyphens. If the customer already exists, their data loads by itself.",
         "ayudaEdad": "Between {{min}} and {{max}} years old.",
         "ayudaMonto": "Outstanding mortgage balance to insure, in COP.",
@@ -784,8 +785,9 @@
         "cargando": "Loading the quote…",
         "titulo": "Assisted quote",
         "codigo": "Code {{id}}",
+        "generadaEl": "generated on {{fecha}}",
         "insignia": {
-          "vigente": "Valid",
+          "vigente": "Valid {{horas}} h",
           "provisional": "Provisional",
           "vencida": "Expired"
         },
@@ -821,7 +823,7 @@
           "vence": "Valid until"
         },
         "cliente": {
-          "titulo": "Customer and loan",
+          "titulo": "Customer",
           "nombre": "Name",
           "documento": "Document",
           "correo": "Email",
@@ -830,8 +832,9 @@
           "plazoMeses": "{{meses}} months"
         },
         "perfil": {
-          "titulo": "Risk profile",
+          "titulo": "Price breakdown",
           "categoria": "Category",
+          "puntaje": "Score",
           "origen": "Profile source",
           "fecha": "Profile date",
           "tarifa": "Rating version",

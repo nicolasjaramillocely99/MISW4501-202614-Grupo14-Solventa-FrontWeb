@@ -1,7 +1,15 @@
 <div class="pagina" *transloco="let t; prefix: 'originacion.cotizacionAsistida'">
   <header class="pagina__encabezado">
-    <h1 class="pagina__titulo">{{ t('datosCliente.titulo') }}</h1>
-    <p class="pagina__descripcion">{{ t('datosCliente.descripcion') }}</p>
+    <div>
+      <h1 class="pagina__titulo">{{ t('datosCliente.titulo') }}</h1>
+      <p class="pagina__descripcion">{{ t('datosCliente.descripcion') }}</p>
+    </div>
+    <div class="pagina__acciones">
+      <a class="boton boton--secundario" routerLink="/inicio">{{ t('datosCliente.cancelar') }}</a>
+      <button type="submit" form="formulario-cotizacion" class="boton boton--primario" [disabled]="enviando()">
+        {{ enviando() ? t('datosCliente.cotizando') : t('datosCliente.cotizar') }}
+      </button>
+    </div>
   </header>
 
   <div class="pagina__cuerpo">
@@ -15,7 +23,7 @@
         </div>
       }
 
-      <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate class="formulario__campos">
+      <form id="formulario-cotizacion" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate class="formulario__campos">
         <div class="campo campo--documento">
           <label class="campo__etiqueta" for="documento">{{ t('campos.documento') }}</label>
           <div class="campo__fila">
@@ -186,12 +194,6 @@
               <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave) }}
             </p>
           }
-        </div>
-
-        <div class="acciones">
-          <button type="submit" class="boton boton--primario" [disabled]="enviando()">
-            {{ enviando() ? t('datosCliente.cotizando') : t('datosCliente.cotizar') }}
-          </button>
         </div>
       </form>
     </section>
