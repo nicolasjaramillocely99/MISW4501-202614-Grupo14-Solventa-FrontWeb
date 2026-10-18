@@ -1,4 +1,4 @@
-name: E2E nocturno · Playwright + axe-core
+name: Corrida nocturna · Cliente web
 
 on:
   schedule:
@@ -15,6 +15,47 @@ on:
         default: ''
 
 jobs:
+  verificar:
+    name: Lint · Build · Unitarias
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Código fuente
+        uses: actions/checkout@v4
+        with:
+          # La corrida nocturna prueba la rama de integración; bajo demanda, la rama elegida.
+          ref: ${{ github.event_name == 'schedule' && 'develop' || github.ref }}
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: npm 11
+        run: npm install -g npm@11
+
+      - name: Dependencias
+        run: npm ci
+
+      - name: Análisis estático (ESLint)
+        run: npm run lint
+
+      - name: Build de producción
+        run: npm run build -- --configuration production
+
+      - name: Pruebas unitarias con cobertura (umbral ≥ 70 %)
+        run: npm test -- --coverage
+
+      - name: Reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-unitarias
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: ignore
+
   e2e:
     name: Flujos críticos y accesibilidad
     runs-on: ubuntu-latest
@@ -44,7 +85,7 @@ jobs:
       - name: Pruebas E2E
         env:
           E2E_BASE_URL: ${{ github.event.inputs.base_url }}
-        run: npx playwright test --pass-with-no-tests
+        run: npx playwright test
 
       - name: Reporte de Playwright
         if: always()
@@ -54,3 +95,24 @@ jobs:
           path: playwright-report/
           retention-days: 14
           if-no-files-found: ignore
+
+  dependencias:
+    name: Dependencias · npm audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Código fuente
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'develop' || github.ref }}
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: npm 11
+        run: npm install -g npm@11
+
+      - name: Vulnerabilidades conocidas (falla con altas o críticas)
+        run: npm audit --audit-level=high
