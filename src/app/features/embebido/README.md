@@ -20,6 +20,48 @@
 
 ## Implementado
 
+**Paso 1 · Consentimiento explícito (HU-W1.2-01)** — `consentimiento/consentimiento.page.ts` (`ConsentimientoPage`, E1), ruta pública
+`/embebido/consentimiento?contexto=…`, dentro de `layout/embebido/`. Contrato: `docs/contratos/HU-W1.2-01-api.md` del backend (servicio
+`audit`, `openapi.yaml` v0.2.0).
+
+- **Contexto de lanzamiento (decisión D3):** el aliado entrega los datos del cliente y del crédito en el *query param* `contexto`
+  (JSON en base64url). `servicios/contexto-lanzamiento.service.ts` (`ContextoLanzamientoService`) lo decodifica y valida (tipos,
+  formatos y límites: monto de 10 a 2000 millones, plazo de 1 a 30 años, moneda COP/MXN/CLP/PEN, identificadores con el patrón del
+  backend, documento de 5 a 20 caracteres, fecha de nacimiento real y pasada), publica la solicitud en `FlujoEmbebidoService` y el
+  aliado en `ContextoAliadoService`, guarda en señales propias el `cliente`, el `aliadoId` y el `consentimiento` (`{ id, fecha }`) y
+  **quita el parámetro de la URL** (`replaceUrl`). No persiste nada en el navegador: recargar sin el parámetro lleva a «sin contexto».
+  Formato (los datos de ejemplo son los del prototipo; el contexto real lo arma el aliado):
+
+  ```json
+  {
+    "aliado": "Banco Aliado", "aliadoId": "aliado-banco-1", "banco": "Banco Aliado",
+    "solicitud": { "numero": "48213", "montoAprobado": 250000000, "plazoAnios": 20, "cuotaEstimada": 2180000, "moneda": "COP" },
+    "cliente": { "id": "cliente-0001", "nombreCompleto": "Ana María Pérez", "documento": "1020304050", "correo": "ana.perez@example.com", "fechaNacimiento": "1988-04-12" }
+  }
+  ```
+
+  Enlace de ejemplo con `npm start`:
+  `http://localhost:4200/embebido/consentimiento?contexto=eyJhbGlhZG8iOiJCYW5jbyBBbGlhZG8iLCJhbGlhZG9JZCI6ImFsaWFkby1iYW5jby0xIiwiYmFuY28iOiJCYW5jbyBBbGlhZG8iLCJzb2xpY2l0dWQiOnsibnVtZXJvIjoiNDgyMTMiLCJtb250b0Fwcm9iYWRvIjoyNTAwMDAwMDAsInBsYXpvQW5pb3MiOjIwLCJjdW90YUVzdGltYWRhIjoyMTgwMDAwLCJtb25lZGEiOiJDT1AifSwiY2xpZW50ZSI6eyJpZCI6ImNsaWVudGUtMDAwMSIsIm5vbWJyZUNvbXBsZXRvIjoiQW5hIE1hcsOtYSBQw6lyZXoiLCJkb2N1bWVudG8iOiIxMDIwMzA0MDUwIiwiY29ycmVvIjoiYW5hLnBlcmV6QGV4YW1wbGUuY29tIiwiZmVjaGFOYWNpbWllbnRvIjoiMTk4OC0wNC0xMiJ9fQ`
+  (`aliadoId` es el `partner_id` del consentimiento y `solicitud.numero` su `application_id`; ambos deben cumplir `^[A-Za-z0-9_-]+$`.
+  `banco` rotula la tarjeta «Tu crédito» y `aliado` la barra del aliado.)
+- **Limitación (demostración del canal):** en producción el aliado entregaría estos datos de servidor a servidor, no en la URL del
+  navegador; el `x-api-key` del aliado tampoco se envía desde aquí.
+- Llama a `AuditoriaApiService` (`core/api/auditoria/`): `consultarTerminosVigentes` (`GET /v1/audit/consent-terms/current`) al entrar y
+  `registrarConsentimiento` (`POST /v1/audit/consents`, canal `embedded`, idempotente por cliente + solicitud + versión: reintentar es
+  seguro). Las fuentes (icono, nombre, datos y vigencia), la finalidad, el responsable y la política se pintan **desde los términos del
+  backend**; el cliente solo traduce los códigos (`embebido.consentimiento.*`). Se envía la `version` mostrada y **todas** las fuentes
+  (todo o nada).
+- «Autorizar y continuar» solo se habilita con **ambas** casillas marcadas. Al registrar guarda el comprobante y navega a
+  `/embebido/perfil-riesgo/:clienteId?consentimiento=true`, la entrada que ya espera `PerfilRiesgoPage` (el backend ignora ese valor
+  cuando `audit` está configurado y verifica el consentimiento por su cuenta).
+- Estados dentro de la misma página: **cargando** (consultando los términos), **formulario** (E1), **enviando** (botón y casillas
+  deshabilitados), **rechazado** («Ahora no»: ninguna llamada; «Volver a autorizar» y «Continuar con mi crédito» → `/inicio`, igual que
+  el resto del flujo), **sin contexto** (no llegó o es inválido: ninguna llamada) y **error** (términos o registro con «Reintentar»; si
+  el backend rechaza los datos con `validation_failed` se explica y no se ofrece reintentar). `409 terms_outdated` vuelve a pedir los
+  términos, limpia las casillas y avisa «Actualizamos los términos».
+- El texto de E1 que menciona la revocación se conserva porque es del prototipo; la revocación está fuera de esta entrega (D2).
+- E2E: `e2e/flujos/cotizacion-emision/consentimiento.spec.ts` (API Gateway simulado con `page.route`, axe-core en cada estado).
+
 **Paso 2 · Cálculo del perfil de riesgo (HU-W1.2-02)** — `perfil-riesgo/perfil-riesgo.page.ts` (`PerfilRiesgoPage`), ruta
 `/embebido/perfil-riesgo/:clienteId?consentimiento=true`, dentro de `layout/embebido/` (barra del aliado).
 
@@ -34,7 +76,7 @@
 - `servicios/flujo-embebido.service.ts` (`FlujoEmbebidoService`) es el estado en memoria del flujo: HU-W1.2-01 deja la
   `solicitud` (tarjeta «Tu crédito» y número de solicitud; se oculta mientras no exista) y esta pantalla publica el `perfil`
   para HU-W1.2-03. El aliado se publica en `core/aliado` para la barra del shell.
-- «Ver mi oferta» lleva a `/embebido/oferta` y «Cancelar» a `/embebido/consentimiento`; ambas rutas llegan con sus historias.
+- «Ver mi oferta» lleva a `/embebido/oferta` (llega con HU-W1.2-03) y «Cancelar» y «Volver al consentimiento» a `/embebido/consentimiento` (paso 1, HU-W1.2-01).
 - E2E: `e2e/flujos/cotizacion-emision/perfil-riesgo.spec.ts` (API Gateway simulado con `page.route`, axe-core en cada estado).
 
 **Paso 5 · Póliza emitida: documento y notificación (HU-W1.3-03)** — `poliza-emitida/poliza-emitida.page.ts` (`PolizaEmitidaPage`, E5),
