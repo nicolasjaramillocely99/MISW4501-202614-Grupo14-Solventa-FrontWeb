@@ -42,7 +42,7 @@
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.3",
-    "typescript-eslint": "8.59.2",
+    "typescript-eslint": "8.71.2",
     "vitest": "^4.0.8"
   },
   "description": "Cliente web (Angular) de Solventa - Proyecto Final MISW4501, Grupo 14",
