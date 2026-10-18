@@ -1,0 +1,169 @@
+<div class="pagina" *transloco="let t; prefix: 'embebido'">
+  <p class="pagina__contexto">
+    <svg lucideLandmark [size]="16" aria-hidden="true"></svg>
+    @if (solicitud(); as datos) {
+      {{ t('contexto.conSolicitud', { numero: datos.numero }) }}
+    } @else {
+      {{ t('contexto.sinSolicitud') }}
+    }
+  </p>
+
+  <div class="pagina__cuerpo">
+    @if (solicitud(); as datos) {
+      <app-tarjeta-credito [solicitud]="datos" />
+    }
+
+    <section class="tarjeta consentimiento" aria-labelledby="titulo-consentimiento" [attr.aria-busy]="fase() === 'cargando'">
+      <app-indicador-pasos [pasos]="pasos" etiqueta="embebido.pasos.navegacion" />
+
+      <div class="consentimiento__encabezado" role="status">
+        <h1 id="titulo-consentimiento" class="consentimiento__titulo">{{ t('consentimiento.titulo.' + claveFase()) }}</h1>
+        <p class="consentimiento__descripcion">{{ t('consentimiento.descripcion.' + claveFase()) }}</p>
+      </div>
+
+      @switch (fase()) {
+        @case ('rechazado') {
+          <div class="aviso aviso--advertencia">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('consentimiento.rechazado.avisoTitulo') }}</p>
+              <p>{{ t('consentimiento.rechazado.avisoTexto') }}</p>
+            </div>
+          </div>
+          <div class="acciones">
+            <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('consentimiento.acciones.continuarCredito') }}</a>
+            <button type="button" class="boton boton--primario" (click)="volverAAutorizar()">{{ t('consentimiento.acciones.volverAutorizar') }}</button>
+          </div>
+        }
+        @case ('sin-contexto') {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('consentimiento.sinContexto.avisoTitulo') }}</p>
+              <p>{{ t('consentimiento.sinContexto.avisoTexto') }}</p>
+            </div>
+          </div>
+        }
+        @case ('error') {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('consentimiento.error.' + motivoError() + '.titulo') }}</p>
+              <p>{{ t('consentimiento.error.' + motivoError() + '.texto') }}</p>
+            </div>
+          </div>
+          <div class="acciones">
+            <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('consentimiento.acciones.continuarCredito') }}</a>
+            @if (motivoError() !== 'datos') {
+              <button type="button" class="boton boton--primario" (click)="reintentar()">{{ t('consentimiento.acciones.reintentar') }}</button>
+            }
+          </div>
+        }
+        @case ('cargando') {
+          <div class="progreso" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-label]="t('consentimiento.progreso')">
+            <div class="progreso__barra progreso__barra--indeterminada"></div>
+          </div>
+        }
+        @default {
+        @if (terminos(); as datos) {
+          @if (terminosActualizados()) {
+            <div class="aviso aviso--advertencia" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('consentimiento.terminosActualizados.titulo') }}</p>
+                <p>{{ t('consentimiento.terminosActualizados.texto') }}</p>
+              </div>
+            </div>
+          }
+
+          <ul class="fuentes" [attr.aria-label]="t('consentimiento.fuentes.etiqueta')">
+            @for (fuente of datos.fuentes; track fuente.codigo) {
+              <li class="fuente">
+                <span class="fuente__icono" aria-hidden="true">
+                  @switch (fuente.codigo) {
+                    @case ('open_finance') {
+                      <svg lucideDatabase [size]="20"></svg>
+                    }
+                    @case ('open_data') {
+                      <svg lucideLandmark [size]="20"></svg>
+                    }
+                    @default {
+                      <svg lucideIdCard [size]="20"></svg>
+                    }
+                  }
+                </span>
+                <div class="fuente__texto">
+                  <p class="fuente__nombre">{{ t('consentimiento.fuente.' + claveFuente(fuente) + '.nombre') }}</p>
+                  <p class="fuente__detalle">
+                    {{ t('consentimiento.fuente.' + claveFuente(fuente) + '.descripcion', { datos: unirCategorias(fuente, t) }) }}
+                  </p>
+                </div>
+                <div class="fuente__vigencia">
+                  <p class="etiqueta">{{ t('consentimiento.vigencia.etiqueta') }}</p>
+                  <p>{{ t('consentimiento.vigencia.' + claveVigencia(fuente)) }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+
+          <dl class="alcance">
+            <div>
+              <dt class="etiqueta">{{ t('consentimiento.finalidad.etiqueta') }}</dt>
+              <dd>{{ claveFinalidad(datos.finalidad) ? t('consentimiento.finalidad.' + claveFinalidad(datos.finalidad)) : datos.finalidad }}</dd>
+            </div>
+            <div>
+              <dt class="etiqueta">{{ t('consentimiento.responsable.etiqueta') }}</dt>
+              <dd>
+                {{ datos.responsable }} ·
+                {{ clavePolitica(datos.politicaDatos) ? t('consentimiento.politica.' + clavePolitica(datos.politicaDatos)) : datos.politicaDatos }}
+              </dd>
+            </div>
+          </dl>
+
+          <div class="casillas">
+            <label class="casilla">
+              <input
+                #autorizo
+                type="checkbox"
+                [checked]="autorizaFuentes()"
+                [disabled]="fase() === 'enviando'"
+                (change)="alternarFuentes(autorizo.checked)"
+              />
+              <span>{{ t('consentimiento.casillas.autorizo') }}</span>
+            </label>
+            <label class="casilla">
+              <input
+                #politica
+                type="checkbox"
+                [checked]="aceptaPolitica()"
+                [disabled]="fase() === 'enviando'"
+                (change)="alternarPolitica(politica.checked)"
+              />
+              <span>{{ t('consentimiento.casillas.politica') }}</span>
+            </label>
+          </div>
+
+          <div class="aviso aviso--informacion">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('consentimiento.registro.titulo') }}</p>
+              <p>{{ t('consentimiento.registro.texto') }}</p>
+            </div>
+          </div>
+
+          <div class="acciones">
+            <button type="button" class="boton boton--secundario" [disabled]="fase() === 'enviando'" (click)="rechazar()">
+              {{ t('consentimiento.acciones.ahoraNo') }}
+            </button>
+            <button type="button" class="boton boton--primario" [disabled]="!puedeAutorizar()" (click)="autorizar()">
+              <svg lucideArrowRight [size]="20" aria-hidden="true"></svg>
+              {{ fase() === 'enviando' ? t('consentimiento.acciones.registrando') : t('consentimiento.acciones.autorizar') }}
+            </button>
+          </div>
+        }
+        }
+      }
+    </section>
+  </div>
+
+</div>

@@ -127,6 +127,105 @@
       "cuotaEstimada": "Estimated installment",
       "cuotaMensual": "{{valor}} / month"
     },
+    "consentimiento": {
+      "titulo": {
+        "cargando": "We are preparing your authorization",
+        "formulario": "Authorize access to your data",
+        "rechazado": "We won't access your data",
+        "sinContexto": "We didn't receive your loan details",
+        "error": "We couldn't complete your authorization"
+      },
+      "descripcion": {
+        "cargando": "Checking the current terms…",
+        "formulario": "To calculate an offer tailored to you instead of a standard rate by age and amount, Solventa will access the following sources only with your express authorization.",
+        "rechazado": "Without your authorization we don't access any source.",
+        "sinContexto": "To authorize we need to know who you are and which loan this is about.",
+        "error": "Nothing was saved. You can try again."
+      },
+      "progreso": "Checking the terms",
+      "fuentes": {
+        "etiqueta": "Data sources we will access"
+      },
+      "fuente": {
+        "openFinance": {
+          "nombre": "Open Finance",
+          "descripcion": "{{datos}} at your financial institutions."
+        },
+        "openData": {
+          "nombre": "Open Data",
+          "descripcion": "{{datos}}: RUNT, Registraduría and watchlists."
+        },
+        "kyc": {
+          "nombre": "Identity (KYC)",
+          "descripcion": "{{datos}} already carried out by the partner bank."
+        }
+      },
+      "categoria": {
+        "productosCredito": "credit products",
+        "saldos": "balances",
+        "comportamientoPago": "payment behavior",
+        "registrosPublicos": "public records",
+        "verificacionIdentidad": "identity verification"
+      },
+      "conjuncion": "and",
+      "vigencia": {
+        "etiqueta": "Validity",
+        "meses12": "12 months",
+        "unicaVez": "One time"
+      },
+      "finalidad": {
+        "etiqueta": "Purpose",
+        "perfilRiesgoVidaHipotecario": "Calculation of the individual risk profile and of the mortgage life insurance offer"
+      },
+      "responsable": {
+        "etiqueta": "Controller"
+      },
+      "politica": {
+        "politicaDatosV1": "Personal data processing policy (Law 1581 of 2012)"
+      },
+      "casillas": {
+        "autorizo": "I authorize Solventa to access my Open Finance and Open Data information for the purpose, scope and validity described. I can revoke this authorization at any time.",
+        "politica": "I have read and accept the personal data processing policy."
+      },
+      "registro": {
+        "titulo": "Your authorization is recorded",
+        "texto": "It is saved with date, time, channel and scope; it is immutable and you will be able to view or revoke it from the portal or the Solventa app."
+      },
+      "terminosActualizados": {
+        "titulo": "We updated the terms",
+        "texto": "The terms changed while you were reading them. Review them and authorize again."
+      },
+      "rechazado": {
+        "avisoTitulo": "Without your authorization we can't calculate your offer",
+        "avisoTexto": "We don't access Open Finance, Open Data or your identity, and we can't personalize the insurance. You can change your mind at any time."
+      },
+      "sinContexto": {
+        "avisoTitulo": "Go back to your bank's website",
+        "avisoTexto": "Your application details didn't arrive. Start the insurance again from your bank's website to be able to authorize."
+      },
+      "error": {
+        "terminos": {
+          "titulo": "We couldn't load the terms",
+          "texto": "Try again in a few seconds. No authorization was recorded."
+        },
+        "registro": {
+          "titulo": "We couldn't record your authorization",
+          "texto": "Nothing was saved and we didn't access your data. Try again in a few seconds."
+        },
+        "datos": {
+          "titulo": "Your application details are not valid",
+          "texto": "Check your application on your bank's website and start the insurance again. No authorization was recorded."
+        }
+      },
+      "acciones": {
+        "ahoraNo": "Not now",
+        "autorizar": "Authorize and continue",
+        "registrando": "Recording…",
+        "volverAutorizar": "Authorize again",
+        "continuarCredito": "Continue with my loan",
+        "reintentar": "Try again"
+      }
+    },
     "perfilRiesgo": {
       "titulo": {
         "calculando": "We are calculating your risk profile",

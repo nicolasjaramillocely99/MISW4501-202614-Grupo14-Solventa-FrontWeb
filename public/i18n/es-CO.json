@@ -127,6 +127,105 @@
       "cuotaEstimada": "Cuota estimada",
       "cuotaMensual": "{{valor}} / mes"
     },
+    "consentimiento": {
+      "titulo": {
+        "cargando": "Estamos preparando tu autorización",
+        "formulario": "Autoriza la consulta de tus datos",
+        "rechazado": "No consultaremos tus datos",
+        "sinContexto": "No recibimos los datos de tu crédito",
+        "error": "No pudimos completar tu autorización"
+      },
+      "descripcion": {
+        "cargando": "Consultando los términos vigentes…",
+        "formulario": "Para calcular una oferta ajustada a tu realidad y no una tarifa estándar por edad y monto, Solventa consultará las siguientes fuentes únicamente con tu autorización expresa.",
+        "rechazado": "Sin tu autorización no consultamos ninguna fuente.",
+        "sinContexto": "Para autorizar necesitamos saber quién eres y de qué crédito se trata.",
+        "error": "No se guardó nada. Puedes intentarlo de nuevo."
+      },
+      "progreso": "Consultando los términos",
+      "fuentes": {
+        "etiqueta": "Fuentes de datos que consultaremos"
+      },
+      "fuente": {
+        "openFinance": {
+          "nombre": "Open Finance",
+          "descripcion": "{{datos}} en tus entidades financieras."
+        },
+        "openData": {
+          "nombre": "Open Data",
+          "descripcion": "{{datos}}: RUNT, Registraduría y listas de control."
+        },
+        "kyc": {
+          "nombre": "Identidad (KYC)",
+          "descripcion": "{{datos}} ya realizada por el banco aliado."
+        }
+      },
+      "categoria": {
+        "productosCredito": "productos de crédito",
+        "saldos": "saldos",
+        "comportamientoPago": "comportamiento de pago",
+        "registrosPublicos": "registros públicos",
+        "verificacionIdentidad": "verificación de identidad"
+      },
+      "conjuncion": "y",
+      "vigencia": {
+        "etiqueta": "Vigencia",
+        "meses12": "12 meses",
+        "unicaVez": "Única vez"
+      },
+      "finalidad": {
+        "etiqueta": "Finalidad",
+        "perfilRiesgoVidaHipotecario": "Cálculo del perfil de riesgo individualizado y de la oferta de seguro de vida hipotecario"
+      },
+      "responsable": {
+        "etiqueta": "Responsable"
+      },
+      "politica": {
+        "politicaDatosV1": "Política de tratamiento de datos (Ley 1581 de 2012)"
+      },
+      "casillas": {
+        "autorizo": "Autorizo a Solventa a consultar mis datos de Open Finance y Open Data con la finalidad, el alcance y la vigencia descritos. Puedo revocar esta autorización en cualquier momento.",
+        "politica": "He leído y acepto la política de tratamiento de datos personales."
+      },
+      "registro": {
+        "titulo": "Tu autorización queda registrada",
+        "texto": "Se guarda con fecha, hora, canal y alcance; es inmutable y podrás consultarla o revocarla desde el portal o la app Solventa."
+      },
+      "terminosActualizados": {
+        "titulo": "Actualizamos los términos",
+        "texto": "Los términos cambiaron mientras los leías. Revísalos y vuelve a autorizar."
+      },
+      "rechazado": {
+        "avisoTitulo": "Sin tu autorización no calculamos tu oferta",
+        "avisoTexto": "No consultamos Open Finance, Open Data ni tu identidad, y no podemos personalizar el seguro. Puedes cambiar de opinión cuando quieras."
+      },
+      "sinContexto": {
+        "avisoTitulo": "Vuelve al sitio de tu banco",
+        "avisoTexto": "No llegaron los datos de tu solicitud. Inicia de nuevo el seguro desde el sitio de tu banco para poder autorizar."
+      },
+      "error": {
+        "terminos": {
+          "titulo": "No pudimos consultar los términos",
+          "texto": "Intenta de nuevo en unos segundos. No se registró ninguna autorización."
+        },
+        "registro": {
+          "titulo": "No pudimos registrar tu autorización",
+          "texto": "No se guardó nada y no consultamos tus datos. Intenta de nuevo en unos segundos."
+        },
+        "datos": {
+          "titulo": "Los datos de tu solicitud no son válidos",
+          "texto": "Revisa tu solicitud en el sitio de tu banco e inicia de nuevo el seguro. No se registró ninguna autorización."
+        }
+      },
+      "acciones": {
+        "ahoraNo": "Ahora no",
+        "autorizar": "Autorizar y continuar",
+        "registrando": "Registrando…",
+        "volverAutorizar": "Volver a autorizar",
+        "continuarCredito": "Continuar con mi crédito",
+        "reintentar": "Reintentar"
+      }
+    },
     "perfilRiesgo": {
       "titulo": {
         "calculando": "Estamos calculando tu perfil de riesgo",
