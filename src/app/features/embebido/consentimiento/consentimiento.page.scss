@@ -1,0 +1,222 @@
+// Paso 1 del canal embebido (E1): contexto, tarjeta «Tu crédito» de 352 px y tarjeta del consentimiento.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 8vw, 120px);
+}
+
+.pagina__contexto {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.pagina__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.consentimiento {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  min-width: 0;
+}
+
+.consentimiento__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.consentimiento__descripcion {
+  margin: var(--espacio-12) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.etiqueta {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+// Fuentes: una fila por fuente, con ícono, qué datos lee y su vigencia.
+.fuentes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+}
+
+.fuente {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+  padding: var(--espacio-16);
+
+  & + & {
+    border-top: 1px solid var(--color-borde-base);
+  }
+}
+
+.fuente__icono {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radio-base);
+  background: var(--color-azul-100);
+  color: var(--color-azul-700);
+}
+
+.fuente__texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.fuente__nombre,
+.fuente__detalle {
+  margin: 0;
+}
+
+.fuente__nombre {
+  font-weight: 500;
+}
+
+.fuente__detalle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.fuente__vigencia {
+  display: flex;
+  flex: 0 0 120px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+
+  p {
+    margin: 0;
+  }
+}
+
+.alcance {
+  display: flex;
+  gap: var(--espacio-24);
+  margin: 0;
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  dd {
+    margin: 2px 0 0;
+  }
+}
+
+// Casillas: la fila completa es el área de clic (mínimo 44 px de alto).
+.casillas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  min-height: 44px;
+  cursor: pointer;
+
+  input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--color-azul-700);
+    cursor: pointer;
+  }
+
+  &:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.progreso {
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radio-completo);
+  background: var(--color-borde-base);
+}
+
+.progreso__barra {
+  width: 40%;
+  height: 100%;
+  background: var(--color-azul-700);
+  animation: progreso-indeterminado 1.4s ease-in-out infinite;
+}
+
+@keyframes progreso-indeterminado {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progreso__barra {
+    width: 60%;
+    animation: none;
+  }
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+@media (max-width: 1024px) {
+  .pagina__cuerpo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .alcance,
+  .fuente {
+    flex-direction: column;
+  }
+
+  .fuente__vigencia {
+    flex-basis: auto;
+    align-items: flex-start;
+  }
+}
