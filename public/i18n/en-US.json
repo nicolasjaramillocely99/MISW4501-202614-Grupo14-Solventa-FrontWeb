@@ -312,7 +312,22 @@
         "calculando": "Calculating…",
         "verOferta": "View my offer",
         "reintentar": "Try again",
-        "volverConsentimiento": "Back to consent"
+        "volverConsentimiento": "Back to consent",
+        "generandoOferta": "Generating your offer…"
+      },
+      "errorOferta": {
+        "datos": {
+          "titulo": "We could not generate your offer",
+          "texto": "The details of your loan are not valid for a quote. Contact your bank."
+        },
+        "noDisponible": {
+          "titulo": "We could not generate your offer",
+          "texto": "Try again in a few minutes."
+        },
+        "generico": {
+          "titulo": "We could not generate your offer",
+          "texto": "An unexpected problem occurred. Please try again later."
+        }
       }
     },
     "aceptacionOferta": {
@@ -321,7 +336,6 @@
       },
       "oferta": {
         "titulo": "Your personalized offer",
-        "numero": "Offer No. {{oferta}}",
         "insignia": {
           "normal": "Personalized",
           "provisional": "Provisional"
@@ -330,23 +344,54 @@
         "primaNota": "Added to your monthly loan payment",
         "valorAsegurado": "Sum insured",
         "vigencia": "Term",
-        "vigenciaValor": "{{anios}} years · same as the loan term",
+        "vigenciaValor": "{{cantidad}} years · same as the loan term",
         "beneficiario": "Loss payee",
         "beneficiarioValor": "{{banco}} (outstanding balance) · remainder to your heirs",
         "perfilAplicado": "Applied profile",
-        "perfilAplicadoValor": "Category {{categoria}} · calculated on {{fecha}}",
-        "perfilBase": "Base actuarial profile",
+        "perfilBase": "Base actuarial · customer with no previous profile",
         "coberturas": "Included coverages",
         "cobertura": {
           "fallecimiento": "Death from any cause",
-          "incapacidad": "Total and permanent disability",
-          "enfermedadesGraves": "Critical illness (advance)"
+          "incapacidad": "Total and permanent disability"
         },
-        "coberturaSaldo": "{{porcentaje}}% of the outstanding loan balance",
-        "coberturaSaldoTope": "{{porcentaje}}% of the balance, up to {{tope}}",
         "avisoPrecio": "Your price is calculated with your individual profile (age, financial habits and public sources), not with a standard rate by age and amount.",
         "terminos": "I accept the general and specific terms of the mortgage life policy and authorize charging the premium with my loan payment.",
-        "terminosError": "You must accept the terms to continue."
+        "terminosError": "You must accept the terms to continue.",
+        "tituloProvisional": "Your offer (provisional)",
+        "numeroVigencia": "Offer No. {{oferta}} · Valid until {{fecha}}",
+        "primaMensualEstimada": "Estimated monthly premium",
+        "primaNotaCache": "With a cached profile · subject to requoting if you do not accept it",
+        "primaNotaBase": "With the base profile · subject to requoting if you do not accept it",
+        "vigenciaMeses": "{{cantidad}} months · same as the loan term",
+        "perfilAplicadoIndividual": "Individual · calculated on {{fecha}}",
+        "perfilAplicadoCache": "Cached · {{fecha}}",
+        "perfilAplicadoVigente": "Individual · current profile",
+        "fuenteNoDisponible": "Unavailable source",
+        "fuente": {
+          "openFinance": "Open Finance",
+          "openData": "Open Data",
+          "kyc": "Identity verification (KYC)",
+          "otra": "An external source"
+        },
+        "provisional": {
+          "cache": {
+            "titulo": "We calculated your offer with your latest profile",
+            "texto": "We could not query {{fuente}} right now, so we used your latest profile, from {{fecha}}. If the information becomes available again, we will recalculate your offer and let you know."
+          },
+          "base": {
+            "titulo": "We calculated your offer with a general profile",
+            "texto": "We could not query {{fuente}} and we have no previous profile for you, so your offer was calculated with a general profile. If the information becomes available again, we will recalculate your offer and let you know."
+          }
+        },
+        "coberturaMonto": "Up to {{monto}}",
+        "condiciones": "Conditions",
+        "condicion": {
+          "vigencia24h": "The offer is valid for 24 hours from the moment it is generated.",
+          "beneficiarioOneroso": "The bank is the loss payee up to the outstanding loan balance.",
+          "primaMensual": "The premium is charged monthly together with your loan payment.",
+          "edadMaxima70": "The maximum insurable age is 70.",
+          "recotizacion": "If the information becomes available again, we will recalculate your offer and let you know."
+        }
       },
       "noRegistrada": {
         "titulo": "We could not register your acceptance",
@@ -363,7 +408,10 @@
         "noGracias": "No, thanks",
         "nuevaOferta": "Generate a new offer",
         "volverCotizar": "Get a new quote",
-        "verNuevaOferta": "View the new offer"
+        "verNuevaOferta": "View the new offer",
+        "generandoOferta": "Generating your new offer…",
+        "verOfertaRenovada": "View my renewed offer",
+        "verOfertaActualizada": "View my updated offer"
       },
       "datos": {
         "numeroSolicitud": "Request number",
@@ -391,7 +439,8 @@
         "emision": "Issuance started",
         "vencida": "Expired",
         "ajustada": "Adjusted",
-        "rechazada": "Rejected"
+        "rechazada": "Rejected",
+        "reemplazada": "Replaced"
       },
       "validando": {
         "titulo": "We registered your acceptance",
@@ -462,6 +511,24 @@
         "texto": "A Solventa advisor reviewed your request on {{fecha}} and the risk was not accepted. Nothing was charged. You can continue with your loan and the bank will tell you the next steps. We also sent it to your email.",
         "avisoTitulo": "Nothing was charged",
         "avisoTexto": "Your request {{numero}} is closed. If you have questions, contact your bank or Solventa."
+      },
+      "reemplazada": {
+        "titulo": "Your offer was updated with your real profile",
+        "texto": "Offer {{oferta}} was provisional. Your financial information is now available and we recalculated your offer with your real profile. The previous offer can no longer be accepted."
+      },
+      "errorRenovacion": {
+        "noRenovable": {
+          "titulo": "You can no longer renew this offer",
+          "texto": "Your details no longer meet the conditions to be insured. Contact your bank or Solventa."
+        },
+        "noDisponible": {
+          "titulo": "We could not generate your new offer",
+          "texto": "Try again in a few minutes. Trying again is safe."
+        },
+        "generico": {
+          "titulo": "We could not generate your new offer",
+          "texto": "An unexpected problem occurred. Please try again later."
+        }
       }
     },
     "pago": {

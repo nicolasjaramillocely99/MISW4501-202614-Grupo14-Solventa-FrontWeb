@@ -31,7 +31,7 @@ Tomado de [Definición de frameworks y ambientes](https://github.com/leonelparra
 | Accesibilidad | axe-core sobre Playwright | 4.13 |
 | Análisis estático | ESLint + angular-eslint | 10 / 22.5 |
 | Integración continua | GitHub Actions (por *pull request* y corrida nocturna) | — |
-| Dependencias vulnerables | Dependabot | — |
+| Dependencias vulnerables | Dependabot (alertas y actualizaciones de seguridad) y `npm audit` en la corrida nocturna | — |
 
 Navegadores soportados: las dos versiones más recientes de Chrome, Edge, Firefox y Safari en escritorio. Resolución de referencia 1440 × 900; ancho mínimo del *back-office* 1280 px. No hay versión web para teléfonos: el asegurado usa la app móvil nativa.
 
@@ -74,8 +74,8 @@ Antes de la primera corrida E2E: `npx playwright install chromium`.
 .
 ├── .github/
 │   ├── workflows/
-│   │   ├── ci.yml                  # PR a develop/main: lint → build → unitarias con cobertura
-│   │   └── e2e-nocturno.yml        # Corrida nocturna: Playwright + axe-core
+│   │   ├── ci.yml                  # PR y push a develop/main: lint → build → unitarias con cobertura, y E2E + axe-core en paralelo
+│   │   └── e2e-nocturno.yml        # Corrida nocturna: lint, build, unitarias, Playwright + axe-core y npm audit
 │   ├── dependabot.yml
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/
@@ -176,7 +176,7 @@ Definidos en [frameworks y ambientes](https://github.com/leonelparrales22/MISW45
 | Ambiente | Archivo de configuración | Uso |
 |---|---|---|
 | Local | `src/environments/environment.development.ts` | Desarrollo diario contra el Docker Compose del backend (PostgreSQL, Redis, LocalStack, stubs) |
-| Test / CI | — (sin despliegue) | Lint, build y unitarias en cada *pull request*; E2E nocturnas |
+| Test / CI | — (sin despliegue) | Lint, build, unitarias y E2E con axe-core en cada *pull request*; corrida nocturna con la suite completa y `npm audit` |
 | Staging | `src/environments/environment.staging.ts` | Experimentos de arquitectura; se enciende solo en su ventana |
 | Producción (demo) | `src/environments/environment.ts` | Entrega evaluable, desplegada por CI/CD |
 
@@ -191,7 +191,7 @@ Según la [estrategia de pruebas v1.2](https://github.com/leonelparrales22/MISW4
 | Nivel | Herramienta | Dónde | Cuándo corre |
 |---|---|---|---|
 | Unitarias y de componente (OBJ 02, ≥ 70 %) | Vitest + Testing Library | `*.spec.ts` junto al código | Cada *pull request* |
-| Extremo a extremo (OBJ 06): cotización y emisión, radicación y seguimiento de siniestro, incorporación de socio B2B; mínimo tres escenarios por flujo | Playwright | `e2e/flujos/` | Corrida nocturna y bajo demanda |
+| Extremo a extremo (OBJ 06): cotización y emisión, radicación y seguimiento de siniestro, incorporación de socio B2B; mínimo tres escenarios por flujo | Playwright | `e2e/flujos/` | Cada *pull request*, corrida nocturna y bajo demanda |
 | Accesibilidad (OBJ 13) | axe-core sobre Playwright | `e2e/accesibilidad/` | Con las E2E |
 | Internacionalización (OBJ 12) | Revisión de `public/i18n/` y casos manuales | — | Por sprint |
 | Usabilidad (OBJ 11) | Sesión moderada | — | Una por sprint |

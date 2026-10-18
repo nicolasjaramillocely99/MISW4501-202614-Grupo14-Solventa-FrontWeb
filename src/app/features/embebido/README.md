@@ -75,8 +75,13 @@
   `embebido.perfilRiesgo.*`; la web no calcula latencias, caché ni cortes.
 - `servicios/flujo-embebido.service.ts` (`FlujoEmbebidoService`) es el estado en memoria del flujo: HU-W1.2-01 deja la
   `solicitud` (tarjeta «Tu crédito» y número de solicitud; se oculta mientras no exista) y esta pantalla publica el `perfil`
-  para HU-W1.2-03. El aliado se publica en `core/aliado` para la barra del shell.
-- «Ver mi oferta» lleva a `/embebido/oferta` (llega con HU-W1.2-03) y «Cancelar» y «Volver al consentimiento» a `/embebido/consentimiento` (paso 1, HU-W1.2-01).
+  resuelto. El aliado se publica en `core/aliado` para la barra del shell.
+- «Ver mi oferta» (HU-W1.2-03) es un botón: genera la oferta con `OriginacionApiService.generarOferta` (`POST /v1/offers`, sin
+  sesión) a partir del cliente y el consentimiento que dejó el paso 1 (`ContextoLanzamientoService`) y de la solicitud
+  (`monto aprobado` → `insured_amount`, `plazoAnios × 12` → `term_months`, `numero` → `application_id`, `aliadoId` →
+  `partner_id`), se deshabilita mientras genera y abre `/embebido/oferta/:ofertaId`. Sin ese contexto, o con `consent_required` /
+  `consent_mismatch`, vuelve al paso 1; `validation_failed`, servicio caído y otros errores muestran su texto junto al botón.
+  «Cancelar» y «Volver al consentimiento» van a `/embebido/consentimiento` (paso 1, HU-W1.2-01).
 - E2E: `e2e/flujos/cotizacion-emision/perfil-riesgo.spec.ts` (API Gateway simulado con `page.route`, axe-core en cada estado).
 
 **Paso 5 · Póliza emitida: documento y notificación (HU-W1.3-03)** — `poliza-emitida/poliza-emitida.page.ts` (`PolizaEmitidaPage`, E5),
@@ -98,22 +103,32 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
 - Se abre desde el pago confirmado con «Ver mi póliza» (HA-D02, paso 4), con el `policy_id` que devuelve el cobro.
 - E2E: `e2e/flujos/cotizacion-emision/poliza-emitida.spec.ts` (Cognito y API Gateway simulados, axe-core en cada estado).
 
-**Paso 3 · Aceptación de la oferta y disparo de la emisión (HU-W1.3-01)** — `aceptacion-oferta/aceptacion-oferta.page.ts`
+**Paso 3 · Oferta personalizada, aceptación y disparo de la emisión (HU-W1.2-03, HU-W1.3-01)** — `aceptacion-oferta/aceptacion-oferta.page.ts`
 (`AceptacionOfertaPage`), rutas `/embebido/oferta/:ofertaId` y `/embebido/oferta` (retoma la oferta guardada en
-`sessionStorage`). Contrato: `HU-W1.3-01-api.md` del backend (servicio `origination`, `openapi.yaml` v0.4.0).
+`sessionStorage`). Contratos: `HU-W1.2-03-api.md` (oferta, `openapi.yaml` v0.10.0) y `HU-W1.3-01-api.md` (aceptación) del backend,
+servicio `origination`.
 
 - **Pide sesión, a diferencia del resto del canal:** aceptar exige el ID token de un asegurado dueño de la oferta, así que
   `oferta` lleva `autenticacionGuard` y, en los hijos, `rolGuard('asegurado')` (los hijos corren después de recuperar la
   sesión al recargar). Sin sesión lleva al inicio de sesión y regresa con `returnUrl`.
-- Llama a `OriginacionApiService` (`core/api/originacion/`): `consultarAceptacionDeOferta` al entrar (retomar el trámite;
-  `acceptance_not_found` = mostrar la oferta con «Aceptar»), `aceptarOferta` (`POST` con `{"channel":"web"}`, idempotente por
+- Llama a `OriginacionApiService` (`core/api/originacion/`): `consultarOferta` al entrar (`GET /v1/offers/{id}`: el primer asegurado
+  que la abre la reclama, y el backend exige leerla antes de aceptar), `consultarAceptacionDeOferta` (retomar el trámite;
+  `acceptance_not_found` = mostrar la oferta con «Aceptar»), `renovarOferta`, `aceptarOferta` (`POST` con `{"channel":"web"}`, idempotente por
   oferta; «Aceptar» se deshabilita mientras está en curso) y `consultarAceptacion` para el polling.
-- Estados dentro de la misma página: **oferta** (E3, con la casilla de condiciones), **registrada / validando**,
+- Estados dentro de la misma página: **oferta** (con la casilla de condiciones; **E3** normal, **E3b** provisional con el último
+  perfil en caché —marca de modo degradado, fuente caída, `fechaPerfil` y la condición de recotización— y **E3c** provisional con
+  el perfil base; coberturas y condiciones se traducen por su código y se omiten las que la pantalla no conoce),
+  **registrada / validando**,
   **aceptación conservada** (`registered` con `attempts > 0` o más de 2 minutos), **en revisión** (E6, `in_review`, motivo
   según `underwriting.reason`), **emisión iniciada** (`issuance_pending`), **solicitud ajustada** (E6b, `adjusted`, HU-W1.1-02:
   nueva prima frente a la anterior, vigencia de 24 h, aviso sin cobro y «Ver la nueva oferta» → `/embebido/oferta/{review.adjusted_offer.offer_id}`),
-  **solicitud rechazada** (E6c, `rejected`: riesgo no aceptado, sin cobro, «Continuar con mi crédito»), **oferta vencida** (E7,
-  `422 offer_expired` con `expires_at`) y errores (`offer_not_found`, sin servicio, sin oferta, genérico). E6b y E6c dicen
+  **solicitud rechazada** (E6c, `rejected`: riesgo no aceptado, sin cobro, «Continuar con mi crédito»), **oferta vencida** (E7: la
+  oferta llega con `status: expired` o `422 offer_expired`; «Generar una nueva oferta» llama a `renovarOferta` —idempotente— y abre
+  la nueva en esta misma página; `offer_still_valid` vuelve a leer la oferta, `offer_superseded` abre la que la reemplazó,
+  `consent_required` va al paso 1 y `validation_failed` informa que ya no se puede renovar), **oferta reemplazada** (CA-4: la oferta
+  llega con `status: superseded`, o aceptarla responde `422 offer_expired` y al consultarla resulta `superseded`; aviso «Tu oferta se
+  actualizó con tu perfil real» con la prima anterior y la nueva y «Ver mi oferta actualizada» → `superseded_by`; no tiene frame en Figma,
+  reutiliza el diseño de E7 por decisión del equipo) y errores (`offer_not_found`, sin servicio, sin oferta, genérico). E6b y E6c dicen
   «También te lo enviamos a tu correo»: el backend avisa por correo el ajuste y el rechazo (decisión D-3 c). El cliente ve la
   decisión al volver a consultar («Ver estado de la solicitud» o al regresar al flujo); `in_review` no se sigue con polling. Los textos salen del código `error`, nunca de
   `message`; `acceptance_not_registered` muestra el aviso junto a la oferta y «Reintentar» reenvía el mismo `POST`.
@@ -121,20 +136,22 @@ póliza activa, documento con «Descargar», confirmación al correo y tarjeta d
   contrato (primera consulta a 1 s, luego cada 2 s; hasta `next_attempt_at` + 1 s si el backend reintenta más tarde, con
   tope de 61 s; cada 15 s tras 2 minutos; se detiene en `issuance_pending`, `in_review`, 400, 401 o 403; ante
   `acceptance_unavailable` o error de red conserva la última pantalla; ante `acceptance_not_found` vuelve a consultar por
-  oferta). `servicios/tramite-aceptacion.service.ts` guarda `offer_id` y `acceptance_id` en `sessionStorage`.
+  oferta). `servicios/tramite-aceptacion.service.ts` guarda `offer_id` y `acceptance_id` en `sessionStorage` (al aceptar); si el trámite se
+  retoma desde la sesión del navegador y la oferta guardada fue reemplazada o renovada, la página sigue el enlace sola.
+  Las ofertas ajustadas (`adj-*`, HU-W1.1-02) y de demostración llegan con una vista reducida (`terms`, `conditions` y `profile` en
+  `null`): la pantalla pinta solo la prima y la vigencia.
 - `aceptacion-oferta.config.ts`: `ACCIONES_ACEPTACION_OFERTA` deja configurables «Generar una nueva oferta» / «Volver a
-  cotizar» (hoy `/embebido/consentimiento`, hasta que HU-W1.2-03 publique el endpoint de nuevas ofertas), «No me interesa»
-  / «Continuar con mi crédito» (`/inicio`) y «Ver la nueva oferta» (`oferta`: `/embebido/oferta`, HU-W1.1-02). `DETALLE_OFERTA`
-  entrega el contenido de la oferta (la oferta ajustada se muestra con estos mismos datos de prueba hasta HU-W1.2-03; E6b sí
-  muestra su prima real).
+  cotizar» (`nuevaOferta`: `/embebido/consentimiento`, solo como respaldo cuando la renovación pide consentimiento o la oferta no se
+  puede renovar, p. ej. una de demostración vencida), «No me interesa» / «Continuar con mi crédito» (`/inicio`) y «Ver la nueva
+  oferta» (`oferta`: `/embebido/oferta`, HU-W1.1-02).
 - La página sigue `paramMap`, no el `snapshot`: Angular la reutiliza al pasar de `/embebido/oferta/A` a la oferta ajustada, y
   cada cambio de parámetro la abre desde cero (detiene el seguimiento y desmarca las condiciones).
-- **Datos de prueba provisionales:** `modelos/detalle-oferta.provisional.ts` (prima 89 500 COP de las ofertas simuladas del
-  backend; valor asegurado, vigencia, beneficiario y coberturas del frame E3). Se elimina cuando HU-W1.2-03 exponga el
-  detalle de la oferta.
+- `componentes/detalle-oferta/` (`DetalleOfertaComponent`): resumen presentacional de la `Oferta` (prima, valor asegurado, vigencia,
+  beneficiario = banco de la solicitud, perfil aplicado, coberturas, condiciones y el aviso de modo provisional).
 - `componentes/tarjeta-credito/` (`TarjetaCreditoComponent`): la tarjeta «Tu crédito», reutilizable por los pasos del canal.
-- E2E: `e2e/flujos/cotizacion-emision/aceptacion-oferta.spec.ts` (Cognito y API Gateway simulados con `page.route`,
-  axe-core en cada estado).
+- E2E: `e2e/flujos/cotizacion-emision/aceptacion-oferta.spec.ts` y `oferta-personalizada.spec.ts` (consentimiento → perfil →
+  «Ver mi oferta» → sesión → E3; E3b, E3c, E7 con renovación y la oferta reemplazada; Cognito y API Gateway simulados con
+  `page.route`, axe-core en cada estado).
 
 **Paso 4 · Pago de la prima: estado del cobro (HA-D02, frame E4b)** — `pago/pago.page.ts` (`PagoPage`), rutas
 `/embebido/pago/:aceptacionId` y `/embebido/pago` (toma la aceptación guardada en `sessionStorage` por el paso 3). Contrato:

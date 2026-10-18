@@ -1,11 +1,20 @@
 import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, ParamMap, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { fireEvent, render, screen } from '@testing-library/angular';
+import {
+  OFERTA_CON_CACHE_DTO,
+  OFERTA_NORMAL_DTO,
+  OFERTA_PERFIL_BASE_DTO,
+  OFERTA_REDUCIDA_DTO,
+  OFERTA_REEMPLAZADA_DTO,
+  OFERTA_VENCIDA_DTO,
+} from '@testing/oferta-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { BehaviorSubject, Observable, Subject, of, throwError } from 'rxjs';
 
 import { Aceptacion, ErrorAceptacion, MotivoRevision } from '@core/api/originacion/aceptacion.modelos';
+import { ErrorOferta, Oferta, OfertaDto, mapearOferta } from '@core/api/originacion/oferta.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
@@ -32,6 +41,11 @@ function aceptacion(cambios: Partial<Aceptacion> = {}): Aceptacion {
   };
 }
 
+/** La oferta que devuelve `GET /v1/offers/{id}`, con el identificador pedido. */
+function oferta(dto: OfertaDto = OFERTA_NORMAL_DTO, cambios: Partial<Oferta> = {}): Oferta {
+  return { ...mapearOferta(dto), ...cambios };
+}
+
 const EN_REVISION = aceptacion({
   estado: 'in_review',
   suscripcion: { resultado: 'human_review', motivo: 'provisional_offer', decididaEn: '2026-10-12T01:54:42Z' },
@@ -41,6 +55,9 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
   let aceptar: Llamada;
   let consultar: Llamada;
   let consultarDeOferta: Llamada;
+  let consultarOferta: ReturnType<typeof vi.fn<(id: string) => Observable<Oferta>>>;
+  let renovarOferta: ReturnType<typeof vi.fn<(id: string) => Observable<Oferta>>>;
+  let navegar: ReturnType<typeof vi.spyOn>;
   let manejador: { handleError: ReturnType<typeof vi.fn> };
   /** Parámetros de la ruta: la página los sigue porque Angular la reutiliza al cambiar de oferta (E6b). */
   let parametros: BehaviorSubject<ParamMap>;
@@ -48,13 +65,16 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
   async function renderizar({
     ofertaId = 'demo-active-1' as string | null,
     deOferta = NO_ACEPTADA() as Observable<Aceptacion>,
+    detalle = (id: string): Observable<Oferta> => of(oferta(OFERTA_NORMAL_DTO, { id })),
   } = {}) {
     aceptar = vi.fn();
     consultar = vi.fn();
     consultarDeOferta = vi.fn().mockReturnValue(deOferta);
+    consultarOferta = vi.fn(detalle);
+    renovarOferta = vi.fn();
     manejador = { handleError: vi.fn() };
     parametros = new BehaviorSubject(convertToParamMap(ofertaId ? { ofertaId } : {}));
-    return render(AceptacionOfertaPage, {
+    const resultado = await render(AceptacionOfertaPage, {
       imports: [proveerTranslocoPruebas()],
       providers: [
         provideRouter([]),
@@ -65,6 +85,8 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
             aceptarOferta: aceptar,
             consultarAceptacion: consultar,
             consultarAceptacionDeOferta: consultarDeOferta,
+            consultarOferta,
+            renovarOferta,
           },
         },
         {
@@ -73,6 +95,7 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
         },
       ],
     });
+    return resultado;
   }
 
   function titulo(): string {
@@ -88,6 +111,7 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
   }
 
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.useRealTimers();
     sessionStorage.clear();
   });
@@ -96,33 +120,89 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
     it('retoma por la oferta y, si no tiene aceptación, muestra la oferta con «Aceptar»', async () => {
       await renderizar();
 
+      expect(consultarOferta).toHaveBeenCalledWith('demo-active-1');
       expect(consultarDeOferta).toHaveBeenCalledWith('demo-active-1');
       expect(titulo()).toBe('Tu oferta personalizada');
-      expect(screen.getByText('Oferta N.º demo-active-1')).toBeTruthy();
-      expect(screen.getByText(/89\.500 COP/)).toBeTruthy();
+      expect(screen.getByText(/Oferta N\.º demo-active-1 · Vigente hasta .*2026/)).toBeTruthy();
+      expect(screen.getByText('Personalizada')).toBeTruthy();
+      expect(screen.getByText(/132\.000 COP/)).toBeTruthy();
       expect(screen.getByText('Fallecimiento por cualquier causa')).toBeTruthy();
-      expect(screen.getByText(/30 % del saldo, hasta .*75\.000\.000 COP/)).toBeTruthy();
+      expect(screen.getByText('Incapacidad total y permanente')).toBeTruthy();
+      expect(screen.getAllByText(/Hasta .*250\.000\.000 COP/)).toHaveLength(2);
+      expect(screen.getByText('20 años · igual al plazo del crédito')).toBeTruthy();
+      expect(screen.getByText('La oferta está vigente por 24 horas desde que se genera.')).toBeTruthy();
+      expect(screen.getByText('La edad máxima asegurable es de 70 años.')).toBeTruthy();
+      expect(screen.getByText(/Tu precio se calcula con tu perfil individual/)).toBeTruthy();
       expect(screen.getByRole('link', { name: 'No me interesa' }).getAttribute('href')).toBe('/inicio');
       expect(botonAceptar().disabled).toBe(false);
     });
 
-    it('marca la oferta como personalizada con el perfil del paso 2', async () => {
+    it('muestra el banco de la solicitud como beneficiario oneroso', async () => {
       await renderizar();
-      TestBed.inject(FlujoEmbebidoService).perfil.set({
-        clienteId: 'cli-1',
-        modo: 'provisional',
-        origen: 'cache',
-        puntaje: 600,
-        categoria: 'C',
-        fechaPerfil: '2026-09-16T19:02:00Z',
-        fuenteNoDisponible: 'open_finance',
-        aviso: 'last_profile_in_use',
-        parcial: false,
-        fuentes: [],
+      TestBed.inject(FlujoEmbebidoService).solicitud.set({
+        numero: '48213',
+        aliado: 'Banco Aliado',
+        banco: 'Banco del Valle',
+        montoAprobado: 250000000,
+        plazoAnios: 20,
+        cuotaEstimada: 2180000,
+        moneda: 'COP',
       });
-      await screen.findByText('Provisional');
+      await screen.findByText(/Banco del Valle \(saldo insoluto\)/);
+    });
 
-      expect(screen.getByText(/Categoría C · calculado el/)).toBeTruthy();
+    it('E3b: con perfil en caché marca la oferta como provisional, con la fecha del perfil y la recotización', async () => {
+      await renderizar({ detalle: (id) => of(oferta(OFERTA_CON_CACHE_DTO, { id })) });
+
+      expect(titulo()).toBe('Tu oferta (provisional)');
+      expect(screen.getByText('Provisional')).toBeTruthy();
+      expect(screen.getByText('Calculamos tu oferta con tu último perfil')).toBeTruthy();
+      expect(screen.getByText(/No pudimos consultar Open Finance en este momento, así que usamos tu último perfil, del .*2026/)).toBeTruthy();
+      expect(screen.getByText('Prima mensual estimada')).toBeTruthy();
+      expect(screen.getByText(/En caché · .*2026/)).toBeTruthy();
+      expect(screen.getByText('Fuente no disponible')).toBeTruthy();
+      expect(screen.getAllByText(/recalcularemos tu oferta y te avisaremos/).length).toBeGreaterThan(0);
+      expect(screen.queryByText(/Tu precio se calcula con tu perfil individual/)).toBeNull();
+      expect(botonAceptar().disabled).toBe(false);
+    });
+
+    it('E3c: con el perfil base lo dice y no inventa una fecha de perfil', async () => {
+      await renderizar({ detalle: (id) => of(oferta(OFERTA_PERFIL_BASE_DTO, { id })) });
+
+      expect(titulo()).toBe('Tu oferta (provisional)');
+      expect(screen.getByText('Calculamos tu oferta con un perfil general')).toBeTruthy();
+      expect(screen.getByText('Base actuarial · cliente sin perfil previo')).toBeTruthy();
+      expect(screen.getByText(/Con perfil base · sujeta a recotización/)).toBeTruthy();
+    });
+
+    it('con una oferta ajustada o de demostración pinta solo la prima y la vigencia', async () => {
+      await renderizar({ detalle: (id) => of(oferta(OFERTA_REDUCIDA_DTO, { id })) });
+
+      expect(titulo()).toBe('Tu oferta personalizada');
+      expect(screen.getByText(/89\.500 COP/)).toBeTruthy();
+      expect(screen.getByText(/Vigente hasta/)).toBeTruthy();
+      expect(screen.queryByText('Coberturas incluidas')).toBeNull();
+      expect(screen.queryByText('Condiciones')).toBeNull();
+      expect(screen.queryByText('Valor asegurado')).toBeNull();
+      expect(screen.queryByText('Perfil aplicado')).toBeNull();
+      expect(botonAceptar().disabled).toBe(false);
+    });
+
+    it('omite una cobertura o condición que no conoce en lugar de mostrar su código', async () => {
+      const desconocida = oferta(OFERTA_NORMAL_DTO, {
+        coberturas: [{ codigo: 'otra_cobertura', valorAsegurado: 1 }],
+        condiciones: ['condicion_nueva'],
+      });
+      await renderizar({ detalle: () => of(desconocida) });
+
+      expect(screen.queryByText(/otra_cobertura|condicion_nueva/)).toBeNull();
+      expect(screen.queryByText('Coberturas incluidas')).toBeNull();
+    });
+
+    it('expresa el plazo en meses cuando no es un número exacto de años', async () => {
+      await renderizar({ detalle: () => of(oferta(OFERTA_NORMAL_DTO, { plazoMeses: 18 })) });
+
+      expect(screen.getByText('18 meses · igual al plazo del crédito')).toBeTruthy();
     });
 
     it('exige aceptar las condiciones antes de enviar', async () => {
@@ -199,7 +279,7 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
       expect(screen.getByText('En revisión')).toBeTruthy();
       expect(screen.getByText('Tu oferta se calculó con información provisional')).toBeTruthy();
       expect(screen.getByText(EN_REVISION.aceptacionId)).toBeTruthy();
-      expect(screen.getByText(/La oferta demo-active-1 y su prima de .*89\.500 COP/)).toBeTruthy();
+      expect(screen.getByText(/La oferta demo-active-1 y su prima de .*132\.000 COP/)).toBeTruthy();
     });
 
     it('si se pierde la respuesta del POST, «Reintentar» reenvía el mismo POST (acceptance_not_registered)', async () => {
@@ -252,6 +332,246 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
       );
       expect(screen.getByRole('link', { name: 'No, gracias' })).toBeTruthy();
       expect(screen.queryByRole('button', { name: /Aceptar oferta/ })).toBeNull();
+    });
+  });
+
+  describe('oferta vencida: generar una nueva (E7 · HU-W1.2-03)', () => {
+    const VENCIDA = (id = 'off-seedr1792338656') => of(oferta(OFERTA_VENCIDA_DTO, { id }));
+
+    it('al abrir una vencida muestra E7 con la oferta anterior y su vencimiento, sin ofrecer aceptarla', async () => {
+      await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+
+      expect(titulo()).toBe('Esta oferta venció');
+      expect(screen.getByText(/La oferta off-seedr1792338656 venció el .*2026/)).toBeTruthy();
+      expect(screen.getByText(/132\.000 COP \/ mes/)).toBeTruthy();
+      expect(screen.getByText('Vencida')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: /Aceptar oferta/ })).toBeNull();
+      expect(screen.getByRole('button', { name: 'Generar una nueva oferta' })).toBeTruthy();
+    });
+
+    it('«Generar una nueva oferta» renueva la oferta y abre la nueva en esta misma página', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+      navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      const respuesta = new Subject<Oferta>();
+      renovarOferta.mockReturnValue(respuesta);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generar una nueva oferta' }));
+      detectChanges();
+      expect(renovarOferta).toHaveBeenCalledWith('off-seedr1792338656');
+      expect((screen.getByRole('button', { name: /Generando tu nueva oferta/ }) as HTMLButtonElement).disabled).toBe(true);
+
+      respuesta.next(oferta(OFERTA_NORMAL_DTO, { id: 'off-nueva' }));
+      expect(navegar).toHaveBeenCalledWith(['/embebido/oferta', 'off-nueva'], { replaceUrl: true });
+    });
+
+    it('si la oferta ya se renovó ofrece ir a la renovada, sin volver a renovar', async () => {
+      await renderizar({
+        ofertaId: 'off-seedr1792338656',
+        detalle: () => of(oferta(OFERTA_VENCIDA_DTO, { puedeRenovar: false, renovadaPor: 'off-renovada' })),
+      });
+
+      expect(screen.queryByRole('button', { name: 'Generar una nueva oferta' })).toBeNull();
+      expect(screen.getByRole('link', { name: 'Ver mi oferta renovada' }).getAttribute('href')).toBe(
+        '/embebido/oferta/off-renovada',
+      );
+    });
+
+    it('al retomar desde la sesión del navegador sigue sola la renovación', async () => {
+      sessionStorage.setItem(CLAVE_TRAMITE_ACEPTACION, JSON.stringify({ ofertaId: 'off-vieja', aceptacionId: 'a-1' }));
+      navegar = vi.spyOn(Router.prototype, 'navigate').mockResolvedValue(true);
+
+      await renderizar({
+        ofertaId: null,
+        detalle: () => of(oferta(OFERTA_VENCIDA_DTO, { renovadaPor: 'off-renovada' })),
+      });
+
+      expect(navegar).toHaveBeenCalledWith(['/embebido/oferta', 'off-renovada'], { replaceUrl: true });
+    });
+
+    it('offer_still_valid vuelve a leer la oferta', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+      renovarOferta.mockReturnValue(throwError(() => new ErrorOferta('offer_still_valid')));
+      consultarOferta.mockReturnValue(of(oferta(OFERTA_NORMAL_DTO, { id: 'off-seedr1792338656' })));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generar una nueva oferta' }));
+      detectChanges();
+
+      expect(consultarOferta).toHaveBeenCalledTimes(2);
+      expect(titulo()).toBe('Tu oferta personalizada');
+    });
+
+    it('offer_superseded abre la oferta que la reemplazó', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+      navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      renovarOferta.mockReturnValue(throwError(() => new ErrorOferta('offer_superseded', 'off-nueva')));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generar una nueva oferta' }));
+      detectChanges();
+
+      expect(navegar).toHaveBeenCalledWith(['/embebido/oferta', 'off-nueva'], { replaceUrl: true });
+    });
+
+    it('consent_required lleva al paso de consentimiento', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+      const irA = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      renovarOferta.mockReturnValue(throwError(() => new ErrorOferta('consent_required')));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generar una nueva oferta' }));
+      detectChanges();
+
+      expect(irA).toHaveBeenCalledWith('/embebido/consentimiento');
+    });
+
+    it('validation_failed dice que ya no se puede renovar y retira la acción', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+      renovarOferta.mockReturnValue(throwError(() => new ErrorOferta('validation_failed')));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generar una nueva oferta' }));
+      detectChanges();
+
+      expect(screen.getByText('Ya no puedes renovar esta oferta')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'Generar una nueva oferta' })).toBeNull();
+    });
+
+    it.each([
+      ['consent_unverifiable', 'No pudimos generar tu nueva oferta', 'Intenta de nuevo en unos minutos'],
+      ['offer_unavailable', 'No pudimos generar tu nueva oferta', 'Intenta de nuevo en unos minutos'],
+    ] as const)('%s permite reintentar', async (codigo, titulo, texto) => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656', detalle: () => VENCIDA() });
+      renovarOferta.mockReturnValue(throwError(() => new ErrorOferta(codigo)));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generar una nueva oferta' }));
+      detectChanges();
+
+      expect(screen.getByText(titulo)).toBeTruthy();
+      expect(screen.getByText(new RegExp(texto))).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Generar una nueva oferta' })).toBeTruthy();
+    });
+  });
+
+  describe('oferta reemplazada (CA-4 · HU-W1.2-03)', () => {
+    const NUEVA = oferta(OFERTA_NORMAL_DTO, { id: 'off-7618b94e3329fa1b05c7d6b5f4ab2297', primaMensual: 135_400 });
+
+    function detalleReemplazo(id: string): Observable<Oferta> {
+      return of(id === OFERTA_REEMPLAZADA_DTO.offer_id ? oferta(OFERTA_REEMPLAZADA_DTO) : NUEVA);
+    }
+
+    it('al cargar una reemplazada avisa que se actualizó, con la prima anterior y la nueva', async () => {
+      await renderizar({ ofertaId: OFERTA_REEMPLAZADA_DTO.offer_id, detalle: detalleReemplazo });
+
+      expect(titulo()).toBe('Tu oferta se actualizó con tu perfil real');
+      expect(screen.getByText('Reemplazada')).toBeTruthy();
+      expect(screen.getByText(/135\.400 COP · antes .*147\.400 COP/)).toBeTruthy();
+      expect(screen.getByRole('link', { name: 'Ver mi oferta actualizada' }).getAttribute('href')).toBe(
+        '/embebido/oferta/off-7618b94e3329fa1b05c7d6b5f4ab2297',
+      );
+      expect(consultarDeOferta).not.toHaveBeenCalled();
+      expect(screen.queryByRole('button', { name: /Aceptar oferta/ })).toBeNull();
+    });
+
+    it('mantiene el aviso y el enlace aunque no se pueda leer la oferta nueva', async () => {
+      await renderizar({
+        ofertaId: OFERTA_REEMPLAZADA_DTO.offer_id,
+        detalle: (id) =>
+          id === OFERTA_REEMPLAZADA_DTO.offer_id
+            ? of(oferta(OFERTA_REEMPLAZADA_DTO))
+            : throwError(() => new ErrorOferta('offer_unavailable')),
+      });
+
+      expect(titulo()).toBe('Tu oferta se actualizó con tu perfil real');
+      expect(screen.queryByText('Nueva prima mensual')).toBeNull();
+      expect(screen.getByRole('link', { name: 'Ver mi oferta actualizada' })).toBeTruthy();
+    });
+
+    it('al aceptar una reemplazada (422 offer_expired) consulta la oferta y muestra el aviso', async () => {
+      const { detectChanges } = await renderizar({
+        ofertaId: OFERTA_REEMPLAZADA_DTO.offer_id,
+        detalle: (id) => of(oferta(OFERTA_NORMAL_DTO, { id })),
+      });
+      aceptar.mockReturnValue(throwError(() => new ErrorAceptacion('offer_expired', '2026-10-18T15:53:02.442028Z')));
+      consultarOferta.mockImplementation(detalleReemplazo);
+      marcarTerminos();
+
+      fireEvent.click(botonAceptar());
+      detectChanges();
+
+      expect(consultarOferta).toHaveBeenLastCalledWith(NUEVA.id);
+      expect(titulo()).toBe('Tu oferta se actualizó con tu perfil real');
+      expect(screen.getByRole('link', { name: 'Ver mi oferta actualizada' })).toBeTruthy();
+    });
+
+    it('al aceptar una vencida (422 offer_expired) que no fue reemplazada muestra E7', async () => {
+      const { detectChanges } = await renderizar({ ofertaId: 'off-seedr1792338656' });
+      aceptar.mockReturnValue(throwError(() => new ErrorAceptacion('offer_expired', '2026-10-17T15:53:06Z')));
+      consultarOferta.mockReturnValue(of(oferta(OFERTA_VENCIDA_DTO)));
+      marcarTerminos();
+
+      fireEvent.click(botonAceptar());
+      detectChanges();
+
+      expect(titulo()).toBe('Esta oferta venció');
+      expect(screen.getByRole('button', { name: 'Generar una nueva oferta' })).toBeTruthy();
+    });
+
+    it('si no puede leer la oferta tras offer_expired informa que venció', async () => {
+      const { detectChanges } = await renderizar();
+      aceptar.mockReturnValue(throwError(() => new ErrorAceptacion('offer_expired')));
+      consultarOferta.mockReturnValue(throwError(() => new ErrorOferta('offer_unavailable')));
+      marcarTerminos();
+
+      fireEvent.click(botonAceptar());
+      detectChanges();
+
+      expect(titulo()).toBe('Esta oferta venció');
+    });
+
+    it('al retomar desde la sesión del navegador sigue sola el enlace del reemplazo', async () => {
+      sessionStorage.setItem(
+        CLAVE_TRAMITE_ACEPTACION,
+        JSON.stringify({ ofertaId: OFERTA_REEMPLAZADA_DTO.offer_id, aceptacionId: 'a-1' }),
+      );
+      navegar = vi.spyOn(Router.prototype, 'navigate').mockResolvedValue(true);
+
+      await renderizar({ ofertaId: null, detalle: detalleReemplazo });
+
+      expect(navegar).toHaveBeenCalledWith(['/embebido/oferta', NUEVA.id], { replaceUrl: true });
+    });
+  });
+
+  describe('lectura de la oferta (HU-W1.2-03)', () => {
+    it.each([
+      ['offer_not_found', 'Esta oferta no existe o ya no está disponible'],
+      ['invalid_request', 'Esta oferta no existe o ya no está disponible'],
+      ['offer_unavailable', 'No pudimos consultar tu trámite'],
+    ] as const)('%s muestra su estado de error', async (codigo, esperado) => {
+      await renderizar({ detalle: () => throwError(() => new ErrorOferta(codigo)) });
+
+      expect(titulo()).toBe(esperado);
+      expect(consultarDeOferta).not.toHaveBeenCalled();
+    });
+
+    it('con un 401 o 403 no muestra un error propio: el interceptor lleva a la pantalla de acceso', async () => {
+      await renderizar({ detalle: () => throwError(() => new ErrorOferta('forbidden')) });
+
+      expect(titulo()).toBe('Estamos consultando tu oferta');
+    });
+
+    it('un error inesperado se registra en el manejador global y muestra el error genérico', async () => {
+      const error = new ErrorOferta('validation_failed');
+      await renderizar({ detalle: () => throwError(() => error) });
+
+      expect(manejador.handleError).toHaveBeenCalledWith(error);
+      expect(titulo()).toBe('No pudimos procesar tu solicitud');
+    });
+
+    it('«Reintentar» vuelve a leer la oferta', async () => {
+      const { detectChanges } = await renderizar({ detalle: () => throwError(() => new ErrorOferta('offer_unavailable')) });
+      consultarOferta.mockReturnValue(of(oferta()));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+      detectChanges();
+
+      expect(titulo()).toBe('Tu oferta personalizada');
     });
   });
 
@@ -439,7 +759,7 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
       expect(screen.getByText(/También te lo enviamos a tu correo\./)).toBeTruthy();
       expect(screen.getByText('Ajustada')).toBeTruthy();
       expect(screen.getByText(AJUSTADA.aceptacionId)).toBeTruthy();
-      expect(screen.getByText(/98\.450 COP · antes .*89\.500 COP/)).toBeTruthy();
+      expect(screen.getByText(/98\.450 COP · antes .*132\.000 COP/)).toBeTruthy();
       expect(screen.getByText(/^Hasta el .* \(24 horas\)$/)).toBeTruthy();
       expect(screen.getByText('Aún no se ha hecho ningún cobro')).toBeTruthy();
       expect(screen.getByText('La nueva oferta reemplaza a demo-review-1. Solo se cobrará la prima cuando aceptes la nueva oferta.')).toBeTruthy();
@@ -485,7 +805,8 @@ describe('AceptacionOfertaPage (E3, E6, E7 · HU-W1.3-01)', () => {
 
       expect(consultarDeOferta).toHaveBeenLastCalledWith('adj-b310b02b-9820-4725-bded-586d263dd16e');
       expect(titulo()).toBe('Tu oferta personalizada');
-      expect(screen.getByText('Oferta N.º adj-b310b02b-9820-4725-bded-586d263dd16e')).toBeTruthy();
+      expect(consultarOferta).toHaveBeenLastCalledWith('adj-b310b02b-9820-4725-bded-586d263dd16e');
+      expect(screen.getByText(/Oferta N\.º adj-b310b02b-9820-4725-bded-586d263dd16e/)).toBeTruthy();
       expect((screen.getByRole('checkbox', { name: /Acepto las condiciones generales/ }) as HTMLInputElement).checked).toBe(false);
       expect(botonAceptar().disabled).toBe(false);
     });

@@ -124,6 +124,16 @@
         </div>
       }
 
+      @if (errorOferta(); as motivoOferta) {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <div>
+            <p class="aviso__titulo">{{ t('perfilRiesgo.errorOferta.' + motivoOferta + '.titulo') }}</p>
+            <p>{{ t('perfilRiesgo.errorOferta.' + motivoOferta + '.texto') }}</p>
+          </div>
+        </div>
+      }
+
       <div class="acciones">
         @if (fase() === 'error' && motivoError() === 'consentimiento') {
           <a class="boton boton--primario" routerLink="/embebido/consentimiento">{{ t('perfilRiesgo.acciones.volverConsentimiento') }}</a>
@@ -131,7 +141,9 @@
           <a class="boton boton--secundario" routerLink="/embebido/consentimiento">{{ t('perfilRiesgo.acciones.cancelar') }}</a>
           @switch (fase()) {
             @case ('listo') {
-              <a class="boton boton--primario" routerLink="/embebido/oferta">{{ t('perfilRiesgo.acciones.verOferta') }}</a>
+              <button type="button" class="boton boton--primario" [disabled]="generandoOferta()" (click)="verOferta()">
+                {{ t(generandoOferta() ? 'perfilRiesgo.acciones.generandoOferta' : 'perfilRiesgo.acciones.verOferta') }}
+              </button>
             }
             @case ('error') {
               <button type="button" class="boton boton--primario" (click)="calcular()">{{ t('perfilRiesgo.acciones.reintentar') }}</button>

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import {
   LucideCircleAlert,
@@ -14,6 +14,7 @@ import {
 } from '@lucide/angular';
 
 import { ContextoAliadoService } from '@core/aliado/contexto-aliado.service';
+import { ErrorOferta } from '@core/api/originacion/oferta.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 import {
   FuentePerfil,
@@ -25,10 +26,13 @@ import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
 import { IndicadorPasosComponent, PasoFlujo } from '@shared/ui/indicador-pasos/indicador-pasos.component';
 import { InsigniaEstadoComponent, TonoInsignia } from '@shared/ui/insignia-estado/insignia-estado.component';
 
+import { ContextoLanzamientoService } from '../servicios/contexto-lanzamiento.service';
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
 
 type Fase = 'calculando' | 'listo' | 'error';
 type MotivoError = 'consentimiento' | 'generico';
+/** Por qué no se pudo generar la oferta al pulsar «Ver mi oferta». */
+type MotivoErrorOferta = 'datos' | 'noDisponible' | 'generico';
 type Icono = 'listo' | 'enCurso' | 'alerta' | 'pendiente';
 type TonoAviso = 'informacion' | 'exito' | 'advertencia' | 'error';
 
@@ -70,6 +74,9 @@ const CLAVE_FUENTE: Record<NombreFuente, string> = {
  *
  * Ruta: `/embebido/perfil-riesgo/:clienteId?consentimiento=true`. El consentimiento lo afirma quien
  * navega (HU-W1.2-01); sin él, el backend responde 422 y no consulta ninguna fuente.
+ *
+ * «Ver mi oferta» (HU-W1.2-03) genera la oferta con `POST /v1/offers`, con el cliente y el consentimiento del paso 1
+ * y el crédito del aliado, y abre `/embebido/oferta/:ofertaId`.
  */
 @Component({
   selector: 'app-perfil-riesgo-page',
@@ -95,7 +102,9 @@ const CLAVE_FUENTE: Record<NombreFuente, string> = {
 export class PerfilRiesgoPage implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
   private readonly api = inject(OriginacionApiService);
+  private readonly router = inject(Router);
   private readonly flujo = inject(FlujoEmbebidoService);
+  private readonly contexto = inject(ContextoLanzamientoService);
   private readonly aliado = inject(ContextoAliadoService);
   private readonly destruccion = inject(DestroyRef);
 
@@ -103,6 +112,9 @@ export class PerfilRiesgoPage implements OnInit {
   protected readonly fase = signal<Fase>('calculando');
   protected readonly perfil = signal<PerfilRiesgo | null>(null);
   protected readonly motivoError = signal<MotivoError>('generico');
+  /** `POST /v1/offers` en curso: «Ver mi oferta» queda deshabilitado. */
+  protected readonly generandoOferta = signal(false);
+  protected readonly errorOferta = signal<MotivoErrorOferta | null>(null);
 
   protected readonly pasos = computed<readonly PasoFlujo[]>(() => {
     const completado = this.fase() === 'listo';
@@ -195,6 +207,66 @@ export class PerfilRiesgoPage implements OnInit {
   ngOnInit(): void {
     this.aliado.establecer(this.solicitud()?.aliado ?? null);
     this.calcular();
+  }
+
+  /**
+   * Genera la oferta con el cliente y el consentimiento del paso 1. Sin ellos (la página se abrió sin pasar por el
+   * consentimiento) o si el backend pide el consentimiento, se vuelve al paso 1.
+   */
+  protected verOferta(): void {
+    const cliente = this.contexto.cliente();
+    const aliadoId = this.contexto.aliadoId();
+    const consentimiento = this.contexto.consentimiento();
+    const solicitud = this.solicitud();
+    if (this.generandoOferta()) {
+      return;
+    }
+    if (!cliente || !aliadoId || !consentimiento || !solicitud) {
+      void this.router.navigateByUrl('/embebido/consentimiento');
+      return;
+    }
+    this.generandoOferta.set(true);
+    this.errorOferta.set(null);
+    this.api
+      .generarOferta({
+        clienteId: cliente.id,
+        consentimientoId: consentimiento.id,
+        aliadoId,
+        solicitudId: solicitud.numero,
+        documento: cliente.documento,
+        nombreCompleto: cliente.nombreCompleto,
+        correo: cliente.correo,
+        fechaNacimiento: cliente.fechaNacimiento,
+        valorAsegurado: solicitud.montoAprobado,
+        plazoMeses: solicitud.plazoAnios * 12,
+      })
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (oferta) => void this.router.navigate(['/embebido/oferta', oferta.id]),
+        error: (error: unknown) => {
+          this.generandoOferta.set(false);
+          this.alFallarOferta(error);
+        },
+      });
+  }
+
+  private alFallarOferta(error: unknown): void {
+    switch (error instanceof ErrorOferta ? error.codigo : 'offer_unavailable') {
+      case 'consent_required':
+      case 'consent_mismatch':
+        void this.router.navigateByUrl('/embebido/consentimiento');
+        break;
+      case 'validation_failed':
+      case 'invalid_request':
+        this.errorOferta.set('datos');
+        break;
+      case 'consent_unverifiable':
+      case 'offer_unavailable':
+        this.errorOferta.set('noDisponible');
+        break;
+      default:
+        this.errorOferta.set('generico');
+    }
   }
 
   protected calcular(): void {

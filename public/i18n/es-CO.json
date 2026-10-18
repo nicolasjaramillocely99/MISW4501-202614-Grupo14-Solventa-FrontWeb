@@ -312,7 +312,22 @@
         "calculando": "Calculando…",
         "verOferta": "Ver mi oferta",
         "reintentar": "Reintentar",
-        "volverConsentimiento": "Volver al consentimiento"
+        "volverConsentimiento": "Volver al consentimiento",
+        "generandoOferta": "Generando tu oferta…"
+      },
+      "errorOferta": {
+        "datos": {
+          "titulo": "No pudimos generar tu oferta",
+          "texto": "Los datos de tu crédito no son válidos para cotizar. Comunícate con tu banco."
+        },
+        "noDisponible": {
+          "titulo": "No pudimos generar tu oferta",
+          "texto": "Intenta de nuevo en unos minutos."
+        },
+        "generico": {
+          "titulo": "No pudimos generar tu oferta",
+          "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
+        }
       }
     },
     "aceptacionOferta": {
@@ -321,7 +336,6 @@
       },
       "oferta": {
         "titulo": "Tu oferta personalizada",
-        "numero": "Oferta N.º {{oferta}}",
         "insignia": {
           "normal": "Personalizada",
           "provisional": "Provisional"
@@ -330,23 +344,54 @@
         "primaNota": "Se suma a la cuota mensual de tu crédito",
         "valorAsegurado": "Valor asegurado",
         "vigencia": "Vigencia",
-        "vigenciaValor": "{{anios}} años · igual al plazo del crédito",
+        "vigenciaValor": "{{cantidad}} años · igual al plazo del crédito",
         "beneficiario": "Beneficiario oneroso",
         "beneficiarioValor": "{{banco}} (saldo insoluto) · remanente a tus herederos",
         "perfilAplicado": "Perfil aplicado",
-        "perfilAplicadoValor": "Categoría {{categoria}} · calculado el {{fecha}}",
-        "perfilBase": "Perfil actuarial base",
+        "perfilBase": "Base actuarial · cliente sin perfil previo",
         "coberturas": "Coberturas incluidas",
         "cobertura": {
           "fallecimiento": "Fallecimiento por cualquier causa",
-          "incapacidad": "Incapacidad total y permanente",
-          "enfermedadesGraves": "Enfermedades graves (anticipo)"
+          "incapacidad": "Incapacidad total y permanente"
         },
-        "coberturaSaldo": "{{porcentaje}} % del saldo insoluto del crédito",
-        "coberturaSaldoTope": "{{porcentaje}} % del saldo, hasta {{tope}}",
         "avisoPrecio": "Tu precio se calcula con tu perfil individual (edad, hábitos financieros y fuentes públicas), no con una tarifa estándar por edad y monto.",
         "terminos": "Acepto las condiciones generales y particulares de la póliza de vida hipotecario y autorizo el cobro de la prima con la cuota de mi crédito.",
-        "terminosError": "Debes aceptar las condiciones para continuar."
+        "terminosError": "Debes aceptar las condiciones para continuar.",
+        "tituloProvisional": "Tu oferta (provisional)",
+        "numeroVigencia": "Oferta N.º {{oferta}} · Vigente hasta {{fecha}}",
+        "primaMensualEstimada": "Prima mensual estimada",
+        "primaNotaCache": "Con perfil en caché · sujeta a recotización si no la aceptas",
+        "primaNotaBase": "Con perfil base · sujeta a recotización si no la aceptas",
+        "vigenciaMeses": "{{cantidad}} meses · igual al plazo del crédito",
+        "perfilAplicadoIndividual": "Individual · calculado el {{fecha}}",
+        "perfilAplicadoCache": "En caché · {{fecha}}",
+        "perfilAplicadoVigente": "Individual · perfil vigente",
+        "fuenteNoDisponible": "Fuente no disponible",
+        "fuente": {
+          "openFinance": "Open Finance",
+          "openData": "Open Data",
+          "kyc": "Verificación de identidad (KYC)",
+          "otra": "Una fuente externa"
+        },
+        "provisional": {
+          "cache": {
+            "titulo": "Calculamos tu oferta con tu último perfil",
+            "texto": "No pudimos consultar {{fuente}} en este momento, así que usamos tu último perfil, del {{fecha}}. Si la información vuelve a estar disponible, recalcularemos tu oferta y te avisaremos."
+          },
+          "base": {
+            "titulo": "Calculamos tu oferta con un perfil general",
+            "texto": "No pudimos consultar {{fuente}} y no tenemos un perfil previo tuyo, así que tu oferta se calculó con un perfil general. Si la información vuelve a estar disponible, recalcularemos tu oferta y te avisaremos."
+          }
+        },
+        "coberturaMonto": "Hasta {{monto}}",
+        "condiciones": "Condiciones",
+        "condicion": {
+          "vigencia24h": "La oferta está vigente por 24 horas desde que se genera.",
+          "beneficiarioOneroso": "El banco es el beneficiario oneroso hasta el saldo insoluto del crédito.",
+          "primaMensual": "La prima se cobra mensualmente junto con la cuota de tu crédito.",
+          "edadMaxima70": "La edad máxima asegurable es de 70 años.",
+          "recotizacion": "Si la información vuelve a estar disponible, recalcularemos tu oferta y te avisaremos."
+        }
       },
       "noRegistrada": {
         "titulo": "No pudimos registrar tu aceptación",
@@ -363,7 +408,10 @@
         "noGracias": "No, gracias",
         "nuevaOferta": "Generar una nueva oferta",
         "volverCotizar": "Volver a cotizar",
-        "verNuevaOferta": "Ver la nueva oferta"
+        "verNuevaOferta": "Ver la nueva oferta",
+        "generandoOferta": "Generando tu nueva oferta…",
+        "verOfertaRenovada": "Ver mi oferta renovada",
+        "verOfertaActualizada": "Ver mi oferta actualizada"
       },
       "datos": {
         "numeroSolicitud": "Número de solicitud",
@@ -391,7 +439,8 @@
         "emision": "Emisión iniciada",
         "vencida": "Vencida",
         "ajustada": "Ajustada",
-        "rechazada": "Rechazada"
+        "rechazada": "Rechazada",
+        "reemplazada": "Reemplazada"
       },
       "validando": {
         "titulo": "Registramos tu aceptación",
@@ -462,6 +511,24 @@
         "texto": "Un asesor de Solventa revisó tu solicitud el {{fecha}} y el riesgo no fue aceptado. No se realizó ningún cobro. Puedes continuar con tu crédito y el banco te indicará los siguientes pasos. También te lo enviamos a tu correo.",
         "avisoTitulo": "No se realizó ningún cobro",
         "avisoTexto": "Tu solicitud {{numero}} quedó cerrada. Si tienes preguntas, comunícate con tu banco o con Solventa."
+      },
+      "reemplazada": {
+        "titulo": "Tu oferta se actualizó con tu perfil real",
+        "texto": "La oferta {{oferta}} era provisional. La información financiera ya está disponible y recalculamos tu oferta con tu perfil real. La oferta anterior ya no se puede aceptar."
+      },
+      "errorRenovacion": {
+        "noRenovable": {
+          "titulo": "Ya no puedes renovar esta oferta",
+          "texto": "Tus datos ya no cumplen las condiciones para asegurarte. Comunícate con tu banco o con Solventa."
+        },
+        "noDisponible": {
+          "titulo": "No pudimos generar tu nueva oferta",
+          "texto": "Intenta de nuevo en unos minutos. Reintentar es seguro."
+        },
+        "generico": {
+          "titulo": "No pudimos generar tu nueva oferta",
+          "texto": "Ocurrió un problema inesperado. Intenta de nuevo más tarde."
+        }
       }
     },
     "pago": {
