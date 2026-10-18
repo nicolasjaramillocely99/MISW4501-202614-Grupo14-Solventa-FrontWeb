@@ -711,6 +711,7 @@
         "seccionCliente": "Datos del cliente",
         "buscar": "Buscar cliente",
         "buscando": "Buscando…",
+        "cancelar": "Cancelar",
         "ayudaDocumento": "Escribe el documento sin puntos ni guiones. Si el cliente ya existe, sus datos se cargan solos.",
         "ayudaEdad": "Entre {{min}} y {{max}} años.",
         "ayudaMonto": "Saldo del crédito hipotecario a asegurar, en COP.",
@@ -784,8 +785,9 @@
         "cargando": "Cargando la cotización…",
         "titulo": "Cotización asistida",
         "codigo": "Código {{id}}",
+        "generadaEl": "generada el {{fecha}}",
         "insignia": {
-          "vigente": "Vigente",
+          "vigente": "Vigente {{horas}} h",
           "provisional": "Provisional",
           "vencida": "Vencida"
         },
@@ -821,7 +823,7 @@
           "vence": "Vigente hasta"
         },
         "cliente": {
-          "titulo": "Cliente y crédito",
+          "titulo": "Cliente",
           "nombre": "Nombre",
           "documento": "Documento",
           "correo": "Correo electrónico",
@@ -830,8 +832,9 @@
           "plazoMeses": "{{meses}} meses"
         },
         "perfil": {
-          "titulo": "Perfil de riesgo",
+          "titulo": "Explicación del precio",
           "categoria": "Categoría",
+          "puntaje": "Puntaje",
           "origen": "Origen del perfil",
           "fecha": "Fecha del perfil",
           "tarifa": "Versión de la tarifa",

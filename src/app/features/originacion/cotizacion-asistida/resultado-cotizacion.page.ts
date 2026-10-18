@@ -98,6 +98,12 @@ export class ResultadoCotizacionPage implements OnInit {
     return avisos;
   });
 
+  /** Horas de vigencia de la cotización, derivadas de sus fechas (hoy 24 h) para el texto de la insignia. */
+  protected readonly horasVigencia = computed(() => {
+    const c = this.cotizacion();
+    return c ? Math.round((new Date(c.venceEn).getTime() - new Date(c.creadaEn).getTime()) / 3_600_000) : 0;
+  });
+
   /** Clave de la categoría de riesgo; una categoría desconocida se muestra tal cual. */
   protected readonly categoriaConocida = computed(() => CATEGORIAS_CONOCIDAS.includes(this.cotizacion()?.categoria ?? ''));
 
