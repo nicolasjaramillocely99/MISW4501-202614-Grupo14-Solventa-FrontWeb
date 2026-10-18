@@ -11,7 +11,7 @@ export class PerfilRiesgoPagina {
   constructor(private readonly page: Page) {
     this.titulo = page.getByRole('heading', { level: 1 });
     this.alerta = page.getByRole('alert');
-    this.verOferta = page.getByRole('link', { name: 'Ver mi oferta' });
+    this.verOferta = page.getByRole('button', { name: 'Ver mi oferta' });
     this.cancelar = page.getByRole('link', { name: 'Cancelar' });
     this.reintentar = page.getByRole('button', { name: 'Reintentar' });
   }

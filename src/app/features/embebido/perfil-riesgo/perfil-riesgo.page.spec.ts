@@ -1,18 +1,22 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
-import { render, screen, within } from '@testing-library/angular';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { fireEvent, render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { CONTEXTO_LANZAMIENTO, codificarContexto } from '@testing/contexto-lanzamiento-pruebas';
+import { OFERTA_NORMAL_DTO } from '@testing/oferta-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ContextoAliadoService } from '@core/aliado/contexto-aliado.service';
+import { ErrorOferta, Oferta, SolicitudOferta, mapearOferta } from '@core/api/originacion/oferta.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 import {
   PerfilRiesgo,
   SolicitudPerfilRiesgo,
 } from '@core/api/originacion/perfil-riesgo.modelos';
 
+import { ContextoLanzamientoService } from '../servicios/contexto-lanzamiento.service';
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
 import { PerfilRiesgoPage } from './perfil-riesgo.page';
 
@@ -35,17 +39,19 @@ const PERFIL_COMPLETO: PerfilRiesgo = {
 
 describe('PerfilRiesgoPage (E2 / E2b · HU-W1.2-02)', () => {
   let resolver: ReturnType<typeof vi.fn<(s: SolicitudPerfilRiesgo) => Observable<PerfilRiesgo>>>;
+  let generarOferta: ReturnType<typeof vi.fn<(s: SolicitudOferta) => Observable<Oferta>>>;
 
   async function renderizar(
     respuesta: Observable<PerfilRiesgo>,
-    { consentimiento = 'true', solicitud = false } = {},
+    { consentimiento = 'true', solicitud = false, contexto = false } = {},
   ) {
     resolver = vi.fn().mockReturnValue(respuesta);
+    generarOferta = vi.fn();
     const resultado = await render(PerfilRiesgoPage, {
       imports: [proveerTranslocoPruebas()],
       providers: [
         provideRouter([]),
-        { provide: OriginacionApiService, useValue: { resolverPerfilRiesgo: resolver } },
+        { provide: OriginacionApiService, useValue: { resolverPerfilRiesgo: resolver, generarOferta } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -57,6 +63,12 @@ describe('PerfilRiesgoPage (E2 / E2b · HU-W1.2-02)', () => {
         },
       ],
       configureTestBed: (bed) => {
+        if (contexto) {
+          // El paso 1 deja el contexto del aliado, la solicitud y el comprobante del consentimiento.
+          const lanzamiento = bed.inject(ContextoLanzamientoService);
+          lanzamiento.cargar(codificarContexto(CONTEXTO_LANZAMIENTO));
+          lanzamiento.registrarConsentimiento({ id: 'cns-1', fecha: '2026-10-18T02:48:14Z' });
+        }
         if (solicitud) {
           bed.inject(FlujoEmbebidoService).solicitud.set({
             numero: '48213',
@@ -119,7 +131,7 @@ describe('PerfilRiesgoPage (E2 / E2b · HU-W1.2-02)', () => {
       expect(screen.getByText('Consultado · 60 ms')).toBeTruthy();
       expect(screen.getByText('Reglas aplicadas')).toBeTruthy();
       expect(screen.getByText(/Nada se envía ni se cobra/)).toBeTruthy();
-      expect(screen.getByRole('link', { name: 'Ver mi oferta' }).getAttribute('href')).toBe('/embebido/oferta');
+      expect(screen.getByRole('button', { name: 'Ver mi oferta' })).toBeTruthy();
       expect(screen.getByRole('link', { name: 'Cancelar' }).getAttribute('href')).toBe('/embebido/consentimiento');
       expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('100');
     });
@@ -148,7 +160,7 @@ describe('PerfilRiesgoPage (E2 / E2b · HU-W1.2-02)', () => {
       expect(screen.getByText('Aislada temporalmente; no se consultó')).toBeTruthy();
       expect(screen.getByText('No disponible')).toBeTruthy();
       expect(screen.getByText('Calculamos tu perfil con las fuentes que respondieron')).toBeTruthy();
-      expect(screen.getByRole('link', { name: 'Ver mi oferta' })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Ver mi oferta' })).toBeTruthy();
     });
 
     it('muestra la fuente con falla', async () => {
@@ -235,6 +247,83 @@ describe('PerfilRiesgoPage (E2 / E2b · HU-W1.2-02)', () => {
 
       expect(resolver).toHaveBeenCalledTimes(2);
       expect(screen.getByRole('heading', { level: 1, name: 'Tu oferta está lista' })).toBeTruthy();
+    });
+  });
+
+  describe('«Ver mi oferta» (HU-W1.2-03)', () => {
+    const OFERTA = mapearOferta(OFERTA_NORMAL_DTO);
+
+    it('genera la oferta con el cliente, el consentimiento y el crédito del paso 1 y abre la oferta', async () => {
+      await renderizar(of(PERFIL_COMPLETO), { contexto: true });
+      const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      generarOferta.mockReturnValue(of(OFERTA));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Ver mi oferta' }));
+
+      expect(generarOferta).toHaveBeenCalledWith({
+        clienteId: 'cliente-0001',
+        consentimientoId: 'cns-1',
+        aliadoId: 'aliado-banco-1',
+        solicitudId: '48213',
+        documento: '1020304050',
+        nombreCompleto: 'Ana María Pérez',
+        correo: 'ana.perez@example.com',
+        fechaNacimiento: '1988-04-12',
+        valorAsegurado: 250000000,
+        plazoMeses: 240,
+      });
+      expect(navegar).toHaveBeenCalledWith(['/embebido/oferta', OFERTA.id]);
+    });
+
+    it('deshabilita el botón mientras genera la oferta y no envía dos veces', async () => {
+      const { detectChanges } = await renderizar(of(PERFIL_COMPLETO), { contexto: true });
+      generarOferta.mockReturnValue(new Subject<Oferta>());
+
+      fireEvent.click(screen.getByRole('button', { name: 'Ver mi oferta' }));
+      detectChanges();
+      const boton = screen.getByRole('button', { name: 'Generando tu oferta…' }) as HTMLButtonElement;
+      fireEvent.click(boton);
+
+      expect(boton.disabled).toBe(true);
+      expect(generarOferta).toHaveBeenCalledTimes(1);
+    });
+
+    it('sin el contexto del paso 1 vuelve al consentimiento sin llamar al servicio', async () => {
+      await renderizar(of(PERFIL_COMPLETO));
+      const irA = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Ver mi oferta' }));
+
+      expect(generarOferta).not.toHaveBeenCalled();
+      expect(irA).toHaveBeenCalledWith('/embebido/consentimiento');
+    });
+
+    it.each(['consent_required', 'consent_mismatch'] as const)('%s lleva de nuevo al paso 1', async (codigo) => {
+      const { detectChanges } = await renderizar(of(PERFIL_COMPLETO), { contexto: true });
+      const irA = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      generarOferta.mockReturnValue(throwError(() => new ErrorOferta(codigo)));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Ver mi oferta' }));
+      detectChanges();
+
+      expect(irA).toHaveBeenCalledWith('/embebido/consentimiento');
+    });
+
+    it.each([
+      ['validation_failed', 'Los datos de tu crédito no son válidos para cotizar'],
+      ['consent_unverifiable', 'Intenta de nuevo en unos minutos'],
+      ['offer_unavailable', 'Intenta de nuevo en unos minutos'],
+      ['forbidden', 'Ocurrió un problema inesperado'],
+    ] as const)('%s muestra su texto y deja reintentar', async (codigo, texto) => {
+      const { detectChanges } = await renderizar(of(PERFIL_COMPLETO), { contexto: true });
+      generarOferta.mockReturnValue(throwError(() => new ErrorOferta(codigo)));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Ver mi oferta' }));
+      detectChanges();
+
+      expect(screen.getByText('No pudimos generar tu oferta')).toBeTruthy();
+      expect(screen.getByText(new RegExp(texto))).toBeTruthy();
+      expect((screen.getByRole('button', { name: 'Ver mi oferta' }) as HTMLButtonElement).disabled).toBe(false);
     });
   });
 

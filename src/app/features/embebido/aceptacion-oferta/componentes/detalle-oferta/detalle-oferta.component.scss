@@ -107,3 +107,9 @@ dd {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.condiciones {
+  margin: 0;
+  padding-left: var(--espacio-24);
+  color: var(--color-texto-secundario);
+}
