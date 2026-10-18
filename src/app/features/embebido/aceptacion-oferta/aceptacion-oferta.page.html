@@ -25,19 +25,23 @@
         }
 
         @case ('oferta') {
-          <div class="flujo__encabezado">
-            <div class="flujo__fila">
-              <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.oferta.titulo') }}</h1>
-              @if (perfil(); as perfilAplicado) {
-                <app-insignia-estado [tono]="perfilAplicado.modo === 'normal' ? 'exito' : 'advertencia'">
-                  {{ t('aceptacionOferta.oferta.insignia.' + perfilAplicado.modo) }}
+          @if (oferta(); as ofertaActual) {
+            <div class="flujo__encabezado">
+              <div class="flujo__fila">
+                <h1 id="titulo-aceptacion" class="flujo__titulo">
+                  {{ t(ofertaActual.modo === 'provisional' ? 'aceptacionOferta.oferta.tituloProvisional' : 'aceptacionOferta.oferta.titulo') }}
+                </h1>
+                <app-insignia-estado [tono]="ofertaActual.modo === 'normal' ? 'exito' : 'advertencia'">
+                  {{ t('aceptacionOferta.oferta.insignia.' + ofertaActual.modo) }}
                 </app-insignia-estado>
-              }
+              </div>
+              <p class="flujo__subtitulo">
+                {{ t('aceptacionOferta.oferta.numeroVigencia', { oferta: ofertaActual.id, fecha: ofertaActual.venceEn | formatoFechaHora }) }}
+              </p>
             </div>
-            <p class="flujo__subtitulo">{{ t('aceptacionOferta.oferta.numero', { oferta: ofertaId() }) }}</p>
-          </div>
 
-          <app-detalle-oferta [detalle]="detalle" [perfil]="perfil()" />
+            <app-detalle-oferta [oferta]="ofertaActual" [beneficiario]="solicitud()?.banco ?? null" />
+          }
 
           <div class="casilla">
             <input
@@ -136,7 +140,7 @@
                     {{
                       t('aceptacionOferta.datos.nuevaPrimaValor', {
                         nueva: nueva.prima | formatoMoneda: nueva.moneda,
-                        anterior: detalle.primaMensual | formatoMoneda: detalle.moneda
+                        anterior: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP')
                       })
                     }}
                   </dd>
@@ -244,7 +248,7 @@
                       {{
                         t('aceptacionOferta.revision.avisoTexto', {
                           oferta: actual.ofertaId,
-                          prima: detalle.primaMensual | formatoMoneda: detalle.moneda
+                          prima: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP')
                         })
                       }}
                     </p>
@@ -302,7 +306,7 @@
           <dl class="datos">
             <div>
               <dt>{{ t('aceptacionOferta.datos.ofertaAnterior') }}</dt>
-              <dd>{{ t('aceptacionOferta.datos.ofertaAnteriorValor', { prima: detalle.primaMensual | formatoMoneda: detalle.moneda }) }}</dd>
+              <dd>{{ t('aceptacionOferta.datos.ofertaAnteriorValor', { prima: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP') }) }}</dd>
             </div>
             <div>
               <dt>{{ t('aceptacionOferta.datos.estado') }}</dt>
@@ -316,12 +320,88 @@
             }
           </dl>
 
+          @if (errorRenovacion(); as motivoRenovacion) {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('aceptacionOferta.errorRenovacion.' + motivoRenovacion + '.titulo') }}</p>
+                <p>{{ t('aceptacionOferta.errorRenovacion.' + motivoRenovacion + '.texto') }}</p>
+              </div>
+            </div>
+          }
+
           <div class="acciones acciones--centradas">
             <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('aceptacionOferta.acciones.noGracias') }}</a>
-            <a class="boton boton--primario" [routerLink]="acciones.nuevaOferta">
-              <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
-              {{ t('aceptacionOferta.acciones.nuevaOferta') }}
-            </a>
+            @if (oferta()?.puedeRenovar && errorRenovacion() !== 'noRenovable') {
+              <button type="button" class="boton boton--primario" [disabled]="renovando()" (click)="renovar()">
+                @if (renovando()) {
+                  {{ t('aceptacionOferta.acciones.generandoOferta') }}
+                } @else {
+                  <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+                  {{ t('aceptacionOferta.acciones.nuevaOferta') }}
+                }
+              </button>
+            } @else if (oferta()?.renovadaPor; as renovada) {
+              <a class="boton boton--primario" [routerLink]="[acciones.oferta, renovada]">
+                <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                {{ t('aceptacionOferta.acciones.verOfertaRenovada') }}
+              </a>
+            } @else {
+              <a class="boton boton--primario" [routerLink]="acciones.nuevaOferta">
+                <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+                {{ t('aceptacionOferta.acciones.nuevaOferta') }}
+              </a>
+            }
+          </div>
+        }
+
+        @case ('reemplazada') {
+          <div class="resultado" role="status">
+            <span class="resultado__icono resultado__icono--ajustada" aria-hidden="true">
+              <svg lucideRefreshCw [size]="28"></svg>
+            </span>
+            <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.reemplazada.titulo') }}</h1>
+            <p class="resultado__texto">{{ t('aceptacionOferta.reemplazada.texto', { oferta: ofertaId() }) }}</p>
+          </div>
+
+          <dl class="datos">
+            <div>
+              <dt>{{ t('aceptacionOferta.datos.ofertaAnterior') }}</dt>
+              <dd>{{ t('aceptacionOferta.datos.ofertaAnteriorValor', { prima: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP') }) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('aceptacionOferta.datos.estado') }}</dt>
+              <dd><app-insignia-estado tono="advertencia">{{ t('aceptacionOferta.insignia.reemplazada') }}</app-insignia-estado></dd>
+            </div>
+            @if (ofertaNueva(); as nueva) {
+              <div>
+                <dt>{{ t('aceptacionOferta.datos.nuevaPrima') }}</dt>
+                <dd>
+                  {{
+                    t('aceptacionOferta.datos.nuevaPrimaValor', {
+                      nueva: nueva.primaMensual | formatoMoneda: nueva.moneda,
+                      anterior: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP')
+                    })
+                  }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ t('aceptacionOferta.datos.vigenciaNueva') }}</dt>
+                <dd>{{ t('aceptacionOferta.datos.vigenciaNuevaValor', { fecha: nueva.venceEn | formatoFechaHora }) }}</dd>
+              </div>
+            }
+          </dl>
+
+          <div class="acciones acciones--centradas">
+            <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('aceptacionOferta.acciones.noGracias') }}</a>
+            @if (oferta()?.reemplazadaPor; as nuevaId) {
+              <a class="boton boton--primario" [routerLink]="[acciones.oferta, nuevaId]">
+                <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                {{ t('aceptacionOferta.acciones.verOfertaActualizada') }}
+              </a>
+            } @else {
+              <a class="boton boton--primario" [routerLink]="acciones.nuevaOferta">{{ t('aceptacionOferta.acciones.volverCotizar') }}</a>
+            }
           </div>
         }
 

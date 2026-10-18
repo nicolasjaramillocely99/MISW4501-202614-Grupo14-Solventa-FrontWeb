@@ -5,12 +5,14 @@ import { environment } from '@env/environment';
 import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
 
 import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
+import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
 import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
 
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
 import { ErrorCobro, mapearCobro } from './cobro.modelos';
 import { OriginacionApiService } from './originacion-api.service';
 import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
+import { ErrorOferta, mapearOferta } from './oferta.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
 
@@ -381,6 +383,91 @@ describe('OriginacionApiService', () => {
       http.expectOne(url).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual(['observations_required', 'review_request_already_decided', 'decision_not_registered']);
+    });
+  });
+
+  describe('oferta personalizada (HU-W1.2-03)', () => {
+    const solicitud = {
+      clienteId: 'cli-1',
+      consentimientoId: 'cns-1',
+      aliadoId: 'aliado-1',
+      solicitudId: '48213',
+      documento: '1020304050',
+      nombreCompleto: 'Ana María Pérez',
+      correo: 'ana@example.com',
+      fechaNacimiento: '1988-04-12',
+      valorAsegurado: 250000000,
+      plazoMeses: 240,
+    };
+
+    it('genera la oferta con POST /v1/offers y devuelve el modelo del cliente', () => {
+      let resultado: unknown;
+      servicio.generarOferta(solicitud).subscribe((oferta) => (resultado = oferta));
+
+      const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/offers`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toMatchObject({ customer_id: 'cli-1', consent_id: 'cns-1', term_months: 240 });
+      peticion.flush(OFERTA_NORMAL_DTO, { status: 201, statusText: 'Created' });
+
+      expect(resultado).toEqual(mapearOferta(OFERTA_NORMAL_DTO));
+    });
+
+    it('falla con el código del contrato cuando falta el consentimiento', () => {
+      let error: unknown;
+      servicio.generarOferta(solicitud).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${environment.apiGatewayUrl}/v1/offers`)
+        .flush({ error: 'consent_required', message: 'x' }, { status: 422, statusText: 'Unprocessable Entity' });
+
+      expect(error).toBeInstanceOf(ErrorOferta);
+      expect((error as ErrorOferta).codigo).toBe('consent_required');
+    });
+
+    it('consulta la oferta por su identificador', () => {
+      let resultado: unknown;
+      servicio.consultarOferta('off-seedr1792338656').subscribe((oferta) => (resultado = oferta));
+
+      const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/offers/off-seedr1792338656`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(OFERTA_VENCIDA_DTO);
+
+      expect(resultado).toMatchObject({ estado: 'expired', puedeRenovar: true });
+    });
+
+    it('distingue una oferta inexistente y un servicio caído al consultar', () => {
+      const codigos: string[] = [];
+      servicio.consultarOferta('a').subscribe({ error: (e: ErrorOferta) => codigos.push(e.codigo) });
+      servicio.consultarOferta('b').subscribe({ error: (e: ErrorOferta) => codigos.push(e.codigo) });
+
+      http.expectOne(`${environment.apiGatewayUrl}/v1/offers/a`).flush(null, { status: 404, statusText: 'Not Found' });
+      http.expectOne(`${environment.apiGatewayUrl}/v1/offers/b`).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['offer_not_found', 'offer_unavailable']);
+    });
+
+    it('renueva la oferta vencida con POST /v1/offers/{id}/renewal sin cuerpo', () => {
+      let resultado: unknown;
+      servicio.renovarOferta('off-seedr1792338656').subscribe((oferta) => (resultado = oferta));
+
+      const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/offers/off-seedr1792338656/renewal`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toBeNull();
+      peticion.flush(OFERTA_NORMAL_DTO, { status: 201, statusText: 'Created' });
+
+      expect(resultado).toEqual(mapearOferta(OFERTA_NORMAL_DTO));
+    });
+
+    it('propaga el 409 offer_superseded con la oferta que la reemplazó', () => {
+      let error: unknown;
+      servicio.renovarOferta('a').subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${environment.apiGatewayUrl}/v1/offers/a/renewal`)
+        .flush({ error: 'offer_superseded', message: 'x', superseded_by: 'b' }, { status: 409, statusText: 'Conflict' });
+
+      expect((error as ErrorOferta).codigo).toBe('offer_superseded');
+      expect((error as ErrorOferta).reemplazadaPor).toBe('b');
     });
   });
 });
