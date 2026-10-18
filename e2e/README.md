@@ -1,6 +1,6 @@
 # `e2e` — pruebas extremo a extremo (Playwright)
 
-Cubren los **tres flujos críticos del cliente web** definidos en la [estrategia de pruebas](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Estrategia-de-Pruebas-v-1.2) (OBJ 06), con **mínimo tres escenarios por flujo** (camino feliz y manejo de errores), y la verificación de accesibilidad con axe-core (OBJ 13). Corren en la corrida nocturna de GitHub Actions y bajo demanda.
+Cubren los **tres flujos críticos del cliente web** definidos en la [estrategia de pruebas](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/Estrategia-de-Pruebas-v-1.2) (OBJ 06), con **mínimo tres escenarios por flujo** (camino feliz y manejo de errores), y la verificación de accesibilidad con axe-core (OBJ 13). Corren en cada *pull request* y en cada *push* a `develop` o `main` (job «E2E · Playwright + axe» de `ci.yml`), en la corrida nocturna y bajo demanda.
 
 | Carpeta | Contenido |
 |---|---|
@@ -31,6 +31,8 @@ npm run e2e
 ```
 
 Contra un ambiente desplegado: `E2E_BASE_URL=https://… npm run e2e`.
+
+Para reproducir el job del CI: `CI=1 npx playwright test` (con `CI` no reutiliza un `npm start` abierto, reintenta dos veces y prohíbe `test.only`).
 
 ### Humo contra el Cognito local (Moto), fuera del CI
 

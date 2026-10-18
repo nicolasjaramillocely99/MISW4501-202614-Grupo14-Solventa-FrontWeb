@@ -53,9 +53,11 @@
   }
 }
 
+// Neutro: el sistema de diseño (§5) no fija sus colores. Texto primario sobre borde/base = 12,19:1 (§8 pide 4,5:1;
+// el secundario daba 4,43:1 y axe lo marcaba en E7). El punto es decorativo (aria-hidden): el estado va en el texto.
 :host(.insignia--neutro) {
   background: var(--color-borde-base);
-  color: var(--color-texto-secundario);
+  color: var(--color-texto-primario);
 
   .insignia__punto {
     background: var(--color-borde-fuerte);

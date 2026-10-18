@@ -5,7 +5,7 @@
 | Rama | Para qué | Cómo recibe cambios |
 |---|---|---|
 | `main` | Lo que está desplegado en producción (demo). Protegida. | Solo desde `develop`, por *pull request*, en cada entrega |
-| `develop` | Integración del sprint. Protegida. | Solo desde ramas de historia, por *pull request* |
+| `develop` | Integración del sprint y **rama por defecto del repositorio** (la que GitHub muestra al abrir el repo y la base preseleccionada de un *pull request* nuevo). Protegida. | Solo desde ramas de historia, por *pull request* |
 | `feature/<ID>-<descripcion-en-ingles>` | El trabajo de una historia: `feature/HA-S01-role-based-auth`, `feature/HA-L01-parallel-quoting` | Quien tomó la historia |
 | `fix/<ID>-<descripcion>` · `chore/<descripcion>` | Una corrección o una tarea técnica sin historia | Quien la toma |
 
@@ -30,7 +30,7 @@ Conventional Commits con el dominio como alcance: `feat(siniestros): cola de sin
 1. Actualiza la rama con `develop` antes de abrirlo.
 2. El *pull request* apunta a `develop`. Completa la plantilla (`.github/PULL_REQUEST_TEMPLATE.md`): historia, pantallas de Figma, cómo probarlo.
 3. Revisión de al menos un compañero.
-4. Pipeline `CI · Cliente web` en verde: lint, build de producción y pruebas unitarias con cobertura ≥ 70 %.
+4. Pipeline `CI · Cliente web` en verde: lint, build de producción y pruebas unitarias con cobertura ≥ 70 % (job «Lint · Build · Unitarias») y todas las pruebas E2E con axe-core (job «E2E · Playwright + axe»); los dos son checks obligatorios de `develop` y de `main`.
 5. *Squash and merge* a `develop`; la rama de la historia se borra al integrar.
 6. Al cierre de cada sprint o entrega, `develop` se integra a `main` por *pull request*; eso es lo que se despliega a producción (demo).
 
@@ -49,6 +49,8 @@ Conventional Commits con el dominio como alcance: `feat(siniestros): cola de sin
 
 | Workflow | Disparo | Qué corre |
 |---|---|---|
-| `ci.yml` | *pull request* hacia `develop` o `main`, y *push* a esas ramas | ESLint → build de producción → Vitest con cobertura |
-| `e2e-nocturno.yml` | Diario sobre `develop`, y bajo demanda sobre cualquier rama | Playwright (tres flujos críticos) + axe-core; reporte como artefacto |
-| Dependabot | Semanal | Actualizaciones de npm y de las acciones de GitHub |
+| `ci.yml` | *pull request* hacia `develop` o `main`, y *push* a esas ramas | Dos jobs en paralelo: «Lint · Build · Unitarias» (ESLint → build de producción → Vitest con cobertura) y «E2E · Playwright + axe» (Playwright + axe-core contra el servidor local; reporte como artefacto) |
+| `e2e-nocturno.yml` | Diario sobre `develop` a las 01:23 de Bogotá (GitHub puede retrasarlo), y bajo demanda sobre cualquier rama | Tres jobs en paralelo: lint, build y unitarias con cobertura; Playwright + axe-core; `npm audit` (falla con vulnerabilidades altas o críticas) |
+| Dependabot | Semanal, contra `develop` | Actualizaciones de versión de npm y de las acciones de GitHub, y actualizaciones de seguridad. Las alertas de vulnerabilidades se ven en la pestaña *Security* |
+
+GitHub lee los workflows programados y la configuración de Dependabot de la rama por defecto (`develop`): un cambio en `e2e-nocturno.yml` o en `dependabot.yml` rige al integrarse en `develop`. Para probar el nocturno antes, se lanza a mano sobre la rama (*Actions* → *Run workflow*).
