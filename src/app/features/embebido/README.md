@@ -55,7 +55,8 @@
   (todo o nada).
 - «Autorizar y continuar» solo se habilita con **ambas** casillas marcadas. Al registrar guarda el comprobante y navega a
   `/embebido/perfil-riesgo/:clienteId?consentimiento=true`, la entrada que ya espera `PerfilRiesgoPage` (el backend ignora ese valor
-  cuando `audit` está configurado y verifica el consentimiento por su cuenta).
+  cuando `audit` está configurado y verifica el consentimiento por su cuenta). **En la demo desplegada en AWS (T5) siempre lo está:**
+  originación pregunta a `audit` dentro de la VPC, así que `?consentimiento=true` no cambia nada.
 - Estados dentro de la misma página: **cargando** (consultando los términos), **formulario** (E1), **enviando** (botón y casillas
   deshabilitados), **rechazado** («Ahora no»: ninguna llamada; «Volver a autorizar» y «Continuar con mi crédito» → `/inicio`, igual que
   el resto del flujo), **sin contexto** (no llegó o es inválido: ninguna llamada) y **error** (términos o registro con «Reintentar»; si
@@ -70,6 +71,9 @@
 - Llama a `OriginacionApiService.resolverPerfilRiesgo` (`POST /v1/risk-profiles/resolve`, `core/api/originacion/`).
   `clienteId` sale de la ruta; el consentimiento lo afirma quien navega (`?consentimiento=true`, lo envía HU-W1.2-01): sin
   él el backend responde 422 y la página muestra «Necesitamos tu consentimiento» con «Volver al consentimiento».
+  **En AWS (T5)** decide `audit`: sin un consentimiento registrado en E1 la respuesta es ese mismo 422 aunque la URL diga
+  `?consentimiento=true`. `POST /v1/risk-profiles/resolve` y `POST /v1/offers` («Ver mi oferta») van, como los de E1, por las
+  rutas de socio con la key de `portal-embebido` que pone CloudFront; el navegador nunca la envía.
 - Estados dentro de la misma página: **calculando** (E2: fuentes y motor «En curso», barra indeterminada), **listo** (E2b:
   estado y latencia por fuente, «Ver mi oferta») y **error** (consentimiento o genérico con «Reintentar»). Variantes del
   resultado: fuentes parciales (`partial`), último perfil en caché (`last_profile_in_use`, con la fuente afectada y la fecha)
