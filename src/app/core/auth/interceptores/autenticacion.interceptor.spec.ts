@@ -74,11 +74,25 @@ describe('autenticacionInterceptor', () => {
     await respuesta;
   });
 
+  it('adjunta el token a cualquier ruta /v1 del mismo origen del portal', async () => {
+    await iniciarSesionComo('asegurado');
+
+    const respuesta = firstValueFrom(http.get(`${GATEWAY}/v1/offers/x`));
+    const peticion = backend.expectOne(`${GATEWAY}/v1/offers/x`);
+    expect(peticion.request.headers.get('Authorization')).toBe(`Bearer ${sesion.idToken()}`);
+    peticion.flush({});
+    await respuesta;
+  });
+
   it.each([
     'https://cognito-idp.us-east-2.amazonaws.com/',
     'i18n/es-CO.json',
     `${GATEWAY}1/v1/quotes`,
     'https://otro-origen.example/v1/quotes',
+    `${GATEWAY}/pasarela/tokens`,
+    `${GATEWAY}/config.json`,
+    `${GATEWAY}/i18n/es-CO.json`,
+    `${GATEWAY}/v1x/quotes`,
   ])('nunca adjunta el token a %s', async (url) => {
     await iniciarSesionComo('operaciones');
 
@@ -157,6 +171,16 @@ describe('autenticacionInterceptor', () => {
     expect(navegar).not.toHaveBeenCalled();
   });
 
+  it('un 403 de la pasarela no lleva a acceso no autorizado ni toca la sesión (T5, H-T5-1)', async () => {
+    await iniciarSesionComo('asegurado');
+
+    const error = await fallaCon(`${GATEWAY}/pasarela/tokens`, 403);
+
+    expect(error.status).toBe(403);
+    expect(sesion.autenticado()).toBe(true);
+    expect(navegar).not.toHaveBeenCalled();
+  });
+
   it('un 401 de otro origen no toca la sesión', async () => {
     await iniciarSesionComo('asesor');
 
@@ -169,9 +193,14 @@ describe('autenticacionInterceptor', () => {
 
 describe('esDelApiGateway', () => {
   it.each([
-    ['https://api.solventa.co', 'https://api.solventa.co', true],
     ['https://api.solventa.co/v1/x', 'https://api.solventa.co/', true],
-    ['https://api.solventa.co?x=1', 'https://api.solventa.co', true],
+    ['https://api.solventa.co/v1', 'https://api.solventa.co', true],
+    ['https://api.solventa.co/v1?x=1', 'https://api.solventa.co', true],
+    ['https://api.solventa.co', 'https://api.solventa.co', false],
+    ['https://api.solventa.co?x=1', 'https://api.solventa.co', false],
+    ['https://api.solventa.co/v1x/y', 'https://api.solventa.co', false],
+    ['https://api.solventa.co/pasarela/tokens', 'https://api.solventa.co', false],
+    ['https://api.solventa.co/config.json', 'https://api.solventa.co', false],
     ['https://api.solventa.com/v1/x', 'https://api.solventa.co', false],
     ['https://api.solventa.co.evil.example/x', 'https://api.solventa.co', false],
     ['PENDIENTE/v1/x', 'PENDIENTE', false],
