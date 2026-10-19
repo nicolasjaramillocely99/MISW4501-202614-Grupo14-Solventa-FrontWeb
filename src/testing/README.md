@@ -6,6 +6,7 @@ Contenido:
 
 | Archivo | Para qué |
 |---|---|
+| `configuracion-pruebas.ts` | `CONFIGURACION_PRUEBAS` (los valores de `environment.development.ts`) y `proveerConfiguracionPruebas()`. Su exportación por defecto la registra `angular.json` (`test.options.providersFile`) para **todas** las pruebas: cualquier servicio que inyecte `CONFIGURACION_EJECUCION` la encuentra sin declararla (T5) |
 | `transloco-pruebas.ts` | `proveerTranslocoPruebas()`: `TranslocoTestingModule` con los diccionarios reales de `public/i18n/` precargados y re-renderizado al cambiar de idioma (como la app), para verificar textos externalizados; `DICCIONARIOS` para comparar las claves de ambos idiomas (HA-S01) |
 | `sesion-pruebas.ts` | Sesión simulada por rol (asegurado, asesor, operaciones, socio) para probar *guards*, menú y páginas protegidas: `crearJwtPrueba` y `crearTokensPrueba` (tokens sin firma real), `crearProveedorIdentidadFalso` (espías de Vitest), `proveerSesionPrueba()` y `iniciarSesionComo(rol)` (HA-S01) |
 | `cobro-pruebas.ts` | `COBRO_PENDIENTE_DTO`: cobro de la prima pendiente con la forma del contrato de HA-D02, base para los demás estados en las pruebas del cliente y del paso de pago |

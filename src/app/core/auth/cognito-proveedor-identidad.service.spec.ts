@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { environment } from '@env/environment';
+import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
 
 import {
   CognitoProveedorIdentidadService,
@@ -12,8 +12,8 @@ import { ErrorIdentidad } from './proveedor-identidad';
 
 // Las pruebas unitarias compilan con la configuración de desarrollo:
 // la URL y el cliente salen del ambiente.
-const URL_COGNITO = urlCognito(environment.cognito);
-const CLIENTE = environment.cognito.clienteId;
+const URL_COGNITO = urlCognito(CONFIGURACION_PRUEBAS.cognito);
+const CLIENTE = CONFIGURACION_PRUEBAS.cognito.clienteId;
 
 describe('urlCognito', () => {
   it('usa el endpoint regional de AWS si el ambiente no define otro', () => {

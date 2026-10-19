@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '@env/environment';
+import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import {
@@ -94,7 +94,7 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
   private readonly http = inject(HttpClient);
-  private readonly base = environment.apiGatewayUrl.replace(/\/+$/, '');
+  private readonly base = inject(CONFIGURACION_EJECUCION).apiGatewayUrl.replace(/\/+$/, '');
 
   /**
    * Resuelve el perfil de riesgo con el que se cotiza la oferta (`POST /v1/risk-profiles/resolve`).

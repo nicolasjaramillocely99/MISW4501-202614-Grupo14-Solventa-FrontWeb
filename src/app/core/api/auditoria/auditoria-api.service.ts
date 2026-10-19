@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '@env/environment';
+import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import {
@@ -24,7 +24,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AuditoriaApiService {
   private readonly http = inject(HttpClient);
-  private readonly base = environment.apiGatewayUrl.replace(/\/+$/, '');
+  private readonly base = inject(CONFIGURACION_EJECUCION).apiGatewayUrl.replace(/\/+$/, '');
 
   /**
    * Consulta los términos vigentes (`GET /v1/audit/consent-terms/current`): finalidad, responsable, política

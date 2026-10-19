@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, provideHttpClient, withInterceptors } fr
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { environment } from '@env/environment';
+import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
 import {
   ProveedorIdentidadFalso,
   crearProveedorIdentidadFalso,
@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { SesionService } from '../sesion.service';
 import { autenticacionInterceptor, esDelApiGateway } from './autenticacion.interceptor';
 
-const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
 
 describe('autenticacionInterceptor', () => {
   let http: HttpClient;

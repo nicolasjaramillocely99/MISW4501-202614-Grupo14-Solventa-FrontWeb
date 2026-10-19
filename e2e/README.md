@@ -36,7 +36,7 @@ Para reproducir el job del CI: `CI=1 npx playwright test` (con `CI` no reutiliza
 
 ### Humo contra el Cognito local (Moto), fuera del CI
 
-`src/environments/environment.development.ts` apunta Cognito al emulador Moto del backend (`cognito.endpoint`,
+`src/environments/environment.development.ts` apunta Cognito al emulador Moto del backend (`configuracionLocal.cognito.endpoint`,
 `http://localhost:5100/`). Las pruebas de `flujos/` y `accesibilidad/` no lo necesitan: `fixtures/sesion-por-rol.ts`
 intercepta tanto ese endpoint como el regional de AWS. El proyecto `local-moto` sí habla con Moto:
 
