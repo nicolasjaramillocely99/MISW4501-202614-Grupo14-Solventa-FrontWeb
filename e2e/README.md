@@ -12,6 +12,7 @@ Cubren los **tres flujos críticos del cliente web** definidos en la [estrategia
 | `fixtures/` | Usuarios de prueba por rol, datos de clientes, pólizas y siniestros, *fixtures* de Playwright (sesión iniciada por rol) |
 | `accesibilidad/` | Ayudante `verificar-accesibilidad.ts`, que ejecuta axe-core sobre una página y falla ante violaciones de contraste, etiquetas y navegación, y `acceso.spec.ts` (P0 en español y en inglés, con y sin errores, 403 y sesión expirada) |
 | `local-moto/` | Humo del acceso contra el **Cognito local (Moto)** del backend, sin `page.route`: inicio de sesión real por rol con su inicio y su menú, cierre de sesión y contraseña equivocada. Solo existe en el proyecto `local-moto` (`E2E_MOTO=1`); **no corre en el CI** |
+| `nube/` | Humo del **portal desplegado en AWS** (T5), sin `page.route`: CloudFront, `config.json`, el API en el mismo dominio, Cognito real con los usuarios permanentes y la pasarela simulada de la plataforma. Solo existe en el proyecto `nube` (`E2E_NUBE=1`); **no corre en el CI** |
 
 Convenciones:
 
@@ -50,3 +51,34 @@ E2E_MOTO=1 MOTO_USER_PASSWORD='…' npx playwright test --project=local-moto
 
 El proyecto solo se registra con `E2E_MOTO=1`, así que `npx playwright test` (CI y corrida nocturna) no lo ve. Limitaciones del
 emulador (tokens de 1 h, `RevokeToken` no implementado): ver la tabla «Local (Moto) ↔ AWS» de ese README.
+
+### Humo contra el portal desplegado (nube), fuera del CI
+
+`nube/portal.spec.ts` recorre el portal **publicado en CloudFront** (T5), con axe-core en cada pantalla y sin simular nada:
+
+| # | Escenario |
+|---|---|
+| 1 | El asesor inicia sesión con Cognito real, ve su inicio y abre la bandeja de decisión |
+| 2 | Recargar `/originacion/bandeja-decision` devuelve la aplicación (enlaces profundos de CloudFront) |
+| 3 | Oferta `demo-active-<corrida>` como asegurado → aceptar → E4 con `4111 1111 1111 1111` (tokenizada por `/pasarela/tokens`) → pago confirmado → E5 → el PDF se descarga |
+| 4 | Tarjeta `4000 0000 0000 0002` → E4c, pago rechazado |
+| 5 | `/embebido/perfil-riesgo/cliente-<corrida>?consentimiento=true` → E2, por la ruta de socio con la key que agrega CloudFront |
+| 6 | Ninguna petición del navegador lleva `x-api-key`, y `config.json` solo trae `apiGatewayUrl`, `pasarelaPagosUrl` y `cognito` |
+| 7 | Solo con `NUBE_AUDIT=1` (cuando las rutas de `audit` del aliado estén en el gateway): E1 → E2 → «Ver mi oferta» → E3 con una oferta `off-…` |
+
+Usuarios: los cuatro permanentes del *user pool* de `bootstrap/identity` del backend (por defecto `asegurado@`, `asesor@`,
+`operaciones@` y `socio@example.com`; se cambian con `NUBE_ASEGURADO`, `NUBE_ASESOR`, `NUBE_OPERACIONES` y `NUBE_SOCIO`). La
+contraseña llega de `NUBE_CONTRASENA`, que se carga de la variable de Windows `SOLVENTA_IDENTITY_SEED_PASSWORD`; nunca se escribe
+en un archivo ni se imprime. `NUBE_RUN` fija el sufijo de las ofertas de demostración (por defecto uno nuevo por corrida).
+
+```bash
+E2E_NUBE=1 E2E_BASE_URL=https://<distribución>.cloudfront.net NUBE_CONTRASENA="$SOLVENTA_IDENTITY_SEED_PASSWORD" \
+  npx playwright test --project=nube
+# Con el cableado de audit en el gateway:
+NUBE_AUDIT=1 E2E_NUBE=1 E2E_BASE_URL=https://<distribución>.cloudfront.net NUBE_CONTRASENA="$SOLVENTA_IDENTITY_SEED_PASSWORD" \
+  npx playwright test --project=nube
+# La suite del CI contra el sitio desplegado (sus pruebas simulan el API con page.route):
+E2E_BASE_URL=https://<distribución>.cloudfront.net CI=1 npx playwright test --project=chromium
+```
+
+El proyecto solo se registra con `E2E_NUBE=1`; el CI y la corrida nocturna no lo ven.
