@@ -7,6 +7,9 @@ name: CD · Portal web · staging
 # Sin llaves guardadas en GitHub: el job asume por OIDC el rol de staging, que solo confía en develop.
 
 on:
+  # TEMPORAL (T5, D-9 b): prueba del workflow en la ventana de staging antes del PR. Se quita antes del PR.
+  push:
+    branches: [chore/T5-web-portal-hosting]
   workflow_dispatch:
     inputs:
       ambiente:
@@ -30,7 +33,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Solo desde develop
-        if: github.ref != 'refs/heads/develop'
+        if: github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/chore/T5-web-portal-hosting'
         run: |
           echo "::error::cd-portal.yml publica staging solo desde develop (rama actual: ${GITHUB_REF})."
           exit 1
