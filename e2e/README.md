@@ -62,9 +62,9 @@ emulador (tokens de 1 h, `RevokeToken` no implementado): ver la tabla «Local (M
 | 2 | Recargar `/originacion/bandeja-decision` devuelve la aplicación (enlaces profundos de CloudFront) |
 | 3 | Oferta `demo-active-<corrida>` como asegurado → aceptar → E4 con `4111 1111 1111 1111` (tokenizada por `/pasarela/tokens`) → pago confirmado → E5 → el PDF se descarga |
 | 4 | Tarjeta `4000 0000 0000 0002` → E4c, pago rechazado |
-| 5 | `/embebido/perfil-riesgo/cliente-<corrida>?consentimiento=true` → E2, por la ruta de socio con la key que agrega CloudFront |
-| 6 | Ninguna petición del navegador lleva `x-api-key`, y `config.json` solo trae `apiGatewayUrl`, `pasarelaPagosUrl` y `cognito` |
-| 7 | Solo con `NUBE_AUDIT=1` (cuando las rutas de `audit` del aliado estén en el gateway): E1 → E2 → «Ver mi oferta» → E3 con una oferta `off-…` |
+| 5 | `/embebido/perfil-riesgo/sin-consentimiento-<corrida>?consentimiento=true` → «Necesitamos tu consentimiento» con «Volver al consentimiento»: el 422 de originación tras preguntar a `audit` (CA-3 de HU-W1.2-01) |
+| 6 | La misma pantalla sin que ninguna petición del navegador lleve `x-api-key`, y `config.json` solo trae `apiGatewayUrl`, `pasarelaPagosUrl` y `cognito` |
+| 7 | E1 con el aliado `portal-embebido`, la solicitud `app-<corrida>` y el cliente `cliente-<corrida>` → autorizar → E2 → «Ver mi oferta» → inicio de sesión del asegurado → E3 con una oferta `off-…`. Escucha la red: `POST /v1/audit/consents` 201, `POST /v1/risk-profiles/resolve` 200 y `POST /v1/offers` 201, ninguna con `x-api-key`. Termina en E3: la suscripción de la oferta depende del puntaje del cliente de la corrida (más de 0,8 va a decisión humana), así que aceptar y pagar no es determinista |
 
 Usuarios: los cuatro permanentes del *user pool* de `bootstrap/identity` del backend (por defecto `asegurado@`, `asesor@`,
 `operaciones@` y `socio@example.com`; se cambian con `NUBE_ASEGURADO`, `NUBE_ASESOR`, `NUBE_OPERACIONES` y `NUBE_SOCIO`). La
@@ -73,9 +73,6 @@ en un archivo ni se imprime. `NUBE_RUN` fija el sufijo de las ofertas de demostr
 
 ```bash
 E2E_NUBE=1 E2E_BASE_URL=https://<distribución>.cloudfront.net NUBE_CONTRASENA="$SOLVENTA_IDENTITY_SEED_PASSWORD" \
-  npx playwright test --project=nube
-# Con el cableado de audit en el gateway:
-NUBE_AUDIT=1 E2E_NUBE=1 E2E_BASE_URL=https://<distribución>.cloudfront.net NUBE_CONTRASENA="$SOLVENTA_IDENTITY_SEED_PASSWORD" \
   npx playwright test --project=nube
 # La suite del CI contra el sitio desplegado (sus pruebas simulan el API con page.route):
 E2E_BASE_URL=https://<distribución>.cloudfront.net CI=1 npx playwright test --project=chromium

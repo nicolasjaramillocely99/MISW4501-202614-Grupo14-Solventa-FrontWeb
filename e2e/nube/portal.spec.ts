@@ -21,11 +21,12 @@ import { PolizaEmitidaPagina } from '../paginas/poliza-emitida.pagina';
  * Humo del portal **desplegado** (T5): CloudFront, `config.json`, el API Gateway en el mismo dominio, Cognito real con
  * los usuarios permanentes y la pasarela simulada de la plataforma. **Sin `page.route`**: todo va a la nube.
  * Solo existe en el proyecto `nube` (`E2E_NUBE=1` y `E2E_BASE_URL` con la URL del portal), nunca en el CI.
- * El escenario 7 (consentimiento y «Ver mi oferta») solo corre con `NUBE_AUDIT=1`, cuando las rutas de `audit` del
- * aliado estén en el gateway (D-10 de T5).
+ * El canal embebido usa el consentimiento real: los términos, el consentimiento y `POST /v1/offers` son rutas de socio
+ * con la key que pone CloudFront, y originación verifica el consentimiento con `audit` dentro de la VPC (T5, #70).
  */
 
-const CON_AUDIT = process.env['NUBE_AUDIT'] === '1';
+/** Rutas del aliado que el escenario 7 escucha en la red (todas `POST`, sin `x-api-key` desde el navegador). */
+const RUTAS_DEL_ALIADO = ['/v1/audit/consents', '/v1/risk-profiles/resolve', '/v1/offers'];
 
 /** Inicia sesión en P0 con un usuario permanente; si hay `returnUrl`, el portal vuelve a esa ruta. */
 async function ingresar(page: Page, rol: RolNube): Promise<void> {
@@ -121,13 +122,15 @@ test.describe('Portal desplegado en la nube (T5)', () => {
     await verificarAccesibilidad(page);
   });
 
-  test('5 · el perfil de riesgo del canal embebido llega por la ruta de socio sin sesión (E2)', async ({ page }) => {
+  test('5 · sin consentimiento registrado, E2 lo pide: originación pregunta a audit (CA-3 de HU-W1.2-01)', async ({ page }) => {
     const perfil = new PerfilRiesgoPagina(page);
 
-    await page.goto(`/embebido/perfil-riesgo/cliente-${CORRIDA_NUBE}?consentimiento=true`);
+    // `?consentimiento=true` ya no basta: en la nube decide `audit`, y este cliente nunca consintió (422 consent_required).
+    await page.goto(`/embebido/perfil-riesgo/sin-consentimiento-${CORRIDA_NUBE}?consentimiento=true`);
 
-    await expect(perfil.verOferta).toBeVisible({ timeout: 30_000 });
-    await expect(perfil.titulo).toHaveText('Tu oferta está lista');
+    await expect(perfil.alerta).toContainText('Necesitamos tu consentimiento', { timeout: 30_000 });
+    await expect(page.getByRole('link', { name: 'Volver al consentimiento' })).toBeVisible();
+    await expect(perfil.verOferta).toHaveCount(0);
     await verificarAccesibilidad(page);
   });
 
@@ -139,8 +142,8 @@ test.describe('Portal desplegado en la nube (T5)', () => {
       }
     });
 
-    await page.goto(`/embebido/perfil-riesgo/cliente-${CORRIDA_NUBE}k?consentimiento=true`);
-    await expect(new PerfilRiesgoPagina(page).verOferta).toBeVisible({ timeout: 30_000 });
+    await page.goto(`/embebido/perfil-riesgo/sin-consentimiento-${CORRIDA_NUBE}k?consentimiento=true`);
+    await expect(new PerfilRiesgoPagina(page).alerta).toContainText('Necesitamos tu consentimiento', { timeout: 30_000 });
     expect(conLlave).toEqual([]);
 
     const config = await request.get('/config.json');
@@ -150,22 +153,47 @@ test.describe('Portal desplegado en la nube (T5)', () => {
     expect(JSON.stringify(cuerpo)).not.toMatch(/api[-_]?key|secret|password/i);
   });
 
-  test('7 · consentimiento → perfil → «Ver mi oferta» → oferta personalizada (solo con NUBE_AUDIT=1)', async ({ page }) => {
-    test.skip(!CON_AUDIT, 'Las rutas de audit del aliado aún no están en el gateway (D-10): NUBE_AUDIT=1 las prueba');
+  test('7 · consentimiento → perfil → «Ver mi oferta» → oferta personalizada, con el consentimiento real', async ({ page }) => {
     test.setTimeout(180_000);
     const consentimiento = new ConsentimientoPagina(page);
-    // Un cliente nuevo por corrida: el consentimiento es idempotente por cliente, solicitud y versión de términos.
-    await consentimiento.abrir({ ...CONTEXTO_ALIADO, cliente: { ...CONTEXTO_ALIADO.cliente, id: `cliente-${CORRIDA_NUBE}a` } });
+    const llamadas: string[] = [];
+    const conLlave: string[] = [];
+    page.on('request', (peticion) => {
+      if (peticion.headers()['x-api-key'] !== undefined) {
+        conLlave.push(new URL(peticion.url()).pathname);
+      }
+    });
+    page.on('response', (respuesta) => {
+      const ruta = new URL(respuesta.url()).pathname;
+      if (respuesta.request().method() === 'POST' && RUTAS_DEL_ALIADO.includes(ruta)) {
+        llamadas.push(`POST ${ruta} ${respuesta.status()}`);
+      }
+    });
+
+    // El aliado de demostración del portal, con un cliente y una solicitud nuevos por corrida: el consentimiento es
+    // idempotente por cliente, solicitud y versión de términos.
+    await consentimiento.abrir({
+      ...CONTEXTO_ALIADO,
+      aliadoId: 'portal-embebido',
+      solicitud: { ...CONTEXTO_ALIADO.solicitud, numero: `app-${CORRIDA_NUBE}` },
+      cliente: { ...CONTEXTO_ALIADO.cliente, id: `cliente-${CORRIDA_NUBE}` },
+    });
     await verificarAccesibilidad(page);
 
     await consentimiento.marcarAmbas();
     await consentimiento.autorizar.click();
     await expect(consentimiento.titulo).toHaveText('Tu oferta está lista', { timeout: 30_000 });
+    await verificarAccesibilidad(page);
     await page.getByRole('button', { name: 'Ver mi oferta' }).click();
     await ingresar(page, 'asegurado');
 
     await expect(page).toHaveURL(/\/embebido\/oferta\/off-[0-9a-f]+$/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tu oferta personalizada');
     await verificarAccesibilidad(page);
+    expect(llamadas).toEqual(['POST /v1/audit/consents 201', 'POST /v1/risk-profiles/resolve 200', 'POST /v1/offers 201']);
+    expect(conLlave).toEqual([]);
+    // Termina en E3: la suscripción de una oferta personalizada depende del puntaje del cliente de la corrida (los
+    // stubs lo derivan del id, y un puntaje mayor a 0,8 va a decisión humana), así que aceptar y pagar no es
+    // determinista; la aceptación de una oferta personalizada se prueba en vivo en la ventana (B9).
   });
 });
