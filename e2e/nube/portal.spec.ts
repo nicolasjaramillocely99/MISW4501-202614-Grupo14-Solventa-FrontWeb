@@ -178,6 +178,8 @@ test.describe('Portal desplegado en la nube (T5)', () => {
       solicitud: { ...CONTEXTO_ALIADO.solicitud, numero: `app-${CORRIDA_NUBE}` },
       cliente: { ...CONTEXTO_ALIADO.cliente, id: `cliente-${CORRIDA_NUBE}` },
     });
+    // En la nube el portal primero lee config.json y los términos vigentes: se espera la pantalla antes de axe.
+    await expect(consentimiento.titulo).toBeVisible({ timeout: 30_000 });
     await verificarAccesibilidad(page);
 
     await consentimiento.marcarAmbas();
