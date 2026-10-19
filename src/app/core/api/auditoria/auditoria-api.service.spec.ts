@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { environment } from '@env/environment';
+import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
 import { RECIBO_CONSENTIMIENTO_DTO as RECIBO_DTO, TERMINOS_DTO } from '@testing/consentimiento-pruebas';
 
 import { AuditoriaApiService } from './auditoria-api.service';
@@ -28,7 +28,7 @@ const SOLICITUD: SolicitudConsentimiento = {
 describe('AuditoriaApiService (HU-W1.2-01)', () => {
   let servicio: AuditoriaApiService;
   let http: HttpTestingController;
-  const url = (ruta: string) => `${environment.apiGatewayUrl.replace(/\/+$/, '')}${ruta}`;
+  const url = (ruta: string) => `${CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '')}${ruta}`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });

@@ -51,13 +51,14 @@ npm ci
 npm start
 ```
 
-El portal queda en `http://localhost:4200` usando `src/environments/environment.development.ts` (ambiente **local**). El servicio de originación no responde CORS, así que en local el navegador llama al mismo origen y el proxy de desarrollo ([`proxy.conf.json`](proxy.conf.json)) reenvía `/v1` a `http://localhost:8080`.
+El portal queda en `http://localhost:4200` usando `src/environments/environment.development.ts` (ambiente **local**, con su `configuracionLocal`). El servicio de originación no responde CORS, así que en local el navegador llama al mismo origen y el proxy de desarrollo ([`proxy.conf.json`](proxy.conf.json)) reenvía `/v1` a `http://localhost:8080` y `/pasarela` al stub de la pasarela, igual que CloudFront en la nube.
 
 | Comando | Qué hace |
 |---|---|
 | `npm start` | Servidor de desarrollo con recarga en caliente |
-| `npm run build` | Compilación de producción en `dist/` |
-| `npm run build -- --configuration staging` | Compilación para el ambiente de experimentos |
+| `npm run build` | Compilación de producción en `dist/`: un solo *build* para staging y production-demo (la configuración del ambiente se lee de `config.json` al arrancar) |
+| `npm run build -- --configuration staging` | Igual que producción (también lee `config.json`); se conserva por compatibilidad |
+| `bash scripts/publicar-portal.sh <staging\|production-demo>` | Publica `dist/` en el bucket S3 del ambiente e invalida CloudFront (credenciales de AWS del entorno; nunca toca `config.json`) |
 | `npm test` | Pruebas unitarias con Vitest |
 | `npm test -- --coverage` | Pruebas unitarias con reporte de cobertura (umbral del proyecto: ≥ 70 %) |
 | `npm run lint` | ESLint sobre TypeScript y plantillas |
@@ -75,7 +76,8 @@ Antes de la primera corrida E2E: `npx playwright install chromium`.
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml                  # PR y push a develop/main: lint → build → unitarias con cobertura, y E2E + axe-core en paralelo
-│   │   └── e2e-nocturno.yml        # Corrida nocturna: lint, build, unitarias, Playwright + axe-core y npm audit
+│   │   ├── e2e-nocturno.yml        # Corrida nocturna: lint, build, unitarias, Playwright + axe-core y npm audit
+│   │   └── cd-portal.yml           # Publicación del portal en staging, bajo demanda desde develop (S3 + CloudFront, rol OIDC)
 │   ├── dependabot.yml
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/
@@ -89,7 +91,8 @@ Antes de la primera corrida E2E: `npx playwright install chromium`.
 │   │   └── socios-b2b/             # Flujo crítico 3
 │   ├── paginas/                    # Page objects
 │   ├── fixtures/                   # Usuarios de prueba por rol y datos
-│   └── accesibilidad/              # Verificación con axe-core (OBJ 13)
+│   ├── accesibilidad/              # Verificación con axe-core (OBJ 13)
+│   └── nube/                       # Humo del portal desplegado en AWS (proyecto nube, fuera del CI)
 ├── public/
 │   ├── favicon.ico
 │   └── i18n/                       # Diccionarios Transloco: es-CO (predeterminado) y en-US
@@ -110,12 +113,14 @@ Antes de la primera corrida E2E: `npx playwright install chromium`.
 │   │   ├── app.config.ts           # Proveedores globales (router, HTTP, i18n, auth)
 │   │   ├── app.routes.ts           # Rutas raíz: carga perezosa de cada dominio
 │   │   └── app.ts                  # Componente raíz
-│   ├── environments/               # local · staging · producción (demo)
+│   ├── environments/               # local (configuracionLocal) · staging · producción (demo): estos dos leen config.json
 │   ├── styles/                     # Tokens del sistema de diseño y estilos globales
 │   ├── testing/                    # Utilidades compartidas de pruebas unitarias
 │   ├── index.html
 │   ├── main.ts
 │   └── styles.scss
+├── scripts/
+│   └── publicar-portal.sh          # Sube el build a S3 e invalida CloudFront (staging o production-demo)
 ├── angular.json · package.json · tsconfig*.json · eslint.config.js · playwright.config.ts
 └── .nvmrc · .editorconfig · .prettierrc · .gitignore
 ```
@@ -173,14 +178,14 @@ Toda pantalla implementa los **estados** que define el prototipo (vacío, sin re
 
 Definidos en [frameworks y ambientes](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/frameworks#d-ambiente-cloud-para-backend--herramientas-para-test):
 
-| Ambiente | Archivo de configuración | Uso |
+| Ambiente | Configuración | Uso |
 |---|---|---|
-| Local | `src/environments/environment.development.ts` | Desarrollo diario contra el Docker Compose del backend (PostgreSQL, Redis, LocalStack, stubs) |
+| Local | `src/environments/environment.development.ts` (`configuracionLocal`) | Desarrollo diario contra el Docker Compose del backend (PostgreSQL, Redis, LocalStack, stubs) |
 | Test / CI | — (sin despliegue) | Lint, build, unitarias y E2E con axe-core en cada *pull request*; corrida nocturna con la suite completa y `npm audit` |
-| Staging | `src/environments/environment.staging.ts` | Experimentos de arquitectura; se enciende solo en su ventana |
-| Producción (demo) | `src/environments/environment.ts` | Entrega evaluable, desplegada por CI/CD |
+| Staging | `config.json` de `staging/web` | Experimentos de arquitectura; se enciende solo en su ventana con `scripts/environment/up.sh staging` (backend) y se publica con `cd-portal.yml` (bajo demanda, desde `develop`) |
+| Producción (demo) | `config.json` de `production-demo/web` | Entrega evaluable. Se enciende con `scripts/environment/up.sh production-demo` (backend), que publica el front desde un *build* local de `main` con `scripts/publicar-portal.sh`; el CD al integrar `main` es del pipeline de `main` del equipo |
 
-Los valores marcados `PENDIENTE` (URL del API Gateway, user pool y cliente de Cognito) se completan cuando el repositorio de infraestructura los publique.
+**Configuración en tiempo de ejecución (T5).** En la nube el portal se sirve desde un bucket S3 privado detrás de CloudFront, con el API Gateway en el mismo dominio (`/v1/*` y `/pasarela/*`), así que no hay CORS. Al arrancar, `main.ts` lee `config.json` (URL del API, URL de la pasarela, *user pool* y cliente web de Cognito), que escribe Terraform junto al sitio (repo backend, `infra/terraform/modules/web-portal`); si no carga o no es válido, la página muestra un aviso fijo y bilingüe y no llama a nada. Así un mismo *build* sirve a staging y a production-demo, y ya no hay valores `PENDIENTE`.
 
 ---
 
@@ -193,6 +198,7 @@ Según la [estrategia de pruebas v1.2](https://github.com/leonelparrales22/MISW4
 | Unitarias y de componente (OBJ 02, ≥ 70 %) | Vitest + Testing Library | `*.spec.ts` junto al código | Cada *pull request* |
 | Extremo a extremo (OBJ 06): cotización y emisión, radicación y seguimiento de siniestro, incorporación de socio B2B; mínimo tres escenarios por flujo | Playwright | `e2e/flujos/` | Cada *pull request*, corrida nocturna y bajo demanda |
 | Accesibilidad (OBJ 13) | axe-core sobre Playwright | `e2e/accesibilidad/` | Con las E2E |
+| Humo del portal desplegado (T5) | Playwright + axe-core, sin simulaciones | `e2e/nube/` (proyecto `nube`, `E2E_NUBE=1`) | A mano, tras publicar en staging o production-demo; fuera del CI |
 | Internacionalización (OBJ 12) | Revisión de `public/i18n/` y casos manuales | — | Por sprint |
 | Usabilidad (OBJ 11) | Sesión moderada | — | Una por sprint |
 

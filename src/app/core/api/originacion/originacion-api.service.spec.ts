@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { environment } from '@env/environment';
+import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
 import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
 
 import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
@@ -51,7 +51,7 @@ describe('OriginacionApiService', () => {
       .resolverPerfilRiesgo({ clienteId: 'cli-1', consentimientoActivo: true })
       .subscribe((perfil) => (resultado = perfil));
 
-    const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/risk-profiles/resolve`);
+    const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/risk-profiles/resolve`);
     expect(peticion.request.method).toBe('POST');
     expect(peticion.request.body).toEqual({ customer_id: 'cli-1', consent_active: true });
     peticion.flush(DTO);
@@ -66,14 +66,14 @@ describe('OriginacionApiService', () => {
       .subscribe({ error: (error: { status: number }) => (estado = error.status) });
 
     http
-      .expectOne(`${environment.apiGatewayUrl}/v1/risk-profiles/resolve`)
+      .expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/risk-profiles/resolve`)
       .flush({ error: 'consent_required', message: 'sin consentimiento' }, { status: 422, statusText: 'Unprocessable' });
 
     expect(estado).toBe(422);
   });
 
   describe('aceptación de la oferta (HU-W1.3-01)', () => {
-    const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+    const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
     const ACEPTACION: AceptacionDto = {
       acceptance_id: 'b310b02b-9820-4725-bded-586d263dd16e',
       offer_id: 'demo-active-002',
@@ -157,7 +157,7 @@ describe('OriginacionApiService', () => {
   });
 
   describe('cotización asistida (HU-W1.1-01)', () => {
-    const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+    const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
     const SOLICITUD = {
       documento: '1032456789',
       nombreCompleto: 'Ana María Pérez',
@@ -268,7 +268,7 @@ describe('OriginacionApiService', () => {
   });
 
   describe('cobro de la prima (HA-D02)', () => {
-    const URL_COBRO = `${environment.apiGatewayUrl.replace(/\/+$/, '')}/v1/acceptances/acc%2F1/charge`;
+    const URL_COBRO = `${CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '')}/v1/acceptances/acc%2F1/charge`;
 
     it('consulta el cobro codificando la aceptación y devuelve el modelo del cliente', () => {
       let recibido: unknown;
@@ -294,7 +294,7 @@ describe('OriginacionApiService', () => {
   });
 
   describe('bandeja de decisión humana (HU-W1.1-02)', () => {
-    const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+    const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
 
     it('lista la bandeja con el estado, el orden y el motivo como parámetros', () => {
       let recibido: unknown;
@@ -404,7 +404,7 @@ describe('OriginacionApiService', () => {
       let resultado: unknown;
       servicio.generarOferta(solicitud).subscribe((oferta) => (resultado = oferta));
 
-      const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/offers`);
+      const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers`);
       expect(peticion.request.method).toBe('POST');
       expect(peticion.request.body).toMatchObject({ customer_id: 'cli-1', consent_id: 'cns-1', term_months: 240 });
       peticion.flush(OFERTA_NORMAL_DTO, { status: 201, statusText: 'Created' });
@@ -417,7 +417,7 @@ describe('OriginacionApiService', () => {
       servicio.generarOferta(solicitud).subscribe({ error: (e: unknown) => (error = e) });
 
       http
-        .expectOne(`${environment.apiGatewayUrl}/v1/offers`)
+        .expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers`)
         .flush({ error: 'consent_required', message: 'x' }, { status: 422, statusText: 'Unprocessable Entity' });
 
       expect(error).toBeInstanceOf(ErrorOferta);
@@ -428,7 +428,7 @@ describe('OriginacionApiService', () => {
       let resultado: unknown;
       servicio.consultarOferta('off-seedr1792338656').subscribe((oferta) => (resultado = oferta));
 
-      const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/offers/off-seedr1792338656`);
+      const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/off-seedr1792338656`);
       expect(peticion.request.method).toBe('GET');
       peticion.flush(OFERTA_VENCIDA_DTO);
 
@@ -440,8 +440,8 @@ describe('OriginacionApiService', () => {
       servicio.consultarOferta('a').subscribe({ error: (e: ErrorOferta) => codigos.push(e.codigo) });
       servicio.consultarOferta('b').subscribe({ error: (e: ErrorOferta) => codigos.push(e.codigo) });
 
-      http.expectOne(`${environment.apiGatewayUrl}/v1/offers/a`).flush(null, { status: 404, statusText: 'Not Found' });
-      http.expectOne(`${environment.apiGatewayUrl}/v1/offers/b`).error(new ProgressEvent('error'));
+      http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/a`).flush(null, { status: 404, statusText: 'Not Found' });
+      http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/b`).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual(['offer_not_found', 'offer_unavailable']);
     });
@@ -450,7 +450,7 @@ describe('OriginacionApiService', () => {
       let resultado: unknown;
       servicio.renovarOferta('off-seedr1792338656').subscribe((oferta) => (resultado = oferta));
 
-      const peticion = http.expectOne(`${environment.apiGatewayUrl}/v1/offers/off-seedr1792338656/renewal`);
+      const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/off-seedr1792338656/renewal`);
       expect(peticion.request.method).toBe('POST');
       expect(peticion.request.body).toBeNull();
       peticion.flush(OFERTA_NORMAL_DTO, { status: 201, statusText: 'Created' });
@@ -463,7 +463,7 @@ describe('OriginacionApiService', () => {
       servicio.renovarOferta('a').subscribe({ error: (e: unknown) => (error = e) });
 
       http
-        .expectOne(`${environment.apiGatewayUrl}/v1/offers/a/renewal`)
+        .expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/a/renewal`)
         .flush({ error: 'offer_superseded', message: 'x', superseded_by: 'b' }, { status: 409, statusText: 'Conflict' });
 
       expect((error as ErrorOferta).codigo).toBe('offer_superseded');
