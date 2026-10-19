@@ -29,13 +29,13 @@
     "@angular/build": "^22.2.2",
     "@angular/cli": "^22.2.2",
     "@angular/compiler-cli": "^22.2.2",
-    "@axe-core/playwright": "^4.13.0",
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.64.0",
+    "@playwright/test": "^1.64.1",
     "@testing-library/angular": "^19.5.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/user-event": "^14.6.7",
+    "@testing-library/user-event": "^14.6.8",
     "@vitest/coverage-v8": "^4.1.11",
     "angular-eslint": "22.5.0",
     "eslint": "^10.3.0",
@@ -43,7 +43,7 @@
     "prettier": "^3.8.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "8.59.2",
-    "vitest": "^4.0.8"
+    "vitest": "^5.0.5"
   },
   "description": "Cliente web (Angular) de Solventa - Proyecto Final MISW4501, Grupo 14",
   "engines": {
