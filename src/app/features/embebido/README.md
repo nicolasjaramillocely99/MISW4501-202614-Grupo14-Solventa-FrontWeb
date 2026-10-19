@@ -45,7 +45,9 @@
   (`aliadoId` es el `partner_id` del consentimiento y `solicitud.numero` su `application_id`; ambos deben cumplir `^[A-Za-z0-9_-]+$`.
   `banco` rotula la tarjeta «Tu crédito» y `aliado` la barra del aliado.)
 - **Limitación (demostración del canal):** en producción el aliado entregaría estos datos de servidor a servidor, no en la URL del
-  navegador; el `x-api-key` del aliado tampoco se envía desde aquí.
+  navegador; el `x-api-key` del aliado tampoco se envía desde aquí. En la demo desplegada (T5) lo agrega CloudFront: las rutas de socio de
+  estas pantallas (`/v1/risk-profiles/*`, `/v1/offers` y las de `audit`) llevan la key del socio de demostración `portal-embebido`, con su
+  propio *usage plan*, sin que el navegador la vea.
 - Llama a `AuditoriaApiService` (`core/api/auditoria/`): `consultarTerminosVigentes` (`GET /v1/audit/consent-terms/current`) al entrar y
   `registrarConsentimiento` (`POST /v1/audit/consents`, canal `embedded`, idempotente por cliente + solicitud + versión: reintentar es
   seguro). Las fuentes (icono, nombre, datos y vigencia), la finalidad, el responsable y la política se pintan **desde los términos del
