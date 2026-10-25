@@ -1,0 +1,53 @@
+<section class="tarjeta" aria-labelledby="titulo-entidades" *transloco="let t; prefix: 'auditoria.consentimientos.entidades'">
+  <h2 id="titulo-entidades" class="seccion__titulo">{{ t('titulo') }}</h2>
+  <div class="tabla-contenedor">
+    <table class="tabla">
+      <caption class="visualmente-oculto">{{ t('titulo') }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t('entidad') }}</th>
+          @if (estado().revocacion; as revocacion) {
+            <th scope="col">{{ t('revocacion') }}</th>
+            <th scope="col">{{ t('confirmacion') }}</th>
+          } @else {
+            <th scope="col">{{ t('estadoEnEntidad') }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @if (estado().revocacion; as revocacion) {
+          @for (entidad of revocacion.entidades; track entidad.codigo) {
+            <tr>
+              <th scope="row">{{ entidad.nombre }}</th>
+              <td>
+                <app-insignia-estado [tono]="tonoDe(entidad.estado)">{{ t('estados.' + entidad.estado) }}</app-insignia-estado>
+              </td>
+              <td>
+                @switch (entidad.estado) {
+                  @case ('confirmed') {
+                    {{ t('confirmoEl', { fecha: entidad.confirmadaEn | formatoFechaHora: 'fechaHora' }) }}
+                  }
+                  @case ('not_confirmed') {
+                    {{ t('tiempoAgotado', { hora: entidad.plazoHasta | formatoFechaHora: 'hora' }) }}
+                  }
+                  @default {
+                    {{ t('plazoHasta', { hora: entidad.plazoHasta | formatoFechaHora: 'hora' }) }}
+                  }
+                }
+              </td>
+            </tr>
+          }
+        } @else {
+          @for (entidad of estado().entidades; track entidad.codigo) {
+            <tr>
+              <th scope="row">{{ entidad.nombre }}</th>
+              <td>
+                <app-insignia-estado [tono]="consentimiento().tono">{{ t('estadoConsentimiento.' + consentimiento().clave) }}</app-insignia-estado>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

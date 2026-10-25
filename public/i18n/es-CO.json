@@ -1649,6 +1649,237 @@
         "base_actuarial_profile": "Se usó el perfil actuarial base porque una fuente no respondió",
         "provisional_offer": "Oferta provisional hasta que la fuente vuelva"
       }
+    },
+    "consentimientos": {
+      "busqueda": {
+        "titulo": "Consentimientos Open Finance",
+        "descripcion": "Consulta el estado de un consentimiento de Open Finance y, si corresponde, revócalo. Por ahora la búsqueda es por identificador.",
+        "tarjeta": "Buscar consentimiento",
+        "campo": "Identificador del consentimiento",
+        "ejemplo": "cns-0123456789abcdef",
+        "ayuda": "Ingresa el identificador del consentimiento (p. ej. cns-…).",
+        "buscar": "Buscar",
+        "buscando": "Buscando…",
+        "errores": {
+          "requerido": "Ingresa el identificador del consentimiento.",
+          "invalido": "El identificador solo admite letras, números, guion y guion bajo (máximo 64 caracteres)."
+        },
+        "sinResultados": {
+          "titulo": "No encontramos un consentimiento con el identificador {{ id }}",
+          "texto": "Verifica el identificador e inténtalo de nuevo. Por seguridad no se muestra información interna del sistema.",
+          "limpiar": "Limpiar búsqueda"
+        },
+        "error": {
+          "titulo": "No pudimos consultar el consentimiento",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "incluye": {
+          "titulo": "Qué muestra el detalle",
+          "estado": "Estado del consentimiento y alcance autorizado",
+          "entidades": "Entidades financieras y el avance del aviso de revocación",
+          "revocacion": "Revocación desde el portal, con motivo y referencia",
+          "historial": "Historial de estados con la hora de cada cambio"
+        }
+      },
+      "detalle": {
+        "volver": "Consentimientos",
+        "cargando": "Cargando el consentimiento…",
+        "titulo": "Consentimiento {{ id }}",
+        "otorgado": "otorgado el {{ fecha }}",
+        "revocar": "Revocar consentimiento",
+        "reintentarEn": "Reintentar en {{ entidad }}",
+        "reintentarEnVarias": "Reintentar en {{ cantidad }} entidades",
+        "reintentando": "Reintentando…",
+        "reintentar": "Reintentar",
+        "error": {
+          "titulo": "No pudimos cargar el consentimiento",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo."
+        },
+        "noEncontrado": {
+          "titulo": "No encontramos este consentimiento",
+          "texto": "No hay un consentimiento con el identificador {{ id }}. Por seguridad no se muestra información interna del sistema.",
+          "buscarOtro": "Buscar otro"
+        },
+        "noRevocable": {
+          "revocado": "Este consentimiento ya está revocado: no se puede revocar de nuevo.",
+          "parcial": "Este consentimiento ya está revocado en Solventa; solo falta que las entidades sin confirmación respondan. Puedes reintentar el aviso.",
+          "vencido": "Este consentimiento está vencido: no hay nada que revocar."
+        },
+        "carrera": {
+          "consent_already_revoked": "Este consentimiento ya fue revocado mientras confirmabas (por ejemplo, por el titular desde la app). No se envió ninguna solicitud nueva y actualizamos el estado.",
+          "consent_not_active": "Este consentimiento venció mientras confirmabas, por eso ya no se puede revocar. Actualizamos el estado."
+        },
+        "parcial": {
+          "titulo": "Revocación parcial: hay entidades sin confirmación",
+          "texto": "Solventa ya no consulta datos de este cliente, pero no todas las entidades confirmaron dentro del plazo de 5 minutos.",
+          "noConfirmo": "{{ entidad }}: sin confirmación, tiempo agotado a las {{ hora }}",
+          "confirmo": "{{ entidad }}: confirmó a las {{ hora }}"
+        },
+        "enCurso": {
+          "titulo": "Revocación en curso",
+          "tituloReintento": "Reintento en curso",
+          "texto": "Solventa ya no consulta datos de este cliente. Estamos avisando a las entidades: tienen hasta las {{ hora }} para confirmar."
+        },
+        "sondeoDetenido": {
+          "titulo": "No pudimos actualizar el estado",
+          "texto": "Dejamos de consultar el estado automáticamente. Lo que ves puede no ser lo más reciente.",
+          "actualizar": "Actualizar"
+        },
+        "falloReintento": "No pudimos reintentar el aviso a las entidades. No se cambió nada: inténtalo de nuevo.",
+        "datos": {
+          "titulo": "Datos del cliente y del consentimiento",
+          "cliente": "Cliente",
+          "alcance": "Alcance"
+        },
+        "alcance": {
+          "titulo": "Alcance detallado"
+        },
+        "efecto": {
+          "titulo": "Efecto inmediato en Solventa",
+          "texto": "Solventa ya no consulta datos de este cliente. El aviso a cada entidad sigue su curso dentro del plazo de 5 minutos."
+        },
+        "registro": {
+          "titulo": "Registro de la operación",
+          "solicitadaPor": "Solicitada por",
+          "solicitantes": {
+            "tu": "{{ nombre }} · Analista de operaciones",
+            "operaciones": "Analista de operaciones",
+            "titular": "El titular desde la app"
+          },
+          "motivo": "Motivo",
+          "referencia": "Referencia",
+          "fecha": "Fecha y hora",
+          "canal": "Canal",
+          "comprobante": "Comprobante al cliente",
+          "enLaApp": "Disponible en la app del cliente"
+        },
+        "reglas": {
+          "titulo": "Revocación desde el portal",
+          "texto": "Solo el analista de operaciones puede revocar. La solicitud se envía a todas las entidades autorizadas y debe completarse en 5 minutos; si alguna no la procesa, verás una alerta y podrás reintentar. No se puede revocar un consentimiento ya revocado o vencido."
+        }
+      },
+      "estados": {
+        "activo": "Activo",
+        "enCurso": "Revocación en curso",
+        "revocado": "Revocado",
+        "parcial": "Revocación parcial",
+        "vencido": "Vencido"
+      },
+      "entidades": {
+        "titulo": "Entidades financieras autorizadas",
+        "entidad": "Entidad",
+        "estadoEnEntidad": "Estado en la entidad",
+        "revocacion": "Revocación",
+        "confirmacion": "Confirmación",
+        "estados": {
+          "pending": "Pendiente",
+          "confirmed": "Revocado",
+          "not_confirmed": "Sin confirmación"
+        },
+        "estadoConsentimiento": {
+          "activo": "Activo",
+          "enCurso": "Revocación en curso",
+          "revocado": "Revocado",
+          "parcial": "Revocación parcial",
+          "vencido": "Vencido"
+        },
+        "plazoHasta": "Plazo hasta {{ hora }}",
+        "confirmoEl": "Confirmó el {{ fecha }}",
+        "tiempoAgotado": "Tiempo agotado a las {{ hora }}"
+      },
+      "historial": {
+        "titulo": "Historial de estados",
+        "referencia": "Referencia {{ referencia }}",
+      "referenciaEntidad": "Referencia de la entidad {{ referencia }}",
+        "estados": {
+          "granted": "Otorgado",
+          "revocation_requested": "Revocación solicitada",
+          "revoked": "Consentimiento revocado en Solventa",
+          "revocation_confirmed": "Revocación confirmada por la entidad",
+          "revocation_not_confirmed": "La entidad no confirmó en el plazo",
+          "revocation_retry_requested": "Reintento del aviso solicitado",
+          "expired": "Vencido"
+        }
+      },
+      "actores": {
+        "operations": "Analista de operaciones",
+        "holder": "Titular",
+        "system": "Sistema"
+      },
+      "motivos": {
+        "customer_request": "Solicitud del cliente",
+        "regulatory_order": "Orden regulatoria"
+      },
+      "canales": {
+        "compliance_portal": "Portal de cumplimiento",
+        "mobile_app": "App móvil"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "categorias": {
+        "credit_products": "productos de crédito",
+        "balances": "saldos",
+        "payment_behavior": "comportamiento de pago",
+        "public_records": "registros públicos",
+        "identity_verification": "verificación de identidad"
+      },
+      "vigencias": {
+        "12_months": "Vigencia: 12 meses",
+        "single_use": "Vigencia: un solo uso"
+      },
+      "revocar": {
+        "titulo": "Revocar el consentimiento de {{ nombre }}",
+        "efectivo": "Efectivo en ≤ 5 min",
+        "cerrar": "Cerrar",
+        "introduccion": "Se enviará la solicitud de revocación a todas las entidades autorizadas. El estado cambiará a Revocado cuando todas la confirmen; si alguna no responde en 5 minutos, verás una alerta y podrás reintentar.",
+        "cliente": "Cliente",
+        "alcance": "Alcance que se revoca",
+        "entidades": "Entidades",
+        "consultasFuturas": "Consultas futuras",
+        "consultasBloqueadas": "Bloqueadas de inmediato en Solventa",
+        "motivo": "Motivo",
+        "motivoPlaceholder": "Selecciona un motivo",
+        "motivos": {
+          "customer_request": "Solicitud del cliente",
+          "regulatory_order": "Orden regulatoria"
+        },
+        "referencia": "Referencia (ticket u orden)",
+        "referenciaAyuda": "De 3 a 64 caracteres: letras sin tilde, números, espacio y . / # _ -",
+        "confirmoRol": "Confirmo que actúo como responsable de cumplimiento y que la solicitud está documentada.",
+        "faltan": "Para revocar falta:",
+        "faltantes": {
+          "motivo": "el motivo",
+          "referencia": "una referencia válida",
+          "rolConfirmado": "confirmar tu rol"
+        },
+        "cancelar": "Cancelar",
+        "revocarAhora": "Revocar ahora",
+        "revocando": "Revocando…",
+        "errores": {
+          "service_unavailable": "No pudimos registrar la revocación y no se cambió nada. Conservamos lo que diligenciaste: pulsa «Revocar ahora» para intentarlo de nuevo.",
+          "idempotency_key_reused": "La solicitud no se pudo procesar. Pulsa «Revocar ahora» para intentarlo de nuevo.",
+          "invalid_request": "La solicitud no se pudo procesar. Pulsa «Revocar ahora» para intentarlo de nuevo.",
+          "generico": "No pudimos revocar el consentimiento. Inténtalo de nuevo.",
+          "campos": {
+            "motivo": {
+              "required": "Selecciona el motivo de la revocación.",
+              "invalid_format": "Selecciona uno de los motivos de la lista."
+            },
+            "referencia": {
+              "required": "Ingresa la referencia del ticket o la orden.",
+              "out_of_range": "La referencia debe tener de 3 a 64 caracteres.",
+              "invalid_format": "La referencia solo admite letras sin tilde, números, espacio y . / # _ -"
+            },
+            "rolConfirmado": {
+              "must_be_true": "Confirma que actúas como responsable de cumplimiento."
+            }
+          }
+        }
+      }
     }
   }
 }
