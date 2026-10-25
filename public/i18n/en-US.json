@@ -1045,6 +1045,181 @@
           "registrando": "Recording the decision…"
         }
       }
+    },
+    "emisiones": {
+      "titulo": "Issuance monitoring",
+      "descripcion": "Real-time status of the issuances in progress and their exceptions. The ones that flow without exceptions need no action.",
+      "panel": "Issuances",
+      "cargando": "Loading issuances…",
+      "actualizadaHace": {
+        "segundos": "Updated {{n}} s ago",
+        "minutos": "Updated {{n}} min ago"
+      },
+      "actualizacionFallida": "We could not refresh the list. We are showing the latest data we have and will try again.",
+      "sinAtender": "Unattended",
+      "tarjetas": {
+        "etiqueta": "Issuances summary",
+        "aceptadas": {
+          "etiqueta": "Accepted",
+          "texto": "Underwriting in progress"
+        },
+        "enCobro": {
+          "etiqueta": "Charging",
+          "texto": "Premium charge in progress",
+          "conReintentos": "{{n}} retrying"
+        },
+        "activas": {
+          "etiqueta": "Active today",
+          "texto": "Coverage activated"
+        },
+        "notificadas": {
+          "etiqueta": "Notified",
+          "texto": "Document delivered today"
+        },
+        "excepcion": {
+          "etiqueta": "In exception",
+          "texto": "Need intervention",
+          "sinAtender": "Need intervention · {{n}} unattended"
+        }
+      },
+      "estados": {
+        "accepted": "Accepted",
+        "charging": "Charging",
+        "active": "Active",
+        "notified": "Notified",
+        "exception": "In exception"
+      },
+      "canales": {
+        "web": "Web",
+        "mobile": "Mobile"
+      },
+      "motivos": {
+        "retry_window_expired": "The payment gateway did not respond within the 24-hour window",
+        "payment_rejected": "Payment rejected by the gateway",
+        "payment_method_missing": "The customer did not provide a payment method in time",
+        "document_generation_failed": "The document generator failed after every attempt",
+        "notification_failed": "The notice to the insured could not be delivered after every attempt"
+      },
+      "pasos": {
+        "underwriting": "Automatic underwriting in progress",
+        "awaiting_payment_method": "Waiting for the customer's payment method",
+        "premium_charge": "Premium charge in progress",
+        "premium_charge_retrying": "Retry {{n}} · gateway not responding",
+        "contract_document": "Generating the contractual document",
+        "notification": "Document generated · notice pending",
+        "completed": "Document generated and notified",
+        "retry_window_expired": "Dependency down · payment gateway",
+        "payment_rejected": "Payment rejected by the gateway",
+        "payment_method_missing": "The customer did not provide a payment method in time",
+        "document_generation_failed": "Dependency down · document generator",
+        "notification_failed": "Dependency down · e-mail channel"
+      },
+      "filtros": {
+        "estado": "Status",
+        "desde": "From",
+        "hasta": "Until",
+        "canal": "Channel",
+        "todos": "All",
+        "todosCanales": "All",
+        "formatoFecha": "MM/DD/YYYY",
+        "limpiar": "Clear filters",
+        "rangoInvalido": "The start date cannot be after the end date."
+      },
+      "acciones": {
+        "actualizar": "Refresh",
+        "reintentar": "Try again"
+      },
+      "vacio": {
+        "general": "There are no issuances to show.",
+        "filtrado": "There are no issuances with these filters."
+      },
+      "error": {
+        "titulo": "We could not load the issuances",
+        "texto": "Try again in a few seconds."
+      },
+      "reintentada": {
+        "titulo": "Retry recorded",
+        "texto": "Issuance {{id}} was retried. The action was recorded with your user and the date."
+      },
+      "tabla": {
+        "leyenda": "Issuances, latest accepted first",
+        "columnas": {
+          "emision": "Issuance",
+          "cliente": "Customer",
+          "canal": "Channel",
+          "estado": "Status",
+          "ultimoPaso": "Last step",
+          "hora": "Time",
+          "acciones": "Actions"
+        },
+        "sinNombre": "No name on record",
+        "ver": "View",
+        "verEtiqueta": "View issuance {{id}}",
+        "gestionar": "Manage",
+        "gestionarEtiqueta": "Manage the exception of issuance {{id}}"
+      },
+      "detalle": {
+        "titulo": "Issuance detail",
+        "tituloExcepcion": "Issuance exception",
+        "cerrar": "Close",
+        "cliente": "Customer",
+        "canal": "Channel",
+        "estado": "Status",
+        "motivo": "Reason",
+        "falloEn": "Failed on",
+        "ultimoPaso": "Last step",
+        "prima": "Premium",
+        "intentos": "Attempts",
+        "aceptadaEn": "Accepted on",
+        "oferta": "Offer",
+        "poliza": "Policy",
+        "notificadaEn": "Notified on",
+        "sinAtender": "It has gone more than 30 minutes without an analyst taking it.",
+        "historial": {
+          "titulo": "Recorded actions",
+          "cargando": "Loading the history…",
+          "error": "We could not load the history.",
+          "vacio": "Nobody has acted on this issuance yet.",
+          "por": "By {{autor}}",
+          "accion": {
+            "resume": "Charge retried",
+            "retry": "Contractual issuance retried"
+          }
+        },
+        "nota": {
+          "etiqueta": "Retry note",
+          "ayuda": "Required. It is recorded with your user and the date (up to {{max}} characters).",
+          "errores": {
+            "requerida": "Write a note to retry.",
+            "larga": "The note is too long."
+          }
+        },
+        "errores": {
+          "issuance_not_retryable": {
+            "titulo": "There is nothing left to retry",
+            "texto": "Another analyst or the automatic process already handled it. Nothing was charged or notified again. Refresh the list to see its status."
+          },
+          "issuance_not_found": {
+            "titulo": "We could not find the issuance",
+            "texto": "The acceptance no longer has a charge or a contractual issuance to retry."
+          },
+          "invalid_request": {
+            "titulo": "The note is not valid",
+            "texto": "Check that it has between 1 and 500 characters."
+          },
+          "charge_unavailable": {
+            "titulo": "We could not retry",
+            "texto": "Nothing was changed. Try again in a few seconds."
+          }
+        },
+        "acciones": {
+          "cancelar": "Cancel",
+          "reintentar": "Retry",
+          "reintentando": "Retrying…",
+          "actualizar": "Refresh list",
+          "cerrar": "Close"
+        }
+      }
     }
   },
   "siniestros": {

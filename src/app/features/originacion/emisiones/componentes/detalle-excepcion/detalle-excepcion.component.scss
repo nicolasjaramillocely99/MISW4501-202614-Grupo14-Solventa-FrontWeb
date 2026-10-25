@@ -1,0 +1,176 @@
+// O1b · Detalle de la excepción: diálogo modal centrado sobre un velo.
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacio-16);
+}
+
+.velo {
+  position: absolute;
+  inset: 0;
+  background: rgb(15 23 42 / 55%);
+}
+
+.dialogo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  width: min(640px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--espacio-24);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+  box-shadow: 0 12px 32px rgb(15 23 42 / 25%);
+}
+
+.dialogo__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+}
+
+.dialogo__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 4px;
+  }
+}
+
+.dialogo__id {
+  margin: var(--espacio-4) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+.dialogo__cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--control-alto);
+  min-height: var(--control-alto);
+  border: none;
+  border-radius: var(--radio-tarjeta);
+  background: transparent;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--espacio-12) var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+.datos__id {
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.alerta {
+  margin: 0;
+  padding: var(--espacio-12) var(--espacio-16);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-error-100);
+  color: var(--color-error-600);
+  font-weight: 500;
+}
+
+.historial__titulo {
+  margin: 0 0 var(--espacio-8);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.historial__estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.historial__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historial__item {
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--espacio-12);
+  border-left: 2px solid var(--color-borde-base);
+}
+
+.historial__cabecera {
+  font-weight: 500;
+}
+
+.historial__autor {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+.historial__nota {
+  overflow-wrap: anywhere;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+.campo__control--area {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

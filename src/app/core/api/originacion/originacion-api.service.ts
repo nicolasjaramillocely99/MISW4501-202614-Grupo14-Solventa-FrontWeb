@@ -32,6 +32,20 @@ import {
   traducirErrorCotizacion,
 } from './cotizacion-asistida.modelos';
 import {
+  AccionEmision,
+  FiltroEmisiones,
+  ListaAccionesDto,
+  ListaEmisiones,
+  ListaEmisionesDto,
+  ReintentoEmision,
+  ReintentoEmisionDto,
+  aParametrosEmisiones,
+  mapearListaAcciones,
+  mapearListaEmisiones,
+  mapearReintento,
+  traducirErrorEmision as traducirErrorMonitoreo,
+} from './emision-monitor.modelos';
+import {
   EmisionContractual,
   EmisionContractualDto,
   mapearEmisionContractual,
@@ -88,8 +102,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
- * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02) y la
- * oferta personalizada (HU-W1.2-03).
+ * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02), la
+ * oferta personalizada (HU-W1.2-03) y el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -318,6 +332,50 @@ export class OriginacionApiService {
       .pipe(
         map(mapearSolicitudRevision),
         catchError((error: unknown) => throwError(() => traducirErrorRevision(error, 'decision_not_registered'))),
+      );
+  }
+
+  /**
+   * Lista las emisiones con su estado para operaciones (`GET /v1/issuances`, solo `operations`; HU-W1.3-04),
+   * la más reciente primero, con los filtros de estado, canal y fecha de aceptación, y los conteos de todas las
+   * emisiones para las tarjetas (el «hoy» es el del analista). Sin resultados es una lista vacía, no un error.
+   * Falla con `ErrorEmision`.
+   */
+  listarEmisiones(filtro: FiltroEmisiones): Observable<ListaEmisiones> {
+    return this.http
+      .get<ListaEmisionesDto>(`${this.base}/v1/issuances`, { params: aParametrosEmisiones(filtro) })
+      .pipe(
+        map(mapearListaEmisiones),
+        catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
+      );
+  }
+
+  /**
+   * Acciones que los analistas tomaron sobre una emisión (`GET /v1/issuances/{id}/actions`), la más reciente
+   * primero, con su autor, nota y fecha. Falla con `ErrorEmision`.
+   */
+  listarAccionesEmision(aceptacionId: string): Observable<readonly AccionEmision[]> {
+    return this.http
+      .get<ListaAccionesDto>(`${this.base}/v1/issuances/${encodeURIComponent(aceptacionId)}/actions`)
+      .pipe(
+        map(mapearListaAcciones),
+        catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
+      );
+  }
+
+  /**
+   * Reintenta lo que falló en una emisión, desde la aceptación registrada (`POST /v1/issuances/{id}/retry`, solo
+   * `operations`): el cobro de la prima, o el documento y el aviso si el cobro ya se confirmó. La nota es
+   * obligatoria (1 a 500 caracteres) y queda registrada con el autor y la fecha. Es idempotente:
+   * `issuance_not_retryable` (409) significa que otro analista o el proceso automático ya lo reintentó. Falla con
+   * `ErrorEmision`.
+   */
+  reintentarEmision(aceptacionId: string, nota: string): Observable<ReintentoEmision> {
+    return this.http
+      .post<ReintentoEmisionDto>(`${this.base}/v1/issuances/${encodeURIComponent(aceptacionId)}/retry`, { note: nota })
+      .pipe(
+        map(mapearReintento),
+        catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
       );
   }
 }

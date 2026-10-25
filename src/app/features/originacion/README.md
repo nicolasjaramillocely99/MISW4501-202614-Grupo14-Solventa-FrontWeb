@@ -58,7 +58,7 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [O1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=31-2707), [O1b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=31-3141) | Monitoreo de emisiones y detalle de excepción | `/originacion/emisiones` | Analista de operaciones | HU-W1.3-04, HA-D02 | S2 |
+| [O1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=31-2707), [O1b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=31-3141) | Monitoreo de emisiones y detalle de excepción | `/originacion/emisiones` | Analista de operaciones | HU-W1.3-04, HA-D02 | S2 (implementada) |
 
 ## Implementado
 
@@ -111,6 +111,37 @@ bandeja). Contrato: `docs/contratos/HU-W1.1-02-api.md` del backend (servicio `or
 - El resultado para el cliente (E6b/E6c) vive en `features/embebido/aceptacion-oferta/`.
 - E2E: `e2e/flujos/cotizacion-emision/bandeja-decision.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en
   cada estado).
+
+**Monitoreo de emisiones y excepciones (HU-W1.3-04)** — `emisiones/emisiones.page.ts` (`EmisionesPage`, O1) y
+`emisiones/componentes/detalle-excepcion/detalle-excepcion.component.ts` (`DetalleExcepcionComponent`, O1b, un diálogo modal), ruta
+`/originacion/emisiones` en `originacion.routes.ts` (`rolGuard('operaciones')`; el ítem «Emisiones» del menú de operaciones ya
+existía). Cliente: `OriginacionApiService.listarEmisiones`, `listarAccionesEmision` y `reintentarEmision`, con los modelos de
+`core/api/originacion/emision-monitor.modelos.ts`.
+
+- **Distribución (O1):** encabezado con «Actualizar», cinco tarjetas (Aceptadas, En cobro, Activas hoy, Notificadas, En excepción),
+  filtros (Estado, Desde, Hasta y Canal, más «Limpiar filtros» y «Actualizado hace N s») y la tabla Emisión · Cliente · Canal · Estado ·
+  Último paso · Hora. Las tarjetas cuentan **todas** las emisiones, no solo las filtradas; «hoy» es el día del analista (se envía
+  `day_from`).
+- **Estados (CA-1, CA-2, CA-5):** Aceptada, En cobro, Activa, Notificada y En excepción, derivados por el backend. En una excepción el
+  «Último paso» dice por qué: pasarela caída, pago rechazado, medio de pago no entregado, generador de documentos o canal de correo. Las
+  excepciones se «Gestionan»; las demás solo se «Ven» (diálogo de solo lectura), porque no piden ninguna acción. Un resumen de «sin
+  atender» marca las excepciones con 30 minutos o más sin analista, en la tarjeta y en la fila.
+- **«Tiempo real»:** la lista se actualiza sola cada 30 s (`INTERVALO_SONDEO_MS`) y con «Actualizar». Una actualización que falla conserva
+  la lista y lo avisa; no hay empuje desde el servidor.
+- **Filtros (CA-4):** estado, canal (web o móvil) y rango de fechas de aceptación, aplicados por el backend. Las fechas son de calendario
+  en la zona del usuario (de 00:00:00.000 a 23:59:59.999). Un rango al revés no consulta y se avisa. Sin resultados es una vista vacía,
+  sin error.
+- **Reintento (CA-3, CA-7):** en el diálogo, motivo, intentos, historial de acciones (autor, nota y fecha) y el formulario con nota
+  obligatoria (1 a 500 caracteres). `POST /v1/issuances/{id}/retry` reintenta lo que falló —el cobro o, si ya se confirmó, el documento y
+  el aviso— con la misma clave de idempotencia; si otro analista o el proceso automático ya lo reintentó, el backend responde 409 y el
+  diálogo lo explica sin cobrar ni avisar de nuevo. El diálogo toma el foco, lo mantiene dentro, se cierra con Escape y lo devuelve al
+  botón que lo abrió.
+- **Cliente y canal:** el nombre del titular sale del cobro; el canal es web o móvil (la aceptación no guarda el aliado ni el asesor que
+  muestra el mockup). «Emisión» muestra el identificador de la aceptación, no un número `EMI-…`.
+- Quedan fuera: el empuje «en tiempo real» y una alerta real del escalamiento (solo la marca «Sin atender»), la gestión manual distinta
+  de reintentar y el código que devuelve el banco. O1b se hizo desde los criterios de aceptación porque falta su mockup.
+- E2E: `e2e/flujos/originacion/monitoreo-emisiones.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en la lista y
+  con el diálogo abierto).
 
 ## Cómo trabajar una historia de este dominio
 
