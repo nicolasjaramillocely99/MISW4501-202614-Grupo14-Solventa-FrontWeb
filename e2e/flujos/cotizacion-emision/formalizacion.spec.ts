@@ -199,7 +199,7 @@ test.describe('Formalización de la compra por el asesor (HU-W1.1-03)', () => {
     await formalizacion.abrirComoAsesor(RUTA);
 
     await expect(page.getByText('La cotización venció')).toBeVisible();
-    await expect(formalizacion.formalizar).toHaveCount(0);
+    await expect(formalizacion.formalizar).toBeDisabled();
     await verificarAccesibilidad(page);
     await expect(page.getByRole('link', { name: 'Generar una nueva cotización' })).toHaveAttribute(
       'href',

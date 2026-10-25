@@ -1230,9 +1230,10 @@
       "volver": "Quote {{id}}",
       "insignia": {
         "vigente": "Quote valid",
-        "vencida": "Quote expired"
+        "vencida": "Expired"
       },
       "acciones": {
+        "volver": "Back",
         "nueva": "New quote",
         "generarNueva": "Generate a new quote",
         "reintentar": "Retry",
@@ -1313,8 +1314,15 @@
         "texto": "Recorded: advisor, date and time, source quote and the customer's acceptance."
       },
       "vencida": {
-        "titulo": "The quote expired",
-        "texto": "Its validity ended on {{fecha}}, so it cannot be formalized. Generate a new quote with the customer's data."
+        "titulo": "The quote expired on {{fecha}}",
+        "texto": "The purchase cannot be formalized with an expired quote. Generate a new quote with the customer's data; the engine will recalculate the profile and the price may change.",
+        "subtitulo": "{{nombre}} · ID {{documento}} · generated on {{fecha}}",
+        "tarjeta": "Expired quote",
+        "primaCotizada": "Quoted premium",
+        "generada": "Generated",
+        "vencio": "Expired on",
+        "siguientePaso": "Next step",
+        "siguienteTexto": "Generate a new quote with the customer's pre-filled data. The engine recalculates the profile and the price."
       },
       "formalizada": {
         "titulo": "Purchase formalized",

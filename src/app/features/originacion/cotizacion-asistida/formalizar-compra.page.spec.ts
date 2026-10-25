@@ -301,8 +301,8 @@ describe('FormalizarCompraPage (S3 / S3c · HU-W1.1-03)', () => {
 
       await formalizar();
 
-      expect(screen.getByText('La cotización venció')).toBeTruthy();
-      expect(screen.queryByRole('button', { name: 'Formalizar y emitir' })).toBeNull();
+      expect(screen.getByText(/La cotización venció/)).toBeTruthy();
+      expect((screen.getByRole('button', { name: 'Formalizar y emitir' }) as HTMLButtonElement).disabled).toBe(true);
     });
 
     it('no muestra aviso propio ante un 401 o 403, que resuelve el interceptor', async () => {
@@ -319,9 +319,10 @@ describe('FormalizarCompraPage (S3 / S3c · HU-W1.1-03)', () => {
   it('una cotización vencida no se formaliza y ofrece generar una nueva con el documento del cliente (CA-2)', async () => {
     await renderizar(of(VENCIDA));
 
-    expect(screen.getByText('Cotización vencida')).toBeTruthy();
-    expect(screen.getByRole('alert').textContent).toContain('no se puede formalizar');
-    expect(screen.queryByRole('button', { name: 'Formalizar y emitir' })).toBeNull();
+    expect(screen.getByText('Vencida')).toBeTruthy();
+    expect(screen.getByText('Siguiente paso')).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toContain('No es posible formalizar');
+    expect((screen.getByRole('button', { name: 'Formalizar y emitir' }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByRole('link', { name: 'Generar una nueva cotización' }).getAttribute('href')).toBe(
       '/originacion/cotizaciones/nueva?documento=1032456789',
     );

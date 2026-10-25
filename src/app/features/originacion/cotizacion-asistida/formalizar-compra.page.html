@@ -158,25 +158,63 @@
           <header class="pagina__encabezado">
             <div>
               <div class="pagina__fila">
-                <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+                <h1 class="pagina__titulo">{{ t('titulo') }} · {{ c.cotizacionId }}</h1>
                 <app-insignia-estado tono="error">{{ t('insignia.vencida') }}</app-insignia-estado>
               </div>
+              <p class="pagina__subtitulo">
+                {{ t('vencida.subtitulo', { nombre: c.nombreCompleto, documento: c.documento, fecha: c.creadaEn | formatoFechaHora }) }}
+              </p>
+            </div>
+            <div class="acciones">
+              <a class="boton boton--secundario" [routerLink]="['/originacion/cotizaciones', c.cotizacionId]">{{ t('acciones.volver') }}</a>
+              <button type="button" class="boton boton--primario" disabled>{{ t('acciones.formalizar') }}</button>
             </div>
           </header>
           <div class="aviso aviso--error" role="alert">
             <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
             <div>
-              <p class="aviso__titulo">{{ t('vencida.titulo') }}</p>
-              <p>{{ t('vencida.texto', { fecha: c.venceEn | formatoFechaHora }) }}</p>
+              <p class="aviso__titulo">{{ t('vencida.titulo', { fecha: c.venceEn | formatoFechaHora }) }}</p>
+              <p>{{ t('vencida.texto') }}</p>
             </div>
           </div>
-          <div class="acciones">
-            <a
-              class="boton boton--primario"
-              routerLink="/originacion/cotizaciones/nueva"
-              [queryParams]="{ documento: c.documento }"
-              >{{ t('acciones.generarNueva') }}</a
-            >
+          <div class="pagina__cuerpo">
+            <section class="tarjeta principal" aria-labelledby="titulo-vencida">
+              <h2 id="titulo-vencida" class="seccion__titulo seccion__titulo--suave">{{ t('vencida.tarjeta') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('cliente.nombre') }}</dt>
+                  <dd>{{ c.nombreCompleto }} · {{ c.documento }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('vencida.primaCotizada') }}</dt>
+                  <dd>{{ c.prima | formatoMoneda: c.moneda }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('vencida.generada') }}</dt>
+                  <dd>{{ c.creadaEn | formatoFechaHora }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('vencida.vencio') }}</dt>
+                  <dd>{{ c.venceEn | formatoFechaHora }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('condiciones.valorAsegurado') }}</dt>
+                  <dd>{{ c.montoAsegurado | formatoMoneda: c.moneda }}</dd>
+                </div>
+              </dl>
+            </section>
+            <section class="tarjeta lateral siguiente" aria-labelledby="titulo-siguiente">
+              <h2 id="titulo-siguiente" class="seccion__titulo">{{ t('vencida.siguientePaso') }}</h2>
+              <p>{{ t('vencida.siguienteTexto') }}</p>
+              <div class="acciones acciones--inicio">
+                <a
+                  class="boton boton--secundario"
+                  routerLink="/originacion/cotizaciones/nueva"
+                  [queryParams]="{ documento: c.documento }"
+                  >{{ t('acciones.generarNueva') }}</a
+                >
+              </div>
+            </section>
           </div>
         } @else {
           <header class="pagina__encabezado">

@@ -1230,9 +1230,10 @@
       "volver": "Cotización {{id}}",
       "insignia": {
         "vigente": "Cotización vigente",
-        "vencida": "Cotización vencida"
+        "vencida": "Vencida"
       },
       "acciones": {
+        "volver": "Volver",
         "nueva": "Nueva cotización",
         "generarNueva": "Generar una nueva cotización",
         "reintentar": "Reintentar",
@@ -1313,8 +1314,15 @@
         "texto": "Queda registrado: asesor, fecha y hora, cotización de origen y la aceptación del cliente."
       },
       "vencida": {
-        "titulo": "La cotización venció",
-        "texto": "Su vigencia terminó el {{fecha}}, por eso no se puede formalizar. Genera una cotización nueva con los datos del cliente."
+        "titulo": "La cotización venció el {{fecha}}",
+        "texto": "No es posible formalizar la compra con una cotización vencida. Genera una nueva cotización con los datos del cliente; el motor recalculará el perfil y el precio puede variar.",
+        "subtitulo": "{{nombre}} · CC {{documento}} · generada el {{fecha}}",
+        "tarjeta": "Cotización vencida",
+        "primaCotizada": "Prima cotizada",
+        "generada": "Generada",
+        "vencio": "Venció",
+        "siguientePaso": "Siguiente paso",
+        "siguienteTexto": "Genera una nueva cotización con los datos precargados del cliente. El motor recalcula el perfil y el precio."
       },
       "formalizada": {
         "titulo": "Compra formalizada",
