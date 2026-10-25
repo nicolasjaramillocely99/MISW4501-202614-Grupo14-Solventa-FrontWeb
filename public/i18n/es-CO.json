@@ -1046,5 +1046,311 @@
         }
       }
     }
+  },
+  "siniestros": {
+    "estados": {
+      "active": "Radicado"
+    },
+    "catalogo": {
+      "ramos": {
+        "autos": "Autos",
+        "hogar": "Hogar"
+      },
+      "tipos": {
+        "colision": {
+          "nombre": "Colisión con daños al vehículo",
+          "corto": "Colisión"
+        },
+        "hurto": {
+          "nombre": "Hurto",
+          "corto": "Hurto"
+        },
+        "danoTerceros": {
+          "nombre": "Daño a terceros",
+          "corto": "Daño a terceros"
+        },
+        "cristales": {
+          "nombre": "Cristales",
+          "corto": "Cristales"
+        },
+        "danoAgua": {
+          "nombre": "Daño por agua",
+          "corto": "Daño por agua"
+        },
+        "otro": {
+          "nombre": "Otro",
+          "corto": "Otro"
+        }
+      },
+      "soportes": {
+        "fotosVehiculo": "Fotos del vehículo",
+        "documentoConductor": "Documento del conductor",
+        "informeTransito": "Informe de tránsito o croquis",
+        "denuncia": "Denuncia ante autoridad",
+        "fotosCristales": "Fotos de los cristales",
+        "documentoSoporte": "Documento de soporte",
+        "fotosDano": "Fotos del daño",
+        "cotizacionReparacion": "Factura o cotización de la reparación"
+      }
+    },
+    "radicacion": {
+      "volver": "Mis siniestros",
+      "cargando": "Consultando tus pólizas…",
+      "titulo": "Radicar un siniestro",
+      "descripcion": "El caso se crea en estado Activo cuando adjuntas todos los soportes obligatorios. También puedes radicar desde la app con fotos geoetiquetadas.",
+      "lateral": "Estado de la radicación",
+      "error": {
+        "opciones": {
+          "titulo": "No pudimos consultar tus pólizas",
+          "texto": "El servicio de pólizas no respondió. Intenta de nuevo en unos minutos."
+        },
+        "caso": {
+          "titulo": "No pudimos consultar tu siniestro",
+          "texto": "El siniestro quedó radicado, pero ahora no podemos mostrarlo. Intenta de nuevo en unos minutos."
+        },
+        "casoNoEncontrado": {
+          "titulo": "No encontramos ese siniestro",
+          "texto": "El enlace no corresponde a ningún siniestro tuyo. Puedes radicar uno nuevo."
+        }
+      },
+      "acciones": {
+        "radicar": "Radicar siniestro",
+        "radicando": "Radicando…",
+        "reintentar": "Reintentar",
+        "radicarOtro": "Radicar un siniestro",
+        "recargarPolizas": "Volver a cargar mis pólizas",
+        "radicarComoNuevo": "Radicar como un caso nuevo"
+      },
+      "sinPolizas": {
+        "titulo": "No tienes pólizas activas para radicar",
+        "texto": "Solo puedes radicar sobre una póliza activa de Autos u Hogar. Los siniestros de Viaje se pagan de forma automática."
+      },
+      "datos": {
+        "titulo": "Datos del siniestro"
+      },
+      "campos": {
+        "polizaId": {
+          "etiqueta": "Póliza afectada",
+          "elegir": "Elige una póliza"
+        },
+        "tipoSiniestro": {
+          "etiqueta": "Tipo de siniestro",
+          "elegir": "Elige el tipo de siniestro",
+          "ayuda": "Los soportes requeridos dependen del tipo"
+        },
+        "ocurridoEn": {
+          "etiqueta": "Fecha y hora del hecho",
+          "ayuda": "Fecha y hora en que ocurrió el hecho"
+        },
+        "lugar": {
+          "etiqueta": "Lugar del hecho"
+        },
+        "descripcion": {
+          "etiqueta": "Descripción de los hechos",
+          "contador": "{{actual}} de {{maximo}} caracteres"
+        }
+      },
+      "errores": {
+        "campo": {
+          "requerido": "Este dato es obligatorio.",
+          "fechaFutura": "La fecha del hecho no puede ser posterior a hoy.",
+          "fechaAntigua": "La fecha del hecho no puede ser de hace más de 5 años.",
+          "fechaFueraRango": "La fecha del hecho no puede ser futura ni de hace más de 5 años.",
+          "fueraVigencia": "La fecha del hecho está fuera de la vigencia de la póliza.",
+          "lugarLongitud": "Escribe entre 3 y 160 caracteres.",
+          "descripcionLongitud": "Escribe entre 10 y 1.000 caracteres.",
+          "formatoInvalido": "El valor no es válido. Revísalo."
+        },
+        "soporte": {
+          "falta": "Falta adjuntar {{nombre}}.",
+          "pocos": "{{nombre}} necesita al menos {{minimo}} archivos.",
+          "muchos": "{{nombre}} admite como máximo {{maximo}} archivos.",
+          "formato": "Hay un archivo en un formato que {{nombre}} no admite.",
+          "noAplica": "Este soporte no aplica para el tipo de siniestro elegido.",
+          "noEncontrado": "Un archivo ya no está disponible. Quítalo y súbelo de nuevo."
+        }
+      },
+      "envio": {
+        "validacion": {
+          "titulo": "No se pudo radicar",
+          "texto": "Revisa los datos y los soportes marcados."
+        },
+        "noElegible": {
+          "noEncontrada": {
+            "titulo": "La póliza no está disponible",
+            "texto": "La póliza elegida no aparece entre tus pólizas. Vuelve a cargarlas y elige otra."
+          },
+          "noActiva": {
+            "titulo": "La póliza ya no está activa",
+            "texto": "Solo puedes radicar sobre una póliza activa. Vuelve a cargar tus pólizas."
+          },
+          "noCubierto": {
+            "titulo": "La póliza no cubre este tipo de siniestro",
+            "texto": "Elige otro tipo de siniestro u otra póliza."
+          },
+          "fueraVigencia": {
+            "titulo": "El hecho ocurrió fuera de la vigencia",
+            "texto": "La fecha del hecho debe estar dentro de la vigencia de la póliza."
+          },
+          "generico": {
+            "titulo": "La póliza no admite esta radicación",
+            "texto": "Revisa la póliza, el tipo de siniestro y la fecha del hecho."
+          }
+        },
+        "vigencia": "Vigencia de la póliza: del {{desde}} al {{hasta}}.",
+        "claveReusada": {
+          "titulo": "Esta solicitud ya se usó para otro siniestro",
+          "texto": "Revisa Mis siniestros antes de radicar de nuevo, para no duplicar el caso."
+        },
+        "indisponible": {
+          "titulo": "No pudimos completar la radicación",
+          "texto": "El servicio no respondió. Tus datos y soportes siguen aquí; al reintentar no se duplica el caso."
+        },
+        "invalido": {
+          "titulo": "No se pudo radicar",
+          "texto": "La solicitud no es válida. Recarga la página e inténtalo de nuevo."
+        }
+      },
+      "faltantes": {
+        "tituloSoporte": "Falta {{cantidad}} soporte obligatorio",
+        "tituloSoportes": "Faltan {{cantidad}} soportes obligatorios",
+        "tituloDatos": "Faltan datos del siniestro",
+        "texto": "No es posible radicar hasta completar: {{lista}}.",
+        "total": "como máximo 20 archivos en total",
+        "subiendo": "Espera a que terminen de subir los archivos para radicar."
+      },
+      "antes": {
+        "titulo": "Antes de radicar",
+        "poliza": {
+          "ok": "La póliza está activa y cubre el tipo de siniestro seleccionado.",
+          "pendiente": "Elige la póliza y el tipo de siniestro."
+        },
+        "vigencia": {
+          "ok": "Fecha del hecho dentro de la vigencia.",
+          "error": "La fecha del hecho está fuera de la vigencia (del {{desde}} al {{hasta}}).",
+          "pendiente": "Indica la fecha y hora del hecho."
+        },
+        "asesor": "Un asesor de siniestros revisará la radicación; si falta algo, te la devolverá con el motivo."
+      },
+      "app": {
+        "titulo": "¿Estás en el lugar de los hechos?",
+        "texto": "Desde la app puedes tomar fotos y video con ubicación y hora certificadas, incluso sin señal: se envían al recuperar la conexión."
+      },
+      "soportes": {
+        "titulo": "Soportes",
+        "conteo": "{{adjuntos}} de {{total}} obligatorios adjuntos",
+        "conMinimo": "{{nombre}} (mínimo {{minimo}})",
+        "detalle": "{{obligatoriedad}} · {{formatos}} · máx. 10 MB c/u · hasta {{maximo}}",
+        "obligatorio": "Obligatorio",
+        "opcional": "Opcional",
+        "formatos": {
+          "imagen": "JPG o PNG",
+          "documento": "PDF o imagen",
+          "pdf": "PDF"
+        },
+        "estado": {
+          "adjunto": "Adjunto · {{archivos}} archivos",
+          "adjuntoUno": "Adjunto",
+          "falta": "Falta",
+          "pocos": "{{archivos}} de {{minimo}} mínimo",
+          "subiendo": "Subiendo",
+          "opcional": "Opcional",
+          "noAplica": "No aplica"
+        },
+        "accion": {
+          "subir": "Subir",
+          "agregar": "Agregar",
+          "etiqueta": "Subir archivos de {{nombre}}"
+        },
+        "archivosDe": "Archivos de {{nombre}}",
+        "archivo": {
+          "subiendo": "Subiendo…",
+          "adjunto": "Adjunto",
+          "quitar": "Quitar",
+          "quitarEtiqueta": "Quitar {{nombre}}"
+        },
+        "rechazo": {
+          "muyGrande": "El archivo supera 10 MB.",
+          "formatoNoAdmitido": "Formato no admitido para este soporte.",
+          "vacio": "El archivo está vacío.",
+          "demasiadosPendientes": "Tienes demasiados archivos sin radicar.",
+          "noDisponible": "No se pudo subir. Quítalo e inténtalo de nuevo.",
+          "invalido": "No se pudo leer el archivo.",
+          "limite": "Este soporte admite como máximo {{maximo}} archivos."
+        },
+        "noAplicaDetalle": "No aplica para este tipo de siniestro"
+      }
+    },
+    "confirmacion": {
+      "titulo": "Siniestro {{numero}}",
+      "radicadoEl": "Radicado el {{fecha}} a las {{hora}}",
+      "descargar": "Descargar radicado",
+      "descargando": "Descargando…",
+      "volver": "Volver a mis siniestros",
+      "errorDescarga": "No pudimos descargar el radicado. Intenta de nuevo en unos minutos.",
+      "exito": {
+        "titulo": "Tu siniestro quedó radicado",
+        "texto": "Un asesor de siniestros revisará la radicación en un máximo de 2 días hábiles. Si falta algún soporte te la devolverá con el motivo, y podrás corregirla desde Mis siniestros."
+      },
+      "etapas": {
+        "etiqueta": "Etapas del siniestro",
+        "radicado": "Radicado",
+        "revision": "Revisión del asesor",
+        "evaluacion": "En evaluación",
+        "aprobado": "Aprobado",
+        "pagado": "Pagado"
+      },
+      "datos": {
+        "radicado": "Número de radicado",
+        "poliza": "Póliza afectada",
+        "fechaHecho": "Fecha y hora del hecho",
+        "soportes": "Soportes adjuntos",
+        "soportesValor": "{{adjuntos}} de {{total}} obligatorios · {{archivos}} archivos"
+      },
+      "queSigue": {
+        "titulo": "Qué sigue",
+        "texto": "El caso entró a la cola de revisión. Si el asesor lo aprueba, pasa a evaluación con la prioridad que calcula el triage."
+      }
+    },
+    "misSiniestros": {
+      "titulo": "Mis siniestros",
+      "descripcion": "Consulta los siniestros que has radicado desde el portal o desde la app.",
+      "radicar": "Radicar un siniestro",
+      "cargando": "Consultando tus siniestros…",
+      "cargandoMas": "Cargando…",
+      "cargarMas": "Cargar más",
+      "conteo": "{{cantidad}} siniestros",
+      "conteoUno": "1 siniestro",
+      "filtros": {
+        "etiqueta": "Filtros",
+        "poliza": "Póliza",
+        "todas": "Todas",
+        "desde": "Desde",
+        "desdeAyuda": "Radicados desde ese día",
+        "limpiar": "Limpiar filtros"
+      },
+      "vacio": {
+        "titulo": "Aún no has radicado siniestros",
+        "texto": "Cuando radiques un siniestro lo verás aquí con su estado."
+      },
+      "sinResultados": {
+        "titulo": "No hay siniestros con estos filtros",
+        "texto": "Cambia la póliza o la fecha, o limpia los filtros."
+      },
+      "error": {
+        "titulo": "No pudimos consultar tus siniestros",
+        "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+        "reintentar": "Reintentar"
+      },
+      "tabla": {
+        "titulo": "Siniestros radicados",
+        "radicado": "Radicado",
+        "polizaTipo": "Póliza y tipo",
+        "fechaHecho": "Fecha del hecho",
+        "etapa": "Etapa",
+        "radicadoEn": "Radicado el",
+        "desdeApp": "Radicado desde la app"
+      }
+    }
   }
 }

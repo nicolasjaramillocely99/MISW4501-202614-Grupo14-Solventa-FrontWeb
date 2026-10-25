@@ -19,7 +19,7 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [A7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1297) | Mis siniestros | `/siniestros/mis-siniestros` | Asegurado | HU-W2.1-02 | S3 |
+| [A7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1297) | Mis siniestros (versión mínima en HU-W2.1-01) | `/siniestros/mis-siniestros` | Asegurado | HU-W2.1-01, HU-W2.1-02 | S2, S3 |
 | [A8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1591) | Detalle y estado del siniestro | `/siniestros/:id` | Asegurado | HU-W2.1-02, HU-W2.1-04 | S3 |
 
 ### `revision/` — F2.1 · Intervención del asesor en la radicación
@@ -48,6 +48,42 @@
 | [O7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=36-3746), [O7b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=1088-9443) | Asignación de prestador más cercano | `/siniestros/:id/asignar-prestador` | Analista de operaciones | HU-W2.3-01 | S3 |
 | [O8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=36-4127) | Seguimiento de la intervención y cierre del caso | `/siniestros/:id/seguimiento` | Analista de operaciones | HU-W2.3-02 | S3 |
 | [O9b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4662) | Detalle de la asistencia con mapa | `/siniestros/asistencias/:id` | Analista de operaciones | HU-W2.3-03 | S3 |
+
+## Implementado
+
+**Radicación de siniestro con soportes (HU-W2.1-01)** — `radicacion/radicacion-siniestro.page.ts` (`RadicacionSiniestroPage`, A6 y
+A6b), ruta `/siniestros/radicar`, rol asegurado (`rolGuard('asegurado')` en `siniestros.routes.ts`). Contrato:
+`docs/contratos/HU-W2.1-01-api.md` del backend (servicio `claims`, `openapi.yaml` v0.3.0). Cliente: `core/api/siniestros/`.
+
+- **Opciones del formulario (CA-1):** `GET /v1/claims/filing-options` trae solo las pólizas activas del asegurado que se radican
+  (Autos y Hogar), los tipos que cubre cada una y los soportes de cada tipo. El catálogo **no** se fija en el front: se pinta desde la
+  respuesta y se traduce por código con `siniestros.catalogo.*` (`modelos/catalogo-siniestros.ts`); un código desconocido muestra el
+  texto del backend. Los soportes de otros tipos de la misma póliza aparecen como «No aplica», sin acción. Sin pólizas, el estado
+  «sin pólizas» (no es un error).
+- **Qué falta y la vigencia (CA-2, CA-3):** `radicacion/modelos/formulario-radicacion.ts` valida con los límites del contrato (lugar de 3
+  a 160, descripción de 10 a 1000, hecho no futuro, de hace 5 años como máximo y dentro de `valid_from ≤ hecho < valid_to`, mínimo y
+  máximo de archivos por soporte, 20 archivos por caso). «Radicar siniestro» se habilita solo sin faltantes y el aviso lateral dice
+  exactamente qué falta; «Antes de radicar» comprueba la póliza y la vigencia. El `422` del backend (`validation_failed` por campo y por
+  `supports.<código>`, `policy_not_eligible` por `reason`) se muestra igual, sin perder lo diligenciado.
+- **Soportes (CA-5):** `radicacion/servicios/carga-soportes.service.ts` (provisto en la página) sube cada archivo en cuanto se elige, uno
+  por petición y en secuencia (`POST /v1/claims/supports`). Antes de subir rechaza en el navegador lo que pasa de 10 MiB, el archivo
+  vacío y el formato que el soporte no admite; el `413`/`415`/`422`/`429` del servidor afecta solo a ese archivo. «Quitar» es local (el
+  contrato no tiene `DELETE`). **Provisional hasta HU-M2.1-01** (`grep -rn "HU-W2.1-01 §9"`): la subida pasará a una URL firmada de S3.
+- **Radicación idempotente:** `POST /v1/claims/web-filings` con una `Idempotency-Key` que se genera una vez por formulario y se reutiliza
+  en cada reintento (`503`, error de red). Ante `422 idempotency_key_reused` el asegurado puede ir a «Mis siniestros» o radicar como un
+  caso nuevo (otra clave).
+- **Confirmación (A6b, CA-4):** estado de la misma página (`componentes/confirmacion-radicacion/`) con el radicado, la insignia
+  «Radicado» (`status: active`), las etapas, los soportes y «Descargar radicado» (`GET /v1/claims/{id}/filing-receipt`). La página
+  escribe `?caso=<claim_id>`: al recargar vuelve a leer el caso con `GET /v1/claims/{id}`. «Ver el estado del siniestro» (A8) no se
+  muestra hasta HU-W2.1-02.
+- **Fuera de alcance:** «Guardar borrador» del prototipo (no está en los CA; un archivo rechazado no borra el formulario) y el correo
+  «Te avisaremos por correo y en la app».
+
+**Mis siniestros, versión mínima (HU-W2.1-01, CA-6)** — `seguimiento/mis-siniestros.page.ts` (`MisSiniestrosPage`, A7), ruta
+`/siniestros/mis-siniestros`, rol asegurado. `GET /v1/claims` lista los casos de los dos canales (los del móvil llegan sin la foto de la
+póliza y se rotulan «Radicado desde la app») en `componentes/tabla-siniestros/`, con filtros de póliza (las de `filing-options`) y
+«Desde», y «Cargar más» con `next_page_token` (al cambiar un filtro se empieza sin token y el filtro se conserva al paginar).
+**HU-W2.1-02 completa la pantalla:** indicadores (en curso, pagados, acción pendiente), filtro de etapa, «Ver detalle» y «Corregir».
 
 ## Cómo trabajar una historia de este dominio
 

@@ -1,0 +1,30 @@
+<div class="tabla-contenedor" *transloco="let t; prefix: 'siniestros.misSiniestros.tabla'">
+  <table class="tabla">
+    <caption class="visualmente-oculto">{{ t('titulo') }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ t('radicado') }}</th>
+        <th scope="col">{{ t('polizaTipo') }}</th>
+        <th scope="col">{{ t('fechaHecho') }}</th>
+        <th scope="col">{{ t('etapa') }}</th>
+        <th scope="col">{{ t('radicadoEn') }}</th>
+      </tr>
+    </thead>
+    <tbody *transloco="let ts; prefix: 'siniestros'">
+      @for (caso of casos(); track caso.id) {
+        <tr>
+          <th scope="row" class="tabla__radicado">{{ caso.numeroRadicado }}</th>
+          <td>
+            <span class="tabla__principal">{{ polizaYTipo(ts, caso) }}</span>
+            <span class="tabla__secundario">
+              {{ caso.canal === 'mobile' ? detallePoliza(caso) + ' · ' + t('desdeApp') : detallePoliza(caso) }}
+            </span>
+          </td>
+          <td>{{ caso.ocurridoEn | formatoFechaHora }}</td>
+          <td><app-insignia-estado tono="informacion">{{ ts('estados.' + caso.estado) }}</app-insignia-estado></td>
+          <td>{{ caso.radicadoEn | formatoFechaHora }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

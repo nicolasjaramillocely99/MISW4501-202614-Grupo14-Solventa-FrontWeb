@@ -1046,5 +1046,311 @@
         }
       }
     }
+  },
+  "siniestros": {
+    "estados": {
+      "active": "Filed"
+    },
+    "catalogo": {
+      "ramos": {
+        "autos": "Auto",
+        "hogar": "Home"
+      },
+      "tipos": {
+        "colision": {
+          "nombre": "Collision with damage to the vehicle",
+          "corto": "Collision"
+        },
+        "hurto": {
+          "nombre": "Theft",
+          "corto": "Theft"
+        },
+        "danoTerceros": {
+          "nombre": "Third-party damage",
+          "corto": "Third-party damage"
+        },
+        "cristales": {
+          "nombre": "Glass",
+          "corto": "Glass"
+        },
+        "danoAgua": {
+          "nombre": "Water damage",
+          "corto": "Water damage"
+        },
+        "otro": {
+          "nombre": "Other",
+          "corto": "Other"
+        }
+      },
+      "soportes": {
+        "fotosVehiculo": "Photos of the vehicle",
+        "documentoConductor": "Driver's ID",
+        "informeTransito": "Traffic report or accident sketch",
+        "denuncia": "Police report",
+        "fotosCristales": "Photos of the glass",
+        "documentoSoporte": "Supporting document",
+        "fotosDano": "Photos of the damage",
+        "cotizacionReparacion": "Repair invoice or quote"
+      }
+    },
+    "radicacion": {
+      "volver": "My claims",
+      "cargando": "Looking up your policies…",
+      "titulo": "File a claim",
+      "descripcion": "The claim is created as Active once you attach every required support. You can also file from the app with geotagged photos.",
+      "lateral": "Filing status",
+      "error": {
+        "opciones": {
+          "titulo": "We couldn't look up your policies",
+          "texto": "The policy service didn't respond. Try again in a few minutes."
+        },
+        "caso": {
+          "titulo": "We couldn't look up your claim",
+          "texto": "The claim was filed, but we can't show it right now. Try again in a few minutes."
+        },
+        "casoNoEncontrado": {
+          "titulo": "We couldn't find that claim",
+          "texto": "The link doesn't match any of your claims. You can file a new one."
+        }
+      },
+      "acciones": {
+        "radicar": "File claim",
+        "radicando": "Filing…",
+        "reintentar": "Try again",
+        "radicarOtro": "File a claim",
+        "recargarPolizas": "Reload my policies",
+        "radicarComoNuevo": "File as a new claim"
+      },
+      "sinPolizas": {
+        "titulo": "You have no active policies to file a claim on",
+        "texto": "You can only file on an active Auto or Home policy. Travel claims are paid automatically."
+      },
+      "datos": {
+        "titulo": "Claim details"
+      },
+      "campos": {
+        "polizaId": {
+          "etiqueta": "Affected policy",
+          "elegir": "Choose a policy"
+        },
+        "tipoSiniestro": {
+          "etiqueta": "Claim type",
+          "elegir": "Choose the claim type",
+          "ayuda": "The required supports depend on the type"
+        },
+        "ocurridoEn": {
+          "etiqueta": "Date and time of the incident",
+          "ayuda": "When the incident happened"
+        },
+        "lugar": {
+          "etiqueta": "Place of the incident"
+        },
+        "descripcion": {
+          "etiqueta": "Description of the incident",
+          "contador": "{{actual}} of {{maximo}} characters"
+        }
+      },
+      "errores": {
+        "campo": {
+          "requerido": "This field is required.",
+          "fechaFutura": "The date of the incident can't be later than today.",
+          "fechaAntigua": "The date of the incident can't be more than 5 years ago.",
+          "fechaFueraRango": "The date of the incident can't be in the future or more than 5 years ago.",
+          "fueraVigencia": "The date of the incident is outside the policy's coverage period.",
+          "lugarLongitud": "Write between 3 and 160 characters.",
+          "descripcionLongitud": "Write between 10 and 1,000 characters.",
+          "formatoInvalido": "The value isn't valid. Please check it."
+        },
+        "soporte": {
+          "falta": "{{nombre}} is missing.",
+          "pocos": "{{nombre}} needs at least {{minimo}} files.",
+          "muchos": "{{nombre}} accepts at most {{maximo}} files.",
+          "formato": "A file has a format that {{nombre}} doesn't accept.",
+          "noAplica": "This support doesn't apply to the chosen claim type.",
+          "noEncontrado": "A file is no longer available. Remove it and upload it again."
+        }
+      },
+      "envio": {
+        "validacion": {
+          "titulo": "The claim couldn't be filed",
+          "texto": "Check the highlighted details and supports."
+        },
+        "noElegible": {
+          "noEncontrada": {
+            "titulo": "The policy isn't available",
+            "texto": "The chosen policy isn't among your policies. Reload them and choose another one."
+          },
+          "noActiva": {
+            "titulo": "The policy is no longer active",
+            "texto": "You can only file on an active policy. Reload your policies."
+          },
+          "noCubierto": {
+            "titulo": "The policy doesn't cover this claim type",
+            "texto": "Choose another claim type or another policy."
+          },
+          "fueraVigencia": {
+            "titulo": "The incident happened outside the coverage period",
+            "texto": "The date of the incident must be within the policy's coverage period."
+          },
+          "generico": {
+            "titulo": "The policy doesn't allow this claim",
+            "texto": "Check the policy, the claim type and the date of the incident."
+          }
+        },
+        "vigencia": "Coverage period: from {{desde}} to {{hasta}}.",
+        "claveReusada": {
+          "titulo": "This request was already used for another claim",
+          "texto": "Check My claims before filing again, so the claim isn't duplicated."
+        },
+        "indisponible": {
+          "titulo": "We couldn't complete the filing",
+          "texto": "The service didn't respond. Your details and supports are still here; trying again won't duplicate the claim."
+        },
+        "invalido": {
+          "titulo": "The claim couldn't be filed",
+          "texto": "The request isn't valid. Reload the page and try again."
+        }
+      },
+      "faltantes": {
+        "tituloSoporte": "{{cantidad}} required support is missing",
+        "tituloSoportes": "{{cantidad}} required supports are missing",
+        "tituloDatos": "Some claim details are missing",
+        "texto": "You can't file until you complete: {{lista}}.",
+        "total": "at most 20 files in all",
+        "subiendo": "Wait for the files to finish uploading before filing."
+      },
+      "antes": {
+        "titulo": "Before filing",
+        "poliza": {
+          "ok": "The policy is active and covers the selected claim type.",
+          "pendiente": "Choose the policy and the claim type."
+        },
+        "vigencia": {
+          "ok": "Date of the incident within the coverage period.",
+          "error": "The date of the incident is outside the coverage period (from {{desde}} to {{hasta}}).",
+          "pendiente": "Enter the date and time of the incident."
+        },
+        "asesor": "A claims advisor will review the filing; if something is missing, they'll send it back with the reason."
+      },
+      "app": {
+        "titulo": "Are you at the scene?",
+        "texto": "In the app you can take photos and video with certified location and time, even offline: they're sent once you're back online."
+      },
+      "soportes": {
+        "titulo": "Supports",
+        "conteo": "{{adjuntos}} of {{total}} required attached",
+        "conMinimo": "{{nombre}} (at least {{minimo}})",
+        "detalle": "{{obligatoriedad}} · {{formatos}} · max. 10 MB each · up to {{maximo}}",
+        "obligatorio": "Required",
+        "opcional": "Optional",
+        "formatos": {
+          "imagen": "JPG or PNG",
+          "documento": "PDF or image",
+          "pdf": "PDF"
+        },
+        "estado": {
+          "adjunto": "Attached · {{archivos}} files",
+          "adjuntoUno": "Attached",
+          "falta": "Missing",
+          "pocos": "{{archivos}} of {{minimo}} minimum",
+          "subiendo": "Uploading",
+          "opcional": "Optional",
+          "noAplica": "Not applicable"
+        },
+        "accion": {
+          "subir": "Upload",
+          "agregar": "Add",
+          "etiqueta": "Upload files for {{nombre}}"
+        },
+        "archivosDe": "Files for {{nombre}}",
+        "archivo": {
+          "subiendo": "Uploading…",
+          "adjunto": "Attached",
+          "quitar": "Remove",
+          "quitarEtiqueta": "Remove {{nombre}}"
+        },
+        "rechazo": {
+          "muyGrande": "The file is larger than 10 MB.",
+          "formatoNoAdmitido": "Format not accepted for this support.",
+          "vacio": "The file is empty.",
+          "demasiadosPendientes": "You have too many files that haven't been filed.",
+          "noDisponible": "It couldn't be uploaded. Remove it and try again.",
+          "invalido": "The file couldn't be read.",
+          "limite": "This support accepts at most {{maximo}} files."
+        },
+        "noAplicaDetalle": "Doesn't apply to this claim type"
+      }
+    },
+    "confirmacion": {
+      "titulo": "Claim {{numero}}",
+      "radicadoEl": "Filed on {{fecha}} at {{hora}}",
+      "descargar": "Download filing receipt",
+      "descargando": "Downloading…",
+      "volver": "Back to my claims",
+      "errorDescarga": "We couldn't download the filing receipt. Try again in a few minutes.",
+      "exito": {
+        "titulo": "Your claim has been filed",
+        "texto": "A claims advisor will review the filing within 2 business days. If a support is missing, they'll send it back with the reason, and you can fix it from My claims."
+      },
+      "etapas": {
+        "etiqueta": "Claim stages",
+        "radicado": "Filed",
+        "revision": "Advisor review",
+        "evaluacion": "Under assessment",
+        "aprobado": "Approved",
+        "pagado": "Paid"
+      },
+      "datos": {
+        "radicado": "Filing number",
+        "poliza": "Affected policy",
+        "fechaHecho": "Date and time of the incident",
+        "soportes": "Attached supports",
+        "soportesValor": "{{adjuntos}} of {{total}} required · {{archivos}} files"
+      },
+      "queSigue": {
+        "titulo": "What's next",
+        "texto": "The claim is in the review queue. If the advisor approves it, it moves to assessment with the priority set by triage."
+      }
+    },
+    "misSiniestros": {
+      "titulo": "My claims",
+      "descripcion": "See the claims you've filed from the portal or the app.",
+      "radicar": "File a claim",
+      "cargando": "Looking up your claims…",
+      "cargandoMas": "Loading…",
+      "cargarMas": "Load more",
+      "conteo": "{{cantidad}} claims",
+      "conteoUno": "1 claim",
+      "filtros": {
+        "etiqueta": "Filters",
+        "poliza": "Policy",
+        "todas": "All",
+        "desde": "From",
+        "desdeAyuda": "Filed on or after that day",
+        "limpiar": "Clear filters"
+      },
+      "vacio": {
+        "titulo": "You haven't filed any claims yet",
+        "texto": "When you file a claim you'll see it here with its status."
+      },
+      "sinResultados": {
+        "titulo": "No claims match these filters",
+        "texto": "Change the policy or the date, or clear the filters."
+      },
+      "error": {
+        "titulo": "We couldn't look up your claims",
+        "texto": "The service didn't respond. Try again in a few minutes.",
+        "reintentar": "Try again"
+      },
+      "tabla": {
+        "titulo": "Filed claims",
+        "radicado": "Filing number",
+        "polizaTipo": "Policy and type",
+        "fechaHecho": "Date of the incident",
+        "etapa": "Stage",
+        "radicadoEn": "Filed on",
+        "desdeApp": "Filed from the app"
+      }
+    }
   }
 }
