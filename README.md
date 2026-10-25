@@ -77,7 +77,7 @@ Antes de la primera corrida E2E: `npx playwright install chromium`.
 │   ├── workflows/
 │   │   ├── ci.yml                  # PR y push a develop/main: lint → build → unitarias con cobertura, y E2E + axe-core en paralelo
 │   │   ├── e2e-nocturno.yml        # Corrida nocturna: lint, build, unitarias, Playwright + axe-core y npm audit
-│   │   └── cd-portal.yml           # Publicación del portal en staging, bajo demanda desde develop (S3 + CloudFront, rol OIDC)
+│   │   └── cd-portal.yml           # Publicación del portal en staging: automática al integrar main, bajo demanda desde develop (S3 + CloudFront, rol OIDC)
 │   ├── dependabot.yml
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/
@@ -182,8 +182,8 @@ Definidos en [frameworks y ambientes](https://github.com/leonelparrales22/MISW45
 |---|---|---|
 | Local | `src/environments/environment.development.ts` (`configuracionLocal`) | Desarrollo diario contra el Docker Compose del backend (PostgreSQL, Redis, LocalStack, stubs) |
 | Test / CI | — (sin despliegue) | Lint, build, unitarias y E2E con axe-core en cada *pull request*; corrida nocturna con la suite completa y `npm audit` |
-| Staging | `config.json` de `staging/web` | Experimentos de arquitectura; se enciende solo en su ventana con `scripts/environment/up.sh staging` (backend) y se publica con `cd-portal.yml` (bajo demanda, desde `develop`) |
-| Producción (demo) | `config.json` de `production-demo/web` | Entrega evaluable. Se enciende con `scripts/environment/up.sh production-demo` (backend), que publica el front desde un *build* local de `main` con `scripts/publicar-portal.sh`; el CD al integrar `main` es del pipeline de `main` del equipo |
+| Staging | `config.json` de `staging/web` | Experimentos de arquitectura; se enciende solo en su ventana con `scripts/environment/up.sh staging` (backend) y se publica con `cd-portal.yml` (automático al integrar `main`, bajo demanda desde `develop`) |
+| Producción (demo) | `config.json` de `production-demo/web` | Entrega evaluable. Se enciende con `scripts/environment/up.sh production-demo` (backend), que publica el front desde un *build* local de `main` con `scripts/publicar-portal.sh`; el CD al integrar `main` publica en staging, no aquí |
 
 **Configuración en tiempo de ejecución (T5).** En la nube el portal se sirve desde un bucket S3 privado detrás de CloudFront, con el API Gateway en el mismo dominio (`/v1/*` y `/pasarela/*`), así que no hay CORS. Al arrancar, `main.ts` lee `config.json` (URL del API, URL de la pasarela, *user pool* y cliente web de Cognito), que escribe Terraform junto al sitio (repo backend, `infra/terraform/modules/web-portal`); si no carga o no es válido, la página muestra un aviso fijo y bilingüe y no llama a nada. Así un mismo *build* sirve a staging y a production-demo, y ya no hay valores `PENDIENTE`.
 
