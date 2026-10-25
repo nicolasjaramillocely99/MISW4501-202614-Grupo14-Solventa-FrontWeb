@@ -44,7 +44,7 @@ jobs:
       - name: Credenciales de AWS (OIDC, rol de staging)
         id: credenciales
         continue-on-error: true
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::368083581678:role/solventa-github-actions-web-stg
           aws-region: us-east-2
