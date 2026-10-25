@@ -24,6 +24,12 @@ export type MotivoFallaCobro =
 export type TipoMedioDePago = 'card' | 'pse';
 
 /**
+ * Quién paga, lo que PSE le pregunta al banco antes de poder tomar el débito.
+ * Solo aplica a PSE; con tarjeta es `null`.
+ */
+export type TipoDePersona = 'natural' | 'legal';
+
+/**
  * Medio de pago que el cliente entregó en E4.
  *
  * El número de tarjeta nunca está aquí ni llega a nuestro backend: el navegador
@@ -36,6 +42,7 @@ export interface MedioDePago {
   ultimosCuatro: string | null;
   cuotas: number;
   codigoBanco: string | null;
+  tipoDePersona: TipoDePersona | null;
   capturadoEn: string;
 }
 
@@ -65,6 +72,16 @@ export interface Cobro {
   proximoIntentoEn: string | null;
   ventana: VentanaReintentos;
   motivoFalla: MotivoFallaCobro | null;
+  /**
+   * Código del emisor cuando la pasarela rechazó el cobro (`51` son fondos
+   * insuficientes). Viaja el código y no la frase: la redacción es de esta
+   * pantalla, no del backend.
+   */
+  codigoRechazo: string | null;
+  /** Identificador de la pasarela para este cobro, aprobado o rechazado. Es el que el cliente cita ante su banco. */
+  referenciaPasarela: string | null;
+  /** Hasta cuándo vale la oferta detrás de la aceptación; lo que E4c le dice al cliente que le queda. */
+  ofertaVigenteHasta: string | null;
   confirmadoEn: string | null;
   /** Póliza de la cobertura activada; `null` hasta confirmar el pago. Con ella se abre la póliza emitida (E5). */
   polizaId: string | null;
@@ -91,6 +108,7 @@ export interface MedioDePagoDto {
   last4: string | null;
   installments: number;
   bank_code: string | null;
+  payer_type: TipoDePersona | null;
   captured_at: string;
 }
 
@@ -109,6 +127,9 @@ export interface CobroDto {
   next_attempt_at: string | null;
   retry_window: { started_at: string; ends_at: string | null };
   failure_reason: MotivoFallaCobro | null;
+  decline_code: string | null;
+  provider_reference: string | null;
+  offer_expires_at: string | null;
   confirmed_at: string | null;
   policy_id: string | null;
   coverage_activated_at: string | null;
@@ -136,6 +157,9 @@ export function mapearCobro(dto: CobroDto): Cobro {
     proximoIntentoEn: dto.next_attempt_at,
     ventana: { iniciaEn: dto.retry_window.started_at, terminaEn: dto.retry_window.ends_at },
     motivoFalla: dto.failure_reason,
+    codigoRechazo: dto.decline_code ?? null,
+    referenciaPasarela: dto.provider_reference ?? null,
+    ofertaVigenteHasta: dto.offer_expires_at ?? null,
     confirmadoEn: dto.confirmed_at,
     polizaId: dto.policy_id,
     coberturaActivadaEn: dto.coverage_activated_at,
@@ -148,6 +172,7 @@ export function mapearCobro(dto: CobroDto): Cobro {
           ultimosCuatro: dto.payment_method.last4,
           cuotas: dto.payment_method.installments,
           codigoBanco: dto.payment_method.bank_code,
+          tipoDePersona: dto.payment_method.payer_type ?? null,
           capturadoEn: dto.payment_method.captured_at,
         }
       : null,
@@ -230,12 +255,12 @@ export function traducirErrorCobro(error: unknown): ErrorCobro {
  */
 export type MedioDePagoNuevo =
   | { tipo: 'card'; token: string; marca: string; ultimosCuatro: string; cuotas: number }
-  | { tipo: 'pse'; codigoBanco: string };
+  | { tipo: 'pse'; codigoBanco: string; tipoDePersona: TipoDePersona };
 
 /** Cuerpo del contrato (snake_case) para entregar el medio de pago. */
 export function aCuerpoMedioDePago(medio: MedioDePagoNuevo): Record<string, unknown> {
   if (medio.tipo === 'pse') {
-    return { method: 'pse', bank_code: medio.codigoBanco };
+    return { method: 'pse', bank_code: medio.codigoBanco, payer_type: medio.tipoDePersona };
   }
   return {
     method: 'card',

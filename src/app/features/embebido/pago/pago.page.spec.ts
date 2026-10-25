@@ -97,7 +97,12 @@ describe('PagoPage (E4b · HA-D02)', () => {
     expect(screen.getByText(/Te avisaremos por correo cuando el pago se confirme/)).toBeTruthy();
     expect(screen.getByRole('list', { name: 'Historial del cobro' })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Continuar con mi crédito/ }).getAttribute('href')).toBe('/inicio');
-    expect(screen.queryByRole('button', { name: /otro medio de pago/ })).toBeNull();
+    // La accion esta en el frame E4b, asi que la pantalla la muestra; pero
+    // mientras la pasarela no responde pudo haber cobrado ya, y cambiar el
+    // medio de pago arriesgaria un segundo cobro. Por eso llega inerte.
+    const otroMedio = screen.getByRole('button', { name: /Intentar con otro medio de pago/ });
+    expect(otroMedio.hasAttribute('disabled')).toBe(true);
+    expect(screen.getByText(/Mientras el cobro está en curso no se puede cambiar el medio de pago/)).toBeTruthy();
     expect(screen.queryByRole('link', { name: /Ver mi póliza/ })).toBeNull();
   });
 
@@ -169,8 +174,65 @@ describe('PagoPage (E4b · HA-D02)', () => {
   it('un pago rechazado ofrece intentar con otro medio de pago', async () => {
     await renderizar({ respuesta: of(cobro({ estado: 'failed', motivoFalla: 'payment_rejected' })) });
 
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Tu pago fue rechazado');
-    expect(screen.getByRole('button', { name: /Pagar con esta tarjeta/i })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('No pudimos procesar tu pago');
+    expect(screen.getByText('Elige otro medio de pago')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Reintentar el pago/ })).toBeTruthy();
+  });
+
+  // E4c vive de lo que dijo el emisor: sin eso, «no se pudo» no le sirve a
+  // nadie (HU-W1.3-02).
+  it('un pago rechazado dice qué respondió el emisor, con qué referencia y hasta cuándo vale la oferta', async () => {
+    await renderizar({
+      respuesta: of(
+        cobro({
+          estado: 'failed',
+          motivoFalla: 'payment_rejected',
+          codigoRechazo: '51',
+          referenciaPasarela: 'ch-7',
+          ofertaVigenteHasta: '2026-10-17T19:30:00Z',
+          intentoDePago: 1,
+        }),
+      ),
+    });
+
+    expect(screen.getByText('Pago rechazado por el emisor de la tarjeta')).toBeTruthy();
+    expect(screen.getByText(/Código 51 · Fondos insuficientes/)).toBeTruthy();
+    expect(screen.getByText('ch-7')).toBeTruthy();
+    expect(screen.getByText(/Vigente hasta/)).toBeTruthy();
+    expect(screen.getByText('Medio usado')).toBeTruthy();
+  });
+
+  // El emisor puede devolver cualquier código; quedarse en blanco seria peor
+  // que decir que el banco no autorizó el cobro.
+  it('un código de rechazo desconocido cae en el texto genérico', async () => {
+    await renderizar({
+      respuesta: of(cobro({ estado: 'failed', motivoFalla: 'payment_rejected', codigoRechazo: '99' })),
+    });
+
+    expect(screen.getByText(/Código 99 · El banco no autorizó el cobro/)).toBeTruthy();
+  });
+
+  // Sin código no se inventa uno: el aviso sigue, sin la línea del emisor.
+  it('un rechazo sin código muestra el aviso sin inventarse un motivo', async () => {
+    await renderizar({ respuesta: of(cobro({ estado: 'failed', motivoFalla: 'payment_rejected' })) });
+
+    expect(screen.getByText('Pago rechazado por el emisor de la tarjeta')).toBeTruthy();
+    // «Código de seguridad» es del formulario, no del emisor.
+    expect(screen.queryByText(/Código \d/)).toBeNull();
+  });
+
+  // En E4c el frame no lleva el panel «Resumen»: la pantalla habla del
+  // rechazo, no del precio.
+  it('E4c no muestra el resumen del cobro', async () => {
+    await renderizar({ respuesta: of(cobro({ estado: 'failed', motivoFalla: 'payment_rejected' })) });
+
+    expect(screen.queryByText('Total a pagar hoy')).toBeNull();
+  });
+
+  it('E4 sí muestra el resumen del cobro', async () => {
+    await renderizar({ respuesta: of(ESPERANDO_TARJETA) });
+
+    expect(screen.getByText('Total a pagar hoy')).toBeTruthy();
   });
 
   it('sin identificador en la URL usa la aceptación guardada en sessionStorage', async () => {
@@ -239,7 +301,7 @@ describe('PagoPage (E4b · HA-D02)', () => {
 
     expect(titulo()).toContain('Paga tu primera prima');
     expect(screen.getByLabelText(/Número de tarjeta/i)).toBeTruthy();
-    expect(screen.getByRole('button', { name: /Pagar mi primera prima/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Pagar/i })).toBeTruthy();
   });
 
   // El estado se decide por el medio de pago, no por el contador de intentos:
@@ -257,13 +319,29 @@ describe('PagoPage (E4b · HA-D02)', () => {
     fireEvent.input(screen.getByLabelText(/Vencimiento/i), { target: { value: '11/28' } });
     fireEvent.input(screen.getByLabelText(/Código de seguridad/i), { target: { value: '123' } });
     fireEvent.input(screen.getByLabelText(/Nombre del titular/i), { target: { value: 'CAROLINA PEREZ' } });
-    fireEvent.click(screen.getByRole('button', { name: /Pagar mi primera prima/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Pagar/i }));
     await new Promise((listo) => setTimeout(listo, 0));
 
     expect(entregar).toHaveBeenCalledTimes(1);
     const [, medio] = entregar.mock.calls[0] as [string, Record<string, unknown>];
     expect(medio['token']).toBe('tok_pruebas');
     expect(JSON.stringify(medio)).not.toContain('4111');
+  });
+
+  // PSE le pregunta al banco si quien paga es una persona o una empresa antes
+  // de poder tomar el débito, así que la pantalla tiene que decirlo
+  // (contrato HU-W1.3-02, sección 3).
+  it('con PSE entrega el banco y el tipo de persona, sin pasar por la pasarela', async () => {
+    await renderizar({ respuesta: of(ESPERANDO_TARJETA) });
+
+    fireEvent.click(screen.getByRole('radio', { name: /PSE/ }));
+    fireEvent.change(screen.getByLabelText(/Tipo de persona/i), { target: { value: 'legal' } });
+    fireEvent.click(screen.getByRole('button', { name: /Pagar/i }));
+    await new Promise((listo) => setTimeout(listo, 0));
+
+    expect(tokenizar).not.toHaveBeenCalled();
+    const [, medio] = entregar.mock.calls[0] as [string, Record<string, unknown>];
+    expect(medio).toEqual({ tipo: 'pse', codigoBanco: expect.any(String), tipoDePersona: 'legal' });
   });
 
   it('una tarjeta que no pasa la comprobación no llega a la pasarela', async () => {
@@ -273,7 +351,7 @@ describe('PagoPage (E4b · HA-D02)', () => {
     fireEvent.input(screen.getByLabelText(/Vencimiento/i), { target: { value: '11/28' } });
     fireEvent.input(screen.getByLabelText(/Código de seguridad/i), { target: { value: '123' } });
     fireEvent.input(screen.getByLabelText(/Nombre del titular/i), { target: { value: 'CAROLINA PEREZ' } });
-    fireEvent.click(screen.getByRole('button', { name: /Pagar mi primera prima/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Pagar/i }));
     await new Promise((listo) => setTimeout(listo, 0));
 
     expect(tokenizar).not.toHaveBeenCalled();

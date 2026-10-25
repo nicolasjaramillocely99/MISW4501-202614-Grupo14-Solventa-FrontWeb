@@ -16,6 +16,9 @@ export const COBRO_PENDIENTE_DTO: CobroDto = {
   next_attempt_at: '2026-10-16T19:05:15.2Z',
   retry_window: { started_at: '2026-10-16T19:05:00Z', ends_at: '2026-10-17T19:05:00Z' },
   failure_reason: null,
+  decline_code: null,
+  provider_reference: null,
+  offer_expires_at: '2026-10-17T19:30:00Z',
   confirmed_at: null,
   policy_id: null,
   coverage_activated_at: null,
@@ -28,6 +31,7 @@ export const COBRO_PENDIENTE_DTO: CobroDto = {
     last4: '1111',
     installments: 1,
     bank_code: null,
+    payer_type: null,
     captured_at: '2026-10-16T19:05:05Z',
   },
   payment_attempt: 1,
@@ -45,10 +49,15 @@ export const COBRO_ESPERANDO_MEDIO_DE_PAGO_DTO: CobroDto = {
   payment_attempt: 0,
 };
 
-/** Cobro que la pasarela rechazó: es E4c, y el cliente puede intentar con otra tarjeta. */
+/**
+ * Cobro que la pasarela rechazó: es E4c, y el cliente puede intentar con otra
+ * tarjeta. Trae lo que dijo el emisor, que es de lo que vive esa pantalla.
+ */
 export const COBRO_RECHAZADO_DTO: CobroDto = {
   ...COBRO_PENDIENTE_DTO,
   status: 'failed',
   failure_reason: 'payment_rejected',
+  decline_code: '51',
+  provider_reference: 'ch-7',
   next_attempt_at: null,
 };

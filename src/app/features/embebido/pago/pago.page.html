@@ -36,10 +36,16 @@
                     {{ t('pago.capturando.texto', { fecha: actual.aceptadaEn | formatoFechaHora }) }}
                   </p>
                 </div>
-                <app-formulario-medio-pago
-                  [enviando]="entregandoMedioDePago()"
-                  (medioElegido)="entregarMedioDePago($event)"
-                />
+                <div class="pago__columnas">
+                  <app-formulario-medio-pago
+                    [enviando]="entregandoMedioDePago()"
+                    [monto]="actual.monto"
+                    [moneda]="actual.moneda"
+                    [volverA]="acciones.verAceptacion"
+                    (medioElegido)="entregarMedioDePago($event)"
+                  />
+                  <app-resumen-pago [monto]="actual.monto" [moneda]="actual.moneda" />
+                </div>
                 @if (medioDePagoRechazado()) {
                   <p class="aviso aviso--error" role="alert">{{ t('pago.capturando.yaNoAdmite') }}</p>
                 }
@@ -53,16 +59,56 @@
                       {{ t('pago.insignia.rechazado') }}
                     </app-insignia-estado>
                   </div>
-                  <p class="flujo__texto">{{ t('pago.rechazado.texto') }}</p>
-                  @if (actual.medioDePago; as medio) {
-                    <p class="flujo__texto flujo__texto--debil">
-                      {{ t('pago.rechazado.conLaTarjeta', { marca: medio.marca, ultimos: medio.ultimosCuatro }) }}
-                    </p>
-                  }
                 </div>
+
+                <!-- Lo que el emisor dijo. Viaja el codigo y la frase la pone
+                     esta pantalla, que es donde vive el idioma. -->
+                <div class="aviso aviso--error">
+                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('pago.rechazado.avisoTitulo') }}</p>
+                    <p>
+                      @if (actual.codigoRechazo; as codigo) {
+                        {{ t('pago.rechazado.codigo', { codigo, motivo: t(glosaDelRechazo()) }) }}
+                      }
+                      {{ t('pago.rechazado.texto') }}
+                    </p>
+                  </div>
+                </div>
+
+                <dl class="rechazo">
+                  @if (actual.medioDePago; as medio) {
+                    <div>
+                      <dt>{{ t('pago.rechazado.medioUsado') }}</dt>
+                      <dd class="rechazo__medio">
+                        {{ t('pago.rechazado.medioValor', { marca: medio.marca, ultimos: medio.ultimosCuatro }) }}
+                      </dd>
+                    </div>
+                  }
+                  <div>
+                    <dt>{{ t('pago.rechazado.intento') }}</dt>
+                    <dd>{{ actual.intentoDePago }}</dd>
+                  </div>
+                  @if (actual.referenciaPasarela; as referencia) {
+                    <div>
+                      <dt>{{ t('pago.rechazado.referencia') }}</dt>
+                      <dd class="datos__identificador">{{ referencia }}</dd>
+                    </div>
+                  }
+                  @if (actual.ofertaVigenteHasta; as vigencia) {
+                    <div>
+                      <dt>{{ t('pago.rechazado.oferta') }}</dt>
+                      <dd>{{ t('pago.rechazado.ofertaValor', { fecha: vigencia | formatoFechaHora }) }}</dd>
+                    </div>
+                  }
+                </dl>
+
                 <app-formulario-medio-pago
                   [enviando]="entregandoMedioDePago()"
                   [reintento]="true"
+                  [monto]="actual.monto"
+                  [moneda]="actual.moneda"
+                  [volverA]="acciones.verAceptacion"
                   (medioElegido)="entregarMedioDePago($event)"
                 />
                 @if (medioDePagoRechazado()) {
@@ -124,6 +170,7 @@
               }
             }
 
+            @if (vista() !== 'capturando' && vista() !== 'rechazado') {
             <dl class="datos">
               <div>
                 <dt>{{ t('pago.datos.aceptacion') }}</dt>
@@ -178,6 +225,7 @@
                 </dd>
               </div>
             </dl>
+            }
 
             @if (vista() === 'pendiente') {
               <ul class="linea" [attr.aria-label]="t('pago.pendiente.lineaEtiqueta')">
@@ -222,6 +270,8 @@
               </div>
             }
 
+            <!-- E4 y E4c traen sus propios botones dentro del formulario. -->
+            @if (vista() !== 'capturando' && vista() !== 'rechazado') {
             <div class="acciones">
               @if (vista() === 'confirmado' && actual.polizaId) {
                 <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('pago.acciones.continuarCredito') }}</a>
@@ -230,12 +280,29 @@
                   {{ t('pago.acciones.verPoliza') }}
                 </a>
               } @else {
+                @if (vista() === 'pendiente') {
+                  <!-- Esta accion esta en el frame E4b y por eso se mantiene,
+                       pero llega deshabilitada mientras el cobro esta en
+                       curso: la pasarela no ha respondido y pudo haber
+                       cobrado ya, asi que cambiar el medio de pago ahora
+                       arriesgaria un segundo cobro. Es la garantia de HA-D02,
+                       y el backend responde 409 charge_not_payable. Se
+                       habilita sola el dia que la pasarela rechace, que es
+                       E4c. -->
+                  <button type="button" class="boton boton--secundario" disabled aria-describedby="porque-no-otro-medio">
+                    {{ t('pago.acciones.otroMedio') }}
+                  </button>
+                }
                 <a class="boton boton--primario" [routerLink]="acciones.salir">
                   <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
                   {{ t('pago.acciones.continuarCredito') }}
                 </a>
               }
             </div>
+            @if (vista() === 'pendiente') {
+              <p id="porque-no-otro-medio" class="acciones__nota">{{ t('pago.acciones.otroMedioNota') }}</p>
+            }
+            }
           }
         }
 
