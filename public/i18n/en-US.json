@@ -1474,6 +1474,236 @@
         "base_actuarial_profile": "The base actuarial profile was used because a source did not respond",
         "provisional_offer": "Provisional offer until the source is back"
       }
+    },
+    "consentimientos": {
+      "busqueda": {
+        "titulo": "Open Finance consents",
+        "descripcion": "Check the status of an Open Finance consent and, when it applies, revoke it. For now the search is by identifier.",
+        "tarjeta": "Search for a consent",
+        "campo": "Consent identifier",
+        "ejemplo": "cns-0123456789abcdef",
+        "ayuda": "Enter the consent identifier (e.g. cns-…).",
+        "buscar": "Search",
+        "buscando": "Searching…",
+        "errores": {
+          "requerido": "Enter the consent identifier.",
+          "invalido": "The identifier only accepts letters, numbers, hyphens and underscores (up to 64 characters)."
+        },
+        "sinResultados": {
+          "titulo": "We couldn't find a consent with the identifier {{ id }}",
+          "texto": "Check the identifier and try again. For security, no internal system information is shown.",
+          "limpiar": "Clear search"
+        },
+        "error": {
+          "titulo": "We couldn't look up the consent",
+          "texto": "The audit service did not respond. Try again in a few minutes.",
+          "reintentar": "Try again"
+        },
+        "incluye": {
+          "titulo": "What the detail shows",
+          "estado": "Consent status and authorized scope",
+          "entidades": "Financial entities and the progress of the revocation notice",
+          "revocacion": "Revocation from the portal, with reason and reference",
+          "historial": "Status history with the time of each change"
+        }
+      },
+      "detalle": {
+        "volver": "Consents",
+        "cargando": "Loading the consent…",
+        "titulo": "Consent {{ id }}",
+        "otorgado": "granted on {{ fecha }}",
+        "revocar": "Revoke consent",
+        "reintentarEn": "Retry at {{ entidad }}",
+        "reintentarEnVarias": "Retry at {{ cantidad }} entities",
+        "reintentando": "Retrying…",
+        "reintentar": "Try again",
+        "error": {
+          "titulo": "We couldn't load the consent",
+          "texto": "The audit service did not respond. Try again."
+        },
+        "noEncontrado": {
+          "titulo": "We couldn't find this consent",
+          "texto": "There is no consent with the identifier {{ id }}. For security, no internal system information is shown.",
+          "buscarOtro": "Search for another"
+        },
+        "noRevocable": {
+          "revocado": "This consent is already revoked: it can't be revoked again.",
+          "parcial": "This consent is already revoked in Solventa; only the entities without confirmation still need to respond. You can retry the notice.",
+          "vencido": "This consent has expired: there is nothing to revoke."
+        },
+        "carrera": {
+          "consent_already_revoked": "This consent was already revoked while you were confirming (for example, by the holder from the app). No new request was sent and we updated the status.",
+          "consent_not_active": "This consent expired while you were confirming, so it can no longer be revoked. We updated the status."
+        },
+        "parcial": {
+          "titulo": "Partial revocation: some entities have not confirmed",
+          "texto": "Solventa no longer queries this customer's data, but not every entity confirmed within the 5-minute window.",
+          "noConfirmo": "{{ entidad }}: no confirmation, time ran out at {{ hora }}",
+          "confirmo": "{{ entidad }}: confirmed at {{ hora }}"
+        },
+        "enCurso": {
+          "titulo": "Revocation in progress",
+          "tituloReintento": "Retry in progress",
+          "texto": "Solventa no longer queries this customer's data. We are notifying the entities: they have until {{ hora }} to confirm."
+        },
+        "sondeoDetenido": {
+          "titulo": "We couldn't update the status",
+          "texto": "We stopped checking the status automatically. What you see may not be the latest.",
+          "actualizar": "Refresh"
+        },
+        "falloReintento": "We couldn't retry the notice to the entities. Nothing was changed: try again.",
+        "datos": {
+          "titulo": "Customer and consent details",
+          "cliente": "Customer",
+          "alcance": "Scope"
+        },
+        "alcance": {
+          "titulo": "Detailed scope"
+        },
+        "efecto": {
+          "titulo": "Immediate effect in Solventa",
+          "texto": "Solventa no longer queries this customer's data. The notice to each entity continues within the 5-minute window."
+        },
+        "registro": {
+          "titulo": "Operation record",
+          "solicitadaPor": "Requested by",
+          "solicitantes": {
+            "tu": "{{ nombre }} · Operations analyst",
+            "operaciones": "Operations analyst",
+            "titular": "The holder from the app"
+          },
+          "motivo": "Reason",
+          "referencia": "Reference",
+          "fecha": "Date and time",
+          "canal": "Channel",
+          "comprobante": "Receipt for the customer",
+          "enLaApp": "Available in the customer's app"
+        },
+        "reglas": {
+          "titulo": "Revocation from the portal",
+          "texto": "Only the operations analyst can revoke. The request is sent to every authorized entity and must complete within 5 minutes; if one doesn't process it, you will see an alert and can retry. A consent that is already revoked or expired can't be revoked."
+        }
+      },
+      "estados": {
+        "activo": "Active",
+        "enCurso": "Revocation in progress",
+        "revocado": "Revoked",
+        "parcial": "Partial revocation",
+        "vencido": "Expired"
+      },
+      "entidades": {
+        "titulo": "Authorized financial entities",
+        "entidad": "Entity",
+        "estadoEnEntidad": "Status at the entity",
+        "revocacion": "Revocation",
+        "confirmacion": "Confirmation",
+        "estados": {
+          "pending": "Pending",
+          "confirmed": "Revoked",
+          "not_confirmed": "No confirmation"
+        },
+        "estadoConsentimiento": {
+          "activo": "Active",
+          "enCurso": "Revocation in progress",
+          "revocado": "Revoked",
+          "parcial": "Partial revocation",
+          "vencido": "Expired"
+        },
+        "plazoHasta": "Deadline {{ hora }}",
+        "confirmoEl": "Confirmed on {{ fecha }}",
+        "tiempoAgotado": "Time ran out at {{ hora }}"
+      },
+      "historial": {
+        "titulo": "Status history",
+        "referencia": "Reference {{ referencia }}",
+        "estados": {
+          "granted": "Granted",
+          "revocation_requested": "Revocation requested",
+          "revoked": "Consent revoked in Solventa",
+          "revocation_confirmed": "Revocation confirmed by the entity",
+          "revocation_not_confirmed": "The entity did not confirm in time",
+          "revocation_retry_requested": "Notice retry requested",
+          "expired": "Expired"
+        }
+      },
+      "actores": {
+        "operations": "Operations analyst",
+        "holder": "Holder",
+        "system": "System"
+      },
+      "motivos": {
+        "customer_request": "Customer request",
+        "regulatory_order": "Regulatory order"
+      },
+      "canales": {
+        "compliance_portal": "Compliance portal",
+        "mobile_app": "Mobile app"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "categorias": {
+        "credit_products": "credit products",
+        "balances": "balances",
+        "payment_behavior": "payment behavior",
+        "public_records": "public records",
+        "identity_verification": "identity verification"
+      },
+      "vigencias": {
+        "12_months": "Validity: 12 months",
+        "single_use": "Validity: single use"
+      },
+      "revocar": {
+        "titulo": "Revoke {{ nombre }}'s consent",
+        "efectivo": "Effective within ≤ 5 min",
+        "cerrar": "Close",
+        "introduccion": "The revocation request will be sent to every authorized entity. The status will change to Revoked once all of them confirm; if one doesn't respond within 5 minutes, you will see an alert and can retry.",
+        "cliente": "Customer",
+        "alcance": "Scope being revoked",
+        "entidades": "Entities",
+        "consultasFuturas": "Future queries",
+        "consultasBloqueadas": "Blocked immediately in Solventa",
+        "motivo": "Reason",
+        "motivoPlaceholder": "Select a reason",
+        "motivos": {
+          "customer_request": "Customer request",
+          "regulatory_order": "Regulatory order"
+        },
+        "referencia": "Reference (ticket or order)",
+        "referenciaAyuda": "3 to 64 characters: unaccented letters, numbers, space and . / # _ -",
+        "confirmoRol": "I confirm that I act as compliance officer and that the request is documented.",
+        "faltan": "To revoke you still need:",
+        "faltantes": {
+          "motivo": "the reason",
+          "referencia": "a valid reference",
+          "rolConfirmado": "to confirm your role"
+        },
+        "cancelar": "Cancel",
+        "revocarAhora": "Revoke now",
+        "revocando": "Revoking…",
+        "errores": {
+          "service_unavailable": "We couldn't record the revocation and nothing was changed. We kept what you filled in: press “Revoke now” to try again.",
+          "idempotency_key_reused": "The request couldn't be processed. Press “Revoke now” to try again.",
+          "invalid_request": "The request couldn't be processed. Press “Revoke now” to try again.",
+          "generico": "We couldn't revoke the consent. Try again.",
+          "campos": {
+            "motivo": {
+              "required": "Select the reason for the revocation.",
+              "invalid_format": "Select one of the reasons in the list."
+            },
+            "referencia": {
+              "required": "Enter the ticket or order reference.",
+              "out_of_range": "The reference must be 3 to 64 characters long.",
+              "invalid_format": "The reference only accepts unaccented letters, numbers, space and . / # _ -"
+            },
+            "rolConfirmado": {
+              "must_be_true": "Confirm that you act as compliance officer."
+            }
+          }
+        }
+      }
     }
   }
 }
