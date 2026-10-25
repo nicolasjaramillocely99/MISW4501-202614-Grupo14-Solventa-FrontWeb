@@ -83,11 +83,33 @@ destacado de la prima, coberturas y explicación del precio).
   `originacion.cotizacionAsistida.*`; la web no calcula precios, vigencias ni degradación.
 - **Fuera de los frames por falta de datos en el contrato o por ser de otra historia:** en S1, apellidos separados, celular, ciudad,
   producto, entidad crediticia, fecha de desembolso, el consentimiento vigente por SMS y el panel «Fuentes del motor»; en S2,
-  «Guardar y enviar al cliente», «Formalizar compra», «Fuentes consultadas» y «Siguientes pasos». La vigencia es de 24 h (la historia y
+  «Guardar y enviar al cliente», «Fuentes consultadas» y «Siguientes pasos». La vigencia es de 24 h (la historia y
   el backend); el prototipo muestra 72 h y está pendiente de acordar con el equipo. La insignia de S2 toma las horas de las fechas de la
   cotización, así que sigue al backend si cambia.
-- Pendiente: «Formalizar la compra» (HU-W1.1-03, ruta `:id/formalizar`).
+- «Formalizar compra» es la pantalla siguiente (HU-W1.1-03, más abajo); en S2 es un enlace habilitado solo con `can_formalize`.
 - E2E: `e2e/flujos/cotizacion-emision/cotizacion-asistida.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
+
+**Formalización de la compra (HU-W1.1-03)** — `cotizacion-asistida/formalizar-compra.page.ts` (`FormalizarCompraPage`, S3 / S3b / S3c),
+ruta `/originacion/cotizaciones/:id/formalizar` en `originacion.routes.ts` (`rolGuard('asesor')`). Contrato: `docs/contratos/HU-W1.1-03-api.md`
+del backend (servicio `origination`, `openapi.yaml` v0.11.0).
+
+- **S3 · Formalizar compra** (frame «Portal asesor · Formalización de la compra»): encabezado con la insignia «Cotización vigente» y las
+  acciones «Volver a la cotización» y «Formalizar y emitir»; tarjetas «Confirmación de datos del cliente», «Condiciones ofertadas» y
+  «Aceptación del cliente»; a la derecha «Qué ocurre al formalizar» (4 pasos) y «Registro». La aceptación (CA-5) pide el **medio**
+  (llamada grabada, firma remota o código de confirmación), la **fecha y hora** y la **referencia**, más la casilla de confirmación. Con
+  el código de confirmación el servicio se lo envía al cliente por correo y el asesor lo digita (el código nunca vuelve al asesor).
+- **S3c · Compra formalizada y emisión iniciada:** «Datos confirmados del cliente», «Condiciones ofertadas», «Aceptación registrada»
+  (solo lectura) y a la derecha «Próximos pasos de emisión» y «Trazabilidad de la formalización». Si la cotización ya estaba
+  formalizada —por el mismo asesor en otra visita o por otro, `409 already_formalized`— se muestra ese registro.
+- **Cotización vencida:** no se formaliza y se ofrece generar una nueva con el documento del cliente. No se pudo contrastar con su
+  frame: el enlace de la tarjeta #63 apunta al nodo 326-7198, que es el de la renovación formalizada (S7b), no el de la vencida.
+- Textos en `originacion.formalizacion.*`; la web no valida grabaciones ni firmas, solo las registra por su referencia.
+- **Diferencias con el mockup, por datos que el contrato no trae:** celular, producto, consentimiento de Open Finance, beneficiario
+  oneroso y medio de pago (las tarjetas de cliente y de condiciones muestran lo que el backend devuelve); el código corto `COT-…`
+  (la cotización se identifica por su id); el nombre de la asesora (el token de Cognito no trae nombre: se muestra su correo); y el botón
+  «Ver emisión en curso», porque el monitor de emisiones es solo de `operaciones` y el asesor no puede abrirlo. Las coberturas se
+  muestran como parte de las condiciones.
+- E2E: `e2e/flujos/cotizacion-emision/formalizacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 
 **Bandeja de decisión humana (HU-W1.1-02)** — `bandeja-decision/bandeja-decision.page.ts` (`BandejaDecisionPage`, S4 / S4b) y
 `bandeja-decision/detalle-solicitud.page.ts` (`DetalleSolicitudPage`, S5), rutas `/originacion/bandeja-decision` y

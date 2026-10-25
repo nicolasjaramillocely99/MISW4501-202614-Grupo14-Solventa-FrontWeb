@@ -1,0 +1,350 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.formalizacion'">
+  <ng-template #datosCliente let-titulo let-c="c">
+    <section class="tarjeta" aria-labelledby="titulo-cliente">
+      <h2 id="titulo-cliente" class="seccion__titulo">{{ t(titulo) }}</h2>
+      <dl class="datos">
+        <div>
+          <dt>{{ t('cliente.nombre') }}</dt>
+          <dd>{{ c.nombreCompleto }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('cliente.documento') }}</dt>
+          <dd>{{ c.documento }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('cliente.correo') }}</dt>
+          <dd>{{ c.correo }}</dd>
+        </div>
+      </dl>
+    </section>
+  </ng-template>
+
+  <ng-template #condiciones let-c="c">
+    <section class="tarjeta" aria-labelledby="titulo-condiciones">
+      <h2 id="titulo-condiciones" class="seccion__titulo">{{ t('condiciones.titulo') }}</h2>
+      <dl class="datos">
+        <div>
+          <dt>{{ t('condiciones.primaMensual') }}</dt>
+          <dd class="datos__cifra">{{ c.prima | formatoMoneda: c.moneda }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('condiciones.valorAsegurado') }}</dt>
+          <dd class="datos__cifra">{{ c.montoAsegurado | formatoMoneda: c.moneda }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('condiciones.vigencia') }}</dt>
+          <dd>{{ t('condiciones.' + plazo().clave, { n: plazo().n }) }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('condiciones.cotizacionVigenteHasta') }}</dt>
+          <dd>{{ c.venceEn | formatoFechaHora }}</dd>
+        </div>
+        <div class="datos__ancho">
+          <dt>{{ t('condiciones.coberturas') }}</dt>
+          <dd>
+            <ul class="coberturas">
+              @for (cobertura of c.coberturas; track cobertura.codigo) {
+                <li>
+                  <svg lucideCircleCheck [size]="16" aria-hidden="true"></svg>
+                  <span>{{ t('condiciones.cobertura.' + cobertura.codigo) }}</span>
+                  <span class="coberturas__monto">{{ cobertura.montoAsegurado | formatoMoneda: c.moneda }}</span>
+                </li>
+              }
+            </ul>
+          </dd>
+        </div>
+      </dl>
+    </section>
+  </ng-template>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-no-encontrada">
+        <h1 id="titulo-no-encontrada" class="pagina__titulo">{{ t('noEncontrada.titulo') }}</h1>
+        <p>{{ t('noEncontrada.texto') }}</p>
+        <div class="acciones">
+          <a class="boton boton--primario" routerLink="/originacion/cotizaciones/nueva">{{ t('acciones.nueva') }}</a>
+        </div>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('errorCarga.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('errorCarga.texto') }}</p>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('acciones.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @case ('listo') {
+      @if (cotizacion(); as c) {
+        <a class="volver" [routerLink]="['/originacion/cotizaciones', c.cotizacionId]">← {{ t('volver', { id: c.cotizacionId }) }}</a>
+
+        @if (paso() === 'formalizada') {
+          <header class="pagina__encabezado">
+            <div>
+              <div class="pagina__fila">
+                <h1 class="pagina__titulo">{{ t('formalizada.titulo') }}</h1>
+                <app-insignia-estado [tono]="vencida() ? 'error' : 'exito'">{{
+                  vencida() ? t('insignia.vencida') : t('insignia.vigente')
+                }}</app-insignia-estado>
+              </div>
+              <p class="pagina__subtitulo">{{ t('formalizada.subtitulo') }}</p>
+            </div>
+            <div class="acciones">
+              <a class="boton boton--secundario" [routerLink]="['/originacion/cotizaciones', c.cotizacionId]">{{
+                t('acciones.verCotizacion')
+              }}</a>
+            </div>
+          </header>
+
+          @if (error(); as clave) {
+            <p class="aviso aviso--advertencia" role="alert">
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+              {{ t('errores.' + clave) }}
+            </p>
+          }
+
+          <div class="pagina__cuerpo">
+            <div class="principal">
+              <ng-container *ngTemplateOutlet="datosCliente; context: { $implicit: 'cliente.tituloConfirmados', c: c }" />
+              <ng-container *ngTemplateOutlet="condiciones; context: { c: c }" />
+              @if (formalizacion(); as f) {
+                <section class="tarjeta" aria-labelledby="titulo-registrada">
+                  <h2 id="titulo-registrada" class="seccion__titulo">{{ t('aceptacion.tituloRegistrada') }}</h2>
+                  <p class="texto-suave">{{ t('aceptacion.textoRegistrada') }}</p>
+                  <dl class="datos">
+                    <div>
+                      <dt>{{ t('aceptacion.medio') }}</dt>
+                      <dd>{{ t('metodos.' + f.metodo) }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('aceptacion.fechaHora') }}</dt>
+                      <dd>{{ f.aceptadaEn | formatoFechaHora }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('aceptacion.referencia') }}</dt>
+                      <dd>{{ f.referencia || t('aceptacion.sinReferencia') }}</dd>
+                    </div>
+                  </dl>
+                </section>
+              }
+            </div>
+            <div class="lateral">
+              <ng-container *ngTemplateOutlet="proximosPasos; context: { $implicit: 'pasos.tituloProximos' }" />
+              @if (formalizacion(); as f) {
+                <section class="tarjeta" aria-labelledby="titulo-trazabilidad">
+                  <h2 id="titulo-trazabilidad" class="seccion__titulo">{{ t('trazabilidad.titulo') }}</h2>
+                  <p>
+                    {{
+                      t('trazabilidad.texto', {
+                        asesor: f.asesorCorreo || f.asesorId,
+                        fecha: f.formalizadaEn | formatoFechaHora,
+                        cotizacion: f.cotizacionId
+                      })
+                    }}
+                  </p>
+                </section>
+              }
+            </div>
+          </div>
+        } @else if (vencida()) {
+          <header class="pagina__encabezado">
+            <div>
+              <div class="pagina__fila">
+                <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+                <app-insignia-estado tono="error">{{ t('insignia.vencida') }}</app-insignia-estado>
+              </div>
+            </div>
+          </header>
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('vencida.titulo') }}</p>
+              <p>{{ t('vencida.texto', { fecha: c.venceEn | formatoFechaHora }) }}</p>
+            </div>
+          </div>
+          <div class="acciones">
+            <a
+              class="boton boton--primario"
+              routerLink="/originacion/cotizaciones/nueva"
+              [queryParams]="{ documento: c.documento }"
+              >{{ t('acciones.generarNueva') }}</a
+            >
+          </div>
+        } @else {
+          <header class="pagina__encabezado">
+            <div>
+              <div class="pagina__fila">
+                <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+                <app-insignia-estado tono="exito">{{ t('insignia.vigente') }}</app-insignia-estado>
+              </div>
+              <p class="pagina__subtitulo">{{ t('subtitulo') }}</p>
+            </div>
+            <div class="acciones">
+              <a class="boton boton--secundario" [routerLink]="['/originacion/cotizaciones', c.cotizacionId]">{{
+                t('acciones.volverCotizacion')
+              }}</a>
+              <button type="button" class="boton boton--primario" [disabled]="trabajando()" (click)="formalizar()">
+                {{ trabajando() ? t('acciones.formalizando') : t('acciones.formalizar') }}
+              </button>
+            </div>
+          </header>
+
+          @if (error(); as clave) {
+            <p class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              {{ t('errores.' + clave) }}
+            </p>
+          }
+
+          <div class="pagina__cuerpo">
+            <div class="principal">
+              <ng-container *ngTemplateOutlet="datosCliente; context: { $implicit: 'cliente.titulo', c: c }" />
+              <ng-container *ngTemplateOutlet="condiciones; context: { c: c }" />
+
+              <section class="tarjeta" aria-labelledby="titulo-aceptacion">
+                <h2 id="titulo-aceptacion" class="seccion__titulo">{{ t('aceptacion.titulo') }}</h2>
+                <p class="texto-suave">{{ t('aceptacion.texto') }}</p>
+                <form class="formulario" [formGroup]="formulario" (ngSubmit)="formalizar()" novalidate>
+                  <div class="campos">
+                    <div class="campo">
+                      <label class="campo__etiqueta" for="metodo">{{ t('aceptacion.medio') }}</label>
+                      <select id="metodo" class="campo__control" formControlName="metodo">
+                        @for (metodo of metodos; track metodo) {
+                          <option [value]="metodo">{{ t('metodos.' + metodo) }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="campo">
+                      <label class="campo__etiqueta" for="fecha">{{ t('aceptacion.fechaHora') }}</label>
+                      <input
+                        id="fecha"
+                        class="campo__control"
+                        type="datetime-local"
+                        formControlName="fecha"
+                        [attr.aria-invalid]="errores().fecha ? 'true' : null"
+                        [attr.aria-describedby]="errores().fecha ? 'fecha-error' : 'fecha-ayuda'"
+                      />
+                      @if (errores().fecha; as clave) {
+                        <p id="fecha-error" class="campo__error">
+                          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.campos.fecha.' + clave) }}
+                        </p>
+                      } @else {
+                        <p id="fecha-ayuda" class="campo__ayuda">{{ t('aceptacion.formatoFecha') }}</p>
+                      }
+                    </div>
+                    <div class="campo">
+                      <label class="campo__etiqueta" for="referencia">{{ t('aceptacion.referencia') }}</label>
+                      <input
+                        id="referencia"
+                        class="campo__control"
+                        type="text"
+                        autocomplete="off"
+                        [attr.maxlength]="maxReferencia"
+                        formControlName="referencia"
+                        [attr.aria-invalid]="errores().referencia ? 'true' : null"
+                        [attr.aria-describedby]="errores().referencia ? 'referencia-error' : null"
+                      />
+                      @if (errores().referencia; as clave) {
+                        <p id="referencia-error" class="campo__error">
+                          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.campos.referencia.' + clave, { max: maxReferencia }) }}
+                        </p>
+                      }
+                    </div>
+                  </div>
+
+                  @if (conCodigo()) {
+                    <div class="codigo">
+                      <p class="texto-suave">{{ t('aceptacion.codigoTexto') }}</p>
+                      @if (envio(); as e) {
+                        <p class="aviso aviso--exito" role="status">
+                          <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+                          {{ t('aceptacion.codigoEnviado', { correo: e.enviadoA, hasta: e.venceEn | formatoFechaHora }) }}
+                        </p>
+                      }
+                      <div class="campos">
+                        <div class="campo">
+                          <label class="campo__etiqueta" for="codigo">{{ t('aceptacion.codigo') }}</label>
+                          <input
+                            id="codigo"
+                            class="campo__control"
+                            type="text"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                            maxlength="6"
+                            formControlName="codigo"
+                            [attr.aria-invalid]="errores().codigo ? 'true' : null"
+                            [attr.aria-describedby]="errores().codigo ? 'codigo-error' : 'codigo-ayuda'"
+                          />
+                          @if (errores().codigo; as clave) {
+                            <p id="codigo-error" class="campo__error">
+                              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.campos.codigo.' + clave) }}
+                            </p>
+                          } @else {
+                            <p id="codigo-ayuda" class="campo__ayuda">{{ t('aceptacion.codigoAyuda') }}</p>
+                          }
+                        </div>
+                        <div class="campo campo--boton">
+                          <button type="button" class="boton boton--secundario" [disabled]="trabajando()" (click)="enviarCodigo()">
+                            {{ envio() ? t('acciones.reenviarCodigo') : t('acciones.enviarCodigo') }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+
+                  <label class="confirmo">
+                    <input
+                      type="checkbox"
+                      formControlName="confirmo"
+                      [attr.aria-invalid]="errores().confirmo ? 'true' : null"
+                      [attr.aria-describedby]="errores().confirmo ? 'confirmo-error' : null"
+                    />
+                    <span>{{ t('aceptacion.confirmo') }}</span>
+                  </label>
+                  @if (errores().confirmo) {
+                    <p id="confirmo-error" class="campo__error">
+                      <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.campos.confirmo.required') }}
+                    </p>
+                  }
+                </form>
+              </section>
+            </div>
+
+            <div class="lateral">
+              <ng-container *ngTemplateOutlet="proximosPasos; context: { $implicit: 'pasos.titulo' }" />
+              <section class="tarjeta" aria-labelledby="titulo-registro">
+                <h2 id="titulo-registro" class="seccion__titulo">{{ t('registro.titulo') }}</h2>
+                <p>{{ t('registro.texto') }}</p>
+              </section>
+            </div>
+          </div>
+        }
+      }
+    }
+  }
+
+  <ng-template #proximosPasos let-titulo>
+    <section class="tarjeta pasos" aria-labelledby="titulo-pasos">
+      <h2 id="titulo-pasos" class="seccion__titulo">{{ t(titulo) }}</h2>
+      <ol class="pasos__lista">
+        @for (n of pasos; track n) {
+          <li>
+            <span class="pasos__numero" aria-hidden="true">{{ n }}</span>
+            <div>
+              <p class="pasos__titulo">{{ t('pasos.items.' + n + '.titulo') }}</p>
+              <p class="pasos__texto">{{ t('pasos.items.' + n + '.texto') }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    </section>
+  </ng-template>
+</div>

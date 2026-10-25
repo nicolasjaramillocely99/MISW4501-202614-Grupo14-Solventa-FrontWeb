@@ -85,6 +85,14 @@ describe('ResultadoCotizacionPage (S2 / S2b · HU-W1.1-01)', () => {
       expect(screen.getByText('v1')).toBeTruthy();
     });
 
+    it('ofrece formalizar la compra, que lleva a la pantalla de formalización (HU-W1.1-03)', async () => {
+      await renderizar(of(VIGENTE));
+
+      const formalizar = screen.getByRole('link', { name: 'Formalizar compra' });
+
+      expect(formalizar.getAttribute('href')).toBe(`/originacion/cotizaciones/${VIGENTE.cotizacionId}/formalizar`);
+    });
+
     it('confirma que la cotización quedó generada con su vigencia y ofrece una nueva', async () => {
       await renderizar(of(VIGENTE));
 
@@ -126,6 +134,7 @@ describe('ResultadoCotizacionPage (S2 / S2b · HU-W1.1-01)', () => {
       expect(screen.getByRole('alert').textContent).toContain('no se puede formalizar');
       expect(screen.getByText('La cotización venció')).toBeTruthy();
       expect(screen.queryByText('Cotización generada')).toBeNull();
+      expect(screen.queryByRole('link', { name: 'Formalizar compra' })).toBeNull();
       const nueva = screen.getByRole('link', { name: 'Generar una nueva cotización' });
       expect(nueva.getAttribute('href')).toBe('/originacion/cotizaciones/nueva?documento=1032456789');
       expect(screen.queryByRole('link', { name: 'Nueva cotización' })).toBeNull();

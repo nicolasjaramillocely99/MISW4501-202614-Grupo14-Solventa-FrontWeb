@@ -854,7 +854,8 @@
         "acciones": {
           "nueva": "Nueva cotización",
           "generarNueva": "Generar una nueva cotización",
-          "reintentar": "Reintentar"
+          "reintentar": "Reintentar",
+          "formalizar": "Formalizar compra"
         },
         "noEncontrada": {
           "titulo": "No encontramos la cotización",
@@ -1091,7 +1092,8 @@
       },
       "canales": {
         "web": "Web",
-        "mobile": "Móvil"
+        "mobile": "Móvil",
+        "advisor": "Asesor"
       },
       "motivos": {
         "retry_window_expired": "La pasarela de pagos no respondió en la ventana de 24 horas",
@@ -1218,6 +1220,151 @@
           "reintentando": "Reintentando…",
           "actualizar": "Actualizar lista",
           "cerrar": "Cerrar"
+        }
+      }
+    },
+    "formalizacion": {
+      "cargando": "Cargando la cotización…",
+      "titulo": "Formalizar compra",
+      "subtitulo": "Confirma los datos y las condiciones ofertadas. La formalización dispara la emisión sin pasos manuales adicionales.",
+      "volver": "Cotización {{id}}",
+      "insignia": {
+        "vigente": "Cotización vigente",
+        "vencida": "Cotización vencida"
+      },
+      "acciones": {
+        "nueva": "Nueva cotización",
+        "generarNueva": "Generar una nueva cotización",
+        "reintentar": "Reintentar",
+        "volverCotizacion": "Volver a la cotización",
+        "verCotizacion": "Ver cotización",
+        "formalizar": "Formalizar y emitir",
+        "formalizando": "Formalizando…",
+        "enviarCodigo": "Enviar código al cliente",
+        "reenviarCodigo": "Reenviar código"
+      },
+      "cliente": {
+        "titulo": "Confirmación de datos del cliente",
+        "tituloConfirmados": "Datos confirmados del cliente",
+        "nombre": "Cliente",
+        "documento": "Documento",
+        "correo": "Correo"
+      },
+      "condiciones": {
+        "titulo": "Condiciones ofertadas",
+        "primaMensual": "Prima mensual",
+        "valorAsegurado": "Valor asegurado",
+        "vigencia": "Vigencia",
+        "plazoAnio": "{{n}} año",
+        "plazoAnios": "{{n}} años",
+        "plazoMeses": "{{n}} meses",
+        "cotizacionVigenteHasta": "Cotización vigente hasta",
+        "coberturas": "Coberturas",
+        "cobertura": {
+          "death": "Fallecimiento del asegurado",
+          "total_permanent_disability": "Incapacidad total y permanente"
+        }
+      },
+      "aceptacion": {
+        "titulo": "Aceptación del cliente",
+        "texto": "Registra cómo y cuándo el cliente aceptó las condiciones. Este registro queda asociado a la póliza para auditoría.",
+        "tituloRegistrada": "Aceptación registrada",
+        "textoRegistrada": "Cómo y cuándo aceptó el cliente las condiciones. Este registro queda asociado a la póliza para auditoría.",
+        "medio": "Medio de aceptación",
+        "fechaHora": "Fecha y hora",
+        "formatoFecha": "DD/MM/AAAA · HH:MM",
+        "referencia": "Referencia",
+        "sinReferencia": "Sin referencia (código de confirmación)",
+        "codigoTexto": "Para este medio, el cliente recibe un código por correo y debe dártelo.",
+        "codigoEnviado": "Enviamos el código a {{correo}}. Vale hasta las {{hasta}}.",
+        "codigo": "Código de confirmación",
+        "codigoAyuda": "Son 6 dígitos. El cliente los recibe por correo.",
+        "confirmo": "Confirmo que el cliente aceptó las condiciones ofertadas y autorizó el cobro de la prima con el medio indicado."
+      },
+      "metodos": {
+        "recorded_call": "Llamada grabada",
+        "remote_signature": "Firma remota",
+        "confirmation_code": "Código de confirmación"
+      },
+      "pasos": {
+        "titulo": "Qué ocurre al formalizar",
+        "tituloProximos": "Próximos pasos de emisión",
+        "items": {
+          "1": {
+            "titulo": "Suscripción automática",
+            "texto": "Si enruta a decisión humana, el caso llega a tu bandeja"
+          },
+          "2": {
+            "titulo": "Cobro de la prima",
+            "texto": "Reintentos idempotentes si la pasarela falla"
+          },
+          "3": {
+            "titulo": "Activación de la cobertura",
+            "texto": "Solo con pago confirmado"
+          },
+          "4": {
+            "titulo": "Documento y notificación",
+            "texto": "El cliente recibe la póliza por correo y en la app"
+          }
+        }
+      },
+      "registro": {
+        "titulo": "Registro",
+        "texto": "Queda registrado: asesor, fecha y hora, cotización de origen y la aceptación del cliente."
+      },
+      "vencida": {
+        "titulo": "La cotización venció",
+        "texto": "Su vigencia terminó el {{fecha}}, por eso no se puede formalizar. Genera una cotización nueva con los datos del cliente."
+      },
+      "formalizada": {
+        "titulo": "Compra formalizada",
+        "subtitulo": "La compra quedó registrada con la aceptación del cliente. La emisión continúa automáticamente, sin pasos manuales adicionales."
+      },
+      "trazabilidad": {
+        "titulo": "Trazabilidad de la formalización",
+        "texto": "Queda registrado: asesor {{asesor}}, fecha y hora {{fecha}}, cotización de origen {{cotizacion}} y la aceptación del cliente."
+      },
+      "noEncontrada": {
+        "titulo": "No encontramos la cotización",
+        "texto": "La cotización no existe o el código no es correcto. Genera una nueva."
+      },
+      "errorCarga": {
+        "titulo": "No pudimos cargar la cotización",
+        "texto": "Hubo un problema al consultar la cotización. Inténtalo de nuevo."
+      },
+      "errores": {
+        "invalid_request": "No pudimos leer la solicitud. Revisa los datos e inténtalo de nuevo.",
+        "quote_not_found": "La cotización ya no existe. Genera una nueva.",
+        "already_formalized": "Otro asesor ya formalizó la compra de esta cotización.",
+        "consent_code_required": "Primero envía el código de confirmación al cliente.",
+        "invalid_confirmation_code": "El código no es el que recibió el cliente. Revísalo con él.",
+        "confirmation_code_expired": "El código venció. Reenvía uno nuevo al cliente.",
+        "too_many_attempts": "Se agotaron los intentos con este código. Genera una cotización nueva.",
+        "too_many_codes": "Ya se enviaron todos los códigos permitidos para esta cotización.",
+        "code_delivery_unavailable": "No pudimos enviar el código al cliente. Inténtalo de nuevo en unos minutos, o registra otro medio de aceptación.",
+        "formalization_not_found": "La compra aún no se formalizó.",
+        "formalization_unavailable": "No pudimos formalizar la compra. Inténtalo de nuevo en unos segundos.",
+        "campos": {
+          "fecha": {
+            "required": "Indica cuándo aceptó el cliente.",
+            "invalid_format": "La fecha y la hora no son válidas.",
+            "out_of_range": "El cliente no pudo aceptar en el futuro ni antes de que existiera la cotización."
+          },
+          "referencia": {
+            "required": "Indica la referencia de la grabación o de la firma.",
+            "invalid_format": "La referencia solo admite letras, números y . _ : / # - (máximo {{max}} caracteres)."
+          },
+          "codigo": {
+            "required": "Ingresa el código de 6 dígitos que recibió el cliente.",
+            "invalid_format": "El código son 6 dígitos."
+          },
+          "metodo": {
+            "required": "Elige el medio de aceptación.",
+            "invalid_format": "Elige un medio de aceptación de la lista."
+          },
+          "confirmo": {
+            "required": "Confirma que el cliente aceptó las condiciones y autorizó el cobro."
+          }
         }
       }
     }
@@ -1791,7 +1938,7 @@
       "historial": {
         "titulo": "Historial de estados",
         "referencia": "Referencia {{ referencia }}",
-      "referenciaEntidad": "Referencia de la entidad {{ referencia }}",
+        "referenciaEntidad": "Referencia de la entidad {{ referencia }}",
         "estados": {
           "granted": "Otorgado",
           "revocation_requested": "Revocación solicitada",

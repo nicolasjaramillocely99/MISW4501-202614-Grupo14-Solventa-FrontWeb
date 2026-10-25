@@ -854,7 +854,8 @@
         "acciones": {
           "nueva": "New quote",
           "generarNueva": "Generate a new quote",
-          "reintentar": "Retry"
+          "reintentar": "Retry",
+          "formalizar": "Formalize purchase"
         },
         "noEncontrada": {
           "titulo": "We could not find the quote",
@@ -1091,7 +1092,8 @@
       },
       "canales": {
         "web": "Web",
-        "mobile": "Mobile"
+        "mobile": "Mobile",
+        "advisor": "Advisor"
       },
       "motivos": {
         "retry_window_expired": "The payment gateway did not respond within the 24-hour window",
@@ -1218,6 +1220,151 @@
           "reintentando": "Retrying…",
           "actualizar": "Refresh list",
           "cerrar": "Close"
+        }
+      }
+    },
+    "formalizacion": {
+      "cargando": "Loading the quote…",
+      "titulo": "Formalize purchase",
+      "subtitulo": "Confirm the details and the offered conditions. Formalizing triggers the issuance with no further manual steps.",
+      "volver": "Quote {{id}}",
+      "insignia": {
+        "vigente": "Quote valid",
+        "vencida": "Quote expired"
+      },
+      "acciones": {
+        "nueva": "New quote",
+        "generarNueva": "Generate a new quote",
+        "reintentar": "Retry",
+        "volverCotizacion": "Back to the quote",
+        "verCotizacion": "View quote",
+        "formalizar": "Formalize and issue",
+        "formalizando": "Formalizing…",
+        "enviarCodigo": "Send code to the customer",
+        "reenviarCodigo": "Resend code"
+      },
+      "cliente": {
+        "titulo": "Customer data confirmation",
+        "tituloConfirmados": "Confirmed customer data",
+        "nombre": "Customer",
+        "documento": "Document",
+        "correo": "Email"
+      },
+      "condiciones": {
+        "titulo": "Offered conditions",
+        "primaMensual": "Monthly premium",
+        "valorAsegurado": "Insured amount",
+        "vigencia": "Term",
+        "plazoAnio": "{{n}} year",
+        "plazoAnios": "{{n}} years",
+        "plazoMeses": "{{n}} months",
+        "cotizacionVigenteHasta": "Quote valid until",
+        "coberturas": "Coverages",
+        "cobertura": {
+          "death": "Death of the insured",
+          "total_permanent_disability": "Total and permanent disability"
+        }
+      },
+      "aceptacion": {
+        "titulo": "Customer acceptance",
+        "texto": "Record how and when the customer accepted the conditions. This record is tied to the policy for auditing.",
+        "tituloRegistrada": "Acceptance recorded",
+        "textoRegistrada": "How and when the customer accepted the conditions. This record is tied to the policy for auditing.",
+        "medio": "Acceptance method",
+        "fechaHora": "Date and time",
+        "formatoFecha": "DD/MM/YYYY · HH:MM",
+        "referencia": "Reference",
+        "sinReferencia": "No reference (confirmation code)",
+        "codigoTexto": "For this method, the customer receives a code by email and must give it to you.",
+        "codigoEnviado": "We sent the code to {{correo}}. It is valid until {{hasta}}.",
+        "codigo": "Confirmation code",
+        "codigoAyuda": "It has 6 digits. The customer receives it by email.",
+        "confirmo": "I confirm that the customer accepted the offered conditions and authorized the premium charge with the indicated method."
+      },
+      "metodos": {
+        "recorded_call": "Recorded call",
+        "remote_signature": "Remote signature",
+        "confirmation_code": "Confirmation code"
+      },
+      "pasos": {
+        "titulo": "What happens when you formalize",
+        "tituloProximos": "Next issuance steps",
+        "items": {
+          "1": {
+            "titulo": "Automatic underwriting",
+            "texto": "If it is routed to human decision, the case reaches your inbox"
+          },
+          "2": {
+            "titulo": "Premium charge",
+            "texto": "Idempotent retries if the gateway fails"
+          },
+          "3": {
+            "titulo": "Coverage activation",
+            "texto": "Only with a confirmed payment"
+          },
+          "4": {
+            "titulo": "Document and notification",
+            "texto": "The customer receives the policy by email and in the app"
+          }
+        }
+      },
+      "registro": {
+        "titulo": "Record",
+        "texto": "Recorded: advisor, date and time, source quote and the customer's acceptance."
+      },
+      "vencida": {
+        "titulo": "The quote expired",
+        "texto": "Its validity ended on {{fecha}}, so it cannot be formalized. Generate a new quote with the customer's data."
+      },
+      "formalizada": {
+        "titulo": "Purchase formalized",
+        "subtitulo": "The purchase was recorded with the customer's acceptance. The issuance continues automatically, with no further manual steps."
+      },
+      "trazabilidad": {
+        "titulo": "Formalization traceability",
+        "texto": "Recorded: advisor {{asesor}}, date and time {{fecha}}, source quote {{cotizacion}} and the customer's acceptance."
+      },
+      "noEncontrada": {
+        "titulo": "We couldn't find the quote",
+        "texto": "The quote does not exist or the code is wrong. Generate a new one."
+      },
+      "errorCarga": {
+        "titulo": "We couldn't load the quote",
+        "texto": "There was a problem fetching the quote. Try again."
+      },
+      "errores": {
+        "invalid_request": "We couldn't read the request. Check the data and try again.",
+        "quote_not_found": "The quote no longer exists. Generate a new one.",
+        "already_formalized": "Another advisor already formalized the purchase of this quote.",
+        "consent_code_required": "Send the confirmation code to the customer first.",
+        "invalid_confirmation_code": "The code is not the one the customer received. Check it with them.",
+        "confirmation_code_expired": "The code expired. Resend a new one to the customer.",
+        "too_many_attempts": "The attempts for this code ran out. Generate a new quote.",
+        "too_many_codes": "All the codes allowed for this quote were already sent.",
+        "code_delivery_unavailable": "We couldn't send the code to the customer. Try again in a few minutes, or record another acceptance method.",
+        "formalization_not_found": "The purchase has not been formalized yet.",
+        "formalization_unavailable": "We couldn't formalize the purchase. Try again in a few seconds.",
+        "campos": {
+          "fecha": {
+            "required": "Enter when the customer accepted.",
+            "invalid_format": "The date and time are not valid.",
+            "out_of_range": "The customer could not accept in the future or before the quote existed."
+          },
+          "referencia": {
+            "required": "Enter the reference of the recording or the signature.",
+            "invalid_format": "The reference only allows letters, numbers and . _ : / # - (up to {{max}} characters)."
+          },
+          "codigo": {
+            "required": "Enter the 6-digit code the customer received.",
+            "invalid_format": "The code has 6 digits."
+          },
+          "metodo": {
+            "required": "Choose the acceptance method.",
+            "invalid_format": "Choose an acceptance method from the list."
+          },
+          "confirmo": {
+            "required": "Confirm that the customer accepted the conditions and authorized the charge."
+          }
         }
       }
     }
@@ -1791,7 +1938,7 @@
       "historial": {
         "titulo": "Status history",
         "referencia": "Reference {{ referencia }}",
-      "referenciaEntidad": "Entity reference {{ referencia }}",
+        "referenciaEntidad": "Entity reference {{ referencia }}",
         "estados": {
           "granted": "Granted",
           "revocation_requested": "Revocation requested",

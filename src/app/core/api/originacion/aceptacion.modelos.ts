@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
  */
 
 /** Canal donde se aceptó la oferta. El portal web envía siempre `web`. */
-export type CanalAceptacion = 'web' | 'mobile';
+export type CanalAceptacion = 'web' | 'mobile' | 'advisor';
 
 /**
  * Estado de la aceptación (§4): `registered` aceptación guardada, suscripción en curso o reintentándose
