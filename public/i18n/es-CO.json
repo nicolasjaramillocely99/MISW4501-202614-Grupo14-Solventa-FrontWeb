@@ -1352,5 +1352,128 @@
         "desdeApp": "Radicado desde la app"
       }
     }
+  },
+  "auditoria": {
+    "registro": {
+      "busqueda": {
+        "titulo": "Auditoría de suscripción",
+        "descripcion": "Reconstruye qué datos de entrada y qué reglas de rating determinaron el precio y la decisión de cualquier póliza. El registro es de solo lectura.",
+        "tarjeta": "Buscar registro de auditoría",
+        "campo": "Identificador de póliza",
+        "ejemplo": "off-0123456789abcdef",
+        "ayuda": "También acepta el número de oferta (off-…) o el número de solicitud del aliado.",
+        "buscar": "Buscar",
+        "buscando": "Buscando…",
+        "errores": {
+          "requerido": "Ingresa el identificador de la póliza.",
+          "invalido": "El identificador solo admite letras, números, guion y guion bajo (máximo 128 caracteres)."
+        },
+        "sinResultados": {
+          "titulo": "No encontramos resultados para {{ id }}",
+          "texto": "Verifica el identificador e inténtalo de nuevo. Por seguridad no se muestra información interna del sistema.",
+          "limpiar": "Limpiar búsqueda"
+        },
+        "error": {
+          "titulo": "No pudimos consultar el registro",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo en unos minutos."
+        },
+        "incluye": {
+          "titulo": "Qué incluye el registro",
+          "fecha": "Fecha y hora de la solicitud con zona horaria",
+          "motor": "Versión del motor de rating utilizado",
+          "fuentes": "Fuentes consultadas (Open Finance, Open Data, KYC) y el valor devuelto por cada una",
+          "reglas": "Reglas de rating aplicadas, en orden, con la salida de cada una",
+          "prima": "Prima calculada y decisión final (aceptado, rechazado o diferido con motivo)"
+        }
+      },
+      "detalle": {
+        "volver": "Auditoría",
+        "cargando": "Cargando el registro…",
+        "titulo": "Registro de auditoría · {{ id }}",
+        "soloLectura": "Solo lectura",
+        "resumen": "Solicitud de suscripción del {{ fecha }} ({{ zona }}) · Motor de rating {{ motor }} · Decisión final: {{ decision }}",
+        "reintentar": "Reintentar",
+        "error": {
+          "titulo": "No pudimos cargar el registro",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo."
+        },
+        "solicitud": {
+          "titulo": "Solicitud",
+          "fecha": "Fecha y hora",
+          "canal": "Canal",
+          "oferta": "Oferta",
+          "consentimiento": "Consentimiento",
+          "cliente": "Cliente",
+          "aliado": "Aliado",
+          "solicitud": "Solicitud del aliado",
+          "motor": "Versión del motor"
+        },
+        "fuentes": {
+          "titulo": "Fuentes de datos consultadas",
+          "fuente": "Fuente",
+          "consultada": "Consultada",
+          "latencia": "Latencia",
+          "valor": "Valor devuelto",
+          "valorFuente": "Puntaje {{ puntaje }} · categoría {{ categoria }}",
+          "sinValor": "Sin valor: la fuente no respondió",
+          "milisegundos": "{{ ms }} ms",
+          "vacio": "No se consultó ninguna fuente externa."
+        },
+        "perfil": "Perfil resultante: puntaje {{ puntaje }}, categoría {{ categoria }}.",
+        "perfilParcial": "El perfil es parcial porque alguna fuente no respondió.",
+        "reglas": {
+          "titulo": "Reglas de rating aplicadas (en orden de ejecución)",
+          "orden": "#",
+          "regla": "Regla",
+          "salida": "Salida"
+        },
+        "resultado": {
+          "titulo": "Resultado",
+          "prima": "Prima calculada",
+          "primaMes": "{{ prima }} / mes",
+          "decision": "Decisión final",
+          "motivo": "Motivo",
+          "registradaEn": "Registrada en auditoría"
+        }
+      },
+      "decisiones": {
+        "accepted": "Aceptado",
+        "rejected": "Rechazado",
+        "deferred": "Diferido"
+      },
+      "canales": {
+        "embedded": "Embebido",
+        "assisted": "Asistido por asesor"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "estadosFuente": {
+        "ok": "Respondió",
+        "timeout": "Sin respuesta a tiempo",
+        "error": "Respondió con error",
+        "circuit_open": "Aislada por el cortacircuitos"
+      },
+      "categorias": {
+        "preferred": "preferente",
+        "standard": "estándar",
+        "high_risk": "alto riesgo",
+        "base_actuarial": "actuarial base"
+      },
+      "reglas": {
+        "base_monthly_rate": "Tarifa base mensual",
+        "age_factor": "Factor por edad",
+        "risk_factor": "Factor por perfil de riesgo",
+        "term_factor": "Factor por plazo",
+        "rounding_step": "Paso de redondeo"
+      },
+      "motivos": {
+        "cached_profile": "Se usó el último perfil guardado porque una fuente no respondió",
+        "base_actuarial_profile": "Se usó el perfil actuarial base porque una fuente no respondió",
+        "provisional_offer": "Oferta provisional hasta que la fuente vuelva"
+      }
+    }
   }
 }

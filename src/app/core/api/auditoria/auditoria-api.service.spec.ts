@@ -2,9 +2,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
+import { REGISTRO_DECISION_DTO } from '@testing/decision-pruebas';
 import { RECIBO_CONSENTIMIENTO_DTO as RECIBO_DTO, TERMINOS_DTO } from '@testing/consentimiento-pruebas';
 
 import { AuditoriaApiService } from './auditoria-api.service';
+import { ErrorDecision, RegistroDecision, mapearRegistroDecision } from './decision.modelos';
 import {
   Consentimiento,
   ErrorConsentimiento,
@@ -160,6 +162,43 @@ describe('AuditoriaApiService (HU-W1.2-01)', () => {
       http.expectOne(url('/v1/audit/consents')).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual(['service_unavailable', 'service_unavailable']);
+    });
+  });
+
+  describe('consultarRegistroDecision (HU-W4.1-01)', () => {
+    it('lee el registro por identificador con el modelo del cliente', () => {
+      let resultado: RegistroDecision | undefined;
+      servicio.consultarRegistroDecision('off-4f2a9c').subscribe((registro) => (resultado = registro));
+
+      const peticion = http.expectOne(url('/v1/audit/decisions/off-4f2a9c'));
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(REGISTRO_DECISION_DTO);
+
+      expect(resultado).toEqual(mapearRegistroDecision(REGISTRO_DECISION_DTO));
+    });
+
+    it('escapa el identificador en la ruta', () => {
+      servicio.consultarRegistroDecision('a/b c').subscribe({ error: () => undefined });
+      http.expectOne(url('/v1/audit/decisions/a%2Fb%20c')).flush('', { status: 404, statusText: 'Not Found' });
+    });
+
+    it('falla con decision_not_found si no hay registro', () => {
+      let error: unknown;
+      servicio.consultarRegistroDecision('nope').subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(url('/v1/audit/decisions/nope')).flush({ error: 'decision_not_found' }, { status: 404, statusText: 'Not Found' });
+
+      expect(error).toBeInstanceOf(ErrorDecision);
+      expect((error as ErrorDecision).codigo).toBe('decision_not_found');
+    });
+
+    it('falla con service_unavailable ante una caída del gateway', () => {
+      let error: unknown;
+      servicio.consultarRegistroDecision('x').subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(url('/v1/audit/decisions/x')).flush('', { status: 502, statusText: 'Bad Gateway' });
+
+      expect((error as ErrorDecision).codigo).toBe('service_unavailable');
     });
   });
 });

@@ -4,6 +4,12 @@ import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import {
+  RegistroDecision,
+  RegistroDecisionDto,
+  mapearRegistroDecision,
+  traducirErrorDecision,
+} from './decision.modelos';
+import {
   Consentimiento,
   ConsentimientoDto,
   SolicitudConsentimiento,
@@ -49,6 +55,20 @@ export class AuditoriaApiService {
       .pipe(
         map(mapearConsentimiento),
         catchError((error: unknown) => throwError(() => traducirErrorConsentimiento(error))),
+      );
+  }
+
+  /**
+   * Consulta el registro de auditoría de una decisión de suscripción (`GET /v1/audit/decisions/{id}`, solo
+   * operaciones, HU-W4.1-01). Es de solo lectura. Falla con `ErrorDecision`: `decision_not_found` si no hay registro
+   * para ese identificador.
+   */
+  consultarRegistroDecision(ofertaId: string): Observable<RegistroDecision> {
+    return this.http
+      .get<RegistroDecisionDto>(`${this.base}/v1/audit/decisions/${encodeURIComponent(ofertaId)}`)
+      .pipe(
+        map(mapearRegistroDecision),
+        catchError((error: unknown) => throwError(() => traducirErrorDecision(error))),
       );
   }
 }

@@ -29,6 +29,10 @@ export const routes: Routes = [
         loadChildren: () => import('@features/inicio/inicio.routes').then((m) => m.INICIO_ROUTES),
       },
       {
+        path: 'auditoria',
+        loadChildren: () => import('@features/auditoria/auditoria.routes').then((m) => m.AUDITORIA_ROUTES),
+      },
+      {
         path: 'originacion',
         loadChildren: () => import('@features/originacion/originacion.routes').then((m) => m.ORIGINACION_ROUTES),
       },
