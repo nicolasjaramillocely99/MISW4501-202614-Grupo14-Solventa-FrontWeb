@@ -173,6 +173,11 @@
             >
           } @else {
             <a class="boton boton--secundario" routerLink="/originacion/cotizaciones/nueva">{{ t('acciones.nueva') }}</a>
+            @if (c.puedeFormalizar) {
+              <a class="boton boton--primario" [routerLink]="['/originacion/cotizaciones', c.cotizacionId, 'formalizar']">{{
+                t('acciones.formalizar')
+              }}</a>
+            }
           }
         </div>
       }

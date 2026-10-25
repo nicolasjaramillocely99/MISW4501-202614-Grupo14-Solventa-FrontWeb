@@ -67,6 +67,25 @@ describe('rutas de originación (HU-W1.1-01)', () => {
     expect(harness.routeNativeElement?.querySelector('app-resultado-cotizacion-page')).not.toBeNull();
   });
 
+  it('«:id/formalizar» abre la formalización de la compra de esa cotización (HU-W1.1-03)', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/originacion/cotizaciones/abc-123/formalizar');
+
+    expect(url()).toBe('/originacion/cotizaciones/abc-123/formalizar');
+    expect(harness.routeNativeElement?.querySelector('app-formalizar-compra-page')).not.toBeNull();
+  });
+
+  it('los demás roles no formalizan: reciben «acceso no autorizado»', async () => {
+    for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
+      await iniciarSesionComo(rol);
+
+      await harness.navigateByUrl('/originacion/cotizaciones/abc-123/formalizar');
+
+      expect(url()).toBe('/acceso/no-autorizado');
+    }
+  });
+
   it('los demás roles reciben «acceso no autorizado» (la URL nunca lleva el rol)', async () => {
     for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
       await iniciarSesionComo(rol);

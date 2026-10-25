@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
 import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
+import { CONFIRMACION_ENVIADA_DTO, FORMALIZACION_DTO } from '@testing/formalizacion-pruebas';
 
 import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
 import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
@@ -12,6 +13,7 @@ import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './
 import { ErrorCobro, mapearCobro } from './cobro.modelos';
 import { OriginacionApiService } from './originacion-api.service';
 import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
+import { ErrorFormalizacion, SolicitudFormalizacion } from './formalizacion.modelos';
 import { ErrorOferta, mapearOferta } from './oferta.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
@@ -29,6 +31,12 @@ const DTO: PerfilRiesgoDto = {
     { name: 'open_finance', status: 'ok', latency_ms: 90 },
     { name: 'open_data', status: 'timeout', latency_ms: 120 },
   ],
+};
+
+const SOLICITUD_FORMALIZACION: SolicitudFormalizacion = {
+  metodo: 'recorded_call',
+  aceptadaEn: '2026-10-16T15:00:00Z',
+  referencia: 'GRAB-2026-88910',
 };
 
 describe('OriginacionApiService', () => {
@@ -230,6 +238,75 @@ describe('OriginacionApiService', () => {
       http.expectOne(`${GATEWAY}/v1/assisted-quotes/nope`).flush({ error: 'quote_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect((error as ErrorCotizacionAsistida).codigo).toBe('quote_not_found');
+    });
+
+    it('pide el código de confirmación sin cuerpo y devuelve el correo enmascarado', () => {
+      let resultado: unknown;
+      servicio.solicitarConfirmacion('a/b').subscribe((r) => (resultado = r));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/assisted-quotes/a%2Fb/consent`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toBeNull();
+      peticion.flush(CONFIRMACION_ENVIADA_DTO);
+
+      expect(resultado).toMatchObject({ enviadoA: 'an***@example.com' });
+    });
+
+    it('formaliza la compra con el código y distingue la primera vez (201) de la repetición (200)', () => {
+      const resultados: unknown[] = [];
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe((r) => resultados.push(r));
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe((r) => resultados.push(r));
+
+      const [primera, segunda] = http.match(`${GATEWAY}/v1/assisted-quotes/q1/formalization`);
+      expect(primera.request.method).toBe('POST');
+      expect(primera.request.body).toEqual({
+        acceptance: { method: 'recorded_call', accepted_at: '2026-10-16T15:00:00Z', reference: 'GRAB-2026-88910' },
+      });
+      primera.flush(FORMALIZACION_DTO, { status: 201, statusText: 'Created' });
+      segunda.flush(FORMALIZACION_DTO, { status: 200, statusText: 'OK' });
+
+      expect(resultados).toMatchObject([{ creada: true }, { creada: false }]);
+      expect(resultados[0]).toMatchObject({ formalizacion: { asesorId: FORMALIZACION_DTO.advisor_id } });
+    });
+
+    it('los errores de validación llegan con cada campo', () => {
+      let error: unknown;
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes/q1/formalization`)
+        .flush(
+          { error: 'validation_failed', message: 'm', fields: [{ field: 'acceptance.reference', code: 'required' }] },
+          { status: 422, statusText: 'Unprocessable Entity' },
+        );
+
+      expect((error as ErrorFormalizacion).campos).toEqual([{ campo: 'referencia', codigo: 'required' }]);
+    });
+
+    it('otro asesor que formaliza primero es already_formalized', () => {
+      let error: unknown;
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes/q1/formalization`)
+        .flush({ error: 'already_formalized', message: 'm' }, { status: 409, statusText: 'Conflict' });
+
+      expect((error as ErrorFormalizacion).codigo).toBe('already_formalized');
+    });
+
+    it('consulta la formalización y una cotización sin formalizar es formalization_not_found', () => {
+      let resultado: unknown;
+      let error: unknown;
+      servicio.consultarFormalizacion('q1').subscribe((r) => (resultado = r));
+      servicio.consultarFormalizacion('q2').subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/assisted-quotes/q1/formalization`).flush(FORMALIZACION_DTO);
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes/q2/formalization`)
+        .flush({ error: 'formalization_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect(resultado).toMatchObject({ formalizacionId: FORMALIZACION_DTO.formalization_id });
+      expect((error as ErrorFormalizacion).codigo).toBe('formalization_not_found');
     });
 
     it('busca al cliente por documento y devuelve sus datos', () => {

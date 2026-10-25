@@ -46,6 +46,18 @@ import {
   traducirErrorEmision as traducirErrorMonitoreo,
 } from './emision-monitor.modelos';
 import {
+  ConfirmacionEnviada,
+  ConfirmacionEnviadaDto,
+  Formalizacion,
+  FormalizacionDto,
+  ResultadoFormalizacion,
+  SolicitudFormalizacion,
+  aSolicitudFormalizacionDto,
+  mapearConfirmacionEnviada,
+  mapearFormalizacion,
+  traducirErrorFormalizacion,
+} from './formalizacion.modelos';
+import {
   EmisionContractual,
   EmisionContractualDto,
   mapearEmisionContractual,
@@ -219,6 +231,59 @@ export class OriginacionApiService {
       .pipe(
         map(mapearCotizacionAsistida),
         catchError((error: unknown) => throwError(() => traducirErrorCotizacion(error, RESPALDO_COTIZAR))),
+      );
+  }
+
+  /**
+   * Pide el código de confirmación de la compra (`POST /v1/assisted-quotes/{quote_id}/consent`, HU-W1.1-03):
+   * el servicio se lo envía por correo al cliente y responde solo con el correo enmascarado. Un código nuevo
+   * reemplaza al anterior, hasta 3 por cotización. Falla con `ErrorFormalizacion`.
+   */
+  solicitarConfirmacion(cotizacionId: string): Observable<ConfirmacionEnviada> {
+    return this.http
+      .post<ConfirmacionEnviadaDto>(
+        `${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}/consent`,
+        null,
+      )
+      .pipe(
+        map(mapearConfirmacionEnviada),
+        catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
+      );
+  }
+
+  /**
+   * Formaliza la compra de una cotización vigente en nombre del cliente
+   * (`POST /v1/assisted-quotes/{quote_id}/formalization`, HU-W1.1-03) registrando cómo y cuándo aceptó el
+   * cliente. 201 la primera vez, 200 si el mismo asesor repite una formalización ya completa. Falla con
+   * `ErrorFormalizacion`: `validation_failed` trae todos los campos inválidos a la vez; también
+   * `quote_expired`, `already_formalized`, `invalid_confirmation_code`…
+   */
+  formalizarCompra(cotizacionId: string, solicitud: SolicitudFormalizacion): Observable<ResultadoFormalizacion> {
+    return this.http
+      .post<FormalizacionDto>(
+        `${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}/formalization`,
+        aSolicitudFormalizacionDto(solicitud),
+        { observe: 'response' },
+      )
+      .pipe(
+        map((respuesta) => ({
+          formalizacion: mapearFormalizacion(respuesta.body as FormalizacionDto),
+          creada: respuesta.status === 201,
+        })),
+        catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
+      );
+  }
+
+  /**
+   * Consulta la formalización de una cotización (`GET /v1/assisted-quotes/{quote_id}/formalization`).
+   * `formalization_not_found` significa que la cotización aún no se formalizó.
+   */
+  consultarFormalizacion(cotizacionId: string): Observable<Formalizacion> {
+    return this.http
+      .get<FormalizacionDto>(`${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}/formalization`)
+      .pipe(
+        map(mapearFormalizacion),
+        catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
       );
   }
 
