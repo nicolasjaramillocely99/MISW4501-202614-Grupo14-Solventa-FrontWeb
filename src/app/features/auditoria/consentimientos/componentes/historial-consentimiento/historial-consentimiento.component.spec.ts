@@ -40,6 +40,19 @@ describe('HistorialConsentimientoComponent (HU-W4.2-02 · CA-5)', () => {
     expect(confirmada.textContent).toContain('Sistema');
   });
 
+  it('rotula como «de la entidad» la referencia de una entrada de una entidad, y no la del ticket', async () => {
+    const dto = structuredClone(ESTADO_REVOCADO_DTO);
+    dto.history.at(-1)!.reference = 'of-rev-2';
+
+    await renderizar(dto);
+
+    const confirmada = screen.getByText('Revocación confirmada por la entidad').closest('li')!;
+    expect(confirmada.textContent).toContain('Referencia de la entidad of-rev-2');
+    const solicitada = screen.getByText('Revocación solicitada').closest('li')!;
+    expect(solicitada.textContent).toContain('Referencia TCK-2026-0412');
+    expect(solicitada.textContent).not.toContain('de la entidad');
+  });
+
   it('muestra la hora en que la entidad no confirmó', async () => {
     await renderizar(ESTADO_PARCIAL_DTO);
 

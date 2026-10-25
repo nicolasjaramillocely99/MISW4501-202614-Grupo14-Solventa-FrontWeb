@@ -1616,6 +1616,7 @@
       "historial": {
         "titulo": "Status history",
         "referencia": "Reference {{ referencia }}",
+      "referenciaEntidad": "Entity reference {{ referencia }}",
         "estados": {
           "granted": "Granted",
           "revocation_requested": "Revocation requested",

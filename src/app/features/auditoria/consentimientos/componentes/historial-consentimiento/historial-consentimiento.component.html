@@ -24,7 +24,7 @@
               <span>{{ entrada.motivo | traducirCodigo: 'auditoria.consentimientos.motivos' }}</span>
             }
             @if (entrada.referencia) {
-              <span>{{ t('referencia', { referencia: entrada.referencia }) }}</span>
+              <span>{{ t(entrada.entidad ? 'referenciaEntidad' : 'referencia', { referencia: entrada.referencia }) }}</span>
             }
           </p>
         </div>
