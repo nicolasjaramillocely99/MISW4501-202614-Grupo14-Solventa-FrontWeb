@@ -8,10 +8,11 @@ import {
   proveerSesionPrueba,
 } from '@testing/sesion-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { mapearListaEmisiones } from '@core/api/originacion/emision-monitor.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import { ErrorRenovacion } from '@core/api/originacion/renovacion.modelos';
 import { mapearSolicitudRevision } from '@core/api/originacion/revision.modelos';
 import { LISTA_EMISIONES_DTO } from '@testing/emision-monitor-pruebas';
 import { SOLICITUD_PENDIENTE_DTO } from '@testing/revision-pruebas';
@@ -229,6 +230,78 @@ describe('rutas del monitoreo de emisiones (HU-W1.3-04)', () => {
       await harness.navigateByUrl('/originacion/emisiones');
 
       expect(url()).toBe('/acceso/no-autorizado');
+    }
+  });
+});
+
+describe('rutas de las pólizas y la renovación en línea (HU-W1.5-02)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            listarPolizas: () => of([]),
+            consultarEstadoRenovacion: () => throwError(() => new ErrorRenovacion('renewal_not_found')),
+            consultarCondicionesRenovacion: () => throwError(() => new ErrorRenovacion('renewal_not_available')),
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+
+  it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {
+    await harness.navigateByUrl('/originacion/polizas/pol-1/renovar');
+
+    expect(url()).toBe('/acceso/iniciar-sesion?returnUrl=%2Foriginacion%2Fpolizas%2Fpol-1%2Frenovar');
+  });
+
+  it('el asegurado entra a «Mis pólizas» dentro del shell del portal', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/polizas');
+
+    expect(url()).toBe('/originacion/polizas');
+    expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-mis-polizas-page')).not.toBeNull();
+  });
+
+  it('«:id/renovar» abre la renovación de esa póliza', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/polizas/pol-1/renovar');
+
+    expect(url()).toBe('/originacion/polizas/pol-1/renovar');
+    expect(harness.routeNativeElement?.querySelector('app-renovar-poliza-page')).not.toBeNull();
+  });
+
+  it('asesor, operaciones y socio reciben «acceso no autorizado»', async () => {
+    for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
+      for (const destino of ['/originacion/polizas', '/originacion/polizas/pol-1/renovar']) {
+        await iniciarSesionComo(rol);
+
+        await harness.navigateByUrl(destino);
+
+        expect(url()).toBe('/acceso/no-autorizado');
+      }
     }
   });
 });

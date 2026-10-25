@@ -1375,6 +1375,219 @@
           }
         }
       }
+    },
+    "polizas": {
+      "titulo": "Mis pólizas",
+      "subtitulo": "Tus pólizas activas y su renovación.",
+      "cargando": "Cargando tus pólizas…",
+      "poliza": "Póliza {{id}}",
+      "titular": "Titular",
+      "vigencia": "Vigencia",
+      "prima": "Prima",
+      "valorAsegurado": "Valor asegurado",
+      "ventanaAbierta": "La renovación está abierta hasta el {{fecha}}.",
+      "ventanaAbre": "Podrás renovarla desde el {{fecha}}.",
+      "estado": {
+        "vigente": "Activa",
+        "porVencer": "Por vencer",
+        "enRenovacion": "Renovación en curso",
+        "renovada": "Renovada",
+        "noRenovada": "No renovada",
+        "finalizada": "Finalizada"
+      },
+      "acciones": {
+        "renovar": "Renovar",
+        "verRenovacion": "Ver renovación",
+        "reintentar": "Reintentar",
+        "radicar": "Radicar un siniestro"
+      },
+      "vacio": {
+        "titulo": "Aún no tienes pólizas activas",
+        "texto": "Cuando se confirme el pago de una póliza la verás aquí, con su vigencia y la opción de renovarla."
+      },
+      "error": {
+        "titulo": "No pudimos cargar tus pólizas",
+        "texto": "Intenta de nuevo en unos momentos."
+      },
+      "subtituloDe": "Coberturas, vigencia y renovación de {{nombre}}",
+      "resumen": {
+        "titulo": "Resumen de tus pólizas",
+        "activas": "Pólizas activas",
+        "porVencer": "Próximas a vencer",
+        "vence": "Vence el {{fecha}}"
+      },
+      "aviso": {
+        "titulo": "Tu póliza {{id}} vence en {{dias}} días",
+        "tituloUno": "Tu póliza {{id}} vence mañana",
+        "tituloHoy": "Tu póliza {{id}} vence hoy",
+        "texto": "Renuévala en línea con las condiciones recotizadas para no interrumpir tu cobertura."
+      },
+      "filtros": {
+        "estado": "Estado",
+        "todas": "Todas"
+      },
+      "contador": "{{n}} pólizas",
+      "contadorUno": "1 póliza",
+      "tabla": {
+        "poliza": "Póliza",
+        "vigencia": "Vigencia",
+        "prima": "Prima",
+        "estado": "Estado",
+        "acciones": "Acciones",
+        "valorAsegurado": "Asegurado por {{monto}}"
+      }
+    },
+    "renovacion": {
+      "titulo": "Renovar póliza",
+      "cargando": "Cargando la renovación…",
+      "subtitulo": "{{id}} · Ventana de renovación abierta hasta el {{fecha}}",
+      "insignia": {
+        "vence": "Vence el {{fecha}}",
+        "fueraDeVentana": "Fuera de la ventana",
+        "procesando": "Procesando el pago",
+        "capturando": "Falta el medio de pago",
+        "rechazado": "Pago rechazado",
+        "excepcion": "En revisión",
+        "renovada": "Renovada",
+        "noRenovada": "No renovada"
+      },
+      "acciones": {
+        "renovar": "Renovar y pagar {{monto}}",
+        "renovarSinMonto": "Renovar y pagar",
+        "misPolizas": "Mis pólizas",
+        "volverPolizas": "Volver a mis pólizas",
+        "certificado": "Descargar certificado renovado",
+        "reintentar": "Reintentar"
+      },
+      "recotizada": {
+        "titulo": "Condiciones recotizadas",
+        "texto": "Recotizamos con tu perfil actualizado y el valor asegurado vigente.",
+        "textoConDescuento": "Recotizamos con tu perfil actualizado: cero siniestros en el año (descuento del {{descuento}} %) y el valor asegurado vigente."
+      },
+      "sinRecotizar": {
+        "titulo": "Mantenemos tus condiciones",
+        "texto": "No pudimos recotizar en este momento, así que renovamos con las condiciones de tu póliza vigente."
+      },
+      "condiciones": {
+        "titulo": "Condiciones de tu renovación",
+        "condicion": "Condición",
+        "vigente": "Vigencia actual",
+        "renovacion": "Renovación (recotizada)",
+        "prima": "Prima",
+        "vigencia": "Vigencia",
+        "valorAsegurado": "Valor asegurado",
+        "descuento": "Descuento por buena experiencia",
+        "descuentoAplicado": "{{descuento}} % aplicado",
+        "coberturas": "Coberturas",
+        "sinCambios": "Sin cambios"
+      },
+      "coberturas": {
+        "death": "Fallecimiento del asegurado",
+        "total_permanent_disability": "Incapacidad total y permanente"
+      },
+      "prima": {
+        "titulo": "Nueva prima",
+        "desde": "Desde el {{fecha}} · {{meses}} meses"
+      },
+      "siNoRenuevas": {
+        "titulo": "Si no renuevas",
+        "texto": "La cobertura termina el {{fecha}}. Después de esa fecha la opción de renovar deja de estar disponible y tendrás que cotizar de nuevo."
+      },
+      "cobro": {
+        "titulo": "Cobro y emisión",
+        "texto": "La renovación reutiliza el flujo de emisión: cobramos la prima con el medio registrado, emitimos el certificado renovado y te notificamos, sin interrupción de la cobertura.",
+        "medioPago": "Medio de pago",
+        "sinMedio": "Sin medio registrado: lo indicarás al pagar",
+        "primerCobro": "Cobro",
+        "alConfirmar": "Al confirmar · {{monto}}",
+        "certificado": "Certificado renovado",
+        "certificadoDisponible": "Disponible al confirmarse el pago",
+        "acepto": "Acepto las condiciones renovadas y autorizo el cobro con el medio de pago registrado."
+      },
+      "medio": {
+        "tarjeta": "{{marca}} •••• {{ultimos}}",
+        "pse": "PSE"
+      },
+      "fueraDeVentana": {
+        "titulo": "La renovación no está disponible",
+        "texto": "Esta póliza no está dentro de su ventana de renovación. La opción de renovar se habilita unos días antes de que termine la cobertura y deja de estar disponible cuando termina."
+      },
+      "estados": {
+        "procesando": {
+          "subtitulo": "{{id}} · Estamos procesando tu pago",
+          "titulo": "Estamos cobrando tu renovación",
+          "texto": "Recibimos tu aceptación y estamos cobrando {{monto}}. No cierres esta pantalla: se actualiza sola."
+        },
+        "capturando": {
+          "subtitulo": "{{id}} · Falta el medio de pago",
+          "titulo": "Indícanos con qué pagar",
+          "texto": "Aceptaste la renovación, pero no hay un medio de pago registrado. Entrégalo antes del {{hasta}} para cobrar {{monto}}."
+        },
+        "rechazado": {
+          "subtitulo": "{{id}} · El pago fue rechazado",
+          "titulo": "Tu pago fue rechazado",
+          "texto": "Tu solicitud de renovación sigue guardada. Prueba con otro medio de pago antes del {{hasta}}; no necesitas crear otra solicitud. Operaciones también puede ver este caso."
+        },
+        "excepcion": {
+          "subtitulo": "{{id}} · Renovación en revisión",
+          "titulo": "Estamos revisando tu renovación",
+          "texto": "No pudimos completar el cobro, pero tu solicitud no se perdió: el equipo de operaciones la está revisando y te avisaremos."
+        },
+        "noRenovadaSinRespuesta": {
+          "subtitulo": "{{id}} · Póliza no renovada",
+          "titulo": "Tu póliza no se renovó",
+          "texto": "No recibimos tu respuesta antes de que cerrara la ventana de renovación, así que la cobertura finalizó. Puedes cotizar de nuevo con un asesor."
+        },
+        "noRenovadaPago": {
+          "subtitulo": "{{id}} · Póliza no renovada",
+          "titulo": "Tu póliza no se renovó",
+          "texto": "El pago no se completó dentro del plazo y la cobertura finalizó. Puedes cotizar de nuevo con un asesor."
+        }
+      },
+      "otroMedio": {
+        "titulo": "Prueba con otro medio de pago",
+        "tituloEntregar": "Entrega tu medio de pago"
+      },
+      "solicitud": {
+        "titulo": "Tu solicitud",
+        "aceptadaEl": "Aceptada el"
+      },
+      "confirmada": {
+        "titulo": "Renovación confirmada",
+        "subtitulo": "Renovada el {{fecha}} · Póliza {{id}}",
+        "avisoTitulo": "Renovación confirmada",
+        "avisoTexto": "El cobro de {{monto}} quedó confirmado y la cobertura continúa sin interrupción desde el {{desde}}. El certificado renovado está disponible y también lo enviamos a tu correo.",
+        "detalle": "Detalle de la renovación",
+        "nuevaPrima": "Nueva prima",
+        "vigenciaRenovada": "Vigencia renovada",
+        "descuentoAplicado": "{{descuento}} % por buena experiencia",
+        "estadoPago": "Estado del pago",
+        "pagado": "Pagado",
+        "estadoPoliza": "Estado de la póliza",
+        "estado": "Estado",
+        "activaRenovada": "Activa · renovada",
+        "polizaNueva": "Póliza renovada",
+        "proximaRenovacion": "Próxima renovación",
+        "descuento": "Descuento aplicado"
+      },
+      "errores": {
+        "aceptoRequerido": "Para renovar debes aceptar las condiciones renovadas y autorizar el cobro.",
+        "invalid_request": "No pudimos procesar la solicitud. Intenta de nuevo.",
+        "policy_not_found": "No encontramos la póliza.",
+        "renewal_not_found": "Esta póliza aún no tiene una renovación.",
+        "renewal_not_available": "Esta póliza ya no está en su ventana de renovación.",
+        "renewal_closed": "La renovación de este periodo ya tiene un resultado.",
+        "renewal_unavailable": "No pudimos procesar la renovación. Intenta de nuevo en unos momentos; tu solicitud no se pierde.",
+        "plazoVencido": "El plazo para pagar la renovación terminó."
+      },
+      "noEncontrada": {
+        "titulo": "No encontramos la póliza",
+        "texto": "Revisa que el enlace sea correcto o vuelve a tus pólizas."
+      },
+      "errorCarga": {
+        "titulo": "No pudimos cargar la renovación",
+        "texto": "Intenta de nuevo en unos momentos."
+      }
     }
   },
   "siniestros": {

@@ -1,0 +1,189 @@
+// A1 · Mis pólizas: resumen, aviso de la póliza por vencer y tabla de pólizas con su entrada a renovar.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espacio-8);
+  }
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.pagina__subtitulo {
+  max-width: 640px;
+  margin: var(--espacio-8) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-16);
+}
+
+.resumen__tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  box-shadow: none;
+}
+
+.resumen__etiqueta {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.resumen__cifra {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-700);
+}
+
+.resumen__cifra--aviso {
+  color: var(--color-advertencia-700, #92400e);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+
+  .campo {
+    min-width: 200px;
+  }
+}
+
+.filtros__contador {
+  margin: 0;
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.tabla-envoltorio {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    border-bottom: 1px solid var(--color-borde, #e5e7eb);
+    text-align: start;
+    vertical-align: middle;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.tabla__poliza {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+
+  .texto-suave {
+    font-weight: 400;
+  }
+}
+
+.tabla__numero {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.tabla__accion {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.enlace {
+  color: var(--color-azul-700);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.texto-suave {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-8);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.estado-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  max-width: 560px;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

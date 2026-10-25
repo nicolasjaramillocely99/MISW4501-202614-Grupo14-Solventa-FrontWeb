@@ -165,6 +165,23 @@ existía). Cliente: `OriginacionApiService.listarEmisiones`, `listarAccionesEmis
 - E2E: `e2e/flujos/originacion/monitoreo-emisiones.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en la lista y
   con el diálogo abierto).
 
+**Mis pólizas y renovación en línea (HU-W1.5-02)** — `polizas/mis-polizas.page.ts` (`MisPolizasPage`, A1 mínimo) y
+`renovaciones/renovar-poliza.page.ts` (`RenovarPolizaPage`, A4 / A4b), rutas `/originacion/polizas` y `/originacion/polizas/:id/renovar` en
+`originacion.routes.ts` (`rolGuard('asegurado')`). Contrato: `docs/contratos/HU-W1.5-02-api.md` del backend (`openapi.yaml` v0.12.0).
+Cliente: `core/api/originacion/renovacion.modelos.ts` y los métodos `listarPolizas`, `consultarCondicionesRenovacion`, `renovarPoliza` y
+`consultarEstadoRenovacion` de `OriginacionApiService`. La pantalla consulta primero la renovación del periodo; si no existe muestra las
+condiciones **vigentes junto a las recotizadas antes de aceptar**; fuera de la ventana el botón queda deshabilitado y la lista no ofrece
+renovar. «Renovar y pagar» pide la casilla de consentimiento, acepta (idempotente en el backend) y sigue el cobro cada 2 s hasta A4b. Con el pago
+rechazado la solicitud se conserva y se reutiliza `FormularioMedioPagoComponent` (E4/E4c) para entregar otro medio al mismo cobro
+(`POST /v1/acceptances/{id}/charge/payment-method`) hasta `retry_until`; sin respuesta o con el pago sin resolver el estado es «no renovada».
+- Se contrastó con las capturas de A1, A4 y A4b del prototipo. Diferencias: **sin el botón «Hablar con un asesor»** (no hay canal de contacto en el
+  sistema), **sin la fila de deducible** (el contrato no la trae), título genérico «Renovar póliza» (no hay producto) y el cobro se hace **al
+  aceptar**, como pide el criterio 2 (A4b lo muestra «programado» para el fin de la vigencia). En A1 faltan el producto, el filtro por producto, la
+  tarjeta de siniestros en curso, las pólizas canceladas («Cancelada», «No pago») y «Ver detalle» (A2, HU-W1.6-02), que no existen en el contrato.
+- **No hay mockup** de «fuera de la ventana», «pago rechazado», «sin medio de pago» ni «no renovada» (la wiki ya lo anotaba): se diseñaron desde los
+  criterios con los mismos componentes de A4.
+- E2E: `e2e/flujos/cotizacion-emision/renovacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
+
 ## Cómo trabajar una historia de este dominio
 
 1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HU-W1.1-01-<descripcion-en-ingles>`).
