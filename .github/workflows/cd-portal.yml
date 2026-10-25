@@ -1,12 +1,17 @@
 name: CD · Portal web · staging
 
-# Publica el portal en staging (S3 + CloudFront) bajo demanda, desde develop (T5). Lo despacha
-# scripts/environment/up.sh staging del repositorio backend (gh workflow run) o una persona desde GitHub.
-# No hay CD hacia main ni hacia production-demo: lo hace el pipeline de main (#68); production-demo se publica con
-# scripts/publicar-portal.sh desde un build local de main (scripts/environment/up.sh production-demo).
-# Sin llaves guardadas en GitHub: el job asume por OIDC el rol de staging, que solo confía en develop.
+# Publica el portal en staging (S3 + CloudFront), igual que el CD del backend (backend-cd):
+#   - merge a main: automático;
+#   - develop (o main): bajo demanda, desde GitHub o con scripts/environment/up.sh staging del backend
+#     (gh workflow run).
+# Si staging está apagado, el rol OIDC no existe (down.sh destruye staging/web): avisa y termina en verde, sin
+# compilar. production-demo no se publica aquí: lo hace scripts/environment/up.sh production-demo del backend con
+# scripts/publicar-portal.sh desde un build local de main.
+# Sin llaves guardadas en GitHub: el job asume por OIDC el rol de staging, que confía en develop y main.
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       ambiente:
@@ -29,35 +34,51 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Solo desde develop
-        if: github.ref != 'refs/heads/develop'
+      - name: Solo desde develop o main
+        if: github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/main'
         run: |
-          echo "::error::cd-portal.yml publica staging solo desde develop (rama actual: ${GITHUB_REF})."
+          echo "::error::cd-portal.yml publica staging solo desde develop o main (rama actual: ${GITHUB_REF})."
           exit 1
 
+      # Primero las credenciales: si staging está apagado no tiene sentido compilar.
+      - name: Credenciales de AWS (OIDC, rol de staging)
+        id: credenciales
+        continue-on-error: true
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::368083581678:role/solventa-github-actions-web-stg
+          aws-region: us-east-2
+
+      - name: Staging apagado
+        if: steps.credenciales.outcome == 'failure'
+        run: |
+          mensaje="No se pudo asumir el rol de staging: staging está apagado (se enciende con scripts/environment/up.sh staging del backend) o su rol no confía en la rama ${GITHUB_REF_NAME}. No se publicó nada."
+          echo "::notice::${mensaje}"
+          { echo "### Portal no publicado"; echo "${mensaje}"; } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Código fuente
+        if: steps.credenciales.outcome == 'success'
         uses: actions/checkout@v4
 
       - name: Node.js
+        if: steps.credenciales.outcome == 'success'
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: npm 11
+        if: steps.credenciales.outcome == 'success'
         run: npm install -g npm@11
 
       - name: Dependencias
+        if: steps.credenciales.outcome == 'success'
         run: npm ci
 
       - name: Build de producción
+        if: steps.credenciales.outcome == 'success'
         run: npm run build -- --configuration production
 
-      - name: Credenciales de AWS (OIDC, rol de staging)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::368083581678:role/solventa-github-actions-web-stg
-          aws-region: us-east-2
-
       - name: Publicar en S3 y refrescar CloudFront
+        if: steps.credenciales.outcome == 'success'
         run: bash scripts/publicar-portal.sh staging
