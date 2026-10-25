@@ -1352,5 +1352,112 @@
         "desdeApp": "Filed from the app"
       }
     }
+  },
+  "auditoria": {
+    "registro": {
+      "busqueda": {
+        "titulo": "Audit record",
+        "descripcion": "Reconstruct which data and rating rules set the price and the decision of an underwriting.",
+        "seccion": "Search for a policy",
+        "campo": "Policy identifier",
+        "ejemplo": "off-0123456789abcdef",
+        "ayuda": "Letters, numbers, hyphen and underscore.",
+        "buscar": "Search",
+        "buscando": "Searching…",
+        "errores": {
+          "requerido": "Enter the policy identifier.",
+          "invalido": "The identifier only accepts letters, numbers, hyphen and underscore (up to 128 characters)."
+        },
+        "sinResultados": {
+          "titulo": "No results",
+          "texto": "No audit record was found for “{{ id }}”. Check the identifier and try again."
+        },
+        "error": {
+          "titulo": "We could not look up the record",
+          "texto": "The audit service did not respond. Try again in a few minutes."
+        }
+      },
+      "detalle": {
+        "volver": "Back to the search",
+        "cargando": "Loading the record…",
+        "titulo": "Policy {{ id }}",
+        "soloLectura": "Read-only record: no data can be changed.",
+        "reintentar": "Try again",
+        "error": {
+          "titulo": "We could not load the record",
+          "texto": "The audit service did not respond. Try again."
+        },
+        "solicitud": {
+          "titulo": "Underwriting request",
+          "fecha": "Request date and time",
+          "motor": "Rating engine version",
+          "canal": "Channel",
+          "cliente": "Customer",
+          "aliado": "Partner",
+          "solicitud": "Partner request"
+        },
+        "fuentes": {
+          "titulo": "Data sources consulted",
+          "fuente": "Source",
+          "estado": "Result",
+          "latencia": "Response time",
+          "milisegundos": "{{ ms }} ms",
+          "vacio": "No external source was consulted."
+        },
+        "perfil": "Resulting profile: score {{ puntaje }}, category {{ categoria }}.",
+        "perfilParcial": "The profile is partial because a source did not respond.",
+        "reglas": {
+          "titulo": "Rating rules applied",
+          "orden": "Order",
+          "regla": "Rule",
+          "valor": "Output value"
+        },
+        "resultado": {
+          "titulo": "Outcome",
+          "prima": "Calculated premium",
+          "decision": "Final decision",
+          "motivo": "Reason",
+          "registradaEn": "Recorded in audit"
+        }
+      },
+      "decisiones": {
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "deferred": "Deferred"
+      },
+      "canales": {
+        "embedded": "Embedded",
+        "assisted": "Advisor-assisted"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "estadosFuente": {
+        "ok": "Responded",
+        "timeout": "No response in time",
+        "error": "Responded with an error",
+        "circuit_open": "Isolated by the circuit breaker"
+      },
+      "categorias": {
+        "preferred": "preferred",
+        "standard": "standard",
+        "high_risk": "high risk",
+        "base_actuarial": "base actuarial"
+      },
+      "reglas": {
+        "base_monthly_rate": "Base monthly rate",
+        "age_factor": "Age factor",
+        "risk_factor": "Risk factor",
+        "term_factor": "Term factor",
+        "rounding_step": "Rounding step"
+      },
+      "motivos": {
+        "cached_profile": "The last saved profile was used because a source did not respond",
+        "base_actuarial_profile": "The base actuarial profile was used because a source did not respond",
+        "provisional_offer": "Provisional offer until the source is back"
+      }
+    }
   }
 }

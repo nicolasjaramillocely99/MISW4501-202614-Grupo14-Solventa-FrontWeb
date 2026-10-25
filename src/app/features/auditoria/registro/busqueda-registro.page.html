@@ -1,0 +1,52 @@
+<div class="pagina" *transloco="let t; prefix: 'auditoria.registro'">
+  <header class="pagina__encabezado">
+    <h1 class="pagina__titulo">{{ t('busqueda.titulo') }}</h1>
+    <p class="pagina__descripcion">{{ t('busqueda.descripcion') }}</p>
+  </header>
+
+  <section class="tarjeta" aria-labelledby="titulo-busqueda">
+    <h2 id="titulo-busqueda" class="seccion__titulo">{{ t('busqueda.seccion') }}</h2>
+    <form class="busqueda" [formGroup]="formulario" (ngSubmit)="buscar()" novalidate>
+      <div class="campo">
+        <label class="campo__etiqueta" for="identificador">{{ t('busqueda.campo') }}</label>
+        <input
+          id="identificador"
+          class="campo__control"
+          type="text"
+          formControlName="identificador"
+          autocomplete="off"
+          [placeholder]="t('busqueda.ejemplo')"
+          [attr.aria-invalid]="errorDeCampo() ? 'true' : null"
+          [attr.aria-describedby]="errorDeCampo() ? 'identificador-error' : 'identificador-ayuda'"
+        />
+        @if (errorDeCampo(); as error) {
+          <p id="identificador-error" class="campo__error" role="alert">{{ t('busqueda.errores.' + error) }}</p>
+        } @else {
+          <p id="identificador-ayuda" class="campo__ayuda">{{ t('busqueda.ayuda') }}</p>
+        }
+      </div>
+      <button type="submit" class="boton boton--primario" [disabled]="fase() === 'buscando'">
+        <svg lucideSearch [size]="18" aria-hidden="true"></svg>
+        {{ fase() === 'buscando' ? t('busqueda.buscando') : t('busqueda.buscar') }}
+      </button>
+    </form>
+  </section>
+
+  @switch (fase()) {
+    @case ('sinResultados') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-sin-resultados">
+        <h2 id="titulo-sin-resultados" class="seccion__titulo">{{ t('busqueda.sinResultados.titulo') }}</h2>
+        <p role="status">{{ t('busqueda.sinResultados.texto', { id: buscado() }) }}</p>
+      </section>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('busqueda.error.titulo') }}</p>
+          <p>{{ t('busqueda.error.texto') }}</p>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -6,6 +6,8 @@
 - **Shell de navegación:** portal
 - **Requiere sesión:** sí (guard de autenticación en el shell del portal; el rol se restringe por ruta)
 
+**Estado:** `registro/` implementado (HU-W4.1-01: O12/O12b búsqueda y O13 registro de auditoría, solo lectura, rol operaciones; cliente `AuditoriaApiService.consultarRegistroDecision`). `consentimientos/` sigue reservado (HU-W4.2-01/02). La exportación JSON (HU-W4.1-02) queda para su historia.
+
 ## Pantallas y dónde va cada una
 
 ### `registro/` — F4.1 · Registro de auditoría de decisiones de suscripción y pricing

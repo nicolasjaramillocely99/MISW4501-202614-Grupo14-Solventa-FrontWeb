@@ -1352,5 +1352,112 @@
         "desdeApp": "Radicado desde la app"
       }
     }
+  },
+  "auditoria": {
+    "registro": {
+      "busqueda": {
+        "titulo": "Registro de auditoría",
+        "descripcion": "Reconstruye qué datos y qué reglas de rating determinaron el precio y la decisión de una suscripción.",
+        "seccion": "Buscar una póliza",
+        "campo": "Identificador de la póliza",
+        "ejemplo": "off-0123456789abcdef",
+        "ayuda": "Letras, números, guion y guion bajo.",
+        "buscar": "Buscar",
+        "buscando": "Buscando…",
+        "errores": {
+          "requerido": "Ingresa el identificador de la póliza.",
+          "invalido": "El identificador solo admite letras, números, guion y guion bajo (máximo 128 caracteres)."
+        },
+        "sinResultados": {
+          "titulo": "Sin resultados",
+          "texto": "No se encontró un registro de auditoría para «{{ id }}». Verifica el identificador e inténtalo de nuevo."
+        },
+        "error": {
+          "titulo": "No pudimos consultar el registro",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo en unos minutos."
+        }
+      },
+      "detalle": {
+        "volver": "Volver a la búsqueda",
+        "cargando": "Cargando el registro…",
+        "titulo": "Póliza {{ id }}",
+        "soloLectura": "Registro de solo lectura: ningún dato puede modificarse.",
+        "reintentar": "Reintentar",
+        "error": {
+          "titulo": "No pudimos cargar el registro",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo."
+        },
+        "solicitud": {
+          "titulo": "Solicitud de suscripción",
+          "fecha": "Fecha y hora de la solicitud",
+          "motor": "Versión del motor de rating",
+          "canal": "Canal",
+          "cliente": "Cliente",
+          "aliado": "Aliado",
+          "solicitud": "Solicitud del aliado"
+        },
+        "fuentes": {
+          "titulo": "Fuentes de datos consultadas",
+          "fuente": "Fuente",
+          "estado": "Resultado",
+          "latencia": "Tiempo de respuesta",
+          "milisegundos": "{{ ms }} ms",
+          "vacio": "No se consultó ninguna fuente externa."
+        },
+        "perfil": "Perfil resultante: puntaje {{ puntaje }}, categoría {{ categoria }}.",
+        "perfilParcial": "El perfil es parcial porque alguna fuente no respondió.",
+        "reglas": {
+          "titulo": "Reglas de rating aplicadas",
+          "orden": "Orden",
+          "regla": "Regla",
+          "valor": "Valor de salida"
+        },
+        "resultado": {
+          "titulo": "Resultado",
+          "prima": "Prima calculada",
+          "decision": "Decisión final",
+          "motivo": "Motivo",
+          "registradaEn": "Registrada en auditoría"
+        }
+      },
+      "decisiones": {
+        "accepted": "Aceptado",
+        "rejected": "Rechazado",
+        "deferred": "Diferido"
+      },
+      "canales": {
+        "embedded": "Embebido",
+        "assisted": "Asistido por asesor"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "estadosFuente": {
+        "ok": "Respondió",
+        "timeout": "Sin respuesta a tiempo",
+        "error": "Respondió con error",
+        "circuit_open": "Aislada por el cortacircuitos"
+      },
+      "categorias": {
+        "preferred": "preferente",
+        "standard": "estándar",
+        "high_risk": "alto riesgo",
+        "base_actuarial": "actuarial base"
+      },
+      "reglas": {
+        "base_monthly_rate": "Tasa mensual base",
+        "age_factor": "Factor por edad",
+        "risk_factor": "Factor por riesgo",
+        "term_factor": "Factor por plazo",
+        "rounding_step": "Paso de redondeo"
+      },
+      "motivos": {
+        "cached_profile": "Se usó el último perfil guardado porque una fuente no respondió",
+        "base_actuarial_profile": "Se usó el perfil actuarial base porque una fuente no respondió",
+        "provisional_offer": "Oferta provisional hasta que la fuente vuelva"
+      }
+    }
   }
 }

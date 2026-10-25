@@ -1,0 +1,154 @@
+<div class="pagina" *transloco="let t; prefix: 'auditoria.registro'">
+  <a class="volver" routerLink="/auditoria/registro">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('detalle.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="pagina__titulo">{{ t('busqueda.sinResultados.titulo') }}</h1>
+        <p role="status">{{ t('busqueda.sinResultados.texto', { id: id() }) }}</p>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('detalle.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('detalle.error.texto') }}</p>
+        </div>
+        <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('detalle.reintentar') }}</button>
+      </section>
+    }
+    @case ('listo') {
+      @if (registro(); as r) {
+        <header class="encabezado">
+          <div class="encabezado__fila">
+            <h1 class="pagina__titulo">{{ t('detalle.titulo', { id: r.ofertaId }) }}</h1>
+            <app-insignia-estado [tono]="tonoDe(r.decision)">{{ t('decisiones.' + r.decision) }}</app-insignia-estado>
+          </div>
+          <p class="solo-lectura">
+            <svg lucideLock [size]="16" aria-hidden="true"></svg>{{ t('detalle.soloLectura') }}
+          </p>
+        </header>
+
+        <section class="tarjeta" aria-labelledby="titulo-solicitud">
+          <h2 id="titulo-solicitud" class="seccion__titulo">{{ t('detalle.solicitud.titulo') }}</h2>
+          <dl class="datos">
+            <div>
+              <dt>{{ t('detalle.solicitud.fecha') }}</dt>
+              <dd>{{ r.solicitadaEn | formatoFechaHora: 'fechaHoraZona' }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.solicitud.motor') }}</dt>
+              <dd>{{ r.versionMotor }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.solicitud.canal') }}</dt>
+              <dd>{{ t('canales.' + r.canal) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.solicitud.cliente') }}</dt>
+              <dd>{{ r.clienteId }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.solicitud.aliado') }}</dt>
+              <dd>{{ r.aliadoId }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.solicitud.solicitud') }}</dt>
+              <dd>{{ r.solicitudId }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="titulo-fuentes">
+          <h2 id="titulo-fuentes" class="seccion__titulo">{{ t('detalle.fuentes.titulo') }}</h2>
+          <div class="tabla-contenedor">
+            <table class="tabla">
+              <caption class="visualmente-oculto">{{ t('detalle.fuentes.titulo') }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('detalle.fuentes.fuente') }}</th>
+                  <th scope="col">{{ t('detalle.fuentes.estado') }}</th>
+                  <th scope="col">{{ t('detalle.fuentes.latencia') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (f of r.fuentes; track f.fuente) {
+                  <tr>
+                    <td>{{ t('fuentes.' + f.fuente) }}</td>
+                    <td>{{ t('estadosFuente.' + f.estado) }}</td>
+                    <td>{{ t('detalle.fuentes.milisegundos', { ms: f.latenciaMs }) }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="3">{{ t('detalle.fuentes.vacio') }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="nota">
+            {{ t('detalle.perfil', { puntaje: r.perfil.puntaje, categoria: t('categorias.' + r.perfil.categoria) }) }}
+            @if (r.perfil.parcial) {
+              {{ t('detalle.perfilParcial') }}
+            }
+          </p>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="titulo-reglas">
+          <h2 id="titulo-reglas" class="seccion__titulo">{{ t('detalle.reglas.titulo') }}</h2>
+          <div class="tabla-contenedor">
+            <table class="tabla">
+              <caption class="visualmente-oculto">{{ t('detalle.reglas.titulo') }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('detalle.reglas.orden') }}</th>
+                  <th scope="col">{{ t('detalle.reglas.regla') }}</th>
+                  <th scope="col">{{ t('detalle.reglas.valor') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (regla of r.reglas; track regla.orden) {
+                  <tr>
+                    <td>{{ regla.orden }}</td>
+                    <td>{{ t('reglas.' + regla.codigo) }}</td>
+                    <td>{{ regla.valor }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="titulo-resultado">
+          <h2 id="titulo-resultado" class="seccion__titulo">{{ t('detalle.resultado.titulo') }}</h2>
+          <dl class="datos">
+            <div>
+              <dt>{{ t('detalle.resultado.prima') }}</dt>
+              <dd class="datos__destacado">{{ r.prima | formatoMoneda: r.moneda }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.resultado.decision') }}</dt>
+              <dd>{{ t('decisiones.' + r.decision) }}</dd>
+            </div>
+            @if (r.motivo) {
+              <div>
+                <dt>{{ t('detalle.resultado.motivo') }}</dt>
+                <dd>{{ t('motivos.' + r.motivo) }}</dd>
+              </div>
+            }
+            <div>
+              <dt>{{ t('detalle.resultado.registradaEn') }}</dt>
+              <dd>{{ r.registradaEn | formatoFechaHora: 'fechaHoraZona' }}</dd>
+            </div>
+          </dl>
+        </section>
+      }
+    }
+  }
+</div>

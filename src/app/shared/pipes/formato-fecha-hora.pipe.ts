@@ -1,8 +1,8 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 
-/** `fechaHora`: «16/09/2026, 14:05»; `hora`: «14:05». */
-export type ModoFechaHora = 'fechaHora' | 'hora';
+/** `fechaHora`: «16/09/2026, 14:05»; `hora`: «14:05»; `fechaHoraZona`: «16/09/2026, 14:05:09 GMT-5». */
+export type ModoFechaHora = 'fechaHora' | 'hora' | 'fechaHoraZona';
 
 const OPCIONES: Readonly<Record<ModoFechaHora, Intl.DateTimeFormatOptions>> = {
   fechaHora: {
@@ -14,6 +14,16 @@ const OPCIONES: Readonly<Record<ModoFechaHora, Intl.DateTimeFormatOptions>> = {
     hourCycle: 'h23',
   },
   hora: { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' },
+  fechaHoraZona: {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+    timeZoneName: 'short',
+  },
 };
 
 /**
