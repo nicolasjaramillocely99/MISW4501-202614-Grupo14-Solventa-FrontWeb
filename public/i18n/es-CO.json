@@ -1,6 +1,6 @@
 {
   "app": {
-    "nombre": "Solventa"
+    "nombre": "Solventa Prueba Pipeline CD Front"
   },
   "comun": {
     "cargando": "Cargando…",
