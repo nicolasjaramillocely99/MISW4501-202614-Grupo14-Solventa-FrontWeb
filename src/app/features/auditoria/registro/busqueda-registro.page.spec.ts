@@ -1,5 +1,5 @@
 import { provideRouter, Router } from '@angular/router';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { REGISTRO_DECISION_DTO } from '@testing/decision-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
@@ -45,7 +45,7 @@ describe('BusquedaRegistroPage (O12 · HU-W4.1-01)', () => {
   it('rechaza un identificador con caracteres no admitidos', async () => {
     await renderizar();
 
-    await userEvent.type(screen.getByLabelText('Identificador de la póliza'), 'off 1/2');
+    await userEvent.type(screen.getByLabelText('Identificador de póliza'), 'off 1/2');
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
 
     expect((screen.getByRole('alert')).textContent).toContain('solo admite letras');
@@ -55,7 +55,7 @@ describe('BusquedaRegistroPage (O12 · HU-W4.1-01)', () => {
   it('con un identificador existente guarda el registro y abre su pantalla (CA-1)', async () => {
     const { navegar } = await renderizar();
 
-    await userEvent.type(screen.getByLabelText('Identificador de la póliza'), '  off-4f2a9c ');
+    await userEvent.type(screen.getByLabelText('Identificador de póliza'), '  off-4f2a9c ');
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
 
     expect(consultar).toHaveBeenCalledWith('off-4f2a9c');
@@ -66,18 +66,40 @@ describe('BusquedaRegistroPage (O12 · HU-W4.1-01)', () => {
   it('muestra «sin resultados» sin datos internos cuando no existe (CA-2)', async () => {
     const { navegar } = await renderizar(falla('decision_not_found'));
 
-    await userEvent.type(screen.getByLabelText('Identificador de la póliza'), 'off-nada');
+    await userEvent.type(screen.getByLabelText('Identificador de póliza'), 'off-nada');
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
 
-    expect(await screen.findByRole('heading', { name: 'Sin resultados' })).toBeTruthy();
-    expect((screen.getByRole('status')).textContent).toContain('No se encontró un registro de auditoría para «off-nada»');
+    expect(await screen.findByRole('heading', { name: 'No encontramos resultados para off-nada' })).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toContain('Por seguridad no se muestra información interna del sistema.');
     expect(navegar).not.toHaveBeenCalled();
+  });
+
+  it('«Limpiar búsqueda» vacía el campo y vuelve al estado inicial (O12b)', async () => {
+    await renderizar(falla('decision_not_found'));
+    const campo = screen.getByLabelText('Identificador de póliza') as HTMLInputElement;
+    await userEvent.type(campo, 'off-nada');
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Limpiar búsqueda' }));
+
+    expect(campo.value).toBe('');
+    expect(screen.queryByRole('status')).toBeNull();
+  });
+
+  it('lista lo que incluye el registro y acepta número de oferta o de solicitud (O12)', async () => {
+    await renderizar();
+
+    expect(screen.getByRole('heading', { name: 'Auditoría de suscripción', level: 1 })).toBeTruthy();
+    expect(screen.getByText(/También acepta el número de oferta/)).toBeTruthy();
+    const incluye = within(screen.getByRole('complementary', { name: 'Qué incluye el registro' }));
+    expect(incluye.getAllByRole('listitem')).toHaveLength(5);
+    expect(incluye.getByText(/el valor devuelto por cada una/)).toBeTruthy();
   });
 
   it('avisa cuando el servicio no responde y deja reintentar', async () => {
     await renderizar(falla('service_unavailable'));
 
-    await userEvent.type(screen.getByLabelText('Identificador de la póliza'), 'off-1');
+    await userEvent.type(screen.getByLabelText('Identificador de póliza'), 'off-1');
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
 
     expect((await screen.findByRole('alert')).textContent).toContain('No pudimos consultar el registro');
@@ -87,10 +109,10 @@ describe('BusquedaRegistroPage (O12 · HU-W4.1-01)', () => {
   it('no muestra aviso propio ante un 401 o 403, que resuelve el interceptor', async () => {
     await renderizar(falla('forbidden'));
 
-    await userEvent.type(screen.getByLabelText('Identificador de la póliza'), 'off-1');
+    await userEvent.type(screen.getByLabelText('Identificador de póliza'), 'off-1');
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
 
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(screen.queryByText('Sin resultados')).toBeNull();
+    expect(screen.queryByText(/No encontramos resultados/)).toBeNull();
   });
 });

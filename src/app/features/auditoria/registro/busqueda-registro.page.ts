@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { LucideCircleAlert, LucideSearch } from '@lucide/angular';
+import { LucideCircleAlert, LucideCircleCheck, LucideSearch } from '@lucide/angular';
 
 import { AuditoriaApiService } from '@core/api/auditoria/auditoria-api.service';
 import { ErrorDecision } from '@core/api/auditoria/decision.modelos';
@@ -18,8 +18,8 @@ const LONGITUD_MAXIMA = 128;
 const PATRON_IDENTIFICADOR = /^[A-Za-z0-9_-]+$/;
 
 /**
- * O12 / O12b · Auditoría: búsqueda por identificador (HU-W4.1-01). El analista de operaciones ingresa el
- * identificador de la póliza (la oferta que originó la decisión) y, si existe, pasa al registro de auditoría (O13).
+ * O12 / O12b · Auditoría de suscripción: búsqueda por identificador (HU-W4.1-01). El analista de operaciones ingresa el
+ * identificador de la póliza (el de la oferta o el número de solicitud del aliado) y, si existe, pasa al registro (O13).
  * Un identificador sin registro muestra «sin resultados» con un mensaje claro, sin datos internos (CA-2); una falla del
  * servicio permite reintentar. La pantalla es de solo lectura.
  *
@@ -27,7 +27,7 @@ const PATRON_IDENTIFICADOR = /^[A-Za-z0-9_-]+$/;
  */
 @Component({
   selector: 'app-busqueda-registro-page',
-  imports: [ReactiveFormsModule, TranslocoDirective, LucideCircleAlert, LucideSearch],
+  imports: [ReactiveFormsModule, TranslocoDirective, LucideCircleAlert, LucideCircleCheck, LucideSearch],
   templateUrl: './busqueda-registro.page.html',
   styleUrl: './busqueda-registro.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +45,16 @@ export class BusquedaRegistroPage {
   /** Identificador por el que se buscó, para repetirlo en el mensaje de «sin resultados». */
   protected readonly buscado = signal('');
   protected readonly intento = signal(false);
+  /** Claves de lo que incluye el registro (`auditoria.registro.busqueda.incluye.*`). */
+  protected readonly incluye = ['fecha', 'motor', 'fuentes', 'reglas', 'prima'] as const;
+
+  /** «Limpiar búsqueda» (O12b): vacía el campo y vuelve al estado inicial. */
+  protected limpiar(): void {
+    this.formulario.reset();
+    this.intento.set(false);
+    this.buscado.set('');
+    this.fase.set('inicial');
+  }
 
   /** Clave del error de validación del campo (`requerido` o `invalido`), solo después del primer intento. */
   protected errorDeCampo(): 'requerido' | 'invalido' | null {

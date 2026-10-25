@@ -17,7 +17,7 @@ export class RegistroAuditoriaPagina {
 
   constructor(private readonly page: Page) {
     this.titulo = page.getByRole('heading', { level: 1 });
-    this.identificador = page.getByLabel('Identificador de la póliza');
+    this.identificador = page.getByLabel('Identificador de póliza');
     this.buscar = page.getByRole('button', { name: 'Buscar' });
   }
 

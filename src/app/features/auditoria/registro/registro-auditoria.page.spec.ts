@@ -40,32 +40,35 @@ describe('RegistroAuditoriaPage (O13 · HU-W4.1-01)', () => {
   it('muestra el registro completo del proceso de suscripción (CA-3)', async () => {
     await renderizar([of(REGISTRO)]);
 
-    expect(await screen.findByRole('heading', { name: 'Póliza off-4f2a9c' })).toBeTruthy();
-    expect(screen.getAllByText('Diferido')).toHaveLength(2);
+    expect(await screen.findByRole('heading', { name: 'Registro de auditoría · off-4f2a9c' })).toBeTruthy();
+    expect(screen.getByText(/Motor de rating v1 · Decisión final: Diferido/)).toBeTruthy();
+    expect(screen.getByText('Solo lectura')).toBeTruthy();
     // Fecha y hora de la solicitud con zona horaria, y versión del motor de rating.
-    const solicitud = within(screen.getByRole('region', { name: 'Solicitud de suscripción' }));
-    expect(solicitud.getByText('Fecha y hora de la solicitud')).toBeTruthy();
-    expect(solicitud.getByText(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} (GMT|UTC)/)).toBeTruthy();
-    expect(solicitud.getByText('v1')).toBeTruthy();
+    const solicitud = within(screen.getByRole('region', { name: 'Solicitud' }));
+    expect(solicitud.getByText('Fecha y hora')).toBeTruthy();
+    expect(solicitud.getByText(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2}[.,]\d{3} (GMT|UTC)/)).toBeTruthy();
+    expect(solicitud.getAllByText('v1').length).toBeGreaterThan(0);
+    expect(solicitud.getByText('cns-7d1e')).toBeTruthy();
     // Fuentes consultadas con su resultado.
     const fuentes = within(screen.getByRole('table', { name: 'Fuentes de datos consultadas' }));
-    expect(fuentes.getByRole('row', { name: /Open Finance Respondió 85 ms/ })).toBeTruthy();
-    expect(fuentes.getByRole('row', { name: /KYC Sin respuesta a tiempo 700 ms/ })).toBeTruthy();
+    expect(fuentes.getByRole('row', { name: /Open Finance Respondió .* 85 ms Puntaje 0,82 · categoría preferente/ })).toBeTruthy();
+    expect(fuentes.getByRole('row', { name: /KYC Sin respuesta a tiempo .* 700 ms Sin valor: la fuente no respondió/ })).toBeTruthy();
     // Reglas en su orden de ejecución con el valor de salida.
-    const reglas = within(screen.getByRole('table', { name: 'Reglas de rating aplicadas' })).getAllByRole('row');
-    expect(reglas[1].textContent).toContain('1Tasa mensual base0.0011');
-    expect(reglas[2].textContent).toContain('2Factor por edad1.2');
+    const reglas = within(screen.getByRole('table', { name: 'Reglas de rating aplicadas (en orden de ejecución)' })).getAllByRole('row');
+    expect(reglas[1].textContent).toContain('1Tarifa base mensual0,0011');
+    expect(reglas[2].textContent).toContain('2Factor por edad1,2');
     // Prima, decisión y motivo.
-    const resultado = within(screen.getByRole('region', { name: 'Resultado' }));
-    expect(resultado.getByText(/120\.000/)).toBeTruthy();
+    const resultado = within(screen.getByRole('complementary', { name: 'Resultado' }));
+    expect(resultado.getByText(/120\.000 COP \/ mes/)).toBeTruthy();
+    expect(resultado.getByText('Diferido')).toBeTruthy();
     expect(resultado.getByText('Se usó el perfil actuarial base porque una fuente no respondió')).toBeTruthy();
   });
 
   it('es de solo lectura: no ofrece ningún campo ni acción de edición (CA-4)', async () => {
     await renderizar([of(REGISTRO)]);
 
-    await screen.findByRole('heading', { name: 'Póliza off-4f2a9c' });
-    expect(screen.getByText('Registro de solo lectura: ningún dato puede modificarse.')).toBeTruthy();
+    await screen.findByRole('heading', { name: 'Registro de auditoría · off-4f2a9c' });
+    expect(screen.getByText('Solo lectura')).toBeTruthy();
     expect(screen.queryByRole('textbox')).toBeNull();
     expect(screen.queryByRole('button')).toBeNull();
   });
@@ -73,14 +76,14 @@ describe('RegistroAuditoriaPage (O13 · HU-W4.1-01)', () => {
   it('usa el registro que encontró la búsqueda sin consultarlo de nuevo', async () => {
     await renderizar([], REGISTRO);
 
-    expect(await screen.findByRole('heading', { name: 'Póliza off-4f2a9c' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Registro de auditoría · off-4f2a9c' })).toBeTruthy();
     expect(consultar).not.toHaveBeenCalled();
   });
 
   it('muestra «sin resultados» si el identificador no existe', async () => {
     await renderizar([falla('decision_not_found')]);
 
-    expect(await screen.findByRole('heading', { name: 'Sin resultados' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'No encontramos resultados para off-4f2a9c' })).toBeTruthy();
   });
 
   it('permite reintentar cuando el servicio no responde', async () => {
@@ -89,7 +92,7 @@ describe('RegistroAuditoriaPage (O13 · HU-W4.1-01)', () => {
     expect((await screen.findByRole('alert')).textContent).toContain('El servicio de auditoría no respondió');
     await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
 
-    expect(await screen.findByRole('heading', { name: 'Póliza off-4f2a9c' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Registro de auditoría · off-4f2a9c' })).toBeTruthy();
     expect(consultar).toHaveBeenCalledTimes(2);
   });
 

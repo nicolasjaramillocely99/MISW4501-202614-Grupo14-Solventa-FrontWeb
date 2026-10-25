@@ -12,7 +12,23 @@ describe('modelos del registro de auditoría (HU-W4.1-01)', () => {
     expect(registro.versionMotor).toBe('v1');
     expect(registro.reglas.map((r) => r.codigo)).toEqual(['base_monthly_rate', 'age_factor']);
     expect(registro.reglas.map((r) => r.orden)).toEqual([1, 2]);
-    expect(registro.fuentes[1]).toEqual({ fuente: 'kyc', estado: 'timeout', latenciaMs: 700 });
+    expect(registro.fuentes[0]).toEqual({
+      fuente: 'open_finance',
+      estado: 'ok',
+      latenciaMs: 85,
+      consultadaEn: '2026-10-20T15:04:05.120Z',
+      puntaje: 0.82,
+      categoria: 'preferred',
+    });
+    expect(registro.fuentes[1]).toEqual({
+      fuente: 'kyc',
+      estado: 'timeout',
+      latenciaMs: 700,
+      consultadaEn: '2026-10-20T15:04:05.120Z',
+      puntaje: null,
+      categoria: '',
+    });
+    expect(registro.consentimientoId).toBe('cns-7d1e');
     expect(registro.perfil).toEqual({ puntaje: 0.4, categoria: 'standard', parcial: true });
     expect(registro.decision).toBe('deferred');
     expect(registro.motivo).toBe('base_actuarial_profile');

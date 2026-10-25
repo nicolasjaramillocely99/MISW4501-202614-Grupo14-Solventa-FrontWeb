@@ -4,49 +4,62 @@
     <p class="pagina__descripcion">{{ t('busqueda.descripcion') }}</p>
   </header>
 
-  <section class="tarjeta" aria-labelledby="titulo-busqueda">
-    <h2 id="titulo-busqueda" class="seccion__titulo">{{ t('busqueda.seccion') }}</h2>
-    <form class="busqueda" [formGroup]="formulario" (ngSubmit)="buscar()" novalidate>
-      <div class="campo">
-        <label class="campo__etiqueta" for="identificador">{{ t('busqueda.campo') }}</label>
-        <input
-          id="identificador"
-          class="campo__control"
-          type="text"
-          formControlName="identificador"
-          autocomplete="off"
-          [placeholder]="t('busqueda.ejemplo')"
-          [attr.aria-invalid]="errorDeCampo() ? 'true' : null"
-          [attr.aria-describedby]="errorDeCampo() ? 'identificador-error' : 'identificador-ayuda'"
-        />
-        @if (errorDeCampo(); as error) {
-          <p id="identificador-error" class="campo__error" role="alert">{{ t('busqueda.errores.' + error) }}</p>
-        } @else {
-          <p id="identificador-ayuda" class="campo__ayuda">{{ t('busqueda.ayuda') }}</p>
-        }
-      </div>
-      <button type="submit" class="boton boton--primario" [disabled]="fase() === 'buscando'">
-        <svg lucideSearch [size]="18" aria-hidden="true"></svg>
-        {{ fase() === 'buscando' ? t('busqueda.buscando') : t('busqueda.buscar') }}
-      </button>
-    </form>
-  </section>
-
-  @switch (fase()) {
-    @case ('sinResultados') {
-      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-sin-resultados">
-        <h2 id="titulo-sin-resultados" class="seccion__titulo">{{ t('busqueda.sinResultados.titulo') }}</h2>
-        <p role="status">{{ t('busqueda.sinResultados.texto', { id: buscado() }) }}</p>
-      </section>
-    }
-    @case ('error') {
-      <div class="aviso aviso--error" role="alert">
-        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
-        <div>
-          <p class="aviso__titulo">{{ t('busqueda.error.titulo') }}</p>
-          <p>{{ t('busqueda.error.texto') }}</p>
+  <div class="cuerpo">
+    <section class="tarjeta" aria-labelledby="titulo-busqueda">
+      <h2 id="titulo-busqueda" class="seccion__titulo">{{ t('busqueda.tarjeta') }}</h2>
+      <form class="busqueda" [formGroup]="formulario" (ngSubmit)="buscar()" novalidate>
+        <div class="campo">
+          <label class="campo__etiqueta" for="identificador">{{ t('busqueda.campo') }}</label>
+          <input
+            id="identificador"
+            class="campo__control"
+            type="text"
+            formControlName="identificador"
+            autocomplete="off"
+            [placeholder]="t('busqueda.ejemplo')"
+            [attr.aria-invalid]="errorDeCampo() ? 'true' : null"
+            [attr.aria-describedby]="errorDeCampo() ? 'identificador-error' : 'identificador-ayuda'"
+          />
+          @if (errorDeCampo(); as error) {
+            <p id="identificador-error" class="campo__error" role="alert">{{ t('busqueda.errores.' + error) }}</p>
+          } @else {
+            <p id="identificador-ayuda" class="campo__ayuda">{{ t('busqueda.ayuda') }}</p>
+          }
         </div>
-      </div>
-    }
-  }
+        <button type="submit" class="boton boton--primario" [disabled]="fase() === 'buscando'">
+          <svg lucideSearch [size]="18" aria-hidden="true"></svg>
+          {{ fase() === 'buscando' ? t('busqueda.buscando') : t('busqueda.buscar') }}
+        </button>
+      </form>
+
+      @switch (fase()) {
+        @case ('sinResultados') {
+          <div class="vacio" role="status">
+            <span class="vacio__icono" aria-hidden="true"><svg lucideSearch [size]="28"></svg></span>
+            <h3 class="vacio__titulo">{{ t('busqueda.sinResultados.titulo', { id: buscado() }) }}</h3>
+            <p class="vacio__texto">{{ t('busqueda.sinResultados.texto') }}</p>
+            <button type="button" class="boton boton--secundario" (click)="limpiar()">{{ t('busqueda.sinResultados.limpiar') }}</button>
+          </div>
+        }
+        @case ('error') {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('busqueda.error.titulo') }}</p>
+              <p>{{ t('busqueda.error.texto') }}</p>
+            </div>
+          </div>
+        }
+      }
+    </section>
+
+    <aside class="tarjeta incluye" aria-labelledby="titulo-incluye">
+      <h2 id="titulo-incluye" class="seccion__titulo">{{ t('busqueda.incluye.titulo') }}</h2>
+      <ul class="incluye__lista">
+        @for (clave of incluye; track clave) {
+          <li><svg lucideCircleCheck [size]="16" aria-hidden="true"></svg>{{ t('busqueda.incluye.' + clave) }}</li>
+        }
+      </ul>
+    </aside>
+  </div>
 </div>

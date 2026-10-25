@@ -6,12 +6,13 @@ export const REGISTRO_DECISION_DTO: RegistroDecisionDto = {
   customer_id: 'cliente-0001',
   partner_id: 'aliado-banco-1',
   application_id: '48213',
+  consent_id: 'cns-7d1e',
   channel: 'embedded',
   requested_at: '2026-10-20T15:04:05Z',
   rater_version: 'v1',
   sources: [
-    { source: 'open_finance', status: 'ok', latency_ms: 85 },
-    { source: 'kyc', status: 'timeout', latency_ms: 700 },
+    { source: 'open_finance', status: 'ok', latency_ms: 85, consulted_at: '2026-10-20T15:04:05.120Z', score: 0.82, category: 'preferred' },
+    { source: 'kyc', status: 'timeout', latency_ms: 700, consulted_at: '2026-10-20T15:04:05.120Z', score: null, category: '' },
   ],
   profile: { score: 0.4, category: 'standard', partial: true },
   rules: [

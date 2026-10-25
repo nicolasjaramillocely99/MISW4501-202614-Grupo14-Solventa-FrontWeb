@@ -15,6 +15,12 @@ export interface FuenteConsultada {
   /** `ok`, `timeout`, `error` o `circuit_open`. */
   estado: string;
   latenciaMs: number;
+  /** Instante en que se pidió el dato a la fuente (RFC 3339, UTC); `null` si no se registró. */
+  consultadaEn: string | null;
+  /** Puntaje de riesgo que devolvió la fuente (0–1); `null` si no respondió. */
+  puntaje: number | null;
+  /** Categoría que devolvió la fuente; vacía si no respondió. */
+  categoria: string;
 }
 
 export interface ReglaAplicada {
@@ -29,6 +35,8 @@ export interface RegistroDecision {
   clienteId: string;
   aliadoId: string;
   solicitudId: string;
+  /** Consentimiento con el que se consultaron las fuentes; vacío si no se registró. */
+  consentimientoId: string;
   canal: string;
   /** Instante de la solicitud (RFC 3339, UTC). */
   solicitadaEn: string;
@@ -49,10 +57,18 @@ export interface RegistroDecisionDto {
   customer_id: string;
   partner_id: string;
   application_id: string;
+  consent_id?: string;
   channel: string;
   requested_at: string;
   rater_version: string;
-  sources: { source: string; status: string; latency_ms: number }[];
+  sources: {
+    source: string;
+    status: string;
+    latency_ms: number;
+    consulted_at?: string | null;
+    score?: number | null;
+    category?: string;
+  }[];
   profile: { score: number; category: string; partial: boolean };
   rules: { order: number; code: string; value: number }[];
   premium: number;
@@ -68,10 +84,18 @@ export function mapearRegistroDecision(dto: RegistroDecisionDto): RegistroDecisi
     clienteId: dto.customer_id,
     aliadoId: dto.partner_id,
     solicitudId: dto.application_id,
+    consentimientoId: dto.consent_id ?? '',
     canal: dto.channel,
     solicitadaEn: dto.requested_at,
     versionMotor: dto.rater_version,
-    fuentes: dto.sources.map((f) => ({ fuente: f.source, estado: f.status, latenciaMs: f.latency_ms })),
+    fuentes: dto.sources.map((f) => ({
+      fuente: f.source,
+      estado: f.status,
+      latenciaMs: f.latency_ms,
+      consultadaEn: f.consulted_at ?? null,
+      puntaje: f.score ?? null,
+      categoria: f.category ?? '',
+    })),
     perfil: { puntaje: dto.profile.score, categoria: dto.profile.category, parcial: dto.profile.partial },
     reglas: [...dto.rules].sort((a, b) => a.order - b.order).map((r) => ({ orden: r.order, codigo: r.code, valor: r.value })),
     prima: dto.premium,

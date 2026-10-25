@@ -1356,12 +1356,12 @@
   "auditoria": {
     "registro": {
       "busqueda": {
-        "titulo": "Audit record",
-        "descripcion": "Reconstruct which data and rating rules set the price and the decision of an underwriting.",
-        "seccion": "Search for a policy",
+        "titulo": "Underwriting audit",
+        "descripcion": "Reconstruct which input data and rating rules set the price and the decision of any policy. The record is read-only.",
+        "tarjeta": "Search the audit record",
         "campo": "Policy identifier",
         "ejemplo": "off-0123456789abcdef",
-        "ayuda": "Letters, numbers, hyphen and underscore.",
+        "ayuda": "It also accepts the offer number (off-…) or the partner's request number.",
         "buscar": "Search",
         "buscando": "Searching…",
         "errores": {
@@ -1369,52 +1369,68 @@
           "invalido": "The identifier only accepts letters, numbers, hyphen and underscore (up to 128 characters)."
         },
         "sinResultados": {
-          "titulo": "No results",
-          "texto": "No audit record was found for “{{ id }}”. Check the identifier and try again."
+          "titulo": "We found no results for {{ id }}",
+          "texto": "Check the identifier and try again. For security, no internal system information is shown.",
+          "limpiar": "Clear search"
         },
         "error": {
           "titulo": "We could not look up the record",
           "texto": "The audit service did not respond. Try again in a few minutes."
+        },
+        "incluye": {
+          "titulo": "What the record includes",
+          "fecha": "Date and time of the request with time zone",
+          "motor": "Version of the rating engine used",
+          "fuentes": "Sources consulted (Open Finance, Open Data, KYC) and the value each one returned",
+          "reglas": "Rating rules applied, in order, with the output of each one",
+          "prima": "Calculated premium and final decision (accepted, rejected or deferred with a reason)"
         }
       },
       "detalle": {
-        "volver": "Back to the search",
+        "volver": "Audit",
         "cargando": "Loading the record…",
-        "titulo": "Policy {{ id }}",
-        "soloLectura": "Read-only record: no data can be changed.",
+        "titulo": "Audit record · {{ id }}",
+        "soloLectura": "Read-only",
+        "resumen": "Underwriting request of {{ fecha }} ({{ zona }}) · Rating engine {{ motor }} · Final decision: {{ decision }}",
         "reintentar": "Try again",
         "error": {
           "titulo": "We could not load the record",
           "texto": "The audit service did not respond. Try again."
         },
         "solicitud": {
-          "titulo": "Underwriting request",
-          "fecha": "Request date and time",
-          "motor": "Rating engine version",
+          "titulo": "Request",
+          "fecha": "Date and time",
           "canal": "Channel",
+          "oferta": "Offer",
+          "consentimiento": "Consent",
           "cliente": "Customer",
           "aliado": "Partner",
-          "solicitud": "Partner request"
+          "solicitud": "Partner request",
+          "motor": "Engine version"
         },
         "fuentes": {
           "titulo": "Data sources consulted",
           "fuente": "Source",
-          "estado": "Result",
-          "latencia": "Response time",
+          "consultada": "Consulted",
+          "latencia": "Latency",
+          "valor": "Value returned",
+          "valorFuente": "Score {{ puntaje }} · category {{ categoria }}",
+          "sinValor": "No value: the source did not respond",
           "milisegundos": "{{ ms }} ms",
           "vacio": "No external source was consulted."
         },
         "perfil": "Resulting profile: score {{ puntaje }}, category {{ categoria }}.",
         "perfilParcial": "The profile is partial because a source did not respond.",
         "reglas": {
-          "titulo": "Rating rules applied",
-          "orden": "Order",
+          "titulo": "Rating rules applied (in execution order)",
+          "orden": "#",
           "regla": "Rule",
-          "valor": "Output value"
+          "salida": "Output"
         },
         "resultado": {
           "titulo": "Outcome",
           "prima": "Calculated premium",
+          "primaMes": "{{ prima }} / month",
           "decision": "Final decision",
           "motivo": "Reason",
           "registradaEn": "Recorded in audit"
@@ -1449,7 +1465,7 @@
       "reglas": {
         "base_monthly_rate": "Base monthly rate",
         "age_factor": "Age factor",
-        "risk_factor": "Risk factor",
+        "risk_factor": "Risk profile factor",
         "term_factor": "Term factor",
         "rounding_step": "Rounding step"
       },
