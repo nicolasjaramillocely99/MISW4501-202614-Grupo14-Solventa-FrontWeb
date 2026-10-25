@@ -56,7 +56,7 @@ describe('rutas raíz', () => {
   it('una pantalla que aún no existe redirige al inicio del rol', async () => {
     await iniciarSesionComo('asegurado');
 
-    await harness.navigateByUrl('/originacion/polizas');
+    await harness.navigateByUrl('/originacion/solicitudes');
 
     expect(url()).toBe('/inicio');
   });

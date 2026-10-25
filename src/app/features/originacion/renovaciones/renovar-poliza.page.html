@@ -1,0 +1,521 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.renovacion'">
+  <ng-template #medioPago let-m>
+    @if (m.tipo === 'card') {
+      {{ t('medio.tarjeta', { marca: (m.marca ?? '' | titlecase), ultimos: m.ultimosCuatro }) }}
+    } @else {
+      {{ t('medio.pse') }}
+    }
+  </ng-template>
+
+  <ng-template #listaCoberturas let-coberturas>
+    <ul class="coberturas">
+      @for (c of coberturas; track c.codigo) {
+        <li>
+          <svg lucideCircleCheck [size]="16" aria-hidden="true"></svg>
+          <span>{{ t('coberturas.' + c.codigo) }}</span>
+        </li>
+      }
+    </ul>
+  </ng-template>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-no-encontrada">
+        <h1 id="titulo-no-encontrada" class="pagina__titulo">{{ t('noEncontrada.titulo') }}</h1>
+        <p>{{ t('noEncontrada.texto') }}</p>
+        <div class="acciones">
+          <a class="boton boton--primario" routerLink="/originacion/polizas">{{
+            t('acciones.misPolizas')
+          }}</a>
+        </div>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('errorCarga.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('errorCarga.texto') }}</p>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">
+            {{ t('acciones.reintentar') }}
+          </button>
+        </div>
+      </section>
+    }
+    @case ('listo') {
+      <a class="volver" routerLink="/originacion/polizas">← {{ t('acciones.misPolizas') }}</a>
+
+      @switch (vista()) {
+        @case ('condiciones') {
+          @if (condiciones(); as c) {
+            <header class="pagina__encabezado">
+              <div>
+                <div class="pagina__fila">
+                  <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+                  <app-insignia-estado [tono]="tono()">{{
+                    t('insignia.vence', { fecha: c.poliza.vigenciaHasta | formatoFecha })
+                  }}</app-insignia-estado>
+                </div>
+                <p class="pagina__subtitulo">
+                  {{
+                    t('subtitulo', {
+                      id: c.poliza.polizaId,
+                      fecha: c.ventana.cierraEn | formatoFecha,
+                    })
+                  }}
+                </p>
+              </div>
+              <div class="acciones">
+                <button
+                  type="button"
+                  class="boton boton--primario"
+                  [disabled]="trabajando()"
+                  (click)="renovar()"
+                >
+                  {{
+                    t('acciones.renovar', {
+                      monto: c.renovada.prima | formatoMoneda: c.renovada.moneda,
+                    })
+                  }}
+                </button>
+              </div>
+            </header>
+
+            @if (error(); as clave) {
+              <p class="aviso aviso--advertencia" role="alert">
+                <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+                {{ t('errores.' + clave) }}
+              </p>
+            }
+
+            @if (c.recotizada) {
+              <div class="aviso aviso--informacion" role="status">
+                <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                <div>
+                  <p class="aviso__titulo">{{ t('recotizada.titulo') }}</p>
+                  <p>
+                    {{
+                      descuentoPorcentaje() > 0
+                        ? t('recotizada.textoConDescuento', { descuento: descuentoPorcentaje() })
+                        : t('recotizada.texto')
+                    }}
+                  </p>
+                </div>
+              </div>
+            } @else {
+              <div class="aviso aviso--informacion" role="status">
+                <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                <div>
+                  <p class="aviso__titulo">{{ t('sinRecotizar.titulo') }}</p>
+                  <p>{{ t('sinRecotizar.texto') }}</p>
+                </div>
+              </div>
+            }
+
+            <div class="pagina__cuerpo">
+              <div class="principal">
+                <section class="tarjeta" aria-labelledby="titulo-condiciones">
+                  <h2 id="titulo-condiciones" class="seccion__titulo">
+                    {{ t('condiciones.titulo') }}
+                  </h2>
+                  <div class="tabla-envoltorio">
+                    <table class="tabla">
+                      <thead>
+                        <tr>
+                          <th scope="col">{{ t('condiciones.condicion') }}</th>
+                          <th scope="col">{{ t('condiciones.vigente') }}</th>
+                          <th scope="col" class="tabla__renovacion">
+                            {{ t('condiciones.renovacion') }}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row">{{ t('condiciones.prima') }}</th>
+                          <td>{{ c.vigente.prima | formatoMoneda: c.vigente.moneda }}</td>
+                          <td class="tabla__renovacion">
+                            {{ c.renovada.prima | formatoMoneda: c.renovada.moneda }}
+                            <span class="tabla__variacion"
+                              >({{ variacionPrima() >= 0 ? '+' : ''
+                              }}{{ variacionPrima() | formatoNumero: 1 }} %)</span
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row">{{ t('condiciones.vigencia') }}</th>
+                          <td>
+                            {{ c.vigente.vigenciaDesde | formatoFecha }} →
+                            {{ c.vigente.vigenciaHasta | formatoFecha }}
+                          </td>
+                          <td class="tabla__renovacion">
+                            {{ c.renovada.vigenciaDesde | formatoFecha }} →
+                            {{ c.renovada.vigenciaHasta | formatoFecha }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row">{{ t('condiciones.valorAsegurado') }}</th>
+                          <td>{{ c.vigente.valorAsegurado | formatoMoneda: c.vigente.moneda }}</td>
+                          <td class="tabla__renovacion">
+                            {{ c.renovada.valorAsegurado | formatoMoneda: c.renovada.moneda }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row">{{ t('condiciones.descuento') }}</th>
+                          <td>—</td>
+                          <td class="tabla__renovacion">
+                            {{
+                              descuentoPorcentaje() > 0
+                                ? t('condiciones.descuentoAplicado', {
+                                    descuento: descuentoPorcentaje(),
+                                  })
+                                : '—'
+                            }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row">{{ t('condiciones.coberturas') }}</th>
+                          <td>
+                            <ng-container
+                              *ngTemplateOutlet="
+                                listaCoberturas;
+                                context: { $implicit: c.vigente.coberturas }
+                              "
+                            />
+                          </td>
+                          <td class="tabla__renovacion">
+                            @if (coberturasSinCambios()) {
+                              {{ t('condiciones.sinCambios') }}
+                            } @else {
+                              <ng-container
+                                *ngTemplateOutlet="
+                                  listaCoberturas;
+                                  context: { $implicit: c.renovada.coberturas }
+                                "
+                              />
+                            }
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="tarjeta" aria-labelledby="titulo-cobro">
+                  <h2 id="titulo-cobro" class="seccion__titulo">{{ t('cobro.titulo') }}</h2>
+                  <p class="texto-suave">{{ t('cobro.texto') }}</p>
+                  <dl class="datos">
+                    <div>
+                      <dt>{{ t('cobro.medioPago') }}</dt>
+                      <dd>
+                        @if (medio(); as m) {
+                          <ng-container *ngTemplateOutlet="medioPago; context: { $implicit: m }" />
+                        } @else {
+                          {{ t('cobro.sinMedio') }}
+                        }
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('cobro.primerCobro') }}</dt>
+                      <dd>
+                        {{
+                          t('cobro.alConfirmar', {
+                            monto: c.renovada.prima | formatoMoneda: c.renovada.moneda,
+                          })
+                        }}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('cobro.certificado') }}</dt>
+                      <dd>{{ t('cobro.certificadoDisponible') }}</dd>
+                    </div>
+                  </dl>
+                  <label class="confirmo">
+                    <input
+                      type="checkbox"
+                      [formControl]="acepto"
+                      [attr.aria-invalid]="falta()"
+                      aria-describedby="ayuda-acepto"
+                    />
+                    <span>{{ t('cobro.acepto') }}</span>
+                  </label>
+                  @if (falta()) {
+                    <p id="ayuda-acepto" class="campo__error" role="alert">
+                      {{ t('errores.aceptoRequerido') }}
+                    </p>
+                  }
+                </section>
+              </div>
+
+              <div class="lateral">
+                <section class="tarjeta destacada" aria-labelledby="titulo-prima">
+                  <h2 id="titulo-prima" class="seccion__titulo seccion__titulo--suave">
+                    {{ t('prima.titulo') }}
+                  </h2>
+                  <p class="prima">{{ c.renovada.prima | formatoMoneda: c.renovada.moneda }}</p>
+                  <p class="texto-suave">
+                    {{
+                      t('prima.desde', {
+                        fecha: c.renovada.vigenciaDesde | formatoFecha,
+                        meses: meses(),
+                      })
+                    }}
+                  </p>
+                </section>
+                <section class="tarjeta" aria-labelledby="titulo-si-no">
+                  <h2 id="titulo-si-no" class="seccion__titulo">{{ t('siNoRenuevas.titulo') }}</h2>
+                  <p>
+                    {{ t('siNoRenuevas.texto', { fecha: c.poliza.vigenciaHasta | formatoFecha }) }}
+                  </p>
+                </section>
+              </div>
+            </div>
+          }
+        }
+
+        @case ('fueraDeVentana') {
+          <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-fuera">
+            <div class="pagina__fila">
+              <h1 id="titulo-fuera" class="pagina__titulo">{{ t('titulo') }}</h1>
+              <app-insignia-estado [tono]="tono()">{{
+                t('insignia.fueraDeVentana')
+              }}</app-insignia-estado>
+            </div>
+            <div class="aviso aviso--informacion" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('fueraDeVentana.titulo') }}</p>
+                <p>{{ t('fueraDeVentana.texto') }}</p>
+              </div>
+            </div>
+            <div class="acciones">
+              <a class="boton boton--secundario" routerLink="/originacion/polizas">{{
+                t('acciones.misPolizas')
+              }}</a>
+              <button type="button" class="boton boton--primario" disabled>
+                {{ t('acciones.renovarSinMonto') }}
+              </button>
+            </div>
+          </section>
+        }
+
+        @case ('confirmada') {
+          @if (renovacion(); as r) {
+            <header class="pagina__encabezado">
+              <div>
+                <div class="pagina__fila">
+                  <h1 class="pagina__titulo">{{ t('confirmada.titulo') }}</h1>
+                  <app-insignia-estado [tono]="tono()">{{
+                    t('insignia.renovada')
+                  }}</app-insignia-estado>
+                </div>
+                <p class="pagina__subtitulo">
+                  {{
+                    t('confirmada.subtitulo', {
+                      fecha: r.resumen.cerradaEn | formatoFecha,
+                      id: polizaId,
+                    })
+                  }}
+                </p>
+              </div>
+              <div class="acciones">
+                <a class="boton boton--secundario" routerLink="/originacion/polizas">{{
+                  t('acciones.volverPolizas')
+                }}</a>
+                @if (r.resumen.polizaNuevaId; as nueva) {
+                  <a
+                    class="boton boton--primario"
+                    [routerLink]="['/embebido/poliza-emitida', nueva]"
+                    >{{ t('acciones.certificado') }}</a
+                  >
+                }
+              </div>
+            </header>
+            <div class="aviso aviso--exito" role="status">
+              <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('confirmada.avisoTitulo') }}</p>
+                <p>
+                  {{
+                    t('confirmada.avisoTexto', {
+                      monto: r.condiciones.prima | formatoMoneda: r.condiciones.moneda,
+                      desde: r.condiciones.vigenciaDesde | formatoFecha,
+                    })
+                  }}
+                </p>
+              </div>
+            </div>
+            <div class="pagina__cuerpo">
+              <section class="tarjeta principal" aria-labelledby="titulo-detalle">
+                <h2 id="titulo-detalle" class="seccion__titulo">{{ t('confirmada.detalle') }}</h2>
+                <dl class="datos">
+                  <div>
+                    <dt>{{ t('confirmada.nuevaPrima') }}</dt>
+                    <dd class="datos__cifra">
+                      {{ r.condiciones.prima | formatoMoneda: r.condiciones.moneda }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('confirmada.vigenciaRenovada') }}</dt>
+                    <dd>
+                      {{ r.condiciones.vigenciaDesde | formatoFecha }} →
+                      {{ r.condiciones.vigenciaHasta | formatoFecha }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('condiciones.valorAsegurado') }}</dt>
+                    <dd>
+                      {{ r.condiciones.valorAsegurado | formatoMoneda: r.condiciones.moneda }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('cobro.medioPago') }}</dt>
+                    <dd>
+                      @if (medio(); as m) {
+                        <ng-container *ngTemplateOutlet="medioPago; context: { $implicit: m }" />
+                      } @else {
+                        —
+                      }
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('confirmada.descuento') }}</dt>
+                    <dd>
+                      {{
+                        r.descuento > 0
+                          ? t('confirmada.descuentoAplicado', {
+                              descuento: r.descuento * 100 | formatoNumero: 0,
+                            })
+                          : '—'
+                      }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('confirmada.estadoPago') }}</dt>
+                    <dd>
+                      <app-insignia-estado tono="exito">{{
+                        t('confirmada.pagado')
+                      }}</app-insignia-estado>
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+              <section class="tarjeta lateral" aria-labelledby="titulo-estado-poliza">
+                <h2 id="titulo-estado-poliza" class="seccion__titulo">
+                  {{ t('confirmada.estadoPoliza') }}
+                </h2>
+                <dl class="datos datos--columna">
+                  <div>
+                    <dt>{{ t('confirmada.estado') }}</dt>
+                    <dd>{{ t('confirmada.activaRenovada') }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('confirmada.polizaNueva') }}</dt>
+                    <dd>{{ r.resumen.polizaNuevaId }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('confirmada.proximaRenovacion') }}</dt>
+                    <dd>{{ r.condiciones.vigenciaHasta | formatoFecha }}</dd>
+                  </div>
+                </dl>
+              </section>
+            </div>
+          }
+        }
+
+        @default {
+          <!-- Aceptada: procesando, esperando el medio de pago, rechazada, en revisión o no renovada. -->
+          @if (renovacion(); as r) {
+            <header class="pagina__encabezado">
+              <div>
+                <div class="pagina__fila">
+                  <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+                  <app-insignia-estado [tono]="tono()">{{
+                    t('insignia.' + vista())
+                  }}</app-insignia-estado>
+                </div>
+                <p class="pagina__subtitulo">
+                  {{ t('estados.' + claveEstado() + '.subtitulo', { id: polizaId }) }}
+                </p>
+              </div>
+            </header>
+
+            <div
+              [class]="
+                'aviso aviso--' +
+                (vista() === 'procesando'
+                  ? 'informacion'
+                  : vista() === 'capturando'
+                    ? 'advertencia'
+                    : 'error')
+              "
+              [attr.role]="vista() === 'procesando' ? 'status' : 'alert'"
+            >
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('estados.' + claveEstado() + '.titulo') }}</p>
+                <p>
+                  {{
+                    t('estados.' + claveEstado() + '.texto', {
+                      monto: r.condiciones.prima | formatoMoneda: r.condiciones.moneda,
+                      hasta: r.resumen.reintentarHasta | formatoFecha,
+                    })
+                  }}
+                </p>
+              </div>
+            </div>
+
+            @if (error(); as clave) {
+              <p class="aviso aviso--advertencia" role="alert">
+                <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+                {{ t('errores.' + clave) }}
+              </p>
+            }
+
+            @if (vista() === 'capturando' || vista() === 'rechazado') {
+              <section class="tarjeta" aria-labelledby="titulo-otro-medio">
+                <h2 id="titulo-otro-medio" class="seccion__titulo">
+                  {{
+                    vista() === 'rechazado' ? t('otroMedio.titulo') : t('otroMedio.tituloEntregar')
+                  }}
+                </h2>
+                <app-formulario-medio-pago
+                  [enviando]="trabajando()"
+                  [reintento]="vista() === 'rechazado'"
+                  (medioElegido)="entregarMedio($event)"
+                />
+              </section>
+            }
+
+            <section class="tarjeta" aria-labelledby="titulo-solicitud">
+              <h2 id="titulo-solicitud" class="seccion__titulo">{{ t('solicitud.titulo') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('confirmada.nuevaPrima') }}</dt>
+                  <dd class="datos__cifra">
+                    {{ r.condiciones.prima | formatoMoneda: r.condiciones.moneda }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('confirmada.vigenciaRenovada') }}</dt>
+                  <dd>
+                    {{ r.condiciones.vigenciaDesde | formatoFecha }} →
+                    {{ r.condiciones.vigenciaHasta | formatoFecha }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('solicitud.aceptadaEl') }}</dt>
+                  <dd>{{ r.resumen.aceptadaEn | formatoFecha }}</dd>
+                </div>
+              </dl>
+            </section>
+          }
+        }
+      }
+    }
+  }
+</div>
