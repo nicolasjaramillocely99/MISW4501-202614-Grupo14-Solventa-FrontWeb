@@ -1,0 +1,182 @@
+// O15b · Modal de confirmación de la revocación (<dialog> nativo, 720 px).
+:host {
+  display: contents;
+}
+
+.modal {
+  width: min(720px, calc(100vw - 2 * var(--espacio-16)));
+  max-height: calc(100vh - 2 * var(--espacio-16));
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-primario);
+  box-shadow: var(--sombra-elevacion);
+  overflow: auto;
+
+  // Fondo azul/900 al 45 % (frame O15b).
+  &::backdrop {
+    background: color-mix(in srgb, var(--color-azul-900) 45%, transparent);
+  }
+}
+
+.modal__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  padding: var(--espacio-24);
+}
+
+.modal__encabezado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.modal__titulo {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.modal__cerrar {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radio-base);
+  background: transparent;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--color-azul-50);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.modal__texto {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-16) var(--espacio-24);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: 2px 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-16);
+
+  @media (max-width: 600px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+
+  input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+    accent-color: var(--color-azul-700);
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+
+  label {
+    cursor: pointer;
+  }
+}
+
+.modal__faltantes {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.modal__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+// Botón de peligro (tokens error/600, 500 y 100): hasta que el sistema de diseño tenga el suyo (F3).
+.boton-peligro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-8);
+  min-width: 120px;
+  min-height: var(--control-alto);
+  padding: var(--espacio-8) var(--espacio-16);
+  border: 1px solid transparent;
+  border-radius: var(--radio-base);
+  background: var(--color-error-600);
+  color: var(--color-texto-inverso);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--color-error-500);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-error-500);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

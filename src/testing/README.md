@@ -11,6 +11,8 @@ Contenido:
 | `sesion-pruebas.ts` | Sesión simulada por rol (asegurado, asesor, operaciones, socio) para probar *guards*, menú y páginas protegidas: `crearJwtPrueba` y `crearTokensPrueba` (tokens sin firma real), `crearProveedorIdentidadFalso` (espías de Vitest), `proveerSesionPrueba()` y `iniciarSesionComo(rol)` (HA-S01) |
 | `cobro-pruebas.ts` | `COBRO_PENDIENTE_DTO`: cobro de la prima pendiente con la forma del contrato de HA-D02, base para los demás estados en las pruebas del cliente y del paso de pago |
 | `revision-pruebas.ts` | `SOLICITUD_PENDIENTE_DTO`, `SOLICITUD_AJUSTADA_DTO` y `SOLICITUD_RECHAZADA_DTO`: solicitudes de la bandeja de decisión humana con la forma del contrato de HU-W1.1-02, para el cliente y las páginas de la bandeja |
+| `revocacion-pruebas.ts` | `ESTADO_ACTIVO_DTO`, `ESTADO_EN_CURSO_DTO`, `ESTADO_REVOCADO_DTO`, `ESTADO_PARCIAL_DTO`, `ESTADO_REVOCADO_EN_APP_DTO` y `ESTADO_VENCIDO_DTO`: el estado de revocación de un consentimiento con la forma del contrato de HU-W4.2-02 (activo, en curso, revocado, parcial, desde la app y vencido) |
+| `dialogo-pruebas.ts` | `simularDialogoNativo()` y `pulsarEscapeEnDialogo()`: jsdom no implementa `<dialog>.showModal()`; el doble reproduce `open`, el evento `close` y la cancelación con `Escape`. El foco atrapado y el fondo inerte los cubre la E2E en Chromium (HU-W4.2-02) |
 | `fabricas/` | Fábricas de datos de prueba (póliza, siniestro, socio, consentimiento) |
 
 Las pruebas se escriben con Vitest y Testing Library: se consulta el DOM por rol y texto accesible (`screen.getByRole`), no por clases ni selectores internos.

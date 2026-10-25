@@ -1,0 +1,34 @@
+<section class="tarjeta" aria-labelledby="titulo-historial" *transloco="let t; prefix: 'auditoria.consentimientos.historial'">
+  <h2 id="titulo-historial" class="seccion__titulo">{{ t('titulo') }}</h2>
+  <ol class="linea">
+    @for (entrada of entradas(); track $index) {
+      <li class="paso" [class.paso--actual]="entrada.actual" [attr.aria-current]="entrada.actual ? 'step' : null">
+        <span class="paso__marca" aria-hidden="true">
+          @if (entrada.actual) {
+            {{ entrada.numero }}
+          } @else {
+            <svg lucideCheck [size]="16"></svg>
+          }
+        </span>
+        <div class="paso__texto">
+          <p class="paso__titulo">{{ entrada.estado | traducirCodigo: 'auditoria.consentimientos.historial.estados' }}</p>
+          <p class="paso__detalle">
+            <span>{{ entrada.ocurridoEn | formatoFechaHora: 'fechaHora' }}</span>
+            @if (entrada.entidad) {
+              <span>{{ entrada.entidad }}</span>
+            }
+            @if (entrada.tipoActor) {
+              <span>{{ entrada.tipoActor | traducirCodigo: 'auditoria.consentimientos.actores' }}</span>
+            }
+            @if (entrada.motivo) {
+              <span>{{ entrada.motivo | traducirCodigo: 'auditoria.consentimientos.motivos' }}</span>
+            }
+            @if (entrada.referencia) {
+              <span>{{ t(entrada.entidad ? 'referenciaEntidad' : 'referencia', { referencia: entrada.referencia }) }}</span>
+            }
+          </p>
+        </div>
+      </li>
+    }
+  </ol>
+</section>
