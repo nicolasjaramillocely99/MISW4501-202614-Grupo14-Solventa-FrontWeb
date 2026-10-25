@@ -1,0 +1,146 @@
+// A6 · Tarjeta «Soportes»: una fila por soporte (ícono, texto, estado y acción) y sus archivos debajo.
+:host {
+  display: block;
+}
+
+.soportes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  box-shadow: none;
+}
+
+.soportes__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.soportes__titulo {
+  flex: 1;
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.soportes__conteo,
+.soporte__detalle,
+.archivo__tamano {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.soportes__lista,
+.archivos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.soporte {
+  padding: var(--espacio-12) 0;
+
+  & + & {
+    border-top: 1px solid var(--color-borde-base);
+  }
+}
+
+.soporte__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.soporte__icono {
+  display: inline-flex;
+  color: var(--color-texto-secundario);
+}
+
+.soporte__icono--exito {
+  color: var(--color-exito-500);
+}
+
+.soporte__icono--error {
+  color: var(--color-error-500);
+}
+
+.soporte__icono--advertencia {
+  color: var(--color-advertencia-600);
+}
+
+.soporte__texto {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.soporte__nombre {
+  margin: 0;
+  font-weight: 500;
+}
+
+.soporte__accion {
+  position: relative;
+
+  &:focus-within {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.soporte__accion--inactiva {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.soporte__error {
+  margin-top: var(--espacio-8);
+  padding-left: var(--espacio-32);
+}
+
+.archivos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin-top: var(--espacio-8);
+  padding-left: var(--espacio-32);
+}
+
+.archivo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-8);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.archivo__nombre {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.archivo__estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  color: var(--color-texto-secundario);
+}
+
+.archivo__estado--adjunto {
+  color: var(--color-exito-600);
+}
+
+.archivo__estado--rechazado {
+  color: var(--color-error-600);
+}
+
+.archivo__quitar {
+  min-width: 0;
+  margin-left: auto;
+  font-size: 0.875rem;
+}

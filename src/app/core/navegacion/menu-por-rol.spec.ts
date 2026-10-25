@@ -48,6 +48,18 @@ describe('itemActivo', () => {
     expect(itemActivo(menu, url)?.clave).toBe(clave);
   });
 
+  it.each([
+    ['/siniestros/radicar', 'menu.misSiniestros'],
+    ['/siniestros/radicar?caso=8f14e45f', 'menu.misSiniestros'],
+    ['/siniestros/mis-siniestros', 'menu.misSiniestros'],
+  ])('para el asegurado %s activa %s (tambienEn, HU-W2.1-01)', (url, clave) => {
+    expect(itemActivo(MENU_POR_ROL.asegurado, url)?.clave).toBe(clave);
+  });
+
+  it('tambienEn no activa el ítem con una ruta que solo comparte el prefijo de texto', () => {
+    expect(itemActivo(MENU_POR_ROL.asegurado, '/siniestros/radicarx')).toBeNull();
+  });
+
   it('una ruta que solo comparte el prefijo de texto no activa el ítem', () => {
     expect(itemActivo(menu, '/sociosx')).toBeNull();
     expect(itemActivo(menu, '/perfil')).toBeNull();

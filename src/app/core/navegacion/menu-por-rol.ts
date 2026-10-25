@@ -26,6 +26,8 @@ export interface ItemMenu {
   /** Ruta de la pantalla (`docs/pantallas.md`). Las que aún no existen redirigen al inicio del rol. */
   readonly ruta: string;
   readonly icono: LucideIcon;
+  /** Otras rutas (y sus hijas) que también activan el ítem, p. ej. la radicación dentro de «Mis siniestros». */
+  readonly tambienEn?: readonly string[];
 }
 
 const INICIO: ItemMenu = { clave: 'menu.inicio', ruta: '/inicio', icono: LucideLayoutGrid };
@@ -39,7 +41,13 @@ export const MENU_POR_ROL: Readonly<Record<Rol, readonly ItemMenu[]>> = {
   asegurado: [
     INICIO,
     { clave: 'menu.misPolizas', ruta: '/originacion/polizas', icono: LucideShield },
-    { clave: 'menu.misSiniestros', ruta: '/siniestros/mis-siniestros', icono: LucideClipboardList },
+    {
+      clave: 'menu.misSiniestros',
+      ruta: '/siniestros/mis-siniestros',
+      icono: LucideClipboardList,
+      // HU-W2.1-01: «Radicar un siniestro» vive dentro de «Mis siniestros» (A6 · migas «← Mis siniestros»).
+      tambienEn: ['/siniestros/radicar'],
+    },
     { clave: 'menu.misSolicitudes', ruta: '/originacion/solicitudes', icono: LucideInbox },
     { clave: 'menu.miPerfil', ruta: '/perfil', icono: LucideUser },
   ],
@@ -75,8 +83,9 @@ export const RUTA_INICIO_POR_ROL: Readonly<Record<Rol, string>> = {
   socio: '/inicio',
 };
 
-/** Ítem del menú que corresponde a una URL (por prefijo de ruta), o `null`. */
+/** Ítem del menú que corresponde a una URL (por prefijo de ruta, también las de `tambienEn`), o `null`. */
 export function itemActivo(menu: readonly ItemMenu[], url: string): ItemMenu | null {
   const ruta = url.split(/[?#]/)[0];
-  return menu.find((item) => ruta === item.ruta || ruta.startsWith(`${item.ruta}/`)) ?? null;
+  const coincide = (base: string) => ruta === base || ruta.startsWith(`${base}/`);
+  return menu.find((item) => coincide(item.ruta) || (item.tambienEn ?? []).some(coincide)) ?? null;
 }

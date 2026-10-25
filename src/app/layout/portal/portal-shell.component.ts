@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LucideDynamicIcon, LucideLogOut } from '@lucide/angular';
 import { filter, map } from 'rxjs';
@@ -20,7 +20,6 @@ import { SelectorIdiomaComponent } from '@shared/ui/selector-idioma/selector-idi
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
     TranslocoDirective,
     LucideDynamicIcon,
     LucideLogOut,
@@ -48,10 +47,14 @@ export class PortalShellComponent {
     return rol ? MENU_POR_ROL[rol] : [];
   });
 
+  /**
+   * Ítem del menú que corresponde a la URL. Marca la barra lateral y da el nombre del módulo de la barra superior, así
+   * los dos coinciden también en las rutas de `tambienEn` (p. ej. la radicación dentro de «Mis siniestros»).
+   */
+  protected readonly activo = computed(() => itemActivo(this.menu(), this.url()));
+
   /** Nombre del módulo de la barra superior: el ítem activo del menú, o «Inicio». */
-  protected readonly modulo = computed(
-    () => itemActivo(this.menu(), this.url())?.clave ?? 'menu.inicio',
-  );
+  protected readonly modulo = computed(() => this.activo()?.clave ?? 'menu.inicio');
 
   protected readonly iniciales = computed(() => {
     const nombre = this.sesion.usuario()?.nombre ?? '';

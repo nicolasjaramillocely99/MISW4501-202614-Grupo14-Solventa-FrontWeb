@@ -31,6 +31,7 @@ describe('PortalShellComponent', () => {
         provideRouter([
           { path: 'inicio', component: PaginaPrueba },
           { path: 'siniestros/cola', component: PaginaPrueba },
+          { path: 'siniestros/radicar', component: PaginaPrueba },
           { path: 'acceso/sesion-expirada', component: PaginaPrueba },
           { path: 'acceso/iniciar-sesion', component: PaginaPrueba },
         ]),
@@ -86,6 +87,16 @@ describe('PortalShellComponent', () => {
     expect(siniestros.getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('link', { name: 'Inicio' }).getAttribute('aria-current')).toBeNull();
     expect(screen.getByRole('banner').textContent).toContain('Siniestros');
+  });
+
+  it('en la radicación del asegurado marca «Mis siniestros» y nombra ese módulo (HU-W2.1-01)', async () => {
+    await renderizar('asegurado', '/siniestros/radicar?caso=8f14e45f');
+
+    const misSiniestros = screen.getByRole('link', { name: 'Mis siniestros' });
+    expect(misSiniestros.getAttribute('aria-current')).toBe('page');
+    expect(misSiniestros.classList.contains('menu__item--activo')).toBe(true);
+    expect(screen.getByRole('link', { name: 'Inicio' }).classList.contains('menu__item--activo')).toBe(false);
+    expect(screen.getByRole('banner').textContent).toContain('Mis siniestros');
   });
 
   it('cerrar sesión revoca el token y lleva al inicio de sesión', async () => {

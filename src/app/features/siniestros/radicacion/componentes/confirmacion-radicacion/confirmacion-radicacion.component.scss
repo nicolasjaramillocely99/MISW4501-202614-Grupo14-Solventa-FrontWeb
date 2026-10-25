@@ -1,0 +1,115 @@
+// A6b · Siniestro radicado: encabezado con el radicado y las acciones, tarjeta de confirmación y «Qué sigue».
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+}
+
+.encabezado__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  min-width: 16rem;
+}
+
+.encabezado__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.encabezado__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+  overflow-wrap: anywhere;
+}
+
+.encabezado__resumen {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.encabezado__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-12);
+}
+
+.confirmacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-16);
+  text-align: center;
+  box-shadow: none;
+}
+
+.confirmacion__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radio-completo);
+  background: var(--color-exito-100);
+  color: var(--color-exito-600);
+}
+
+.confirmacion__anuncio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-8);
+}
+
+.confirmacion__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.confirmacion__texto {
+  max-width: 64rem;
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.confirmacion__etapas {
+  align-self: stretch;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-16);
+  align-self: stretch;
+  margin: 0;
+  text-align: left;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
