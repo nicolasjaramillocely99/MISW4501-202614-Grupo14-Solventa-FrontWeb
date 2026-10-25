@@ -1,0 +1,168 @@
+<div class="velo" (click)="cerrar.emit()" aria-hidden="true"></div>
+<div
+  class="dialogo"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="detalle-titulo"
+  *transloco="let t; prefix: 'originacion.emisiones.detalle'"
+>
+  <header class="dialogo__encabezado">
+    <div>
+      <h2 id="detalle-titulo" class="dialogo__titulo" tabindex="-1">
+        {{ t(emision().estado === 'exception' ? 'tituloExcepcion' : 'titulo') }}
+      </h2>
+      <p class="dialogo__id">{{ emision().aceptacionId }}</p>
+    </div>
+    <button type="button" class="dialogo__cerrar" [attr.aria-label]="t('cerrar')" (click)="cerrar.emit()">
+      <svg lucideX [size]="20" aria-hidden="true"></svg>
+    </button>
+  </header>
+
+  <dl class="datos">
+    <div>
+      <dt>{{ t('cliente') }}</dt>
+      <dd>{{ emision().nombreCliente ?? ('originacion.emisiones.tabla.sinNombre' | transloco) }}</dd>
+    </div>
+    <div>
+      <dt>{{ t('canal') }}</dt>
+      <dd>{{ 'originacion.emisiones.canales.' + emision().canal | transloco }}</dd>
+    </div>
+    <div>
+      <dt>{{ t('estado') }}</dt>
+      <dd>{{ 'originacion.emisiones.estados.' + emision().estado | transloco }}</dd>
+    </div>
+    @if (emision().estado === 'exception' && emision().motivo) {
+      <div>
+        <dt>{{ t('motivo') }}</dt>
+        <dd>{{ 'originacion.emisiones.motivos.' + emision().motivo | transloco }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('falloEn') }}</dt>
+        <dd>{{ emision().fallaEn | formatoFechaHora }}</dd>
+      </div>
+    } @else {
+      <div>
+        <dt>{{ t('ultimoPaso') }}</dt>
+        <dd>{{ ('originacion.emisiones.pasos.' + paso(emision()).clave) | transloco: { n: paso(emision()).intentos } }}</dd>
+      </div>
+    }
+    <div>
+      <dt>{{ t('prima') }}</dt>
+      <dd>
+        @if (emision().monto !== null && emision().moneda) {
+          {{ emision().monto | formatoMoneda: emision().moneda! }}
+        } @else {
+          —
+        }
+      </dd>
+    </div>
+    <div>
+      <dt>{{ t('intentos') }}</dt>
+      <dd>{{ emision().intentos }}</dd>
+    </div>
+    <div>
+      <dt>{{ t('aceptadaEn') }}</dt>
+      <dd>{{ emision().aceptadaEn | formatoFechaHora }}</dd>
+    </div>
+    <div>
+      <dt>{{ t('oferta') }}</dt>
+      <dd class="datos__id">{{ emision().ofertaId }}</dd>
+    </div>
+    @if (emision().polizaId) {
+      <div>
+        <dt>{{ t('poliza') }}</dt>
+        <dd class="datos__id">{{ emision().polizaId }}</dd>
+      </div>
+    }
+    @if (emision().notificadaEn) {
+      <div>
+        <dt>{{ t('notificadaEn') }}</dt>
+        <dd>{{ emision().notificadaEn | formatoFechaHora }}</dd>
+      </div>
+    }
+  </dl>
+
+  @if (emision().sinAtender) {
+    <p class="alerta" role="status">{{ t('sinAtender') }}</p>
+  }
+
+  <section class="historial" aria-labelledby="historial-titulo">
+    <h3 id="historial-titulo" class="historial__titulo">{{ t('historial.titulo') }}</h3>
+    @switch (fase()) {
+      @case ('cargando') {
+        <p class="historial__estado" role="status">{{ t('historial.cargando') }}</p>
+      }
+      @case ('error') {
+        <p class="historial__estado" role="status">{{ t('historial.error') }}</p>
+      }
+      @case ('listo') {
+        @if (acciones().length === 0) {
+          <p class="historial__estado">{{ t('historial.vacio') }}</p>
+        } @else {
+          <ul class="historial__lista">
+            @for (a of acciones(); track a.id) {
+              <li class="historial__item">
+                <span class="historial__cabecera">
+                  {{ t('historial.accion.' + a.accion) }} · {{ a.creadaEn | formatoFechaHora }}
+                </span>
+                <span class="historial__autor">{{ t('historial.por', { autor: a.autor }) }}</span>
+                <span class="historial__nota">{{ a.nota }}</span>
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </section>
+
+  @if (emision().estado === 'exception') {
+  <form class="formulario" (submit)="enviar($event)" novalidate>
+    <div class="campo">
+      <label class="campo__etiqueta" for="nota-reintento">{{ t('nota.etiqueta') }}</label>
+      <textarea
+        id="nota-reintento"
+        class="campo__control campo__control--area"
+        rows="3"
+        [attr.maxlength]="maxNota"
+        [formControl]="nota"
+        [attr.aria-invalid]="errorNota() ? 'true' : null"
+        [attr.aria-describedby]="errorNota() ? 'nota-error' : 'nota-ayuda'"
+      ></textarea>
+      @if (errorNota(); as clave) {
+        <p id="nota-error" class="campo__error">
+          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('nota.errores.' + clave) }}
+        </p>
+      } @else {
+        <p id="nota-ayuda" class="campo__ayuda">{{ t('nota.ayuda', { max: maxNota }) }}</p>
+      }
+    </div>
+
+    @if (errorEnvio(); as codigo) {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('errores.' + codigo + '.titulo') }}</p>
+          <p>{{ t('errores.' + codigo + '.texto') }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="acciones">
+      @if (errorEnvio() === 'issuance_not_retryable') {
+        <button type="button" class="boton boton--primario" (click)="reintentada.emit(emision().aceptacionId)">
+          {{ t('acciones.actualizar') }}
+        </button>
+      } @else {
+        <button type="button" class="boton boton--secundario" (click)="cerrar.emit()">{{ t('acciones.cancelar') }}</button>
+        <button type="submit" class="boton boton--primario" [disabled]="enviando()">
+          {{ enviando() ? t('acciones.reintentando') : t('acciones.reintentar') }}
+        </button>
+      }
+    </div>
+  </form>
+  } @else {
+    <div class="acciones">
+      <button type="button" class="boton boton--secundario" (click)="cerrar.emit()">{{ t('acciones.cerrar') }}</button>
+    </div>
+  }
+</div>
