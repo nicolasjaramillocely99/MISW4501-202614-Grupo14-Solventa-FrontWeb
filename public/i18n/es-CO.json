@@ -608,7 +608,9 @@
         "verPoliza": "Ver mi póliza",
         "continuarCredito": "Continuar con mi crédito",
         "reintentar": "Reintentar",
-        "verAceptacion": "Ver el estado de tu aceptación"
+        "verAceptacion": "Ver el estado de tu aceptación",
+        "otroMedio": "Intentar con otro medio de pago",
+        "otroMedioNota": "Mientras el cobro está en curso no se puede cambiar el medio de pago: la pasarela no ha respondido y pudo haberlo tomado ya. Queda disponible si el pago se rechaza."
       },
       "medioDePago": {
         "titulo": "Medio de pago",
@@ -635,10 +637,23 @@
         "pseAyuda": "Te llevaremos al portal de tu banco para autorizar el débito.",
         "cifrado": "Pago cifrado · pasarela certificada PCI DSS · exactamente un cobro por aceptación",
         "confirmar": "Pagar mi primera prima",
-        "reintentar": "Pagar con esta tarjeta",
+        "reintentar": "Reintentar el pago",
         "enviando": "Procesando…",
         "errorTarjeta": "La pasarela no aceptó la tarjeta. Revisa los datos e inténtalo de nuevo.",
-        "errorPasarela": "No pudimos contactar la pasarela de pago. Inténtalo de nuevo en un momento."
+        "errorPasarela": "No pudimos contactar la pasarela de pago. Inténtalo de nuevo en un momento.",
+        "guardar": "Guardar este medio de pago para renovaciones y pagos de siniestros",
+        "volver": "Volver a la oferta",
+        "pagar": "Pagar {{monto}}",
+        "resumen": "Resumen",
+        "primaMensual": "Prima mensual",
+        "iva": "IVA",
+        "ivaIncluido": "Incluido",
+        "totalHoy": "Total a pagar hoy",
+        "elegirOtro": "Elige otro medio de pago",
+        "otraTarjeta": "Otra tarjeta débito o crédito",
+        "tipoDePersona": "Tipo de persona",
+        "personaNatural": "Natural",
+        "personaJuridica": "Jurídica"
       },
       "capturando": {
         "titulo": "Paga tu primera prima",
@@ -646,9 +661,25 @@
         "yaNoAdmite": "Este cobro ya no admite otro medio de pago. Espera un momento: la pantalla se actualiza sola con su estado."
       },
       "rechazado": {
-        "titulo": "Tu pago fue rechazado",
-        "texto": "Tu aceptación se conserva. Puedes intentar con otro medio de pago sin volver a empezar.",
-        "conLaTarjeta": "Rechazada: {{marca}} ···{{ultimos}}"
+        "titulo": "No pudimos procesar tu pago",
+        "texto": "Tu aceptación sigue vigente y la emisión quedó como excepción visible para nuestro equipo de operaciones; puedes reintentar con otro medio de pago sin volver a empezar.",
+        "conLaTarjeta": "Rechazada: {{marca}} ···{{ultimos}}",
+        "avisoTitulo": "Pago rechazado por el emisor de la tarjeta",
+        "codigo": "Código {{codigo}} · {{motivo}}.",
+        "medioUsado": "Medio usado",
+        "medioValor": "{{marca}} ···{{ultimos}}",
+        "intento": "Intento",
+        "referencia": "Referencia",
+        "oferta": "Oferta",
+        "ofertaValor": "Vigente hasta {{fecha}}",
+        "motivos": {
+          "51": "Fondos insuficientes",
+          "54": "Tarjeta vencida",
+          "57": "Operación no permitida para esta tarjeta",
+          "61": "Supera el cupo disponible",
+          "65": "Supera el número de operaciones permitidas",
+          "otro": "El banco no autorizó el cobro"
+        }
       }
     },
     "polizaEmitida": {

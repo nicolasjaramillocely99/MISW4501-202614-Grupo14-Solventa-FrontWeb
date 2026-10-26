@@ -239,6 +239,7 @@ describe('RenovarPolizaPage (A4 / A4b · HU-W1.5-02)', () => {
     (fixture.debugElement.query(By.directive(FormularioMedioPagoComponent)).componentInstance as FormularioMedioPagoComponent).medioElegido.emit({
       tipo: 'pse',
       codigoBanco: '1007',
+      tipoDePersona: 'natural',
     });
     fixture.detectChanges();
 

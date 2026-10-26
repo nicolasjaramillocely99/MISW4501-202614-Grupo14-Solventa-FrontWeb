@@ -32,6 +32,7 @@ import { InsigniaEstadoComponent, TonoInsignia } from '@shared/ui/insignia-estad
 import { TramiteAceptacionService } from '../aceptacion-oferta/servicios/tramite-aceptacion.service';
 import { TarjetaCreditoComponent } from '../componentes/tarjeta-credito/tarjeta-credito.component';
 import { FormularioMedioPagoComponent } from './componentes/formulario-medio-pago/formulario-medio-pago.component';
+import { ResumenPagoComponent } from './componentes/resumen-pago/resumen-pago.component';
 import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
 import { ACCIONES_PAGO } from './pago.config';
 import { SeguimientoCobroService } from './servicios/seguimiento-cobro.service';
@@ -54,6 +55,13 @@ export type VistaCobro =
   | 'rechazado'
   | 'confirmado'
   | 'excepcion';
+
+/**
+ * Códigos del emisor para los que hay un texto propio. El resto cae en el
+ * genérico: un emisor puede devolver cualquier código, y la pantalla no puede
+ * quedarse en blanco por eso.
+ */
+const CODIGOS_DE_RECHAZO: readonly string[] = ['51', '54', '57', '61', '65'];
 
 const TONO_POR_VISTA: Readonly<Record<VistaCobro, TonoInsignia>> = {
   capturando: 'informacion',
@@ -84,6 +92,7 @@ const TONO_POR_VISTA: Readonly<Record<VistaCobro, TonoInsignia>> = {
     InsigniaEstadoComponent,
     TarjetaCreditoComponent,
     FormularioMedioPagoComponent,
+    ResumenPagoComponent,
     FormatoFechaHoraPipe,
     FormatoMonedaPipe,
     LucideArrowRight,
@@ -128,6 +137,22 @@ export class PagoPage implements OnInit {
   });
 
   protected readonly vista = computed<VistaCobro>(() => vistaDe(this.cobro()));
+
+  /**
+   * Clave del texto que explica el código del emisor. Viaja el código y la
+   * frase la pone esta pantalla, así el idioma y la redacción no quedan
+   * congelados en un servicio de backend (contrato HU-W1.3-02, sección 5).
+   *
+   * Un código que no esté en el catálogo cae en el texto genérico: el emisor
+   * puede devolver cualquiera, y quedarse en blanco sería peor que decir que
+   * el banco no autorizó el cobro.
+   */
+  protected readonly glosaDelRechazo = computed(() => {
+    const codigo = this.cobro()?.codigoRechazo;
+    return codigo !== null && codigo !== undefined && CODIGOS_DE_RECHAZO.includes(codigo)
+      ? `pago.rechazado.motivos.${codigo}`
+      : 'pago.rechazado.motivos.otro';
+  });
 
   protected readonly pasos = computed<readonly PasoFlujo[]>(() => {
     const confirmado = this.vista() === 'confirmado' && this.fase() === 'cobro';

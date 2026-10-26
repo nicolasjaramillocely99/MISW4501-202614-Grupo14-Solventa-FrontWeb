@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { LucideCreditCard, LucideLandmark, LucideLock } from '@lucide/angular';
+import { LucideCreditCard, LucideLandmark, LucideLock, LucideRefreshCw } from '@lucide/angular';
 
-import { MedioDePagoNuevo } from '@core/api/originacion/cobro.modelos';
+import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
+
+import { MedioDePagoNuevo, TipoDePersona } from '@core/api/originacion/cobro.modelos';
 import { ErrorPasarela, MotivoErrorPasarela } from '@core/api/pasarela/pasarela.modelos';
 import { PasarelaPagosService } from '@core/api/pasarela/pasarela.service';
 
@@ -67,7 +70,11 @@ function validarVencimiento(control: AbstractControl<string>): ValidationErrors 
 @Component({
   selector: 'app-formulario-medio-pago',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslocoDirective, LucideCreditCard, LucideLandmark, LucideLock],
+  imports: [ReactiveFormsModule, RouterLink, TranslocoDirective, LucideCreditCard, LucideLandmark, LucideLock,
+    LucideRefreshCw],
+  // El pipe se inyecta para armar la etiqueta del boton, que el frame pide
+  // con el monto dentro («Pagar $ 68.500 COP»).
+  providers: [FormatoMonedaPipe],
   templateUrl: './formulario-medio-pago.component.html',
   styleUrl: './formulario-medio-pago.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -80,11 +87,19 @@ export class FormularioMedioPagoComponent {
   readonly enviando = input(false);
   /** Es un reintento tras un rechazo (E4c): cambia el texto del botón. */
   readonly reintento = input(false);
+  /** Prima que el botón muestra, como en el frame: «Pagar $ 68.500 COP». */
+  readonly monto = input.required<number>();
+  readonly moneda = input.required<string>();
+  /** Destino de «Volver a la oferta». */
+  readonly volverA = input.required<string>();
 
   /** El medio de pago ya tokenizado. El número de tarjeta nunca viaja aquí. */
   readonly medioElegido = output<MedioDePagoNuevo>();
 
+  private readonly formatoMoneda = inject(FormatoMonedaPipe);
+
   protected readonly cuotas = CUOTAS;
+  protected readonly montoFormateado = computed(() => this.formatoMoneda.transform(this.monto(), this.moneda()));
   protected readonly bancos = BANCOS;
 
   protected readonly tokenizando = signal(false);
@@ -98,7 +113,12 @@ export class FormularioMedioPagoComponent {
     codigo: this.fb.control('', [Validators.required, Validators.pattern(/^\d{3,4}$/)]),
     titular: this.fb.control('', [Validators.required, Validators.minLength(3)]),
     cuotas: this.fb.control(1),
+    // Deshabilitado a proposito; el porque esta en la plantilla. Se declara
+    // asi y no con el atributo disabled del HTML, que en formularios
+    // reactivos Angular advierte como error.
+    guardar: this.fb.control({ value: false, disabled: true }),
     banco: this.fb.control(BANCOS[0].codigo),
+    tipoDePersona: this.fb.control<TipoDePersona>('natural'),
   });
 
   protected get esTarjeta(): boolean {
@@ -126,7 +146,11 @@ export class FormularioMedioPagoComponent {
     this.errorPasarela.set(null);
 
     if (!this.esTarjeta) {
-      this.medioElegido.emit({ tipo: 'pse', codigoBanco: this.formulario.controls.banco.value });
+      this.medioElegido.emit({
+        tipo: 'pse',
+        codigoBanco: this.formulario.controls.banco.value,
+        tipoDePersona: this.formulario.controls.tipoDePersona.value,
+      });
       return;
     }
 

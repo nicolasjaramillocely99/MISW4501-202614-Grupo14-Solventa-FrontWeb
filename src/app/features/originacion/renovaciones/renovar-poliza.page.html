@@ -486,6 +486,9 @@
                 <app-formulario-medio-pago
                   [enviando]="trabajando()"
                   [reintento]="vista() === 'rechazado'"
+                  [monto]="condiciones()?.renovada?.prima ?? 0"
+                  [moneda]="condiciones()?.renovada?.moneda ?? 'COP'"
+                  volverA="/originacion/polizas"
                   (medioElegido)="entregarMedio($event)"
                 />
               </section>

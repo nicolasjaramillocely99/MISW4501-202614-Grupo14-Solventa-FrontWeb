@@ -243,6 +243,7 @@ export function mapearCondicionesRenovacion(dto: CondicionesRenovacionDto): Cond
           ultimosCuatro: medio.last4,
           cuotas: medio.installments,
           codigoBanco: medio.bank_code,
+          tipoDePersona: medio.payer_type,
           capturadoEn: medio.captured_at,
         }
       : null,

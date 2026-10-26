@@ -71,7 +71,10 @@ export const CONDICIONES_RENOVACION_DTO: CondicionesRenovacionDto = {
   renewal_window: { opens_at: '2026-09-02T23:59:00Z', closes_at: '2026-10-02T23:59:00Z' },
   requoted: true,
   discount_rate: 0.08,
-  payment_method: { method: 'card', brand: 'visa', last4: '1111', installments: 1, bank_code: null, captured_at: '2025-10-02T23:58:00Z' },
+  payment_method: {
+    method: 'card', brand: 'visa', last4: '1111', installments: 1,
+    bank_code: null, payer_type: null, captured_at: '2025-10-02T23:58:00Z',
+  },
 };
 
 const ID_COBRO = 'ren-pol-acc-118204-20261002';

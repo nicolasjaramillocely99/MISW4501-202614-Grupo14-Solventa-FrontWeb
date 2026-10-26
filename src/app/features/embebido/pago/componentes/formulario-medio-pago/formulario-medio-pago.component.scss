@@ -78,3 +78,27 @@
   font-size: 0.8125rem;
   color: var(--color-texto-secundario);
 }
+
+
+.guardar {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+  margin: var(--espacio-16) 0;
+  font-size: 0.8125rem;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+}
+
+// Se ve, ocupa su lugar en la pantalla y no se puede marcar.
+.guardar--inactiva {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+  flex-wrap: wrap;
+}

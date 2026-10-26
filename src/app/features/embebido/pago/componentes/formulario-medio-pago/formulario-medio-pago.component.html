@@ -1,12 +1,12 @@
 <form *transloco="let t; read: 'embebido.pago.medioDePago'" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
   <fieldset class="metodos">
-    <legend class="metodos__titulo">{{ t('titulo') }}</legend>
+    <legend class="metodos__titulo">{{ reintento() ? t('elegirOtro') : t('titulo') }}</legend>
 
     <label class="metodo" [class.metodo--elegido]="esTarjeta">
       <input type="radio" formControlName="metodo" value="card" (change)="elegirMetodo('card')" />
       <svg lucideCreditCard [size]="20" aria-hidden="true"></svg>
       <span>
-        <strong>{{ t('tarjeta') }}</strong>
+        <strong>{{ reintento() ? t('otraTarjeta') : t('tarjeta') }}</strong>
         <small>{{ t('tarjetaDetalle') }}</small>
       </span>
     </label>
@@ -105,15 +105,41 @@
       </select>
     </div>
   } @else {
-    <div class="campo">
-      <label class="campo__etiqueta" for="banco">{{ t('banco') }}</label>
-      <select id="banco" class="campo__control" formControlName="banco">
-        @for (b of bancos; track b.codigo) {
-          <option [value]="b.codigo">{{ b.nombre }}</option>
-        }
-      </select>
-      <p class="ayuda">{{ t('pseAyuda') }}</p>
+    <div class="fila">
+      <div class="campo">
+        <label class="campo__etiqueta" for="banco">{{ t('banco') }}</label>
+        <select id="banco" class="campo__control" formControlName="banco">
+          @for (b of bancos; track b.codigo) {
+            <option [value]="b.codigo">{{ b.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- PSE le pregunta al banco si quien paga es una persona o una empresa
+           antes de poder tomar el debito, asi que la pantalla tiene que
+           decirlo (contrato HU-W1.3-02, seccion 3). -->
+      <div class="campo">
+        <label class="campo__etiqueta" for="tipoDePersona">{{ t('tipoDePersona') }}</label>
+        <select id="tipoDePersona" class="campo__control" formControlName="tipoDePersona">
+          <option value="natural">{{ t('personaNatural') }}</option>
+          <option value="legal">{{ t('personaJuridica') }}</option>
+        </select>
+      </div>
     </div>
+    <p class="ayuda">{{ t('pseAyuda') }}</p>
+  }
+
+  <!-- Esta casilla esta en el frame E4 del prototipo y por eso se mantiene, pero
+       llega deshabilitada: guardar el medio de pago no pertenece a ningun
+       criterio de aceptacion de HU-W1.3-02, y el contrato del cobro no tiene
+       donde recibir la preferencia. La capacidad aparece en HU-W1.5-02
+       (renovacion en linea), del Sprint 2. Cuando el contrato la admita, basta
+       con habilitar el control: el resto ya esta puesto. -->
+  @if (!reintento()) {
+    <label class="guardar guardar--inactiva">
+      <input type="checkbox" formControlName="guardar" />
+      <span>{{ t('guardar') }}</span>
+    </label>
   }
 
   @if (errorPasarela(); as motivo) {
@@ -122,12 +148,19 @@
     </p>
   }
 
-  <p class="cifrado">
-    <svg lucideLock [size]="16" aria-hidden="true"></svg>
-    {{ t('cifrado') }}
-  </p>
-
-  <button type="submit" class="boton boton--primario boton--bloque" [disabled]="ocupado()">
-    {{ ocupado() ? t('enviando') : reintento() ? t('reintentar') : t('confirmar') }}
-  </button>
+  <div class="acciones">
+    <a class="boton boton--secundario" [routerLink]="volverA()">{{ t('volver') }}</a>
+    <button type="submit" class="boton boton--primario" [disabled]="ocupado()">
+      @if (reintento()) {
+        <svg lucideRefreshCw [size]="16" aria-hidden="true"></svg>
+      } @else {
+        <svg lucideLock [size]="16" aria-hidden="true"></svg>
+      }
+      @if (ocupado()) {
+        {{ t('enviando') }}
+      } @else {
+        {{ reintento() ? t('reintentar') : t('pagar', { monto: montoFormateado() }) }}
+      }
+    </button>
+  </div>
 </form>

@@ -608,7 +608,9 @@
         "verPoliza": "View my policy",
         "continuarCredito": "Continue with my loan",
         "reintentar": "Retry",
-        "verAceptacion": "Check the status of your acceptance"
+        "verAceptacion": "Check the status of your acceptance",
+        "otroMedio": "Try another payment method",
+        "otroMedioNota": "The payment method cannot be changed while the charge is running: the gateway has not answered and may already have taken it. It becomes available if the payment is declined."
       },
       "medioDePago": {
         "titulo": "Payment method",
@@ -635,10 +637,23 @@
         "pseAyuda": "We will take you to your bank's portal to authorise the debit.",
         "cifrado": "Encrypted payment · PCI DSS certified gateway · exactly one charge per acceptance",
         "confirmar": "Pay my first premium",
-        "reintentar": "Pay with this card",
+        "reintentar": "Retry the payment",
         "enviando": "Processing…",
         "errorTarjeta": "The gateway did not accept the card. Check the details and try again.",
-        "errorPasarela": "We could not reach the payment gateway. Please try again in a moment."
+        "errorPasarela": "We could not reach the payment gateway. Please try again in a moment.",
+        "guardar": "Save this payment method for renewals and claim payouts",
+        "volver": "Back to the offer",
+        "pagar": "Pay {{monto}}",
+        "resumen": "Summary",
+        "primaMensual": "Monthly premium",
+        "iva": "VAT",
+        "ivaIncluido": "Included",
+        "totalHoy": "Total due today",
+        "elegirOtro": "Choose another payment method",
+        "otraTarjeta": "Another debit or credit card",
+        "tipoDePersona": "Payer type",
+        "personaNatural": "Individual",
+        "personaJuridica": "Company"
       },
       "capturando": {
         "titulo": "Pay your first premium",
@@ -646,9 +661,25 @@
         "yaNoAdmite": "This charge no longer takes another payment method. Hold on: the screen updates itself with its state."
       },
       "rechazado": {
-        "titulo": "Your payment was declined",
-        "texto": "Your acceptance is kept. You can try another payment method without starting over.",
-        "conLaTarjeta": "Declined: {{marca}} ···{{ultimos}}"
+        "titulo": "We could not process your payment",
+        "texto": "Your acceptance is still valid and the issuance is now an exception your operations team can see; you can try another payment method without starting over.",
+        "conLaTarjeta": "Declined: {{marca}} ···{{ultimos}}",
+        "avisoTitulo": "The card issuer declined the payment",
+        "codigo": "Code {{codigo}} · {{motivo}}.",
+        "medioUsado": "Method used",
+        "medioValor": "{{marca}} ···{{ultimos}}",
+        "intento": "Attempt",
+        "referencia": "Reference",
+        "oferta": "Offer",
+        "ofertaValor": "Valid until {{fecha}}",
+        "motivos": {
+          "51": "Insufficient funds",
+          "54": "Expired card",
+          "57": "Transaction not permitted for this card",
+          "61": "Exceeds the available limit",
+          "65": "Exceeds the allowed number of transactions",
+          "otro": "The bank did not authorise the charge"
+        }
       }
     },
     "polizaEmitida": {
