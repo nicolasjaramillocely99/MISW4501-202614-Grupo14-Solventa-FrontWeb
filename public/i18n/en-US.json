@@ -1406,6 +1406,219 @@
           }
         }
       }
+    },
+    "polizas": {
+      "titulo": "My policies",
+      "subtitulo": "Your active policies and their renewal.",
+      "cargando": "Loading your policies…",
+      "poliza": "Policy {{id}}",
+      "titular": "Holder",
+      "vigencia": "Coverage period",
+      "prima": "Premium",
+      "valorAsegurado": "Insured amount",
+      "ventanaAbierta": "Renewal is open until {{fecha}}.",
+      "ventanaAbre": "You will be able to renew it from {{fecha}}.",
+      "estado": {
+        "vigente": "Active",
+        "porVencer": "Expiring soon",
+        "enRenovacion": "Renewal in progress",
+        "renovada": "Renewed",
+        "noRenovada": "Not renewed",
+        "finalizada": "Ended"
+      },
+      "acciones": {
+        "renovar": "Renew",
+        "verRenovacion": "View renewal",
+        "reintentar": "Try again",
+        "radicar": "File a claim"
+      },
+      "vacio": {
+        "titulo": "You have no active policies yet",
+        "texto": "Once the payment of a policy is confirmed you will see it here, with its coverage period and the option to renew it."
+      },
+      "error": {
+        "titulo": "We could not load your policies",
+        "texto": "Try again in a few moments."
+      },
+      "subtituloDe": "Coverage, term and renewal of {{nombre}}",
+      "resumen": {
+        "titulo": "Summary of your policies",
+        "activas": "Active policies",
+        "porVencer": "Expiring soon",
+        "vence": "Expires on {{fecha}}"
+      },
+      "aviso": {
+        "titulo": "Your policy {{id}} expires in {{dias}} days",
+        "tituloUno": "Your policy {{id}} expires tomorrow",
+        "tituloHoy": "Your policy {{id}} expires today",
+        "texto": "Renew it online with the re-quoted conditions so your coverage is not interrupted."
+      },
+      "filtros": {
+        "estado": "Status",
+        "todas": "All"
+      },
+      "contador": "{{n}} policies",
+      "contadorUno": "1 policy",
+      "tabla": {
+        "poliza": "Policy",
+        "vigencia": "Coverage period",
+        "prima": "Premium",
+        "estado": "Status",
+        "acciones": "Actions",
+        "valorAsegurado": "Insured for {{monto}}"
+      }
+    },
+    "renovacion": {
+      "titulo": "Renew policy",
+      "cargando": "Loading the renewal…",
+      "subtitulo": "{{id}} · Renewal window open until {{fecha}}",
+      "insignia": {
+        "vence": "Expires on {{fecha}}",
+        "fueraDeVentana": "Outside the window",
+        "procesando": "Processing the payment",
+        "capturando": "Payment method missing",
+        "rechazado": "Payment declined",
+        "excepcion": "Under review",
+        "renovada": "Renewed",
+        "noRenovada": "Not renewed"
+      },
+      "acciones": {
+        "renovar": "Renew and pay {{monto}}",
+        "renovarSinMonto": "Renew and pay",
+        "misPolizas": "My policies",
+        "volverPolizas": "Back to my policies",
+        "certificado": "Download renewed certificate",
+        "reintentar": "Try again"
+      },
+      "recotizada": {
+        "titulo": "Re-quoted conditions",
+        "texto": "We re-quoted with your updated profile and the current insured amount.",
+        "textoConDescuento": "We re-quoted with your updated profile: no claims this year ({{descuento}} % discount) and the current insured amount."
+      },
+      "sinRecotizar": {
+        "titulo": "We keep your conditions",
+        "texto": "We could not re-quote right now, so we renew with the conditions of your current policy."
+      },
+      "condiciones": {
+        "titulo": "Your renewal conditions",
+        "condicion": "Condition",
+        "vigente": "Current period",
+        "renovacion": "Renewal (re-quoted)",
+        "prima": "Premium",
+        "vigencia": "Coverage period",
+        "valorAsegurado": "Insured amount",
+        "descuento": "Good experience discount",
+        "descuentoAplicado": "{{descuento}} % applied",
+        "coberturas": "Coverages",
+        "sinCambios": "No changes"
+      },
+      "coberturas": {
+        "death": "Death of the insured",
+        "total_permanent_disability": "Total and permanent disability"
+      },
+      "prima": {
+        "titulo": "New premium",
+        "desde": "From {{fecha}} · {{meses}} months"
+      },
+      "siNoRenuevas": {
+        "titulo": "If you do not renew",
+        "texto": "Your coverage ends on {{fecha}}. After that date the option to renew is no longer available and you will have to quote again."
+      },
+      "cobro": {
+        "titulo": "Payment and issuance",
+        "texto": "The renewal reuses the issuance flow: we charge the premium with the registered payment method, issue the renewed certificate and notify you, with no gap in coverage.",
+        "medioPago": "Payment method",
+        "sinMedio": "No method registered: you will enter it when you pay",
+        "primerCobro": "Charge",
+        "alConfirmar": "On confirmation · {{monto}}",
+        "certificado": "Renewed certificate",
+        "certificadoDisponible": "Available once the payment is confirmed",
+        "acepto": "I accept the renewed conditions and authorize the charge with the registered payment method."
+      },
+      "medio": {
+        "tarjeta": "{{marca}} •••• {{ultimos}}",
+        "pse": "PSE"
+      },
+      "fueraDeVentana": {
+        "titulo": "Renewal is not available",
+        "texto": "This policy is not inside its renewal window. The option to renew opens a few days before the coverage ends and is no longer available once it ends."
+      },
+      "estados": {
+        "procesando": {
+          "subtitulo": "{{id}} · We are processing your payment",
+          "titulo": "We are charging your renewal",
+          "texto": "We received your acceptance and we are charging {{monto}}. Keep this screen open: it updates by itself."
+        },
+        "capturando": {
+          "subtitulo": "{{id}} · Payment method missing",
+          "titulo": "Tell us how to pay",
+          "texto": "You accepted the renewal, but there is no registered payment method. Provide one before {{hasta}} so we can charge {{monto}}."
+        },
+        "rechazado": {
+          "subtitulo": "{{id}} · The payment was declined",
+          "titulo": "Your payment was declined",
+          "texto": "Your renewal request is still saved. Try another payment method before {{hasta}}; you do not need to create another request. Operations can also see this case."
+        },
+        "excepcion": {
+          "subtitulo": "{{id}} · Renewal under review",
+          "titulo": "We are reviewing your renewal",
+          "texto": "We could not complete the charge, but your request was not lost: the operations team is reviewing it and we will let you know."
+        },
+        "noRenovadaSinRespuesta": {
+          "subtitulo": "{{id}} · Policy not renewed",
+          "titulo": "Your policy was not renewed",
+          "texto": "We did not receive your answer before the renewal window closed, so the coverage ended. You can quote again with an advisor."
+        },
+        "noRenovadaPago": {
+          "subtitulo": "{{id}} · Policy not renewed",
+          "titulo": "Your policy was not renewed",
+          "texto": "The payment was not completed in time and the coverage ended. You can quote again with an advisor."
+        }
+      },
+      "otroMedio": {
+        "titulo": "Try another payment method",
+        "tituloEntregar": "Provide your payment method"
+      },
+      "solicitud": {
+        "titulo": "Your request",
+        "aceptadaEl": "Accepted on"
+      },
+      "confirmada": {
+        "titulo": "Renewal confirmed",
+        "subtitulo": "Renewed on {{fecha}} · Policy {{id}}",
+        "avisoTitulo": "Renewal confirmed",
+        "avisoTexto": "The charge of {{monto}} was confirmed and your coverage continues with no gap from {{desde}}. The renewed certificate is available and we also sent it to your e-mail.",
+        "detalle": "Renewal detail",
+        "nuevaPrima": "New premium",
+        "vigenciaRenovada": "Renewed coverage period",
+        "descuentoAplicado": "{{descuento}} % good experience",
+        "estadoPago": "Payment status",
+        "pagado": "Paid",
+        "estadoPoliza": "Policy status",
+        "estado": "Status",
+        "activaRenovada": "Active · renewed",
+        "polizaNueva": "Renewed policy",
+        "proximaRenovacion": "Next renewal",
+        "descuento": "Discount applied"
+      },
+      "errores": {
+        "aceptoRequerido": "To renew you must accept the renewed conditions and authorize the charge.",
+        "invalid_request": "We could not process the request. Try again.",
+        "policy_not_found": "We could not find the policy.",
+        "renewal_not_found": "This policy has no renewal yet.",
+        "renewal_not_available": "This policy is no longer inside its renewal window.",
+        "renewal_closed": "The renewal of this period already has an outcome.",
+        "renewal_unavailable": "We could not process the renewal. Try again in a few moments; your request is not lost.",
+        "plazoVencido": "The deadline to pay the renewal has passed."
+      },
+      "noEncontrada": {
+        "titulo": "We could not find the policy",
+        "texto": "Check that the link is correct or go back to your policies."
+      },
+      "errorCarga": {
+        "titulo": "We could not load the renewal",
+        "texto": "Try again in a few moments."
+      }
     }
   },
   "siniestros": {

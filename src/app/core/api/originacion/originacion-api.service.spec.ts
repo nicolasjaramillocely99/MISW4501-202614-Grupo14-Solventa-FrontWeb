@@ -6,6 +6,12 @@ import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
 import { CONFIRMACION_ENVIADA_DTO, FORMALIZACION_DTO } from '@testing/formalizacion-pruebas';
 
 import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
+import {
+  CONDICIONES_RENOVACION_DTO,
+  LISTA_POLIZAS_DTO,
+  RENOVACION_ACEPTADA_DTO,
+  RENOVACION_RENOVADA_DTO,
+} from '@testing/renovacion-pruebas';
 import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
 import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
 
@@ -16,6 +22,7 @@ import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-
 import { ErrorFormalizacion, SolicitudFormalizacion } from './formalizacion.modelos';
 import { ErrorOferta, mapearOferta } from './oferta.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
+import { ErrorRenovacion, mapearCondicionesRenovacion, mapearPolizaListada, mapearRenovacion } from './renovacion.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
 
 const DTO: PerfilRiesgoDto = {
@@ -367,6 +374,80 @@ describe('OriginacionApiService', () => {
       http.expectOne(URL_COBRO).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual(['charge_not_found', 'charge_unavailable']);
+    });
+  });
+
+  describe('pólizas y renovación en línea (HU-W1.5-02)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('lista las pólizas del asegurado', () => {
+      let recibido: unknown;
+      servicio.listarPolizas().subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${BASE}/v1/policies`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(LISTA_POLIZAS_DTO);
+
+      expect(recibido).toEqual(LISTA_POLIZAS_DTO.items.map(mapearPolizaListada));
+    });
+
+    it('consulta las condiciones de renovación codificando la póliza', () => {
+      let recibido: unknown;
+      servicio.consultarCondicionesRenovacion('pol/1').subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${BASE}/v1/policies/pol%2F1/renewal`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(CONDICIONES_RENOVACION_DTO);
+
+      expect(recibido).toEqual(mapearCondicionesRenovacion(CONDICIONES_RENOVACION_DTO));
+    });
+
+    it('acepta la renovación sin cuerpo: 201 la primera vez y 200 si ya estaba aceptada', () => {
+      const resultados: boolean[] = [];
+      servicio.renovarPoliza('pol-1').subscribe((r) => resultados.push(r.creada));
+      const primera = http.expectOne(`${BASE}/v1/policies/pol-1/renewal`);
+      expect(primera.request.method).toBe('POST');
+      expect(primera.request.body).toBeNull();
+      primera.flush(RENOVACION_ACEPTADA_DTO, { status: 201, statusText: 'Created' });
+
+      let recibido: unknown;
+      servicio.renovarPoliza('pol-1').subscribe((r) => {
+        resultados.push(r.creada);
+        recibido = r.renovacion;
+      });
+      http.expectOne(`${BASE}/v1/policies/pol-1/renewal`).flush(RENOVACION_ACEPTADA_DTO);
+
+      expect(resultados).toEqual([true, false]);
+      expect(recibido).toEqual(mapearRenovacion(RENOVACION_ACEPTADA_DTO));
+    });
+
+    it('consulta el estado de la renovación', () => {
+      let recibido: unknown;
+      servicio.consultarEstadoRenovacion('pol-1').subscribe((r) => (recibido = r));
+
+      http.expectOne(`${BASE}/v1/policies/pol-1/renewal/status`).flush(RENOVACION_RENOVADA_DTO);
+
+      expect(recibido).toEqual(mapearRenovacion(RENOVACION_RENOVADA_DTO));
+    });
+
+    it('traduce los errores del contrato y la falta de servicio a ErrorRenovacion', () => {
+      const codigos: string[] = [];
+      const alFallar = (e: ErrorRenovacion) => codigos.push(e.codigo);
+
+      servicio.consultarCondicionesRenovacion('pol-1').subscribe({ error: alFallar });
+      http
+        .expectOne(`${BASE}/v1/policies/pol-1/renewal`)
+        .flush({ error: 'renewal_not_available', message: 'm' }, { status: 409, statusText: 'Conflict' });
+      servicio.renovarPoliza('pol-1').subscribe({ error: alFallar });
+      http.expectOne(`${BASE}/v1/policies/pol-1/renewal`).error(new ProgressEvent('error'));
+      servicio.listarPolizas().subscribe({ error: alFallar });
+      http.expectOne(`${BASE}/v1/policies`).flush(null, { status: 503, statusText: 'Service Unavailable' });
+      servicio.consultarEstadoRenovacion('pol-1').subscribe({ error: alFallar });
+      http
+        .expectOne(`${BASE}/v1/policies/pol-1/renewal/status`)
+        .flush({ error: 'renewal_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect(codigos).toEqual(['renewal_not_available', 'renewal_unavailable', 'renewal_unavailable', 'renewal_not_found']);
     });
   });
 

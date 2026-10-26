@@ -58,6 +58,19 @@ import {
   traducirErrorFormalizacion,
 } from './formalizacion.modelos';
 import {
+  CondicionesRenovacion,
+  CondicionesRenovacionDto,
+  ListaPolizasDto,
+  PolizaListada,
+  Renovacion,
+  RenovacionDto,
+  ResultadoRenovacion,
+  mapearCondicionesRenovacion,
+  mapearPolizaListada,
+  mapearRenovacion,
+  traducirErrorRenovacion,
+} from './renovacion.modelos';
+import {
   EmisionContractual,
   EmisionContractualDto,
   mapearEmisionContractual,
@@ -115,7 +128,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
  * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02), la
- * oferta personalizada (HU-W1.2-03) y el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04).
+ * oferta personalizada (HU-W1.2-03), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04) y las pólizas del
+ * asegurado con su renovación en línea (HU-W1.5-02).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -284,6 +298,62 @@ export class OriginacionApiService {
       .pipe(
         map(mapearFormalizacion),
         catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
+      );
+  }
+
+  /**
+   * Lista las pólizas del asegurado con su ventana de renovación (`GET /v1/policies`, solo `insured`; HU-W1.5-02,
+   * pantalla A1). Falla con `ErrorRenovacion`.
+   */
+  listarPolizas(): Observable<PolizaListada[]> {
+    return this.http.get<ListaPolizasDto>(`${this.base}/v1/policies`).pipe(
+      map((lista) => lista.items.map(mapearPolizaListada)),
+      catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
+    );
+  }
+
+  /**
+   * Condiciones vigentes y recotizadas de una póliza dentro de su ventana (`GET /v1/policies/{id}/renewal`,
+   * pantalla A4). Falla con `ErrorRenovacion`: `renewal_not_available` fuera de la ventana (la opción de renovar no
+   * existe) y `renewal_closed` si el periodo ya se aceptó o renovó.
+   */
+  consultarCondicionesRenovacion(polizaId: string): Observable<CondicionesRenovacion> {
+    return this.http
+      .get<CondicionesRenovacionDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/renewal`)
+      .pipe(
+        map(mapearCondicionesRenovacion),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
+      );
+  }
+
+  /**
+   * Acepta la renovación y arranca su cobro (`POST /v1/policies/{id}/renewal`, «Renovar y pagar»). 201 la primera
+   * vez, 200 si el periodo ya estaba aceptado: es idempotente por póliza y periodo. Falla con `ErrorRenovacion`.
+   */
+  renovarPoliza(polizaId: string): Observable<ResultadoRenovacion> {
+    return this.http
+      .post<RenovacionDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/renewal`, null, {
+        observe: 'response',
+      })
+      .pipe(
+        map((respuesta) => ({
+          renovacion: mapearRenovacion(respuesta.body as RenovacionDto),
+          creada: respuesta.status === 201,
+        })),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
+      );
+  }
+
+  /**
+   * Renovación del periodo actual de una póliza con su cobro (`GET /v1/policies/{id}/renewal/status`, pantalla A4b,
+   * por *polling*). `renewal_not_found` significa que el periodo aún no tiene renovación.
+   */
+  consultarEstadoRenovacion(polizaId: string): Observable<Renovacion> {
+    return this.http
+      .get<RenovacionDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/renewal/status`)
+      .pipe(
+        map(mapearRenovacion),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
       );
   }
 
