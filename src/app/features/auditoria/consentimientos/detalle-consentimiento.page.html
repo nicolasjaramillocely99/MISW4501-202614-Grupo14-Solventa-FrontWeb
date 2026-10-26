@@ -1,0 +1,233 @@
+<div class="pagina" *transloco="let t; prefix: 'auditoria.consentimientos'">
+  <a class="volver" routerLink="/auditoria/consentimientos">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('detalle.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="pagina__titulo">{{ t('detalle.noEncontrado.titulo') }}</h1>
+        <p role="status">{{ t('detalle.noEncontrado.texto', { id: id() }) }}</p>
+        <a class="boton boton--primario" routerLink="/auditoria/consentimientos">{{ t('detalle.noEncontrado.buscarOtro') }}</a>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('detalle.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('detalle.error.texto') }}</p>
+        </div>
+        <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('detalle.reintentar') }}</button>
+      </section>
+    }
+    @case ('listo') {
+      @if (estado(); as e) {
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <div class="encabezado__fila">
+              <h1 #titulo class="pagina__titulo" tabindex="-1">{{ t('detalle.titulo', { id: e.consentimientoId }) }}</h1>
+              @if (etiqueta(); as etiqueta) {
+                <app-insignia-estado [tono]="etiqueta.tono">{{ t('estados.' + etiqueta.clave) }}</app-insignia-estado>
+              }
+            </div>
+            <p class="encabezado__resumen">
+              {{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}
+              @if (otorgado(); as fecha) {
+                · {{ t('detalle.otorgado', { fecha: fecha | formatoFechaHora: 'fechaHora' }) }}
+              }
+            </p>
+          </div>
+          <div class="acciones">
+            @if (e.revocable) {
+              <button type="button" class="boton-peligro" (click)="abrirConfirmacion()">
+                <svg lucideBan [size]="20" aria-hidden="true"></svg>{{ t('detalle.revocar') }}
+              </button>
+            }
+            @if (e.estado === 'partially_revoked' && sinConfirmar().length > 0) {
+              <button type="button" class="boton boton--primario" [disabled]="reintentando()" (click)="reintentar()">
+                <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
+                @if (reintentando()) {
+                  {{ t('detalle.reintentando') }}
+                } @else if (sinConfirmar().length === 1) {
+                  {{ t('detalle.reintentarEn', { entidad: sinConfirmar()[0].nombre }) }}
+                } @else {
+                  {{ t('detalle.reintentarEnVarias', { cantidad: sinConfirmar().length }) }}
+                }
+              </button>
+            }
+          </div>
+        </header>
+
+        @if (noRevocable(); as motivo) {
+          <p class="nota-estado">
+            <svg lucideInfo [size]="16" aria-hidden="true"></svg>{{ t('detalle.noRevocable.' + motivo) }}
+          </p>
+        }
+
+        @if (avisoCarrera(); as carrera) {
+          <div class="aviso aviso--informacion" role="status">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('detalle.carrera.' + carrera) }}</p>
+          </div>
+        }
+
+        @if (sinConfirmar().length > 0) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('detalle.parcial.titulo') }}</p>
+              <p>{{ t('detalle.parcial.texto') }}</p>
+              <ul class="aviso__lista">
+                @for (entidad of sinConfirmar(); track entidad.codigo) {
+                  <li>{{ t('detalle.parcial.noConfirmo', { entidad: entidad.nombre, hora: entidad.plazoHasta | formatoFechaHora: 'hora' }) }}</li>
+                }
+                @for (entidad of yaConfirmaron(); track entidad.codigo) {
+                  <li>{{ t('detalle.parcial.confirmo', { entidad: entidad.nombre, hora: entidad.confirmadaEn | formatoFechaHora: 'hora' }) }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+        } @else if (esperando().length > 0) {
+          <div class="aviso aviso--informacion" role="status">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ e.estado === 'revoked' ? t('detalle.enCurso.titulo') : t('detalle.enCurso.tituloReintento') }}</p>
+              <p>{{ t('detalle.enCurso.texto', { hora: plazo() | formatoFechaHora: 'hora' }) }}</p>
+            </div>
+          </div>
+        }
+
+        @if (actualizacion() === 'detenido') {
+          <div class="aviso aviso--advertencia" role="status">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('detalle.sondeoDetenido.titulo') }}</p>
+              <p>{{ t('detalle.sondeoDetenido.texto') }}</p>
+              <button type="button" class="boton boton--secundario" (click)="actualizar()">{{ t('detalle.sondeoDetenido.actualizar') }}</button>
+            </div>
+          </div>
+        }
+
+        @if (falloReintento()) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('detalle.falloReintento') }}</p>
+          </div>
+        }
+
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            <!-- Provisional (HU-W4.2-02 F2): finalidad, vigencia, canal y contacto llegan con HU-W4.2-01. -->
+            <section class="tarjeta" aria-labelledby="titulo-datos">
+              <h2 id="titulo-datos" class="seccion__titulo">{{ t('detalle.datos.titulo') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('detalle.datos.cliente') }}</dt>
+                  <dd>{{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.datos.alcance') }}</dt>
+                  <dd>
+                    @for (fuente of e.alcance; track fuente.codigo; let ultima = $last) {
+                      {{ fuente.codigo | traducirCodigo: 'auditoria.consentimientos.fuentes' }}@if (!ultima) {,
+                      }
+                    }
+                  </dd>
+                </div>
+              </dl>
+            </section>
+
+            <app-historial-consentimiento [estado]="e" />
+          </div>
+
+          <div class="cuerpo__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-alcance">
+              <h2 id="titulo-alcance" class="seccion__titulo">{{ t('detalle.alcance.titulo') }}</h2>
+              <ul class="alcance">
+                @for (fuente of e.alcance; track fuente.codigo) {
+                  <li>
+                    <svg lucideCircleCheck [size]="18" aria-hidden="true"></svg>
+                    <span>
+                      <strong>{{ fuente.codigo | traducirCodigo: 'auditoria.consentimientos.fuentes' }}</strong>:
+                      @for (categoria of fuente.categoriasDatos; track categoria; let ultima = $last) {
+                        {{ categoria | traducirCodigo: 'auditoria.consentimientos.categorias' }}@if (!ultima) {,
+                        }
+                      }
+                      <span class="alcance__vigencia">{{ fuente.vigencia | traducirCodigo: 'auditoria.consentimientos.vigencias' }}</span>
+                    </span>
+                  </li>
+                }
+              </ul>
+            </section>
+
+            @if (e.revocacion; as revocacion) {
+              <section class="tarjeta tarjeta--destacada" aria-labelledby="titulo-efecto">
+                <h2 id="titulo-efecto" class="seccion__titulo">{{ t('detalle.efecto.titulo') }}</h2>
+                <p>{{ t('detalle.efecto.texto') }}</p>
+              </section>
+
+              <section class="tarjeta" aria-labelledby="titulo-registro">
+                <h2 id="titulo-registro" class="seccion__titulo">{{ t('detalle.registro.titulo') }}</h2>
+                <dl class="datos datos--columna">
+                  <div>
+                    <dt>{{ t('detalle.registro.solicitadaPor') }}</dt>
+                    <dd>
+                      @switch (solicitante()) {
+                        @case ('tu') {
+                          {{ t('detalle.registro.solicitantes.tu', { nombre: nombreSesion() }) }}
+                        }
+                        @case ('titular') {
+                          {{ t('detalle.registro.solicitantes.titular') }}
+                        }
+                        @default {
+                          {{ t('detalle.registro.solicitantes.operaciones') }}
+                        }
+                      }
+                    </dd>
+                  </div>
+                  @if (revocacion.motivo) {
+                    <div>
+                      <dt>{{ t('detalle.registro.motivo') }}</dt>
+                      <dd>{{ revocacion.motivo | traducirCodigo: 'auditoria.consentimientos.motivos' }}</dd>
+                    </div>
+                  }
+                  @if (revocacion.referencia) {
+                    <div>
+                      <dt>{{ t('detalle.registro.referencia') }}</dt>
+                      <dd>{{ revocacion.referencia }}</dd>
+                    </div>
+                  }
+                  <div>
+                    <dt>{{ t('detalle.registro.fecha') }}</dt>
+                    <dd>{{ revocacion.solicitadaEn | formatoFechaHora: 'fechaHora' }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.registro.canal') }}</dt>
+                    <dd>{{ revocacion.canal | traducirCodigo: 'auditoria.consentimientos.canales' }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.registro.comprobante') }}</dt>
+                    <dd>{{ revocacion.numeroComprobante }} · {{ t('detalle.registro.enLaApp') }}</dd>
+                  </div>
+                </dl>
+              </section>
+            } @else {
+              <section class="tarjeta tarjeta--destacada" aria-labelledby="titulo-reglas">
+                <h2 id="titulo-reglas" class="seccion__titulo">{{ t('detalle.reglas.titulo') }}</h2>
+                <p>{{ t('detalle.reglas.texto') }}</p>
+              </section>
+            }
+          </div>
+        </div>
+
+        <app-entidades-revocacion [estado]="e" />
+
+        <app-confirmar-revocacion [estado]="e" [enviando]="enviando()" [error]="errorRevocacion()" (confirmar)="revocar($event)" />
+      }
+    }
+  }
+</div>

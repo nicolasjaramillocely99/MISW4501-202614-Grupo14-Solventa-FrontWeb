@@ -1,14 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { environment } from '@env/environment';
+import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
 import { EMISION_COMPLETADA_DTO } from '@testing/emision-contractual-pruebas';
 
 import { ErrorEmisionContractual, mapearEmisionContractual } from './emision-contractual.modelos';
 import { OriginacionApiService } from './originacion-api.service';
 
 describe('OriginacionApiService · emisión contractual (HU-W1.3-03)', () => {
-  const GATEWAY = environment.apiGatewayUrl.replace(/\/+$/, '');
+  const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
   let servicio: OriginacionApiService;
   let http: HttpTestingController;
 

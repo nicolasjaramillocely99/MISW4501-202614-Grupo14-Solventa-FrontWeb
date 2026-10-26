@@ -31,11 +31,13 @@ export const USUARIOS_PRUEBA: Readonly<Record<RolPrueba, UsuarioPrueba>> = {
 
 /**
  * Endpoints de Cognito que se interceptan: el regional de AWS (staging y producción) y el del ambiente
- * local, que apunta al emulador (`cognito.endpoint`). Así estas pruebas nunca dependen de él.
+ * local, que apunta al emulador (`configuracionLocal.cognito.endpoint`, T5). Así estas pruebas nunca dependen de él.
  */
+const COGNITO_LOCAL = ambienteLocal.configuracionLocal?.cognito.endpoint;
+
 export const URLS_COGNITO: readonly string[] = [
   'https://cognito-idp.us-east-2.amazonaws.com/',
-  ambienteLocal.cognito.endpoint,
+  ...(COGNITO_LOCAL ? [COGNITO_LOCAL] : []),
 ];
 
 const esCognito = (url: URL): boolean => URLS_COGNITO.includes(url.href);

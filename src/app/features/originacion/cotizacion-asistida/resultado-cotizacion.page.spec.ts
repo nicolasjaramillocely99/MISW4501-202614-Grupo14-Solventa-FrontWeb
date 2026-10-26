@@ -70,7 +70,7 @@ describe('ResultadoCotizacionPage (S2 / S2b · HU-W1.1-01)', () => {
 
       expect(screen.getByRole('heading', { level: 1, name: 'Cotización asistida' })).toBeTruthy();
       expect(screen.getByText(`Código ${VIGENTE.cotizacionId}`)).toBeTruthy();
-      expect(screen.getByText('Vigente')).toBeTruthy();
+      expect(screen.getByText('Vigente 24 h')).toBeTruthy();
       expect(screen.getByText(/132\.800 COP/)).toBeTruthy();
       expect(screen.getByText('Prima mensual')).toBeTruthy();
       expect(screen.getByText('Fallecimiento del asegurado')).toBeTruthy();
@@ -83,6 +83,14 @@ describe('ResultadoCotizacionPage (S2 / S2b · HU-W1.1-01)', () => {
       expect(screen.getByText('Estándar')).toBeTruthy();
       expect(screen.getByText('Fuentes externas en línea')).toBeTruthy();
       expect(screen.getByText('v1')).toBeTruthy();
+    });
+
+    it('ofrece formalizar la compra, que lleva a la pantalla de formalización (HU-W1.1-03)', async () => {
+      await renderizar(of(VIGENTE));
+
+      const formalizar = screen.getByRole('link', { name: 'Formalizar compra' });
+
+      expect(formalizar.getAttribute('href')).toBe(`/originacion/cotizaciones/${VIGENTE.cotizacionId}/formalizar`);
     });
 
     it('confirma que la cotización quedó generada con su vigencia y ofrece una nueva', async () => {
@@ -126,6 +134,7 @@ describe('ResultadoCotizacionPage (S2 / S2b · HU-W1.1-01)', () => {
       expect(screen.getByRole('alert').textContent).toContain('no se puede formalizar');
       expect(screen.getByText('La cotización venció')).toBeTruthy();
       expect(screen.queryByText('Cotización generada')).toBeNull();
+      expect(screen.queryByRole('link', { name: 'Formalizar compra' })).toBeNull();
       const nueva = screen.getByRole('link', { name: 'Generar una nueva cotización' });
       expect(nueva.getAttribute('href')).toBe('/originacion/cotizaciones/nueva?documento=1032456789');
       expect(screen.queryByRole('link', { name: 'Nueva cotización' })).toBeNull();

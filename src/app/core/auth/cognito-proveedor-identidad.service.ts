@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '@env/environment';
+import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { firstValueFrom } from 'rxjs';
 
 import {
@@ -30,7 +30,7 @@ const ERRORES_ACCION_REQUERIDA = new Set([
 const ERRORES_RECHAZO = new Set(['NotAuthorizedException', 'UserNotFoundException']);
 
 /**
- * Configuración de Cognito de un ambiente (`src/environments/*.ts`). `endpoint` es opcional: solo lo
+ * Configuración de Cognito de un ambiente (`ConfiguracionEjecucion.cognito`, T5). `endpoint` es opcional: solo lo
  * define un ambiente que usa otro servidor compatible con el API de Cognito (p. ej. el emulador local);
  * sin él se usa el endpoint regional de AWS.
  */
@@ -53,8 +53,9 @@ export function urlCognito({ region, endpoint }: ConfiguracionCognito): string {
 @Injectable({ providedIn: 'root' })
 export class CognitoProveedorIdentidadService extends ProveedorIdentidad {
   private readonly http = inject(HttpClient);
-  private readonly url = urlCognito(environment.cognito);
-  private readonly clienteId = environment.cognito.clienteId;
+  private readonly configuracion = inject(CONFIGURACION_EJECUCION).cognito;
+  private readonly url = urlCognito(this.configuracion);
+  private readonly clienteId = this.configuracion.clienteId;
 
   async iniciarSesion(correo: string, contrasena: string): Promise<TokensIdentidad> {
     const respuesta = await this.llamar<RespuestaInitiateAuth>(

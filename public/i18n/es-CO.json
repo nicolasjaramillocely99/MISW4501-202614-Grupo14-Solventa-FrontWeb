@@ -635,11 +635,13 @@
         "variasCuotas": "{{n}} cuotas",
         "banco": "Banco",
         "pseAyuda": "Te llevaremos al portal de tu banco para autorizar el débito.",
-        "guardar": "Guardar este medio de pago para renovaciones y pagos de siniestros",
         "cifrado": "Pago cifrado · pasarela certificada PCI DSS · exactamente un cobro por aceptación",
+        "confirmar": "Pagar mi primera prima",
+        "reintentar": "Reintentar el pago",
         "enviando": "Procesando…",
         "errorTarjeta": "La pasarela no aceptó la tarjeta. Revisa los datos e inténtalo de nuevo.",
         "errorPasarela": "No pudimos contactar la pasarela de pago. Inténtalo de nuevo en un momento.",
+        "guardar": "Guardar este medio de pago para renovaciones y pagos de siniestros",
         "volver": "Volver a la oferta",
         "pagar": "Pagar {{monto}}",
         "resumen": "Resumen",
@@ -649,7 +651,6 @@
         "totalHoy": "Total a pagar hoy",
         "elegirOtro": "Elige otro medio de pago",
         "otraTarjeta": "Otra tarjeta débito o crédito",
-        "reintentar": "Reintentar el pago",
         "tipoDePersona": "Tipo de persona",
         "personaNatural": "Natural",
         "personaJuridica": "Jurídica"
@@ -661,9 +662,10 @@
       },
       "rechazado": {
         "titulo": "No pudimos procesar tu pago",
+        "texto": "Tu aceptación sigue vigente y la emisión quedó como excepción visible para nuestro equipo de operaciones; puedes reintentar con otro medio de pago sin volver a empezar.",
+        "conLaTarjeta": "Rechazada: {{marca}} ···{{ultimos}}",
         "avisoTitulo": "Pago rechazado por el emisor de la tarjeta",
         "codigo": "Código {{codigo}} · {{motivo}}.",
-        "texto": "Tu aceptación sigue vigente y la emisión quedó como excepción visible para nuestro equipo de operaciones; puedes reintentar con otro medio de pago sin volver a empezar.",
         "medioUsado": "Medio usado",
         "medioValor": "{{marca}} ···{{ultimos}}",
         "intento": "Intento",
@@ -740,6 +742,7 @@
         "seccionCliente": "Datos del cliente",
         "buscar": "Buscar cliente",
         "buscando": "Buscando…",
+        "cancelar": "Cancelar",
         "ayudaDocumento": "Escribe el documento sin puntos ni guiones. Si el cliente ya existe, sus datos se cargan solos.",
         "ayudaEdad": "Entre {{min}} y {{max}} años.",
         "ayudaMonto": "Saldo del crédito hipotecario a asegurar, en COP.",
@@ -813,8 +816,9 @@
         "cargando": "Cargando la cotización…",
         "titulo": "Cotización asistida",
         "codigo": "Código {{id}}",
+        "generadaEl": "generada el {{fecha}}",
         "insignia": {
-          "vigente": "Vigente",
+          "vigente": "Vigente {{horas}} h",
           "provisional": "Provisional",
           "vencida": "Vencida"
         },
@@ -850,7 +854,7 @@
           "vence": "Vigente hasta"
         },
         "cliente": {
-          "titulo": "Cliente y crédito",
+          "titulo": "Cliente",
           "nombre": "Nombre",
           "documento": "Documento",
           "correo": "Correo electrónico",
@@ -859,8 +863,9 @@
           "plazoMeses": "{{meses}} meses"
         },
         "perfil": {
-          "titulo": "Perfil de riesgo",
+          "titulo": "Explicación del precio",
           "categoria": "Categoría",
+          "puntaje": "Puntaje",
           "origen": "Origen del perfil",
           "fecha": "Fecha del perfil",
           "tarifa": "Versión de la tarifa",
@@ -880,7 +885,8 @@
         "acciones": {
           "nueva": "Nueva cotización",
           "generarNueva": "Generar una nueva cotización",
-          "reintentar": "Reintentar"
+          "reintentar": "Reintentar",
+          "formalizar": "Formalizar compra"
         },
         "noEncontrada": {
           "titulo": "No encontramos la cotización",
@@ -1069,6 +1075,995 @@
         "acciones": {
           "registrar": "Registrar decisión",
           "registrando": "Registrando la decisión…"
+        }
+      }
+    },
+    "emisiones": {
+      "titulo": "Monitoreo de emisiones",
+      "descripcion": "Estado en tiempo real de las emisiones en curso y sus excepciones. Las que fluyen sin excepciones no requieren ninguna acción.",
+      "panel": "Emisiones",
+      "cargando": "Cargando emisiones…",
+      "actualizadaHace": {
+        "segundos": "Actualizado hace {{n}} s",
+        "minutos": "Actualizado hace {{n}} min"
+      },
+      "actualizacionFallida": "No pudimos actualizar la lista. Mostramos los últimos datos que tenemos y lo intentaremos de nuevo.",
+      "sinAtender": "Sin atender",
+      "tarjetas": {
+        "etiqueta": "Resumen de las emisiones",
+        "aceptadas": {
+          "etiqueta": "Aceptadas",
+          "texto": "Suscripción en curso"
+        },
+        "enCobro": {
+          "etiqueta": "En cobro",
+          "texto": "Cobro de la prima en curso",
+          "conReintentos": "{{n}} con reintentos"
+        },
+        "activas": {
+          "etiqueta": "Activas hoy",
+          "texto": "Cobertura activada"
+        },
+        "notificadas": {
+          "etiqueta": "Notificadas",
+          "texto": "Documento entregado hoy"
+        },
+        "excepcion": {
+          "etiqueta": "En excepción",
+          "texto": "Requieren intervención",
+          "sinAtender": "Requieren intervención · {{n}} sin atender"
+        }
+      },
+      "estados": {
+        "accepted": "Aceptada",
+        "charging": "En cobro",
+        "active": "Activa",
+        "notified": "Notificada",
+        "exception": "En excepción"
+      },
+      "canales": {
+        "web": "Web",
+        "mobile": "Móvil",
+        "advisor": "Asesor"
+      },
+      "motivos": {
+        "retry_window_expired": "La pasarela de pagos no respondió en la ventana de 24 horas",
+        "payment_rejected": "Pago rechazado por la pasarela",
+        "payment_method_missing": "El cliente no entregó un medio de pago a tiempo",
+        "document_generation_failed": "El generador de documentos falló tras todos los intentos",
+        "notification_failed": "El aviso al asegurado no se pudo entregar tras todos los intentos"
+      },
+      "pasos": {
+        "underwriting": "Suscripción automática en curso",
+        "awaiting_payment_method": "Esperando el medio de pago del cliente",
+        "premium_charge": "Cobro de la prima en curso",
+        "premium_charge_retrying": "Reintento {{n}} · pasarela sin respuesta",
+        "contract_document": "Generando el documento contractual",
+        "notification": "Documento generado · aviso pendiente",
+        "completed": "Documento generado y notificado",
+        "retry_window_expired": "Dependencia caída · pasarela de pagos",
+        "payment_rejected": "Pago rechazado por la pasarela",
+        "payment_method_missing": "El cliente no entregó un medio de pago a tiempo",
+        "document_generation_failed": "Dependencia caída · generador de documentos",
+        "notification_failed": "Dependencia caída · canal de correo"
+      },
+      "filtros": {
+        "estado": "Estado",
+        "desde": "Desde",
+        "hasta": "Hasta",
+        "canal": "Canal",
+        "todos": "Todos",
+        "todosCanales": "Todos",
+        "formatoFecha": "DD/MM/AAAA",
+        "limpiar": "Limpiar filtros",
+        "rangoInvalido": "La fecha inicial no puede ser posterior a la final."
+      },
+      "acciones": {
+        "actualizar": "Actualizar",
+        "reintentar": "Reintentar"
+      },
+      "vacio": {
+        "general": "No hay emisiones por mostrar.",
+        "filtrado": "No hay emisiones con estos filtros."
+      },
+      "error": {
+        "titulo": "No pudimos cargar las emisiones",
+        "texto": "Intenta de nuevo en unos segundos."
+      },
+      "reintentada": {
+        "titulo": "Reintento registrado",
+        "texto": "Se reintentó la emisión {{id}}. La acción quedó registrada con tu usuario y la fecha."
+      },
+      "tabla": {
+        "leyenda": "Emisiones, la más reciente aceptada primero",
+        "columnas": {
+          "emision": "Emisión",
+          "cliente": "Cliente",
+          "canal": "Canal",
+          "estado": "Estado",
+          "ultimoPaso": "Último paso",
+          "hora": "Hora",
+          "acciones": "Acciones"
+        },
+        "sinNombre": "Sin nombre registrado",
+        "ver": "Ver",
+        "verEtiqueta": "Ver la emisión {{id}}",
+        "gestionar": "Gestionar",
+        "gestionarEtiqueta": "Gestionar la excepción de la emisión {{id}}"
+      },
+      "detalle": {
+        "titulo": "Detalle de la emisión",
+        "tituloExcepcion": "Excepción de emisión",
+        "cerrar": "Cerrar",
+        "cliente": "Cliente",
+        "canal": "Canal",
+        "estado": "Estado",
+        "motivo": "Motivo",
+        "falloEn": "Falló el",
+        "ultimoPaso": "Último paso",
+        "prima": "Prima",
+        "intentos": "Intentos",
+        "aceptadaEn": "Aceptada el",
+        "oferta": "Oferta",
+        "poliza": "Póliza",
+        "notificadaEn": "Notificada el",
+        "sinAtender": "Lleva más de 30 minutos sin que un analista la atienda.",
+        "historial": {
+          "titulo": "Acciones registradas",
+          "cargando": "Cargando el historial…",
+          "error": "No pudimos cargar el historial.",
+          "vacio": "Aún nadie ha actuado sobre esta emisión.",
+          "por": "Por {{autor}}",
+          "accion": {
+            "resume": "Cobro reintentado",
+            "retry": "Emisión contractual reintentada"
+          }
+        },
+        "nota": {
+          "etiqueta": "Nota del reintento",
+          "ayuda": "Obligatoria. Queda registrada con tu usuario y la fecha (máximo {{max}} caracteres).",
+          "errores": {
+            "requerida": "Escribe una nota para reintentar.",
+            "larga": "La nota es demasiado larga."
+          }
+        },
+        "errores": {
+          "issuance_not_retryable": {
+            "titulo": "Ya no hay nada que reintentar",
+            "texto": "Otro analista o el proceso automático ya lo atendió. No se cobró ni se avisó de nuevo. Actualiza la lista para ver su estado."
+          },
+          "issuance_not_found": {
+            "titulo": "No encontramos la emisión",
+            "texto": "La aceptación ya no tiene un cobro ni una emisión contractual que reintentar."
+          },
+          "invalid_request": {
+            "titulo": "La nota no es válida",
+            "texto": "Revisa que tenga entre 1 y 500 caracteres."
+          },
+          "charge_unavailable": {
+            "titulo": "No pudimos reintentar",
+            "texto": "No se hizo ningún cambio. Intenta de nuevo en unos segundos."
+          }
+        },
+        "acciones": {
+          "cancelar": "Cancelar",
+          "reintentar": "Reintentar",
+          "reintentando": "Reintentando…",
+          "actualizar": "Actualizar lista",
+          "cerrar": "Cerrar"
+        }
+      }
+    },
+    "formalizacion": {
+      "cargando": "Cargando la cotización…",
+      "titulo": "Formalizar compra",
+      "subtitulo": "Confirma los datos y las condiciones ofertadas. La formalización dispara la emisión sin pasos manuales adicionales.",
+      "volver": "Cotización {{id}}",
+      "insignia": {
+        "vigente": "Cotización vigente",
+        "vencida": "Vencida"
+      },
+      "acciones": {
+        "volver": "Volver",
+        "nueva": "Nueva cotización",
+        "generarNueva": "Generar una nueva cotización",
+        "reintentar": "Reintentar",
+        "volverCotizacion": "Volver a la cotización",
+        "verCotizacion": "Ver cotización",
+        "formalizar": "Formalizar y emitir",
+        "formalizando": "Formalizando…",
+        "enviarCodigo": "Enviar código al cliente",
+        "reenviarCodigo": "Reenviar código"
+      },
+      "cliente": {
+        "titulo": "Confirmación de datos del cliente",
+        "tituloConfirmados": "Datos confirmados del cliente",
+        "nombre": "Cliente",
+        "documento": "Documento",
+        "correo": "Correo"
+      },
+      "condiciones": {
+        "titulo": "Condiciones ofertadas",
+        "primaMensual": "Prima mensual",
+        "valorAsegurado": "Valor asegurado",
+        "vigencia": "Vigencia",
+        "plazoAnio": "{{n}} año",
+        "plazoAnios": "{{n}} años",
+        "plazoMeses": "{{n}} meses",
+        "cotizacionVigenteHasta": "Cotización vigente hasta",
+        "coberturas": "Coberturas",
+        "cobertura": {
+          "death": "Fallecimiento del asegurado",
+          "total_permanent_disability": "Incapacidad total y permanente"
+        }
+      },
+      "aceptacion": {
+        "titulo": "Aceptación del cliente",
+        "texto": "Registra cómo y cuándo el cliente aceptó las condiciones. Este registro queda asociado a la póliza para auditoría.",
+        "tituloRegistrada": "Aceptación registrada",
+        "textoRegistrada": "Cómo y cuándo aceptó el cliente las condiciones. Este registro queda asociado a la póliza para auditoría.",
+        "medio": "Medio de aceptación",
+        "fechaHora": "Fecha y hora",
+        "formatoFecha": "DD/MM/AAAA · HH:MM",
+        "referencia": "Referencia",
+        "sinReferencia": "Sin referencia (código de confirmación)",
+        "codigoTexto": "Para este medio, el cliente recibe un código por correo y debe dártelo.",
+        "codigoEnviado": "Enviamos el código a {{correo}}. Vale hasta las {{hasta}}.",
+        "codigo": "Código de confirmación",
+        "codigoAyuda": "Son 6 dígitos. El cliente los recibe por correo.",
+        "confirmo": "Confirmo que el cliente aceptó las condiciones ofertadas y autorizó el cobro de la prima con el medio indicado."
+      },
+      "metodos": {
+        "recorded_call": "Llamada grabada",
+        "remote_signature": "Firma remota",
+        "confirmation_code": "Código de confirmación"
+      },
+      "pasos": {
+        "titulo": "Qué ocurre al formalizar",
+        "tituloProximos": "Próximos pasos de emisión",
+        "items": {
+          "1": {
+            "titulo": "Suscripción automática",
+            "texto": "Si enruta a decisión humana, el caso llega a tu bandeja"
+          },
+          "2": {
+            "titulo": "Cobro de la prima",
+            "texto": "Reintentos idempotentes si la pasarela falla"
+          },
+          "3": {
+            "titulo": "Activación de la cobertura",
+            "texto": "Solo con pago confirmado"
+          },
+          "4": {
+            "titulo": "Documento y notificación",
+            "texto": "El cliente recibe la póliza por correo y en la app"
+          }
+        }
+      },
+      "registro": {
+        "titulo": "Registro",
+        "texto": "Queda registrado: asesor, fecha y hora, cotización de origen y la aceptación del cliente."
+      },
+      "vencida": {
+        "titulo": "La cotización venció el {{fecha}}",
+        "texto": "No es posible formalizar la compra con una cotización vencida. Genera una nueva cotización con los datos del cliente; el motor recalculará el perfil y el precio puede variar.",
+        "subtitulo": "{{nombre}} · CC {{documento}} · generada el {{fecha}}",
+        "tarjeta": "Cotización vencida",
+        "primaCotizada": "Prima cotizada",
+        "generada": "Generada",
+        "vencio": "Venció",
+        "siguientePaso": "Siguiente paso",
+        "siguienteTexto": "Genera una nueva cotización con los datos precargados del cliente. El motor recalcula el perfil y el precio."
+      },
+      "formalizada": {
+        "titulo": "Compra formalizada",
+        "subtitulo": "La compra quedó registrada con la aceptación del cliente. La emisión continúa automáticamente, sin pasos manuales adicionales."
+      },
+      "trazabilidad": {
+        "titulo": "Trazabilidad de la formalización",
+        "texto": "Queda registrado: asesor {{asesor}}, fecha y hora {{fecha}}, cotización de origen {{cotizacion}} y la aceptación del cliente."
+      },
+      "noEncontrada": {
+        "titulo": "No encontramos la cotización",
+        "texto": "La cotización no existe o el código no es correcto. Genera una nueva."
+      },
+      "errorCarga": {
+        "titulo": "No pudimos cargar la cotización",
+        "texto": "Hubo un problema al consultar la cotización. Inténtalo de nuevo."
+      },
+      "errores": {
+        "invalid_request": "No pudimos leer la solicitud. Revisa los datos e inténtalo de nuevo.",
+        "quote_not_found": "La cotización ya no existe. Genera una nueva.",
+        "already_formalized": "Otro asesor ya formalizó la compra de esta cotización.",
+        "consent_code_required": "Primero envía el código de confirmación al cliente.",
+        "invalid_confirmation_code": "El código no es el que recibió el cliente. Revísalo con él.",
+        "confirmation_code_expired": "El código venció. Reenvía uno nuevo al cliente.",
+        "too_many_attempts": "Se agotaron los intentos con este código. Genera una cotización nueva.",
+        "too_many_codes": "Ya se enviaron todos los códigos permitidos para esta cotización.",
+        "code_delivery_unavailable": "No pudimos enviar el código al cliente. Inténtalo de nuevo en unos minutos, o registra otro medio de aceptación.",
+        "formalization_not_found": "La compra aún no se formalizó.",
+        "formalization_unavailable": "No pudimos formalizar la compra. Inténtalo de nuevo en unos segundos.",
+        "campos": {
+          "fecha": {
+            "required": "Indica cuándo aceptó el cliente.",
+            "invalid_format": "La fecha y la hora no son válidas.",
+            "out_of_range": "El cliente no pudo aceptar en el futuro ni antes de que existiera la cotización."
+          },
+          "referencia": {
+            "required": "Indica la referencia de la grabación o de la firma.",
+            "invalid_format": "La referencia solo admite letras, números y . _ : / # - (máximo {{max}} caracteres)."
+          },
+          "codigo": {
+            "required": "Ingresa el código de 6 dígitos que recibió el cliente.",
+            "invalid_format": "El código son 6 dígitos."
+          },
+          "metodo": {
+            "required": "Elige el medio de aceptación.",
+            "invalid_format": "Elige un medio de aceptación de la lista."
+          },
+          "confirmo": {
+            "required": "Confirma que el cliente aceptó las condiciones y autorizó el cobro."
+          }
+        }
+      }
+    }
+  },
+  "siniestros": {
+    "estados": {
+      "active": "Radicado"
+    },
+    "catalogo": {
+      "ramos": {
+        "autos": "Autos",
+        "hogar": "Hogar"
+      },
+      "tipos": {
+        "colision": {
+          "nombre": "Colisión con daños al vehículo",
+          "corto": "Colisión"
+        },
+        "hurto": {
+          "nombre": "Hurto",
+          "corto": "Hurto"
+        },
+        "danoTerceros": {
+          "nombre": "Daño a terceros",
+          "corto": "Daño a terceros"
+        },
+        "cristales": {
+          "nombre": "Cristales",
+          "corto": "Cristales"
+        },
+        "danoAgua": {
+          "nombre": "Daño por agua",
+          "corto": "Daño por agua"
+        },
+        "otro": {
+          "nombre": "Otro",
+          "corto": "Otro"
+        }
+      },
+      "soportes": {
+        "fotosVehiculo": "Fotos del vehículo",
+        "documentoConductor": "Documento del conductor",
+        "informeTransito": "Informe de tránsito o croquis",
+        "denuncia": "Denuncia ante autoridad",
+        "fotosCristales": "Fotos de los cristales",
+        "documentoSoporte": "Documento de soporte",
+        "fotosDano": "Fotos del daño",
+        "cotizacionReparacion": "Factura o cotización de la reparación"
+      }
+    },
+    "radicacion": {
+      "volver": "Mis siniestros",
+      "cargando": "Consultando tus pólizas…",
+      "titulo": "Radicar un siniestro",
+      "descripcion": "El caso se crea en estado Activo cuando adjuntas todos los soportes obligatorios. También puedes radicar desde la app con fotos geoetiquetadas.",
+      "lateral": "Estado de la radicación",
+      "error": {
+        "opciones": {
+          "titulo": "No pudimos consultar tus pólizas",
+          "texto": "El servicio de pólizas no respondió. Intenta de nuevo en unos minutos."
+        },
+        "caso": {
+          "titulo": "No pudimos consultar tu siniestro",
+          "texto": "El siniestro quedó radicado, pero ahora no podemos mostrarlo. Intenta de nuevo en unos minutos."
+        },
+        "casoNoEncontrado": {
+          "titulo": "No encontramos ese siniestro",
+          "texto": "El enlace no corresponde a ningún siniestro tuyo. Puedes radicar uno nuevo."
+        }
+      },
+      "acciones": {
+        "radicar": "Radicar siniestro",
+        "radicando": "Radicando…",
+        "reintentar": "Reintentar",
+        "radicarOtro": "Radicar un siniestro",
+        "recargarPolizas": "Volver a cargar mis pólizas",
+        "radicarComoNuevo": "Radicar como un caso nuevo"
+      },
+      "sinPolizas": {
+        "titulo": "No tienes pólizas activas para radicar",
+        "texto": "Solo puedes radicar sobre una póliza activa de Autos u Hogar. Los siniestros de Viaje se pagan de forma automática."
+      },
+      "datos": {
+        "titulo": "Datos del siniestro"
+      },
+      "campos": {
+        "polizaId": {
+          "etiqueta": "Póliza afectada",
+          "elegir": "Elige una póliza"
+        },
+        "tipoSiniestro": {
+          "etiqueta": "Tipo de siniestro",
+          "elegir": "Elige el tipo de siniestro",
+          "ayuda": "Los soportes requeridos dependen del tipo"
+        },
+        "ocurridoEn": {
+          "etiqueta": "Fecha y hora del hecho",
+          "ayuda": "Fecha y hora en que ocurrió el hecho"
+        },
+        "lugar": {
+          "etiqueta": "Lugar del hecho"
+        },
+        "descripcion": {
+          "etiqueta": "Descripción de los hechos",
+          "contador": "{{actual}} de {{maximo}} caracteres"
+        }
+      },
+      "errores": {
+        "campo": {
+          "requerido": "Este dato es obligatorio.",
+          "fechaFutura": "La fecha del hecho no puede ser posterior a hoy.",
+          "fechaAntigua": "La fecha del hecho no puede ser de hace más de 5 años.",
+          "fechaFueraRango": "La fecha del hecho no puede ser futura ni de hace más de 5 años.",
+          "fueraVigencia": "La fecha del hecho está fuera de la vigencia de la póliza.",
+          "lugarLongitud": "Escribe entre 3 y 160 caracteres.",
+          "descripcionLongitud": "Escribe entre 10 y 1.000 caracteres.",
+          "formatoInvalido": "El valor no es válido. Revísalo."
+        },
+        "soporte": {
+          "falta": "Falta adjuntar {{nombre}}.",
+          "pocos": "{{nombre}} necesita al menos {{minimo}} archivos.",
+          "muchos": "{{nombre}} admite como máximo {{maximo}} archivos.",
+          "formato": "Hay un archivo en un formato que {{nombre}} no admite.",
+          "noAplica": "Este soporte no aplica para el tipo de siniestro elegido.",
+          "noEncontrado": "Un archivo ya no está disponible. Quítalo y súbelo de nuevo."
+        }
+      },
+      "envio": {
+        "validacion": {
+          "titulo": "No se pudo radicar",
+          "texto": "Revisa los datos y los soportes marcados."
+        },
+        "noElegible": {
+          "noEncontrada": {
+            "titulo": "La póliza no está disponible",
+            "texto": "La póliza elegida no aparece entre tus pólizas. Vuelve a cargarlas y elige otra."
+          },
+          "noActiva": {
+            "titulo": "La póliza ya no está activa",
+            "texto": "Solo puedes radicar sobre una póliza activa. Vuelve a cargar tus pólizas."
+          },
+          "noCubierto": {
+            "titulo": "La póliza no cubre este tipo de siniestro",
+            "texto": "Elige otro tipo de siniestro u otra póliza."
+          },
+          "fueraVigencia": {
+            "titulo": "El hecho ocurrió fuera de la vigencia",
+            "texto": "La fecha del hecho debe estar dentro de la vigencia de la póliza."
+          },
+          "generico": {
+            "titulo": "La póliza no admite esta radicación",
+            "texto": "Revisa la póliza, el tipo de siniestro y la fecha del hecho."
+          }
+        },
+        "vigencia": "Vigencia de la póliza: del {{desde}} al {{hasta}}.",
+        "claveReusada": {
+          "titulo": "Esta solicitud ya se usó para otro siniestro",
+          "texto": "Revisa Mis siniestros antes de radicar de nuevo, para no duplicar el caso."
+        },
+        "indisponible": {
+          "titulo": "No pudimos completar la radicación",
+          "texto": "El servicio no respondió. Tus datos y soportes siguen aquí; al reintentar no se duplica el caso."
+        },
+        "invalido": {
+          "titulo": "No se pudo radicar",
+          "texto": "La solicitud no es válida. Recarga la página e inténtalo de nuevo."
+        }
+      },
+      "faltantes": {
+        "tituloSoporte": "Falta {{cantidad}} soporte obligatorio",
+        "tituloSoportes": "Faltan {{cantidad}} soportes obligatorios",
+        "tituloDatos": "Faltan datos del siniestro",
+        "texto": "No es posible radicar hasta completar: {{lista}}.",
+        "total": "como máximo 20 archivos en total",
+        "subiendo": "Espera a que terminen de subir los archivos para radicar."
+      },
+      "antes": {
+        "titulo": "Antes de radicar",
+        "poliza": {
+          "ok": "La póliza está activa y cubre el tipo de siniestro seleccionado.",
+          "pendiente": "Elige la póliza y el tipo de siniestro."
+        },
+        "vigencia": {
+          "ok": "Fecha del hecho dentro de la vigencia.",
+          "error": "La fecha del hecho está fuera de la vigencia (del {{desde}} al {{hasta}}).",
+          "pendiente": "Indica la fecha y hora del hecho."
+        },
+        "asesor": "Un asesor de siniestros revisará la radicación; si falta algo, te la devolverá con el motivo."
+      },
+      "app": {
+        "titulo": "¿Estás en el lugar de los hechos?",
+        "texto": "Desde la app puedes tomar fotos y video con ubicación y hora certificadas, incluso sin señal: se envían al recuperar la conexión."
+      },
+      "soportes": {
+        "titulo": "Soportes",
+        "conteo": "{{adjuntos}} de {{total}} obligatorios adjuntos",
+        "conMinimo": "{{nombre}} (mínimo {{minimo}})",
+        "detalle": "{{obligatoriedad}} · {{formatos}} · máx. 10 MB c/u · hasta {{maximo}}",
+        "obligatorio": "Obligatorio",
+        "opcional": "Opcional",
+        "formatos": {
+          "imagen": "JPG o PNG",
+          "documento": "PDF o imagen",
+          "pdf": "PDF"
+        },
+        "estado": {
+          "adjunto": "Adjunto · {{archivos}} archivos",
+          "adjuntoUno": "Adjunto",
+          "falta": "Falta",
+          "pocos": "{{archivos}} de {{minimo}} mínimo",
+          "subiendo": "Subiendo",
+          "opcional": "Opcional",
+          "noAplica": "No aplica"
+        },
+        "accion": {
+          "subir": "Subir",
+          "agregar": "Agregar",
+          "etiqueta": "Subir archivos de {{nombre}}"
+        },
+        "archivosDe": "Archivos de {{nombre}}",
+        "archivo": {
+          "subiendo": "Subiendo…",
+          "adjunto": "Adjunto",
+          "quitar": "Quitar",
+          "quitarEtiqueta": "Quitar {{nombre}}"
+        },
+        "rechazo": {
+          "muyGrande": "El archivo supera 10 MB.",
+          "formatoNoAdmitido": "Formato no admitido para este soporte.",
+          "vacio": "El archivo está vacío.",
+          "demasiadosPendientes": "Tienes demasiados archivos sin radicar.",
+          "noDisponible": "No se pudo subir. Quítalo e inténtalo de nuevo.",
+          "invalido": "No se pudo leer el archivo.",
+          "limite": "Este soporte admite como máximo {{maximo}} archivos."
+        },
+        "noAplicaDetalle": "No aplica para este tipo de siniestro"
+      }
+    },
+    "confirmacion": {
+      "titulo": "Siniestro {{numero}}",
+      "radicadoEl": "Radicado el {{fecha}} a las {{hora}}",
+      "descargar": "Descargar radicado",
+      "descargando": "Descargando…",
+      "volver": "Volver a mis siniestros",
+      "errorDescarga": "No pudimos descargar el radicado. Intenta de nuevo en unos minutos.",
+      "exito": {
+        "titulo": "Tu siniestro quedó radicado",
+        "texto": "Un asesor de siniestros revisará la radicación en un máximo de 2 días hábiles. Si falta algún soporte te la devolverá con el motivo, y podrás corregirla desde Mis siniestros."
+      },
+      "etapas": {
+        "etiqueta": "Etapas del siniestro",
+        "radicado": "Radicado",
+        "revision": "Revisión del asesor",
+        "evaluacion": "En evaluación",
+        "aprobado": "Aprobado",
+        "pagado": "Pagado"
+      },
+      "datos": {
+        "radicado": "Número de radicado",
+        "poliza": "Póliza afectada",
+        "fechaHecho": "Fecha y hora del hecho",
+        "soportes": "Soportes adjuntos",
+        "soportesValor": "{{adjuntos}} de {{total}} obligatorios · {{archivos}} archivos"
+      },
+      "queSigue": {
+        "titulo": "Qué sigue",
+        "texto": "El caso entró a la cola de revisión. Si el asesor lo aprueba, pasa a evaluación con la prioridad que calcula el triage."
+      }
+    },
+    "misSiniestros": {
+      "titulo": "Mis siniestros",
+      "descripcion": "Consulta los siniestros que has radicado desde el portal o desde la app.",
+      "radicar": "Radicar un siniestro",
+      "cargando": "Consultando tus siniestros…",
+      "cargandoMas": "Cargando…",
+      "cargarMas": "Cargar más",
+      "conteo": "{{cantidad}} siniestros",
+      "conteoUno": "1 siniestro",
+      "filtros": {
+        "etiqueta": "Filtros",
+        "poliza": "Póliza",
+        "todas": "Todas",
+        "desde": "Desde",
+        "desdeAyuda": "Radicados desde ese día",
+        "limpiar": "Limpiar filtros"
+      },
+      "vacio": {
+        "titulo": "Aún no has radicado siniestros",
+        "texto": "Cuando radiques un siniestro lo verás aquí con su estado."
+      },
+      "sinResultados": {
+        "titulo": "No hay siniestros con estos filtros",
+        "texto": "Cambia la póliza o la fecha, o limpia los filtros."
+      },
+      "error": {
+        "titulo": "No pudimos consultar tus siniestros",
+        "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+        "reintentar": "Reintentar"
+      },
+      "tabla": {
+        "titulo": "Siniestros radicados",
+        "radicado": "Radicado",
+        "polizaTipo": "Póliza y tipo",
+        "fechaHecho": "Fecha del hecho",
+        "etapa": "Etapa",
+        "radicadoEn": "Radicado el",
+        "desdeApp": "Radicado desde la app"
+      }
+    }
+  },
+  "auditoria": {
+    "registro": {
+      "busqueda": {
+        "titulo": "Auditoría de suscripción",
+        "descripcion": "Reconstruye qué datos de entrada y qué reglas de rating determinaron el precio y la decisión de cualquier póliza. El registro es de solo lectura.",
+        "tarjeta": "Buscar registro de auditoría",
+        "campo": "Identificador de póliza",
+        "ejemplo": "off-0123456789abcdef",
+        "ayuda": "También acepta el número de oferta (off-…) o el número de solicitud del aliado.",
+        "buscar": "Buscar",
+        "buscando": "Buscando…",
+        "errores": {
+          "requerido": "Ingresa el identificador de la póliza.",
+          "invalido": "El identificador solo admite letras, números, guion y guion bajo (máximo 128 caracteres)."
+        },
+        "sinResultados": {
+          "titulo": "No encontramos resultados para {{ id }}",
+          "texto": "Verifica el identificador e inténtalo de nuevo. Por seguridad no se muestra información interna del sistema.",
+          "limpiar": "Limpiar búsqueda"
+        },
+        "error": {
+          "titulo": "No pudimos consultar el registro",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo en unos minutos."
+        },
+        "incluye": {
+          "titulo": "Qué incluye el registro",
+          "fecha": "Fecha y hora de la solicitud con zona horaria",
+          "motor": "Versión del motor de rating utilizado",
+          "fuentes": "Fuentes consultadas (Open Finance, Open Data, KYC) y el valor devuelto por cada una",
+          "reglas": "Reglas de rating aplicadas, en orden, con la salida de cada una",
+          "prima": "Prima calculada y decisión final (aceptado, rechazado o diferido con motivo)"
+        }
+      },
+      "detalle": {
+        "volver": "Auditoría",
+        "cargando": "Cargando el registro…",
+        "titulo": "Registro de auditoría · {{ id }}",
+        "soloLectura": "Solo lectura",
+        "resumen": "Solicitud de suscripción del {{ fecha }} ({{ zona }}) · Motor de rating {{ motor }} · Decisión final: {{ decision }}",
+        "reintentar": "Reintentar",
+        "error": {
+          "titulo": "No pudimos cargar el registro",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo."
+        },
+        "solicitud": {
+          "titulo": "Solicitud",
+          "fecha": "Fecha y hora",
+          "canal": "Canal",
+          "oferta": "Oferta",
+          "consentimiento": "Consentimiento",
+          "cliente": "Cliente",
+          "aliado": "Aliado",
+          "solicitud": "Solicitud del aliado",
+          "motor": "Versión del motor"
+        },
+        "fuentes": {
+          "titulo": "Fuentes de datos consultadas",
+          "fuente": "Fuente",
+          "consultada": "Consultada",
+          "latencia": "Latencia",
+          "valor": "Valor devuelto",
+          "valorFuente": "Puntaje {{ puntaje }} · categoría {{ categoria }}",
+          "sinValor": "Sin valor: la fuente no respondió",
+          "milisegundos": "{{ ms }} ms",
+          "vacio": "No se consultó ninguna fuente externa."
+        },
+        "perfil": "Perfil resultante: puntaje {{ puntaje }}, categoría {{ categoria }}.",
+        "perfilParcial": "El perfil es parcial porque alguna fuente no respondió.",
+        "reglas": {
+          "titulo": "Reglas de rating aplicadas (en orden de ejecución)",
+          "orden": "#",
+          "regla": "Regla",
+          "salida": "Salida"
+        },
+        "resultado": {
+          "titulo": "Resultado",
+          "prima": "Prima calculada",
+          "primaMes": "{{ prima }} / mes",
+          "decision": "Decisión final",
+          "motivo": "Motivo",
+          "registradaEn": "Registrada en auditoría"
+        }
+      },
+      "decisiones": {
+        "accepted": "Aceptado",
+        "rejected": "Rechazado",
+        "deferred": "Diferido"
+      },
+      "canales": {
+        "embedded": "Embebido",
+        "assisted": "Asistido por asesor"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "estadosFuente": {
+        "ok": "Respondió",
+        "timeout": "Sin respuesta a tiempo",
+        "error": "Respondió con error",
+        "circuit_open": "Aislada por el cortacircuitos"
+      },
+      "categorias": {
+        "preferred": "preferente",
+        "standard": "estándar",
+        "high_risk": "alto riesgo",
+        "base_actuarial": "actuarial base"
+      },
+      "reglas": {
+        "base_monthly_rate": "Tarifa base mensual",
+        "age_factor": "Factor por edad",
+        "risk_factor": "Factor por perfil de riesgo",
+        "term_factor": "Factor por plazo",
+        "rounding_step": "Paso de redondeo"
+      },
+      "motivos": {
+        "cached_profile": "Se usó el último perfil guardado porque una fuente no respondió",
+        "base_actuarial_profile": "Se usó el perfil actuarial base porque una fuente no respondió",
+        "provisional_offer": "Oferta provisional hasta que la fuente vuelva"
+      }
+    },
+    "consentimientos": {
+      "busqueda": {
+        "titulo": "Consentimientos Open Finance",
+        "descripcion": "Consulta el estado de un consentimiento de Open Finance y, si corresponde, revócalo. Por ahora la búsqueda es por identificador.",
+        "tarjeta": "Buscar consentimiento",
+        "campo": "Identificador del consentimiento",
+        "ejemplo": "cns-0123456789abcdef",
+        "ayuda": "Ingresa el identificador del consentimiento (p. ej. cns-…).",
+        "buscar": "Buscar",
+        "buscando": "Buscando…",
+        "errores": {
+          "requerido": "Ingresa el identificador del consentimiento.",
+          "invalido": "El identificador solo admite letras, números, guion y guion bajo (máximo 64 caracteres)."
+        },
+        "sinResultados": {
+          "titulo": "No encontramos un consentimiento con el identificador {{ id }}",
+          "texto": "Verifica el identificador e inténtalo de nuevo. Por seguridad no se muestra información interna del sistema.",
+          "limpiar": "Limpiar búsqueda"
+        },
+        "error": {
+          "titulo": "No pudimos consultar el consentimiento",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "incluye": {
+          "titulo": "Qué muestra el detalle",
+          "estado": "Estado del consentimiento y alcance autorizado",
+          "entidades": "Entidades financieras y el avance del aviso de revocación",
+          "revocacion": "Revocación desde el portal, con motivo y referencia",
+          "historial": "Historial de estados con la hora de cada cambio"
+        }
+      },
+      "detalle": {
+        "volver": "Consentimientos",
+        "cargando": "Cargando el consentimiento…",
+        "titulo": "Consentimiento {{ id }}",
+        "otorgado": "otorgado el {{ fecha }}",
+        "revocar": "Revocar consentimiento",
+        "reintentarEn": "Reintentar en {{ entidad }}",
+        "reintentarEnVarias": "Reintentar en {{ cantidad }} entidades",
+        "reintentando": "Reintentando…",
+        "reintentar": "Reintentar",
+        "error": {
+          "titulo": "No pudimos cargar el consentimiento",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo."
+        },
+        "noEncontrado": {
+          "titulo": "No encontramos este consentimiento",
+          "texto": "No hay un consentimiento con el identificador {{ id }}. Por seguridad no se muestra información interna del sistema.",
+          "buscarOtro": "Buscar otro"
+        },
+        "noRevocable": {
+          "revocado": "Este consentimiento ya está revocado: no se puede revocar de nuevo.",
+          "parcial": "Este consentimiento ya está revocado en Solventa; solo falta que las entidades sin confirmación respondan. Puedes reintentar el aviso.",
+          "vencido": "Este consentimiento está vencido: no hay nada que revocar."
+        },
+        "carrera": {
+          "consent_already_revoked": "Este consentimiento ya fue revocado mientras confirmabas (por ejemplo, por el titular desde la app). No se envió ninguna solicitud nueva y actualizamos el estado.",
+          "consent_not_active": "Este consentimiento venció mientras confirmabas, por eso ya no se puede revocar. Actualizamos el estado."
+        },
+        "parcial": {
+          "titulo": "Revocación parcial: hay entidades sin confirmación",
+          "texto": "Solventa ya no consulta datos de este cliente, pero no todas las entidades confirmaron dentro del plazo de 5 minutos.",
+          "noConfirmo": "{{ entidad }}: sin confirmación, tiempo agotado a las {{ hora }}",
+          "confirmo": "{{ entidad }}: confirmó a las {{ hora }}"
+        },
+        "enCurso": {
+          "titulo": "Revocación en curso",
+          "tituloReintento": "Reintento en curso",
+          "texto": "Solventa ya no consulta datos de este cliente. Estamos avisando a las entidades: tienen hasta las {{ hora }} para confirmar."
+        },
+        "sondeoDetenido": {
+          "titulo": "No pudimos actualizar el estado",
+          "texto": "Dejamos de consultar el estado automáticamente. Lo que ves puede no ser lo más reciente.",
+          "actualizar": "Actualizar"
+        },
+        "falloReintento": "No pudimos reintentar el aviso a las entidades. No se cambió nada: inténtalo de nuevo.",
+        "datos": {
+          "titulo": "Datos del cliente y del consentimiento",
+          "cliente": "Cliente",
+          "alcance": "Alcance"
+        },
+        "alcance": {
+          "titulo": "Alcance detallado"
+        },
+        "efecto": {
+          "titulo": "Efecto inmediato en Solventa",
+          "texto": "Solventa ya no consulta datos de este cliente. El aviso a cada entidad sigue su curso dentro del plazo de 5 minutos."
+        },
+        "registro": {
+          "titulo": "Registro de la operación",
+          "solicitadaPor": "Solicitada por",
+          "solicitantes": {
+            "tu": "{{ nombre }} · Analista de operaciones",
+            "operaciones": "Analista de operaciones",
+            "titular": "El titular desde la app"
+          },
+          "motivo": "Motivo",
+          "referencia": "Referencia",
+          "fecha": "Fecha y hora",
+          "canal": "Canal",
+          "comprobante": "Comprobante al cliente",
+          "enLaApp": "Disponible en la app del cliente"
+        },
+        "reglas": {
+          "titulo": "Revocación desde el portal",
+          "texto": "Solo el analista de operaciones puede revocar. La solicitud se envía a todas las entidades autorizadas y debe completarse en 5 minutos; si alguna no la procesa, verás una alerta y podrás reintentar. No se puede revocar un consentimiento ya revocado o vencido."
+        }
+      },
+      "estados": {
+        "activo": "Activo",
+        "enCurso": "Revocación en curso",
+        "revocado": "Revocado",
+        "parcial": "Revocación parcial",
+        "vencido": "Vencido"
+      },
+      "entidades": {
+        "titulo": "Entidades financieras autorizadas",
+        "entidad": "Entidad",
+        "estadoEnEntidad": "Estado en la entidad",
+        "revocacion": "Revocación",
+        "confirmacion": "Confirmación",
+        "estados": {
+          "pending": "Pendiente",
+          "confirmed": "Revocado",
+          "not_confirmed": "Sin confirmación"
+        },
+        "estadoConsentimiento": {
+          "activo": "Activo",
+          "enCurso": "Revocación en curso",
+          "revocado": "Revocado",
+          "parcial": "Revocación parcial",
+          "vencido": "Vencido"
+        },
+        "plazoHasta": "Plazo hasta {{ hora }}",
+        "confirmoEl": "Confirmó el {{ fecha }}",
+        "tiempoAgotado": "Tiempo agotado a las {{ hora }}"
+      },
+      "historial": {
+        "titulo": "Historial de estados",
+        "referencia": "Referencia {{ referencia }}",
+        "referenciaEntidad": "Referencia de la entidad {{ referencia }}",
+        "estados": {
+          "granted": "Otorgado",
+          "revocation_requested": "Revocación solicitada",
+          "revoked": "Consentimiento revocado en Solventa",
+          "revocation_confirmed": "Revocación confirmada por la entidad",
+          "revocation_not_confirmed": "La entidad no confirmó en el plazo",
+          "revocation_retry_requested": "Reintento del aviso solicitado",
+          "expired": "Vencido"
+        }
+      },
+      "actores": {
+        "operations": "Analista de operaciones",
+        "holder": "Titular",
+        "system": "Sistema"
+      },
+      "motivos": {
+        "customer_request": "Solicitud del cliente",
+        "regulatory_order": "Orden regulatoria"
+      },
+      "canales": {
+        "compliance_portal": "Portal de cumplimiento",
+        "mobile_app": "App móvil"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "categorias": {
+        "credit_products": "productos de crédito",
+        "balances": "saldos",
+        "payment_behavior": "comportamiento de pago",
+        "public_records": "registros públicos",
+        "identity_verification": "verificación de identidad"
+      },
+      "vigencias": {
+        "12_months": "Vigencia: 12 meses",
+        "single_use": "Vigencia: un solo uso"
+      },
+      "revocar": {
+        "titulo": "Revocar el consentimiento de {{ nombre }}",
+        "efectivo": "Efectivo en ≤ 5 min",
+        "cerrar": "Cerrar",
+        "introduccion": "Se enviará la solicitud de revocación a todas las entidades autorizadas. El estado cambiará a Revocado cuando todas la confirmen; si alguna no responde en 5 minutos, verás una alerta y podrás reintentar.",
+        "cliente": "Cliente",
+        "alcance": "Alcance que se revoca",
+        "entidades": "Entidades",
+        "consultasFuturas": "Consultas futuras",
+        "consultasBloqueadas": "Bloqueadas de inmediato en Solventa",
+        "motivo": "Motivo",
+        "motivoPlaceholder": "Selecciona un motivo",
+        "motivos": {
+          "customer_request": "Solicitud del cliente",
+          "regulatory_order": "Orden regulatoria"
+        },
+        "referencia": "Referencia (ticket u orden)",
+        "referenciaAyuda": "De 3 a 64 caracteres: letras sin tilde, números, espacio y . / # _ -",
+        "confirmoRol": "Confirmo que actúo como responsable de cumplimiento y que la solicitud está documentada.",
+        "faltan": "Para revocar falta:",
+        "faltantes": {
+          "motivo": "el motivo",
+          "referencia": "una referencia válida",
+          "rolConfirmado": "confirmar tu rol"
+        },
+        "cancelar": "Cancelar",
+        "revocarAhora": "Revocar ahora",
+        "revocando": "Revocando…",
+        "errores": {
+          "service_unavailable": "No pudimos registrar la revocación y no se cambió nada. Conservamos lo que diligenciaste: pulsa «Revocar ahora» para intentarlo de nuevo.",
+          "idempotency_key_reused": "La solicitud no se pudo procesar. Pulsa «Revocar ahora» para intentarlo de nuevo.",
+          "invalid_request": "La solicitud no se pudo procesar. Pulsa «Revocar ahora» para intentarlo de nuevo.",
+          "generico": "No pudimos revocar el consentimiento. Inténtalo de nuevo.",
+          "campos": {
+            "motivo": {
+              "required": "Selecciona el motivo de la revocación.",
+              "invalid_format": "Selecciona uno de los motivos de la lista."
+            },
+            "referencia": {
+              "required": "Ingresa la referencia del ticket o la orden.",
+              "out_of_range": "La referencia debe tener de 3 a 64 caracteres.",
+              "invalid_format": "La referencia solo admite letras sin tilde, números, espacio y . / # _ -"
+            },
+            "rolConfirmado": {
+              "must_be_true": "Confirma que actúas como responsable de cumplimiento."
+            }
+          }
         }
       }
     }

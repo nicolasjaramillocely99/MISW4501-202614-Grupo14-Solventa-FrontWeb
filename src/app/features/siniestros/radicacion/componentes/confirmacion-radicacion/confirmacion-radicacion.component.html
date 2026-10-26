@@ -1,0 +1,70 @@
+<ng-container *transloco="let t; prefix: 'siniestros'">
+  <header class="encabezado">
+    <div class="encabezado__texto">
+      <div class="encabezado__fila">
+        <h1 class="encabezado__titulo">{{ t('confirmacion.titulo', { numero: caso().numeroRadicado }) }}</h1>
+        <app-insignia-estado tono="informacion">{{ t('estados.' + caso().estado) }}</app-insignia-estado>
+      </div>
+      <p class="encabezado__resumen">{{ resumen(t) }}</p>
+    </div>
+    <div class="encabezado__acciones">
+      <button type="button" class="boton boton--terciario" [disabled]="descargando()" (click)="descargar.emit()">
+        <svg lucideDownload [size]="20" aria-hidden="true"></svg>
+        {{ descargando() ? t('confirmacion.descargando') : t('confirmacion.descargar') }}
+      </button>
+      <a class="boton boton--secundario" routerLink="/siniestros/mis-siniestros">{{ t('confirmacion.volver') }}</a>
+    </div>
+  </header>
+
+  @if (errorDescarga()) {
+    <div class="aviso aviso--error" role="alert">
+      <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+      <p>{{ t('confirmacion.errorDescarga') }}</p>
+    </div>
+  }
+
+  <section class="tarjeta confirmacion" aria-labelledby="titulo-confirmacion">
+    <span class="confirmacion__icono" aria-hidden="true"><svg lucideCircleCheck [size]="24"></svg></span>
+    <div class="confirmacion__anuncio" role="status">
+      <h2 id="titulo-confirmacion" class="confirmacion__titulo">{{ t('confirmacion.exito.titulo') }}</h2>
+      <p class="confirmacion__texto">{{ t('confirmacion.exito.texto') }}</p>
+    </div>
+
+    <app-indicador-pasos class="confirmacion__etapas" [pasos]="etapas" etiqueta="siniestros.confirmacion.etapas.etiqueta" />
+
+    <dl class="datos">
+      <div>
+        <dt>{{ t('confirmacion.datos.radicado') }}</dt>
+        <dd>{{ caso().numeroRadicado }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('confirmacion.datos.poliza') }}</dt>
+        <dd>{{ poliza(t) }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('confirmacion.datos.fechaHecho') }}</dt>
+        <dd>{{ caso().ocurridoEn | formatoFechaHora }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('confirmacion.datos.soportes') }}</dt>
+        <dd>
+          {{
+            t('confirmacion.datos.soportesValor', {
+              adjuntos: caso().soportes.obligatoriosAdjuntos,
+              total: caso().soportes.obligatoriosTotal,
+              archivos: caso().soportes.archivos
+            })
+          }}
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <div class="aviso aviso--informacion">
+    <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+    <div>
+      <p class="aviso__titulo">{{ t('confirmacion.queSigue.titulo') }}</p>
+      <p>{{ t('confirmacion.queSigue.texto') }}</p>
+    </div>
+  </div>
+</ng-container>

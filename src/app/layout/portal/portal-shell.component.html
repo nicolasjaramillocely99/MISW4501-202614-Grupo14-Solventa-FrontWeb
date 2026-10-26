@@ -28,8 +28,8 @@
           <a
             class="menu__item"
             [routerLink]="item.ruta"
-            routerLinkActive="menu__item--activo"
-            ariaCurrentWhenActive="page"
+            [class.menu__item--activo]="item === activo()"
+            [attr.aria-current]="item === activo() ? 'page' : null"
           >
             <svg [lucideIcon]="item.icono" [size]="20"></svg>
             {{ t(item.clave) }}

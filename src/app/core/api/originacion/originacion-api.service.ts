@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '@env/environment';
+import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import {
@@ -31,6 +31,32 @@ import {
   mapearCotizacionAsistida,
   traducirErrorCotizacion,
 } from './cotizacion-asistida.modelos';
+import {
+  AccionEmision,
+  FiltroEmisiones,
+  ListaAccionesDto,
+  ListaEmisiones,
+  ListaEmisionesDto,
+  ReintentoEmision,
+  ReintentoEmisionDto,
+  aParametrosEmisiones,
+  mapearListaAcciones,
+  mapearListaEmisiones,
+  mapearReintento,
+  traducirErrorEmision as traducirErrorMonitoreo,
+} from './emision-monitor.modelos';
+import {
+  ConfirmacionEnviada,
+  ConfirmacionEnviadaDto,
+  Formalizacion,
+  FormalizacionDto,
+  ResultadoFormalizacion,
+  SolicitudFormalizacion,
+  aSolicitudFormalizacionDto,
+  mapearConfirmacionEnviada,
+  mapearFormalizacion,
+  traducirErrorFormalizacion,
+} from './formalizacion.modelos';
 import {
   EmisionContractual,
   EmisionContractualDto,
@@ -88,13 +114,13 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * Cliente del servicio de originación vía API Gateway. Única salida HTTP hacia ese microservicio:
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
- * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02) y la
- * oferta personalizada (HU-W1.2-03).
+ * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02), la
+ * oferta personalizada (HU-W1.2-03) y el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
   private readonly http = inject(HttpClient);
-  private readonly base = environment.apiGatewayUrl.replace(/\/+$/, '');
+  private readonly base = inject(CONFIGURACION_EJECUCION).apiGatewayUrl.replace(/\/+$/, '');
 
   /**
    * Resuelve el perfil de riesgo con el que se cotiza la oferta (`POST /v1/risk-profiles/resolve`).
@@ -209,6 +235,59 @@ export class OriginacionApiService {
   }
 
   /**
+   * Pide el código de confirmación de la compra (`POST /v1/assisted-quotes/{quote_id}/consent`, HU-W1.1-03):
+   * el servicio se lo envía por correo al cliente y responde solo con el correo enmascarado. Un código nuevo
+   * reemplaza al anterior, hasta 3 por cotización. Falla con `ErrorFormalizacion`.
+   */
+  solicitarConfirmacion(cotizacionId: string): Observable<ConfirmacionEnviada> {
+    return this.http
+      .post<ConfirmacionEnviadaDto>(
+        `${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}/consent`,
+        null,
+      )
+      .pipe(
+        map(mapearConfirmacionEnviada),
+        catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
+      );
+  }
+
+  /**
+   * Formaliza la compra de una cotización vigente en nombre del cliente
+   * (`POST /v1/assisted-quotes/{quote_id}/formalization`, HU-W1.1-03) registrando cómo y cuándo aceptó el
+   * cliente. 201 la primera vez, 200 si el mismo asesor repite una formalización ya completa. Falla con
+   * `ErrorFormalizacion`: `validation_failed` trae todos los campos inválidos a la vez; también
+   * `quote_expired`, `already_formalized`, `invalid_confirmation_code`…
+   */
+  formalizarCompra(cotizacionId: string, solicitud: SolicitudFormalizacion): Observable<ResultadoFormalizacion> {
+    return this.http
+      .post<FormalizacionDto>(
+        `${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}/formalization`,
+        aSolicitudFormalizacionDto(solicitud),
+        { observe: 'response' },
+      )
+      .pipe(
+        map((respuesta) => ({
+          formalizacion: mapearFormalizacion(respuesta.body as FormalizacionDto),
+          creada: respuesta.status === 201,
+        })),
+        catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
+      );
+  }
+
+  /**
+   * Consulta la formalización de una cotización (`GET /v1/assisted-quotes/{quote_id}/formalization`).
+   * `formalization_not_found` significa que la cotización aún no se formalizó.
+   */
+  consultarFormalizacion(cotizacionId: string): Observable<Formalizacion> {
+    return this.http
+      .get<FormalizacionDto>(`${this.base}/v1/assisted-quotes/${encodeURIComponent(cotizacionId)}/formalization`)
+      .pipe(
+        map(mapearFormalizacion),
+        catchError((error: unknown) => throwError(() => traducirErrorFormalizacion(error))),
+      );
+  }
+
+  /**
    * Recupera un cliente por su documento (`GET /v1/customers?document_id=`) para no digitar sus datos de
    * nuevo. `customer_not_found` significa que el documento aún no está registrado.
    */
@@ -318,6 +397,50 @@ export class OriginacionApiService {
       .pipe(
         map(mapearSolicitudRevision),
         catchError((error: unknown) => throwError(() => traducirErrorRevision(error, 'decision_not_registered'))),
+      );
+  }
+
+  /**
+   * Lista las emisiones con su estado para operaciones (`GET /v1/issuances`, solo `operations`; HU-W1.3-04),
+   * la más reciente primero, con los filtros de estado, canal y fecha de aceptación, y los conteos de todas las
+   * emisiones para las tarjetas (el «hoy» es el del analista). Sin resultados es una lista vacía, no un error.
+   * Falla con `ErrorEmision`.
+   */
+  listarEmisiones(filtro: FiltroEmisiones): Observable<ListaEmisiones> {
+    return this.http
+      .get<ListaEmisionesDto>(`${this.base}/v1/issuances`, { params: aParametrosEmisiones(filtro) })
+      .pipe(
+        map(mapearListaEmisiones),
+        catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
+      );
+  }
+
+  /**
+   * Acciones que los analistas tomaron sobre una emisión (`GET /v1/issuances/{id}/actions`), la más reciente
+   * primero, con su autor, nota y fecha. Falla con `ErrorEmision`.
+   */
+  listarAccionesEmision(aceptacionId: string): Observable<readonly AccionEmision[]> {
+    return this.http
+      .get<ListaAccionesDto>(`${this.base}/v1/issuances/${encodeURIComponent(aceptacionId)}/actions`)
+      .pipe(
+        map(mapearListaAcciones),
+        catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
+      );
+  }
+
+  /**
+   * Reintenta lo que falló en una emisión, desde la aceptación registrada (`POST /v1/issuances/{id}/retry`, solo
+   * `operations`): el cobro de la prima, o el documento y el aviso si el cobro ya se confirmó. La nota es
+   * obligatoria (1 a 500 caracteres) y queda registrada con el autor y la fecha. Es idempotente:
+   * `issuance_not_retryable` (409) significa que otro analista o el proceso automático ya lo reintentó. Falla con
+   * `ErrorEmision`.
+   */
+  reintentarEmision(aceptacionId: string, nota: string): Observable<ReintentoEmision> {
+    return this.http
+      .post<ReintentoEmisionDto>(`${this.base}/v1/issuances/${encodeURIComponent(aceptacionId)}/retry`, { note: nota })
+      .pipe(
+        map(mapearReintento),
+        catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
       );
   }
 }

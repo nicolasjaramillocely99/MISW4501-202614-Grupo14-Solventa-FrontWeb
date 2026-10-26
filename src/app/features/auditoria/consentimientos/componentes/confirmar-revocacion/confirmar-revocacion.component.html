@@ -1,0 +1,136 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-confirmar-revocacion"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'auditoria.consentimientos.revocar'"
+>
+  @if (abierto()) {
+    <form class="modal__contenido" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-confirmar-revocacion" class="modal__titulo">{{ t('titulo', { nombre: estado().titular.nombreCompleto }) }}</h2>
+        <app-insignia-estado tono="error">{{ t('efectivo') }}</app-insignia-estado>
+        <button type="button" class="modal__cerrar" [attr.aria-label]="t('cerrar')" [disabled]="enviando()" (click)="pedirCierre()">
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">{{ t('introduccion') }}</p>
+
+      <dl class="datos">
+        <div>
+          <dt>{{ t('cliente') }}</dt>
+          <dd>{{ estado().titular.nombreCompleto }} · {{ estado().titular.documentoEnmascarado }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('alcance') }}</dt>
+          <dd>
+            @for (fuente of estado().alcance; track fuente.codigo; let ultima = $last) {
+              {{ fuente.codigo | traducirCodigo: 'auditoria.consentimientos.fuentes' }}@if (!ultima) {,
+              }
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ t('entidades') }}</dt>
+          <dd>
+            {{ estado().entidades.length }} ·
+            @for (entidad of estado().entidades; track entidad.codigo; let ultima = $last) {
+              {{ entidad.nombre }}@if (!ultima) {,
+              }
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ t('consultasFuturas') }}</dt>
+          <dd>{{ t('consultasBloqueadas') }}</dd>
+        </div>
+      </dl>
+
+      <div class="campos">
+        <div class="campo">
+          <label class="campo__etiqueta" for="revocar-motivo">{{ t('motivo') }}</label>
+          <select
+            id="revocar-motivo"
+            class="campo__control"
+            formControlName="motivo"
+            required
+            [attr.aria-invalid]="erroresDeCampo().has('motivo') ? 'true' : null"
+            [attr.aria-describedby]="erroresDeCampo().has('motivo') ? 'revocar-motivo-error' : null"
+            (blur)="tocar('motivo')"
+          >
+            <option value="" disabled>{{ t('motivoPlaceholder') }}</option>
+            <option value="customer_request">{{ t('motivos.customer_request') }}</option>
+            <option value="regulatory_order">{{ t('motivos.regulatory_order') }}</option>
+          </select>
+          @if (erroresDeCampo().get('motivo'); as codigo) {
+            <p id="revocar-motivo-error" class="campo__error" role="alert">{{ t('errores.campos.motivo.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="revocar-referencia">{{ t('referencia') }}</label>
+          <input
+            id="revocar-referencia"
+            class="campo__control"
+            type="text"
+            formControlName="referencia"
+            autocomplete="off"
+            required
+            [attr.maxlength]="longitudReferencia"
+            [attr.aria-invalid]="erroresDeCampo().has('referencia') ? 'true' : null"
+            [attr.aria-describedby]="erroresDeCampo().has('referencia') ? 'revocar-referencia-error' : 'revocar-referencia-ayuda'"
+            (blur)="tocar('referencia')"
+          />
+          @if (erroresDeCampo().get('referencia'); as codigo) {
+            <p id="revocar-referencia-error" class="campo__error" role="alert">{{ t('errores.campos.referencia.' + codigo) }}</p>
+          } @else {
+            <p id="revocar-referencia-ayuda" class="campo__ayuda">{{ t('referenciaAyuda') }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="casilla">
+        <input
+          id="revocar-rol"
+          type="checkbox"
+          formControlName="rolConfirmado"
+          [attr.aria-invalid]="erroresDeCampo().has('rolConfirmado') ? 'true' : null"
+          [attr.aria-describedby]="erroresDeCampo().has('rolConfirmado') ? 'revocar-rol-error' : null"
+        />
+        <label for="revocar-rol">{{ t('confirmoRol') }}</label>
+      </div>
+      @if (erroresDeCampo().get('rolConfirmado'); as codigo) {
+        <p id="revocar-rol-error" class="campo__error" role="alert">{{ t('errores.campos.rolConfirmado.' + codigo) }}</p>
+      }
+
+      <div aria-live="polite">
+        @if (pendientes().length > 0) {
+          <p class="modal__faltantes">
+            {{ t('faltan') }}
+            @for (campo of pendientes(); track campo; let ultimo = $last) {
+              {{ t('faltantes.' + campo) }}@if (!ultimo) {,
+              }
+            }.
+          </p>
+        }
+      </div>
+
+      @if (errorGeneral(); as clave) {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('errores.' + clave) }}</p>
+        </div>
+      }
+
+      <footer class="modal__acciones">
+        <button type="button" class="boton boton--secundario" [disabled]="enviando()" (click)="pedirCierre()">{{ t('cancelar') }}</button>
+        <button type="submit" class="boton-peligro" [disabled]="!puedeEnviar()">
+          <svg lucideBan [size]="20" aria-hidden="true"></svg>
+          {{ enviando() ? t('revocando') : t('revocarAhora') }}
+        </button>
+      </footer>
+    </form>
+  }
+</dialog>

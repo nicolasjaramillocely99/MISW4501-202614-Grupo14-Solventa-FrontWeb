@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideSearch } from '@lucide/angular';
 
@@ -81,7 +81,7 @@ function validarEntero(control: AbstractControl<number | null>): ValidationError
  */
 @Component({
   selector: 'app-datos-cliente-page',
-  imports: [ReactiveFormsModule, TranslocoDirective, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideSearch],
+  imports: [ReactiveFormsModule, RouterLink, TranslocoDirective, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideSearch],
   templateUrl: './datos-cliente.page.html',
   styleUrl: './datos-cliente.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

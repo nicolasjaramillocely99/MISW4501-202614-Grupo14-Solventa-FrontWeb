@@ -1,4 +1,4 @@
-// S2 / S2b · Cotización asistida · Resultado: tarjeta de la prima a la izquierda y el detalle a la derecha.
+// S2 / S2b · Cotización asistida · Resultado: prima, coberturas y explicación del precio a la izquierda; cliente a la derecha.
 .pagina {
   display: flex;
   flex-direction: column;
@@ -37,11 +37,57 @@
   box-shadow: none;
 }
 
+.principal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  min-width: 0;
+}
+
+.pagina__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+// Bloque destacado del frame S2: fondo azul claro y borde izquierdo azul, con la prima y las cifras clave.
 .prima {
   display: flex;
-  flex: 0 0 420px;
   flex-direction: column;
   gap: var(--espacio-8);
+  border-left: 4px solid var(--color-azul-700);
+  background: var(--color-azul-50);
+}
+
+.principal > .tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.prima__cifras {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-24) var(--espacio-32);
+}
+
+.prima__etiqueta {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.datos--cifras {
+  flex: 1;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin: 0;
 }
 
 .prima--vencida .prima__valor {
@@ -57,26 +103,11 @@
   color: var(--color-azul-900);
 }
 
-.prima__detalle {
-  margin: 0;
-  color: var(--color-texto-secundario);
-}
-
 .seccion__titulo {
   margin: 0;
   font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 600;
-}
-
-.seccion__subtitulo {
-  margin: var(--espacio-16) 0 0;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: var(--color-texto-secundario);
 }
 
 .coberturas {
@@ -106,7 +137,7 @@
 
 .detalle {
   display: flex;
-  flex: 1;
+  flex: 0 0 352px;
   flex-direction: column;
   gap: var(--espacio-16);
   min-width: 0;
@@ -161,7 +192,7 @@
     flex-direction: column;
   }
 
-  .prima {
+  .detalle {
     flex-basis: auto;
     width: 100%;
   }

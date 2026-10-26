@@ -1,8 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
-
-import { environment } from '../../../../environments/environment';
 
 import {
   ErrorPasarela,
@@ -26,7 +25,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class PasarelaPagosService {
   private readonly http = inject(HttpClient);
-  private readonly base = environment.pasarelaPagosUrl.replace(/\/+$/, '');
+  private readonly base = inject(CONFIGURACION_EJECUCION).pasarelaPagosUrl.replace(/\/+$/, '');
 
   tokenizar(tarjeta: TarjetaSinTokenizar): Observable<TarjetaTokenizada> {
     return this.http

@@ -25,7 +25,7 @@ const CONTRASENA = process.env['MOTO_USER_PASSWORD'] ?? '';
 function esInicioDeSesionEnMoto(respuesta: Response): boolean {
   const cuerpo = respuesta.request().postDataJSON() as { AuthFlow?: string } | null;
   return (
-    respuesta.url() === ambienteLocal.cognito.endpoint && cuerpo?.AuthFlow === 'USER_PASSWORD_AUTH'
+    respuesta.url() === ambienteLocal.configuracionLocal?.cognito.endpoint && cuerpo?.AuthFlow === 'USER_PASSWORD_AUTH'
   );
 }
 

@@ -108,6 +108,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "tsconfig.spec.json",
+            "providersFile": "src/testing/configuracion-pruebas.ts",
             "coverageExclude": ["src/main.ts", "src/testing/**", "src/environments/**"],
             "coverageReporters": ["text", "html", "lcov"],
             "coverageThresholds": {

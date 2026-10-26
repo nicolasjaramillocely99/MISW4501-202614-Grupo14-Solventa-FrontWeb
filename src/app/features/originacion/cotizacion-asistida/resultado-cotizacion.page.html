@@ -28,12 +28,20 @@
       @if (cotizacion(); as c) {
         <header class="pagina__encabezado">
           <div>
-            <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+            <div class="pagina__fila">
+              <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+              @if (insignia(); as ins) {
+                <app-insignia-estado [tono]="ins.tono">{{
+                  t(ins.texto, { horas: horasVigencia() })
+                }}</app-insignia-estado>
+              }
+            </div>
             <p class="pagina__codigo">{{ t('codigo', { id: c.cotizacionId }) }}</p>
+            <p class="pagina__codigo">
+              {{ c.nombreCompleto }} · {{ c.documento }} ·
+              {{ t('generadaEl', { fecha: c.creadaEn | formatoFechaHora }) }}
+            </p>
           </div>
-          @if (insignia(); as ins) {
-            <app-insignia-estado [tono]="ins.tono">{{ t(ins.texto) }}</app-insignia-estado>
-          }
         </header>
 
         @for (aviso of avisos(); track aviso.titulo) {
@@ -57,61 +65,48 @@
         }
 
         <div class="pagina__cuerpo">
-          <section class="tarjeta prima" [class.prima--vencida]="vencida()" aria-labelledby="titulo-prima">
-            <h2 id="titulo-prima" class="seccion__titulo">{{ t('prima.titulo') }}</h2>
-            <p class="prima__valor" [attr.aria-label]="t('prima.mensual') + ' ' + (c.prima | formatoMoneda: c.moneda)">
-              {{ c.prima | formatoMoneda: c.moneda }}
-            </p>
-            <p class="prima__detalle">{{ t('prima.mensual') }}</p>
-
-            <h3 class="seccion__subtitulo">{{ t('coberturas.titulo') }}</h3>
-            <ul class="coberturas">
-              @for (cobertura of c.coberturas; track cobertura.codigo) {
-                <li>
-                  <svg lucideCircleCheck [size]="16" aria-hidden="true"></svg>
-                  <span>{{ t('coberturas.' + cobertura.codigo) }}</span>
-                  <span class="coberturas__monto">{{ cobertura.montoAsegurado | formatoMoneda: c.moneda }}</span>
-                </li>
-              }
-            </ul>
-
-            <dl class="datos datos--pie">
-              <div>
-                <dt>{{ t('vigencia.creada') }}</dt>
-                <dd>{{ c.creadaEn | formatoFechaHora }}</dd>
+          <div class="principal">
+            <section
+              class="tarjeta prima"
+              [class.prima--vencida]="vencida()"
+              aria-labelledby="titulo-prima"
+            >
+              <h2 id="titulo-prima" class="seccion__titulo">{{ t('prima.titulo') }}</h2>
+              <div class="prima__cifras">
+                <div>
+                  <p class="prima__etiqueta">{{ t('prima.mensual') }}</p>
+                  <p class="prima__valor">{{ c.prima | formatoMoneda: c.moneda }}</p>
+                </div>
+                <dl class="datos datos--cifras">
+                  <div>
+                    <dt>{{ t('cliente.montoAsegurado') }}</dt>
+                    <dd>{{ c.montoAsegurado | formatoMoneda: c.moneda }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('cliente.plazo') }}</dt>
+                    <dd>{{ t('cliente.plazoMeses', { meses: c.plazoMeses }) }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('vigencia.vence') }}</dt>
+                    <dd>{{ c.venceEn | formatoFechaHora }}</dd>
+                  </div>
+                </dl>
               </div>
-              <div>
-                <dt>{{ t('vigencia.vence') }}</dt>
-                <dd>{{ c.venceEn | formatoFechaHora }}</dd>
-              </div>
-            </dl>
-          </section>
+            </section>
 
-          <div class="detalle">
-            <section class="tarjeta" aria-labelledby="titulo-cliente">
-              <h2 id="titulo-cliente" class="seccion__titulo">{{ t('cliente.titulo') }}</h2>
-              <dl class="datos">
-                <div>
-                  <dt>{{ t('cliente.nombre') }}</dt>
-                  <dd>{{ c.nombreCompleto }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('cliente.documento') }}</dt>
-                  <dd>{{ c.documento }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('cliente.correo') }}</dt>
-                  <dd>{{ c.correo }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('cliente.montoAsegurado') }}</dt>
-                  <dd>{{ c.montoAsegurado | formatoMoneda: c.moneda }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t('cliente.plazo') }}</dt>
-                  <dd>{{ t('cliente.plazoMeses', { meses: c.plazoMeses }) }}</dd>
-                </div>
-              </dl>
+            <section class="tarjeta" aria-labelledby="titulo-coberturas">
+              <h2 id="titulo-coberturas" class="seccion__titulo">{{ t('coberturas.titulo') }}</h2>
+              <ul class="coberturas">
+                @for (cobertura of c.coberturas; track cobertura.codigo) {
+                  <li>
+                    <svg lucideCircleCheck [size]="16" aria-hidden="true"></svg>
+                    <span>{{ t('coberturas.' + cobertura.codigo) }}</span>
+                    <span class="coberturas__monto">{{
+                      cobertura.montoAsegurado | formatoMoneda: c.moneda
+                    }}</span>
+                  </li>
+                }
+              </ul>
             </section>
 
             <section class="tarjeta" aria-labelledby="titulo-perfil">
@@ -120,6 +115,10 @@
                 <div>
                   <dt>{{ t('perfil.categoria') }}</dt>
                   <dd>{{ categoriaConocida() ? t('perfil.categorias.' + c.categoria) : c.categoria }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('perfil.puntaje') }}</dt>
+                  <dd>{{ c.puntaje }}</dd>
                 </div>
                 <div>
                   <dt>{{ t('perfil.origen') }}</dt>
@@ -138,6 +137,30 @@
               </dl>
             </section>
           </div>
+
+          <div class="detalle">
+            <section class="tarjeta" aria-labelledby="titulo-cliente">
+              <h2 id="titulo-cliente" class="seccion__titulo">{{ t('cliente.titulo') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('cliente.nombre') }}</dt>
+                  <dd>{{ c.nombreCompleto }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('cliente.documento') }}</dt>
+                  <dd>{{ c.documento }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('cliente.correo') }}</dt>
+                  <dd>{{ c.correo }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('vigencia.creada') }}</dt>
+                  <dd>{{ c.creadaEn | formatoFechaHora }}</dd>
+                </div>
+              </dl>
+            </section>
+          </div>
         </div>
 
         <div class="acciones">
@@ -150,6 +173,11 @@
             >
           } @else {
             <a class="boton boton--secundario" routerLink="/originacion/cotizaciones/nueva">{{ t('acciones.nueva') }}</a>
+            @if (c.puedeFormalizar) {
+              <a class="boton boton--primario" [routerLink]="['/originacion/cotizaciones', c.cotizacionId, 'formalizar']">{{
+                t('acciones.formalizar')
+              }}</a>
+            }
           }
         </div>
       }

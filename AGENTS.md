@@ -23,7 +23,7 @@ El servicio de notificaciones **no** se consume desde el cliente web (sus evento
 ## 2. Reglas de arquitectura no negociables
 
 1. **Dependencias entre capas:** `features` → `shared` y `core`; `layout` → `shared` y `core`; `shared` **no depende de nadie**; `core` solo lo importa `app.config.ts`. **Un dominio nunca importa a otro dominio**: lo que comparten se promueve a `shared/`.
-2. **Una sola salida HTTP:** toda petición sale por el cliente del microservicio en `src/app/core/api/<servicio>/`. Ningún componente, página o servicio de un dominio usa `HttpClient` directamente ni conoce direcciones de microservicios, bases de datos, Redis ni SNS/SQS. El único origen es `apiGatewayUrl` de `src/environments/`.
+2. **Una sola salida HTTP:** toda petición sale por el cliente del microservicio en `src/app/core/api/<servicio>/`. Ningún componente, página o servicio de un dominio usa `HttpClient` directamente ni conoce direcciones de microservicios, bases de datos, Redis ni SNS/SQS. El único origen es `apiGatewayUrl` de la configuración del ambiente (`CONFIGURACION_EJECUCION` de `core/configuracion/`: en la nube sale de `config.json`, que escribe Terraform junto al sitio; en local, de `environment.development.ts`). En la nube ese origen es el propio portal: CloudFront lleva `/v1/*` y `/pasarela/*` al API Gateway, así que no hay CORS.
 3. **Autorización por rol en la ruta:** el rol se restringe con un *guard* (`autenticacion.guard.ts`, `rol.guard.ts`); la URL nunca lleva el rol. 401 → sesión expirada; 403 → no autorizado (HA-S01). El canal embebido es público para el usuario final (el socio autentica con credenciales de API en el gateway, no con Cognito).
 4. **Una página por pantalla del prototipo:** los estados (vacío, sin resultados, error, degradado, confirmación; variantes `b`, `c`, `d` de Figma) viven dentro de la misma página, no son rutas distintas.
 5. **Sistema de diseño:** los componentes visuales reutilizables viven en `shared/ui/`, usan únicamente los tokens de `src/styles/` y son accesibles por construcción (etiqueta permanente, foco visible, estado no comunicado solo con color, área mínima de clic).
@@ -39,7 +39,7 @@ El servicio de notificaciones **no** se consume desde el cliente web (sus evento
 - **Manejo de errores y seguridad:**
   - Los errores HTTP se manejan de forma uniforme en `core/errores/` (`ErrorHandler` global + interceptor); las páginas muestran el estado de error del prototipo, no `alert` ni `console.log`.
   - Sin `console.log` en código de producción; sin `any` salvo justificación en comentario.
-  - Nunca se escriben credenciales, tokens ni secretos en el código ni en `src/environments/` (allí solo van URL públicas e identificadores de cliente de Cognito). El JWT se adjunta únicamente desde `core/auth/interceptores/`.
+  - Nunca se escriben credenciales, tokens ni secretos en el código, en `src/environments/` ni en `config.json` (allí solo van URL públicas e identificadores de cliente de Cognito; la API key del canal embebido la agrega CloudFront y el navegador nunca la ve). El JWT se adjunta únicamente desde `core/auth/interceptores/` y solo a `<apiGatewayUrl>/v1/…`.
 - **Accesibilidad:** contraste AA/AAA, foco visible, etiquetas en todos los elementos interactivos, navegación por teclado; sin violaciones de axe-core en la pantalla.
 
 ---
