@@ -1722,6 +1722,11 @@
         "descripcion": {
           "etiqueta": "Descripción de los hechos",
           "contador": "{{actual}} de {{maximo}} caracteres"
+        },
+        "montoEstimado": {
+          "etiqueta": "Monto estimado (opcional)",
+          "ayuda": "En pesos colombianos, sin centavos (por ejemplo 4.800.000). Nos ayuda a priorizar tu caso.",
+          "vista": "Se enviará como {{monto}}"
         }
       },
       "errores": {
@@ -1733,7 +1738,8 @@
           "fueraVigencia": "La fecha del hecho está fuera de la vigencia de la póliza.",
           "lugarLongitud": "Escribe entre 3 y 160 caracteres.",
           "descripcionLongitud": "Escribe entre 10 y 1.000 caracteres.",
-          "formatoInvalido": "El valor no es válido. Revísalo."
+          "formatoInvalido": "El valor no es válido. Revísalo.",
+          "montoRango": "El monto debe estar entre 1 y 100.000.000.000 de pesos."
         },
         "soporte": {
           "falta": "Falta adjuntar {{nombre}}.",
@@ -1924,7 +1930,192 @@
         "fechaHecho": "Fecha del hecho",
         "etapa": "Etapa",
         "radicadoEn": "Radicado el",
-        "desdeApp": "Radicado desde la app"
+        "desdeApp": "Radicado desde la app",
+        "verDetalle": "Ver detalle",
+        "verDetalleDe": "Ver detalle del siniestro {{radicado}}",
+        "acciones": "Acciones"
+      }
+    },
+    "triage": {
+      "niveles": {
+        "1": "Triage 1",
+        "2": "Triage 2",
+        "3": "Triage 3"
+      },
+      "severidades": {
+        "high": "alta",
+        "medium": "media",
+        "low": "baja"
+      },
+      "bandas": {
+        "high": "monto alto",
+        "medium": "monto medio",
+        "low": "monto bajo",
+        "unknown": "sin monto declarado"
+      },
+      "objetivos": {
+        "inmediato": "Atención inmediata",
+        "diasHabiles": "Objetivo: {{dias}}"
+      },
+      "diasHabilesUno": "1 día hábil",
+      "diasHabiles": "{{dias}} días hábiles",
+      "resolucion": "Tiempo estimado de resolución: {{dias}}",
+      "causas": {
+        "entered_evaluation": "Entró a evaluación",
+        "estimated_amount_changed": "Cambió el monto estimado",
+        "incident_type_changed": "Cambió el tipo de siniestro",
+        "coverage_changed": "Cambió la cobertura",
+        "provider_report_received": "Llegó el informe del prestador",
+        "policy_updated": "Cambió la política de prioridad"
+      },
+      "estados": {
+        "pending": "Calculando prioridad…",
+        "assessed": "Prioridad calculada",
+        "not_applicable": "Sin prioridad (no está en evaluación)",
+        "not_found": "No existe"
+      },
+      "cola": {
+        "titulo": "Cola de siniestros",
+        "descripcion": "Consulta la prioridad automática de los siniestros en evaluación.",
+        "regla": {
+          "titulo": "Cómo se calcula la prioridad",
+          "texto": "El sistema calcula la prioridad solo, con la severidad del siniestro (según su tipo y cobertura) y el rango de su monto estimado: monto bajo, menos de {{bajo}}; monto alto, más de {{alto}}. Si el siniestro no declara monto, se prioriza solo por su severidad. Política vigente: {{version}}.",
+          "textoSinPolitica": "El sistema calcula la prioridad solo, con la severidad del siniestro (según su tipo y cobertura) y el rango de su monto estimado."
+        },
+        "indicadores": {
+          "titulo": "Objetivo de atención por nivel",
+          "cargando": "Consultando la política de prioridad…",
+          "error": "No pudimos consultar el objetivo de cada nivel.",
+          "reintentar": "Reintentar"
+        },
+        "busqueda": {
+          "titulo": "Buscar siniestros",
+          "etiqueta": "Identificadores de caso",
+          "ayuda": "Pega uno o varios identificadores de caso, hasta 50. Sepáralos con comas, espacios o saltos de línea.",
+          "buscar": "Buscar",
+          "limpiar": "Limpiar",
+          "errores": {
+            "vacio": "Escribe al menos un identificador de caso.",
+            "invalidos": "Estos identificadores no son válidos: {{ids}}.",
+            "demasiados": "Pegaste {{cantidad}} identificadores; el máximo es 50."
+          },
+          "repetidos": "Se quitó {{cantidad}} identificador repetido.",
+          "repetidosVarios": "Se quitaron {{cantidad}} identificadores repetidos.",
+          "inexistente": "No encontramos 1 caso con los identificadores buscados.",
+          "inexistentes": "No encontramos {{cantidad}} casos con los identificadores buscados."
+        },
+        "inicial": {
+          "titulo": "Busca un siniestro para ver su prioridad",
+          "texto": "Escribe uno o varios identificadores de caso y consulta su nivel, severidad y objetivo de atención."
+        },
+        "buscando": "Consultando la prioridad…",
+        "sinResultados": {
+          "titulo": "No hay prioridad para mostrar",
+          "texto": "Ningún identificador corresponde a un siniestro existente. Revísalos e intenta de nuevo."
+        },
+        "error": {
+          "titulo": "No pudimos consultar la prioridad",
+          "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "detenido": {
+          "titulo": "La prioridad aún no está disponible",
+          "texto": "Algunos casos siguen sin prioridad. Vuelve a consultar en unos segundos.",
+          "actualizar": "Actualizar"
+        },
+        "conteo": "{{cantidad}} siniestros",
+        "conteoUno": "1 siniestro",
+        "tabla": {
+          "titulo": "Prioridad de los siniestros consultados",
+          "caso": "Caso",
+          "prioridad": "Prioridad",
+          "severidad": "Severidad",
+          "monto": "Rango de monto",
+          "objetivo": "Objetivo",
+          "calculada": "Calculada el",
+          "verPrioridad": "Ver prioridad",
+          "verPrioridadDe": "Ver prioridad del caso {{id}}"
+        }
+      },
+      "prioridad": {
+        "migas": "Cola de siniestros",
+        "titulo": "Siniestro {{id}}",
+        "cargando": "Consultando la prioridad…",
+        "tarjeta": {
+          "titulo": "Prioridad",
+          "resumen": "{{nivel}} · severidad {{severidad}} · {{banda}}",
+          "monto": "Monto estimado",
+          "sinMonto": "—",
+          "tipo": "Tipo de siniestro",
+          "cobertura": "Cobertura",
+          "objetivo": "Objetivo de atención",
+          "calculada": "Calculada el",
+          "politica": "Política",
+          "pendiente": "Calculando prioridad…",
+          "sinPrioridad": "Sin prioridad",
+          "sinPrioridadTexto": "Este siniestro no entró a evaluación, así que no tiene prioridad."
+        },
+        "noEncontrado": {
+          "titulo": "No encontramos este siniestro",
+          "texto": "El identificador no corresponde a un siniestro existente.",
+          "volver": "Volver a la cola"
+        },
+        "error": {
+          "titulo": "No pudimos consultar la prioridad",
+          "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "detenido": {
+          "titulo": "La prioridad aún no está disponible",
+          "texto": "El cálculo está tardando más de lo esperado. Vuelve a consultar en unos segundos.",
+          "actualizar": "Actualizar"
+        }
+      },
+      "historial": {
+        "titulo": "Historial de prioridad",
+        "asignado": "{{nivel}} asignado · {{actor}}",
+        "recalculado": "Prioridad recalculada: {{anterior}} → {{nivel}} · {{causas}}",
+        "revisado": "Prioridad revisada: se mantiene {{nivel}} · {{causas}}",
+        "actores": {
+          "system": "automático"
+        },
+        "vacio": "Aún no hay cálculos de prioridad."
+      }
+    },
+    "detalle": {
+      "migas": "Mis siniestros",
+      "titulo": "Siniestro {{radicado}}",
+      "cargando": "Consultando tu siniestro…",
+      "datos": {
+        "titulo": "Datos reportados",
+        "poliza": "Póliza",
+        "tipo": "Tipo de siniestro",
+        "fechaHecho": "Fecha del hecho",
+        "lugar": "Lugar del hecho",
+        "radicadoEn": "Radicado el",
+        "monto": "Monto estimado",
+        "sinMonto": "—",
+        "descripcion": "Descripción de los hechos"
+      },
+      "prioridad": {
+        "titulo": "Prioridad",
+        "nivel": "Prioridad {{nivel}}",
+        "linea": "Prioridad {{nivel}} · {{resolucion}}",
+        "calculando": "Calculando prioridad…",
+        "error": "No pudimos consultar la prioridad",
+        "reintentar": "Reintentar",
+        "detenido": "La prioridad aún no está disponible",
+        "actualizar": "Actualizar"
+      },
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o busca el siniestro en tu lista.",
+        "volver": "Volver a Mis siniestros"
+      },
+      "error": {
+        "titulo": "No pudimos consultar tu siniestro",
+        "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+        "reintentar": "Reintentar"
       }
     }
   },

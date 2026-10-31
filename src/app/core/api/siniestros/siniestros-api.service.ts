@@ -31,12 +31,24 @@ import {
   traducirErrorSiniestro,
 } from './siniestro.modelos';
 import { calcularSha256 } from './sha256';
+import {
+  PaginaTriageDto,
+  PoliticaTriage,
+  PoliticaTriageDto,
+  ResumenTriage,
+  TriageSiniestro,
+  TriageSiniestroDto,
+  mapearPaginaTriage,
+  mapearPoliticaTriage,
+  mapearTriageSiniestro,
+} from './triage.modelos';
 
 /**
  * Cliente del servicio de siniestros (`claims`) vía API Gateway. Única salida HTTP hacia ese microservicio: ningún
  * dominio usa `HttpClient` directamente. Hoy expone la radicación web con soportes del asegurado (HU-W2.1-01): las
  * opciones del formulario, la subida de cada soporte (declarar, S3 y confirmar), la radicación, el detalle, el PDF del radicado y «Mis
- * siniestros». Todas son rutas humanas del rol `insured` (el interceptor adjunta el token).
+ * siniestros» (rol `insured`), y la prioridad automática del siniestro (HU-W2.2-01: detalle, lote y política; el rol
+ * `operations` lee las tres y el `insured` solo la de su caso). El interceptor adjunta el token.
  */
 @Injectable({ providedIn: 'root' })
 export class SiniestrosApiService {
@@ -139,6 +151,39 @@ export class SiniestrosApiService {
     }
     return this.http.get<PaginaSiniestrosDto>(`${this.base}/v1/claims`, { params }).pipe(
       map(mapearPaginaSiniestros),
+      catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+    );
+  }
+
+  /**
+   * Prioridad de un caso (`GET /v1/claims/{claim_id}/triage`). La vista depende del rol del token: `operations` trae el
+   * cálculo completo con su historial; `insured` (solo el dueño) trae el nivel y el tiempo estimado. Falla con
+   * `ErrorSiniestro`.
+   */
+  consultarTriage(siniestroId: string): Observable<TriageSiniestro> {
+    return this.http.get<TriageSiniestroDto>(`${this.base}/v1/claims/${encodeURIComponent(siniestroId)}/triage`).pipe(
+      map(mapearTriageSiniestro),
+      catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+    );
+  }
+
+  /**
+   * Prioridad de una página de casos en **una** llamada (`GET /v1/claims/triage?claim_id=…`, rol `operations`): de 1 a
+   * 50 ids sin repetir, que viajan como `claim_id` repetido. Devuelve una fila por id, en el orden pedido; un id que no
+   * existe vuelve con `estado: 'not_found'`. Falla con `ErrorSiniestro`.
+   */
+  consultarTriageLote(ids: readonly string[]): Observable<ResumenTriage[]> {
+    const params = new HttpParams().appendAll({ claim_id: [...ids] });
+    return this.http.get<PaginaTriageDto>(`${this.base}/v1/claims/triage`, { params }).pipe(
+      map(mapearPaginaTriage),
+      catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+    );
+  }
+
+  /** Política de triage vigente (`GET /v1/claims/triage-policy`, rol `operations`). Falla con `ErrorSiniestro`. */
+  consultarPoliticaTriage(): Observable<PoliticaTriage> {
+    return this.http.get<PoliticaTriageDto>(`${this.base}/v1/claims/triage-policy`).pipe(
+      map(mapearPoliticaTriage),
       catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
     );
   }

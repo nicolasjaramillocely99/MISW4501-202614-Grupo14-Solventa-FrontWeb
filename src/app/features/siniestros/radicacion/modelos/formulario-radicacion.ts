@@ -23,6 +23,11 @@ export const DESCRIPCION_MIN = 10;
 export const DESCRIPCION_MAX = 1000;
 /** El hecho no puede ser anterior a cinco años. */
 const ANIOS_ATRAS = 5;
+/** Monto estimado (HU-W2.2-01, S2): de 1 peso a 10¹¹ pesos (10¹³ centavos, el máximo del contrato). */
+export const MONTO_MIN_PESOS = 1;
+export const MONTO_MAX_PESOS = 100_000_000_000;
+/** Dígitos con separadores de miles `.`, `,` o espacio en grupos de tres; sin decimales, letras ni signos. */
+const FORMATO_MONTO = /^\d{1,3}([.,\s]?\d{3})*$/;
 
 /** Lo que diligencia el asegurado. `ocurridoEn` es el valor de `<input type="datetime-local">` (`YYYY-MM-DDTHH:mm`). */
 export interface FormularioRadicacion {
@@ -31,6 +36,8 @@ export interface FormularioRadicacion {
   ocurridoEn: string;
   lugar: string;
   descripcion: string;
+  /** Opcional (HU-W2.2-01): pesos colombianos enteros, tal como los escribe la persona («4.800.000»). */
+  montoEstimado: string;
 }
 
 export const FORMULARIO_VACIO: FormularioRadicacion = {
@@ -39,6 +46,7 @@ export const FORMULARIO_VACIO: FormularioRadicacion = {
   ocurridoEn: '',
   lugar: '',
   descripcion: '',
+  montoEstimado: '',
 };
 
 /** Campo de datos del hecho. */
@@ -53,6 +61,7 @@ export type ProblemaCampo =
   | 'fueraVigencia'
   | 'lugarLongitud'
   | 'descripcionLongitud'
+  | 'montoRango'
   | 'formatoInvalido';
 
 /** Problema de un soporte; la clave va bajo `siniestros.radicacion.errores.soporte`. */
@@ -62,6 +71,37 @@ export type Faltante =
   | { tipo: 'campo'; campo: CampoFormulario; problema: ProblemaCampo }
   | { tipo: 'soporte'; requisito: RequisitoSoporte; problema: ProblemaSoporte }
   | { tipo: 'total' };
+
+/** Lectura del campo «Monto estimado»: vacío, válido (con sus centavos) o con un problema. */
+export type LecturaMonto =
+  | { tipo: 'vacio' }
+  | { tipo: 'valido'; pesos: number; centavos: number }
+  | { tipo: 'invalido'; problema: 'formatoInvalido' | 'montoRango' };
+
+/**
+ * Interpreta el monto en pesos enteros (S2). Vacío no es un error (el campo es opcional); un decimal, letras o signos
+ * son `formatoInvalido`; fuera de 1 a 100.000.000.000 pesos es `montoRango`.
+ */
+export function leerMonto(texto: string): LecturaMonto {
+  const valor = texto.trim();
+  if (!valor) {
+    return { tipo: 'vacio' };
+  }
+  if (!FORMATO_MONTO.test(valor)) {
+    return { tipo: 'invalido', problema: 'formatoInvalido' };
+  }
+  const pesos = Number(valor.replace(/[.,\s]/g, ''));
+  if (pesos < MONTO_MIN_PESOS || pesos > MONTO_MAX_PESOS) {
+    return { tipo: 'invalido', problema: 'montoRango' };
+  }
+  return { tipo: 'valido', pesos, centavos: pesos * 100 };
+}
+
+/** Pesos → centavos para el contrato (`estimated_amount_minor`); `null` si está vacío o es inválido. */
+export function normalizarMonto(texto: string): number | null {
+  const lectura = leerMonto(texto);
+  return lectura.tipo === 'valido' ? lectura.centavos : null;
+}
 
 /** Tipos de siniestro y requisitos de la póliza elegida. */
 export function requisitosDelTipo(poliza: PolizaRadicable | null, codigoTipo: string): RequisitoSoporte[] {
@@ -135,6 +175,10 @@ export function problemaCampo(
   poliza: PolizaRadicable | null,
   ahora: Date,
 ): ProblemaCampo | null {
+  if (campo === 'montoEstimado') {
+    const lectura = leerMonto(formulario.montoEstimado);
+    return lectura.tipo === 'invalido' ? lectura.problema : null;
+  }
   const valor = formulario[campo].trim();
   if (!valor) {
     return 'requerido';
@@ -174,10 +218,18 @@ export function problemaSoporte(requisito: RequisitoSoporte, adjuntos: number): 
   return adjuntos > requisito.maxArchivos ? 'muchos' : null;
 }
 
-const CAMPOS: readonly CampoFormulario[] = ['polizaId', 'tipoSiniestro', 'ocurridoEn', 'lugar', 'descripcion'];
+const CAMPOS: readonly CampoFormulario[] = [
+  'polizaId',
+  'tipoSiniestro',
+  'ocurridoEn',
+  'lugar',
+  'descripcion',
+  'montoEstimado',
+];
 
 /**
- * Todo lo que impide radicar, a la vez (CA-2): campos vacíos o fuera de rango, la fecha fuera de la vigencia (CA-3),
+ * Todo lo que impide radicar, a la vez (CA-2): campos vacíos o fuera de rango (el monto estimado solo cuenta si se
+ * escribió y es inválido), la fecha fuera de la vigencia (CA-3),
  * soportes obligatorios sin archivos o con menos del mínimo y más de 20 archivos en total. `adjuntos` cuenta, por
  * código de requisito, los archivos ya subidos.
  */
@@ -267,6 +319,7 @@ export function aSolicitud(
   poliza: PolizaRadicable | null,
   soportes: Readonly<Record<string, readonly string[]>>,
 ): SolicitudRadicacion {
+  const montoEstimadoMinor = normalizarMonto(formulario.montoEstimado);
   return {
     polizaId: formulario.polizaId,
     tipoSiniestro: formulario.tipoSiniestro,
@@ -276,5 +329,7 @@ export function aSolicitud(
     soportes: requisitosDelTipo(poliza, formulario.tipoSiniestro)
       .map((requisito) => ({ codigoRequisito: requisito.codigo, soporteIds: [...(soportes[requisito.codigo] ?? [])] }))
       .filter((grupo) => grupo.soporteIds.length > 0),
+    // Sin monto el campo no se envía (HU-W2.2-01): el cuerpo es el de HU-W2.1-01.
+    ...(montoEstimadoMinor === null ? {} : { montoEstimadoMinor }),
   };
 }

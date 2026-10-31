@@ -1,0 +1,14 @@
+// A8 mínima · Prioridad del asegurado en la etapa «En evaluación».
+.prioridad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+  margin: 0;
+  font-weight: 500;
+}
+
+.prioridad--calculando {
+  font-weight: 400;
+  color: var(--color-texto-secundario);
+}

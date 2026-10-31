@@ -1,0 +1,51 @@
+// O6 reducida · Historial de la prioridad: lista ordenada con ícono, texto y fecha.
+.historial {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  box-shadow: none;
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.historial__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historial__fila {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-12);
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-azul-700);
+  }
+}
+
+.historial__texto,
+.historial__fecha,
+.historial__vacio {
+  margin: 0;
+}
+
+.historial__texto {
+  font-weight: 500;
+}
+
+.historial__fecha,
+.historial__vacio {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

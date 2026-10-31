@@ -1722,6 +1722,11 @@
         "descripcion": {
           "etiqueta": "Description of the incident",
           "contador": "{{actual}} of {{maximo}} characters"
+        },
+        "montoEstimado": {
+          "etiqueta": "Estimated amount (optional)",
+          "ayuda": "In Colombian pesos, without cents (for example 4,800,000). It helps us prioritize your claim.",
+          "vista": "It will be sent as {{monto}}"
         }
       },
       "errores": {
@@ -1733,7 +1738,8 @@
           "fueraVigencia": "The date of the incident is outside the policy's coverage period.",
           "lugarLongitud": "Write between 3 and 160 characters.",
           "descripcionLongitud": "Write between 10 and 1,000 characters.",
-          "formatoInvalido": "The value isn't valid. Please check it."
+          "formatoInvalido": "The value isn't valid. Please check it.",
+          "montoRango": "The amount must be between 1 and 100,000,000,000 pesos."
         },
         "soporte": {
           "falta": "{{nombre}} is missing.",
@@ -1924,7 +1930,192 @@
         "fechaHecho": "Date of the incident",
         "etapa": "Stage",
         "radicadoEn": "Filed on",
-        "desdeApp": "Filed from the app"
+        "desdeApp": "Filed from the app",
+        "verDetalle": "View details",
+        "verDetalleDe": "View details of claim {{radicado}}",
+        "acciones": "Actions"
+      }
+    },
+    "triage": {
+      "niveles": {
+        "1": "Triage 1",
+        "2": "Triage 2",
+        "3": "Triage 3"
+      },
+      "severidades": {
+        "high": "high",
+        "medium": "medium",
+        "low": "low"
+      },
+      "bandas": {
+        "high": "high amount",
+        "medium": "medium amount",
+        "low": "low amount",
+        "unknown": "no declared amount"
+      },
+      "objetivos": {
+        "inmediato": "Immediate attention",
+        "diasHabiles": "Target: {{dias}}"
+      },
+      "diasHabilesUno": "1 business day",
+      "diasHabiles": "{{dias}} business days",
+      "resolucion": "Estimated resolution time: {{dias}}",
+      "causas": {
+        "entered_evaluation": "Entered evaluation",
+        "estimated_amount_changed": "The estimated amount changed",
+        "incident_type_changed": "The claim type changed",
+        "coverage_changed": "The coverage changed",
+        "provider_report_received": "The provider report arrived",
+        "policy_updated": "The priority policy changed"
+      },
+      "estados": {
+        "pending": "Calculating priority…",
+        "assessed": "Priority calculated",
+        "not_applicable": "No priority (not under evaluation)",
+        "not_found": "Does not exist"
+      },
+      "cola": {
+        "titulo": "Claims queue",
+        "descripcion": "Check the automatic priority of the claims under evaluation.",
+        "regla": {
+          "titulo": "How the priority is calculated",
+          "texto": "The system calculates the priority on its own, from the claim's severity (by type and coverage) and the range of its estimated amount: low amount, under {{bajo}}; high amount, over {{alto}}. A claim without a declared amount is prioritized by severity alone. Policy in force: {{version}}.",
+          "textoSinPolitica": "The system calculates the priority on its own, from the claim's severity (by type and coverage) and the range of its estimated amount."
+        },
+        "indicadores": {
+          "titulo": "Attention target by level",
+          "cargando": "Loading the priority policy…",
+          "error": "We could not load the target of each level.",
+          "reintentar": "Retry"
+        },
+        "busqueda": {
+          "titulo": "Search claims",
+          "etiqueta": "Claim identifiers",
+          "ayuda": "Paste one or more claim identifiers, up to 50. Separate them with commas, spaces or line breaks.",
+          "buscar": "Search",
+          "limpiar": "Clear",
+          "errores": {
+            "vacio": "Enter at least one claim identifier.",
+            "invalidos": "These identifiers are not valid: {{ids}}.",
+            "demasiados": "You pasted {{cantidad}} identifiers; the maximum is 50."
+          },
+          "repetidos": "{{cantidad}} repeated identifier was removed.",
+          "repetidosVarios": "{{cantidad}} repeated identifiers were removed.",
+          "inexistente": "We did not find 1 claim with the identifiers searched.",
+          "inexistentes": "We did not find {{cantidad}} claims with the identifiers searched."
+        },
+        "inicial": {
+          "titulo": "Search a claim to see its priority",
+          "texto": "Enter one or more claim identifiers and check their level, severity and attention target."
+        },
+        "buscando": "Loading the priority…",
+        "sinResultados": {
+          "titulo": "There is no priority to show",
+          "texto": "No identifier matches an existing claim. Check them and try again."
+        },
+        "error": {
+          "titulo": "We could not load the priority",
+          "texto": "The service did not respond. Try again in a few minutes.",
+          "reintentar": "Retry"
+        },
+        "detenido": {
+          "titulo": "The priority is not available yet",
+          "texto": "Some claims still have no priority. Check again in a few seconds.",
+          "actualizar": "Refresh"
+        },
+        "conteo": "{{cantidad}} claims",
+        "conteoUno": "1 claim",
+        "tabla": {
+          "titulo": "Priority of the claims searched",
+          "caso": "Claim",
+          "prioridad": "Priority",
+          "severidad": "Severity",
+          "monto": "Amount range",
+          "objetivo": "Target",
+          "calculada": "Calculated on",
+          "verPrioridad": "View priority",
+          "verPrioridadDe": "View the priority of claim {{id}}"
+        }
+      },
+      "prioridad": {
+        "migas": "Claims queue",
+        "titulo": "Claim {{id}}",
+        "cargando": "Loading the priority…",
+        "tarjeta": {
+          "titulo": "Priority",
+          "resumen": "{{nivel}} · {{severidad}} severity · {{banda}}",
+          "monto": "Estimated amount",
+          "sinMonto": "—",
+          "tipo": "Claim type",
+          "cobertura": "Coverage",
+          "objetivo": "Attention target",
+          "calculada": "Calculated on",
+          "politica": "Policy",
+          "pendiente": "Calculating priority…",
+          "sinPrioridad": "No priority",
+          "sinPrioridadTexto": "This claim did not enter evaluation, so it has no priority."
+        },
+        "noEncontrado": {
+          "titulo": "We did not find this claim",
+          "texto": "The identifier does not match an existing claim.",
+          "volver": "Back to the queue"
+        },
+        "error": {
+          "titulo": "We could not load the priority",
+          "texto": "The service did not respond. Try again in a few minutes.",
+          "reintentar": "Retry"
+        },
+        "detenido": {
+          "titulo": "The priority is not available yet",
+          "texto": "The calculation is taking longer than expected. Check again in a few seconds.",
+          "actualizar": "Refresh"
+        }
+      },
+      "historial": {
+        "titulo": "Priority history",
+        "asignado": "{{nivel}} assigned · {{actor}}",
+        "recalculado": "Priority recalculated: {{anterior}} → {{nivel}} · {{causas}}",
+        "revisado": "Priority reviewed: stays at {{nivel}} · {{causas}}",
+        "actores": {
+          "system": "automatic"
+        },
+        "vacio": "There are no priority calculations yet."
+      }
+    },
+    "detalle": {
+      "migas": "My claims",
+      "titulo": "Claim {{radicado}}",
+      "cargando": "Loading your claim…",
+      "datos": {
+        "titulo": "Reported data",
+        "poliza": "Policy",
+        "tipo": "Claim type",
+        "fechaHecho": "Date of the event",
+        "lugar": "Place of the event",
+        "radicadoEn": "Filed on",
+        "monto": "Estimated amount",
+        "sinMonto": "—",
+        "descripcion": "Description of the events"
+      },
+      "prioridad": {
+        "titulo": "Priority",
+        "nivel": "Priority {{nivel}}",
+        "linea": "Priority {{nivel}} · {{resolucion}}",
+        "calculando": "Calculating priority…",
+        "error": "We could not load the priority",
+        "reintentar": "Retry",
+        "detenido": "The priority is not available yet",
+        "actualizar": "Refresh"
+      },
+      "noEncontrado": {
+        "titulo": "We did not find this claim",
+        "texto": "Check the link or look for the claim in your list.",
+        "volver": "Back to My claims"
+      },
+      "error": {
+        "titulo": "We could not load your claim",
+        "texto": "The service did not respond. Try again in a few minutes.",
+        "reintentar": "Retry"
       }
     }
   },
