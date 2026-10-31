@@ -160,6 +160,13 @@ test.describe('Radicación de siniestro con soportes (HU-W2.1-01)', () => {
     await diligenciarColision(radicacion);
     await expect(radicacion.soportes.getByText('3 de 3 obligatorios adjuntos')).toBeVisible();
     expect(llamadas.soportes).toEqual(['1.jpg', '2.jpg', '3.jpg', '4.jpg', 'cedula.pdf', 'croquis.pdf']);
+    // Cada archivo se sube directo a S3 con las cabeceras firmadas, sin token, y se confirma.
+    expect(llamadas.subidasS3).toHaveLength(6);
+    for (const cabeceras of llamadas.subidasS3) {
+      expect(cabeceras['authorization']).toBeUndefined();
+      expect(cabeceras['content-type']).toMatch(/^(image\/jpeg|application\/pdf)$/);
+    }
+    expect(llamadas.confirmaciones).toEqual([1, 2, 3, 4, 5, 6].map((n) => `sup-${String(n).padStart(32, '0')}`));
 
     await radicacion.radicar.click();
 
@@ -196,7 +203,7 @@ test.describe('Radicación de siniestro con soportes (HU-W2.1-01)', () => {
 
   test('rechaza un archivo demasiado grande sin subirlo y uno renombrado por su contenido, sin perder lo diligenciado (CA-5)', async ({ page }) => {
     const { radicacion, llamadas } = await preparar(page, {
-      soporte: (nombre) =>
+      confirmacion: (nombre) =>
         nombre === 'croquis-falso.pdf'
           ? { estado: 415, cuerpo: { error: 'unsupported_file_type', message: 'only JPEG, PNG or PDF files are accepted' } }
           : null,

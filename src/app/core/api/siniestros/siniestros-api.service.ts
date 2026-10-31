@@ -1,16 +1,20 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
 
 import {
   OpcionesRadicacion,
   OpcionesRadicacionDto,
   SolicitudRadicacion,
+  SoporteDeclaradoDto,
   SoporteSubido,
   SoporteSubidoDto,
+  aDeclaracionSoporteDto,
   aSolicitudRadicacionDto,
+  ErrorSoporte,
   mapearOpcionesRadicacion,
+  mapearSoporteDeclarado,
   mapearSoporteSubido,
   traducirErrorOpciones,
   traducirErrorRadicacion,
@@ -26,11 +30,12 @@ import {
   mapearPaginaSiniestros,
   traducirErrorSiniestro,
 } from './siniestro.modelos';
+import { calcularSha256 } from './sha256';
 
 /**
  * Cliente del servicio de siniestros (`claims`) vía API Gateway. Única salida HTTP hacia ese microservicio: ningún
  * dominio usa `HttpClient` directamente. Hoy expone la radicación web con soportes del asegurado (HU-W2.1-01): las
- * opciones del formulario, la subida de cada soporte, la radicación, el detalle, el PDF del radicado y «Mis
+ * opciones del formulario, la subida de cada soporte (declarar, S3 y confirmar), la radicación, el detalle, el PDF del radicado y «Mis
  * siniestros». Todas son rutas humanas del rol `insured` (el interceptor adjunta el token).
  */
 @Injectable({ providedIn: 'root' })
@@ -51,14 +56,33 @@ export class SiniestrosApiService {
   }
 
   /**
-   * Sube **un** soporte (`POST /v1/claims/supports`, multipart con el campo `file`). El backend lo valida por su
-   * contenido; un rechazo (`413`, `415`, `422`, `429`) afecta solo a ese archivo. Falla con `ErrorSoporte`.
+   * Sube **un** soporte en tres pasos (HU-W2.1-01): declara el archivo con su SHA-256 (`POST /v1/claims/supports`),
+   * lo sube directo a S3 con la URL firmada y las cabeceras que devolvió, y lo confirma
+   * (`POST /v1/claims/supports/{id}/confirmation`). El archivo no pasa por el API Gateway. Un rechazo en cualquier
+   * paso afecta solo a ese archivo. Falla con `ErrorSoporte`; un fallo del `PUT` a S3 (URL vencida, firma distinta,
+   * red) es `supports_unavailable`.
    */
   subirSoporte(archivo: File): Observable<SoporteSubido> {
-    // Provisional (HU-W2.1-01 §9): con HU-M2.1-01 la subida pasará a una URL firmada de S3; la firma de este método se conserva.
-    const cuerpo = new FormData();
-    cuerpo.append('file', archivo, archivo.name);
-    return this.http.post<SoporteSubidoDto>(`${this.base}/v1/claims/supports`, cuerpo).pipe(
+    return from(calcularSha256(archivo)).pipe(
+      switchMap((sha256) =>
+        this.http.post<SoporteDeclaradoDto>(`${this.base}/v1/claims/supports`, aDeclaracionSoporteDto(archivo, sha256)),
+      ),
+      map(mapearSoporteDeclarado),
+      switchMap((declarado) =>
+        // La URL es de S3, no del gateway: no lleva `Authorization` y solo se envían las cabeceras que cubre la firma.
+        // `Content-Length` también está firmada, pero el navegador no deja fijarla: la calcula él con el cuerpo.
+        this.http
+          .put(declarado.urlSubida, archivo, { headers: cabecerasDeSubida(declarado.cabecerasSubida) })
+          .pipe(
+            catchError(() => throwError(() => new ErrorSoporte('supports_unavailable'))),
+            switchMap(() =>
+              this.http.post<SoporteSubidoDto>(
+                `${this.base}/v1/claims/supports/${encodeURIComponent(declarado.id)}/confirmation`,
+                null,
+              ),
+            ),
+          ),
+      ),
       map(mapearSoporteSubido),
       catchError((error: unknown) => throwError(() => traducirErrorSoporte(error))),
     );
@@ -118,4 +142,10 @@ export class SiniestrosApiService {
       catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
     );
   }
+}
+
+function cabecerasDeSubida(firmadas: Readonly<Record<string, string>>): HttpHeaders {
+  return new HttpHeaders(
+    Object.fromEntries(Object.entries(firmadas).filter(([nombre]) => nombre.toLowerCase() !== 'content-length')),
+  );
 }

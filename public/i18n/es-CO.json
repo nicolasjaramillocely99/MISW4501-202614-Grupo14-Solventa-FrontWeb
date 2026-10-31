@@ -1849,6 +1849,7 @@
           "vacio": "El archivo está vacío.",
           "demasiadosPendientes": "Tienes demasiados archivos sin radicar.",
           "noDisponible": "No se pudo subir. Quítalo e inténtalo de nuevo.",
+          "noCoincide": "El archivo subido no coincide con el elegido. Quítalo e inténtalo de nuevo.",
           "invalido": "No se pudo leer el archivo.",
           "limite": "Este soporte admite como máximo {{maximo}} archivos."
         },
