@@ -13,6 +13,16 @@ async function renderizar(dto: EstadoRevocacionDto) {
   });
 }
 
+describe('HistorialConsentimientoComponent · canales (HU-W4.2-01)', () => {
+  it('la entrada «Otorgado» muestra el canal con su entidad y la revocación su canal', async () => {
+    await renderizar(ESTADO_REVOCADO_DTO);
+
+    const pasos = screen.getAllByRole('listitem');
+    expect(pasos[0].textContent).toContain('canal Banco Aliado (flujo embebido)');
+    expect(pasos[1].textContent).toContain('canal Portal de cumplimiento');
+  });
+});
+
 describe('HistorialConsentimientoComponent (HU-W4.2-02 · CA-5)', () => {
   it('lista una entrada por cambio, en orden, con ícono y texto', async () => {
     await renderizar(ESTADO_REVOCADO_DTO);

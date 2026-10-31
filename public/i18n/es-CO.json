@@ -2175,7 +2175,14 @@
         "datos": {
           "titulo": "Datos del cliente y del consentimiento",
           "cliente": "Cliente",
-          "alcance": "Alcance"
+          "alcance": "Alcance",
+          "canal": "Canal de otorgamiento",
+          "canalValor": "{{ canal }} · {{ entidad }}",
+          "evidencia": "Evidencia",
+          "evidenciaValor": "Registro inmutable · términos {{ version }}",
+          "finalidad": "Finalidad",
+          "vigencia": "Vigencia",
+          "vigenciaValor": "{{ desde }} → {{ hasta }}"
         },
         "alcance": {
           "titulo": "Alcance detallado"
@@ -2202,7 +2209,9 @@
         "reglas": {
           "titulo": "Revocación desde el portal",
           "texto": "Solo el analista de operaciones puede revocar. La solicitud se envía a todas las entidades autorizadas y debe completarse en 5 minutos; si alguna no la procesa, verás una alerta y podrás reintentar. No se puede revocar un consentimiento ya revocado o vencido."
-        }
+        },
+        "otorgadoCanal": "otorgado el {{ fecha }} en el {{ canal }} ({{ entidad }})",
+        "vence": "vence el {{ fecha }}"
       },
       "estados": {
         "activo": "Activo",
@@ -2231,7 +2240,8 @@
         },
         "plazoHasta": "Plazo hasta {{ hora }}",
         "confirmoEl": "Confirmó el {{ fecha }}",
-        "tiempoAgotado": "Tiempo agotado a las {{ hora }}"
+        "tiempoAgotado": "Tiempo agotado a las {{ hora }}",
+        "datosAutorizados": "Datos autorizados"
       },
       "historial": {
         "titulo": "Historial de estados",
@@ -2245,7 +2255,9 @@
           "revocation_not_confirmed": "La entidad no confirmó en el plazo",
           "revocation_retry_requested": "Reintento del aviso solicitado",
           "expired": "Vencido"
-        }
+        },
+        "canal": "canal {{ canal }}",
+        "canalOtorgamiento": "canal {{ entidad }} ({{ canal }})"
       },
       "actores": {
         "operations": "Analista de operaciones",
@@ -2324,6 +2336,12 @@
             }
           }
         }
+      },
+      "finalidades": {
+        "risk_profiling_mortgage_life_offer": "Perfil de riesgo y oferta de seguro de vida hipotecario"
+      },
+      "canalesOtorgamiento": {
+        "embedded": "flujo embebido"
       }
     }
   }

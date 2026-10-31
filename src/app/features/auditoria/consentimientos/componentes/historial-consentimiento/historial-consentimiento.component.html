@@ -17,6 +17,18 @@
             @if (entrada.entidad) {
               <span>{{ entrada.entidad }}</span>
             }
+            @if (entrada.canal) {
+              @if (entrada.estado === 'granted' && entidadOtorgamiento()) {
+                <span>{{
+                  t('canalOtorgamiento', {
+                    entidad: entidadOtorgamiento(),
+                    canal: entrada.canal | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento',
+                  })
+                }}</span>
+              } @else {
+                <span>{{ t('canal', { canal: entrada.canal | traducirCodigo: 'auditoria.consentimientos.canales' }) }}</span>
+              }
+            }
             @if (entrada.tipoActor) {
               <span>{{ entrada.tipoActor | traducirCodigo: 'auditoria.consentimientos.actores' }}</span>
             }

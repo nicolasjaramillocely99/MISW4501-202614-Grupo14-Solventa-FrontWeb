@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Params, convertToParamMap, provideRouter } from '@angular/router';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { pulsarEscapeEnDialogo, simularDialogoNativo } from '@testing/dialogo-pruebas';
@@ -29,6 +29,7 @@ import { SesionService } from '@core/auth/sesion.service';
 
 import { DetalleConsentimientoPage } from './detalle-consentimiento.page';
 import { INTERVALO_SONDEO_MS } from './servicios/seguimiento-revocacion.service';
+import { UltimoListadoService } from './servicios/ultimo-listado.service';
 
 const activo = mapearEstadoRevocacion(ESTADO_ACTIVO_DTO);
 const enCurso = mapearEstadoRevocacion(ESTADO_EN_CURSO_DTO);
@@ -45,7 +46,9 @@ describe('DetalleConsentimientoPage (O15 · HU-W4.2-02)', () => {
   afterEach(() => vi.useRealTimers());
 
   /** `inicial` es la primera lectura del detalle (HU-W4.2-01 retiró el estado que traía la búsqueda); `lecturas`, las siguientes. */
-  async function renderizar(opciones: { lecturas?: Observable<EstadoRevocacion>[]; inicial?: EstadoRevocacion; usuarioId?: string } = {}) {
+  async function renderizar(
+    opciones: { lecturas?: Observable<EstadoRevocacion>[]; inicial?: EstadoRevocacion; usuarioId?: string; volverA?: Params } = {},
+  ) {
     consultar = vi.fn();
     if (opciones.inicial) {
       consultar.mockReturnValueOnce(of(opciones.inicial));
@@ -55,6 +58,8 @@ describe('DetalleConsentimientoPage (O15 · HU-W4.2-02)', () => {
     }
     revocar = vi.fn().mockReturnValue(of(enCurso));
     reintentar = vi.fn().mockReturnValue(of({ entidadesReintentadas: ['aliado-banco-1'], estado: enCurso }));
+    const ultimo = new UltimoListadoService();
+    ultimo.guardar(opciones.volverA ?? {});
     const usuario = { id: opciones.usuarioId ?? 'sub-operaciones', nombre: 'Andrés Ruiz', correo: 'o@solventa.co', rol: 'operaciones', socioId: null };
     return render(DetalleConsentimientoPage, {
       imports: [proveerTranslocoPruebas()],
@@ -65,6 +70,7 @@ describe('DetalleConsentimientoPage (O15 · HU-W4.2-02)', () => {
           useValue: { consultarEstadoRevocacion: consultar, revocarConsentimiento: revocar, reintentarRevocacion: reintentar },
         },
         { provide: SesionService, useValue: { usuario: signal(usuario) } },
+        { provide: UltimoListadoService, useValue: ultimo },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: CONSENTIMIENTO_ID }) } } },
       ],
     });
@@ -121,6 +127,60 @@ describe('DetalleConsentimientoPage (O15 · HU-W4.2-02)', () => {
 
       expect(screen.queryByRole('alert')).toBeNull();
       expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+    });
+  });
+
+  describe('detalle completo (HU-W4.2-01, CA-4)', () => {
+    it('el encabezado dice el canal y la entidad del otorgamiento y el vencimiento', async () => {
+      await renderizar({ inicial: activo });
+
+      expect(
+        screen.getByText(
+          /Ana María Pérez · \*{6}4050 · otorgado el 20\/10\/2026, \d{2}:\d{2} en el flujo embebido \(Banco Aliado\) · vence el 20\/10\/2027/,
+        ),
+      ).toBeTruthy();
+    });
+
+    it('«Datos del cliente y del consentimiento» trae canal, evidencia, finalidad y vigencia', async () => {
+      await renderizar({ inicial: activo });
+
+      const datos = within(screen.getByRole('region', { name: 'Datos del cliente y del consentimiento' }));
+      const valor = (termino: string) => datos.getByText(termino).nextElementSibling?.textContent?.trim();
+      expect(valor('Cliente')).toBe('Ana María Pérez · ******4050');
+      expect(valor('Canal de otorgamiento')).toBe('flujo embebido · Banco Aliado');
+      expect(valor('Evidencia')).toBe('Registro inmutable · términos v1');
+      expect(valor('Finalidad')).toBe('Perfil de riesgo y oferta de seguro de vida hipotecario');
+      expect(valor('Vigencia')).toBe('20/10/2026 → 20/10/2027');
+    });
+
+    it('con un backend anterior (sin los campos de 0.6.0) no pinta filas vacías', async () => {
+      const dto: EstadoRevocacionDto = structuredClone(ESTADO_ACTIVO_DTO);
+      delete dto.granted_at;
+      delete dto.expires_at;
+      delete dto.purpose;
+      delete dto.grant_channel;
+      delete dto.terms_version;
+      await renderizar({ inicial: mapearEstadoRevocacion(dto) });
+
+      const datos = within(screen.getByRole('region', { name: 'Datos del cliente y del consentimiento' }));
+      expect(datos.queryByText('Canal de otorgamiento')).toBeNull();
+      expect(datos.queryByText('Finalidad')).toBeNull();
+      expect(datos.queryByText('Vigencia')).toBeNull();
+      expect(screen.getByText(/otorgado el 20\/10\/2026/).textContent).not.toContain('vence el');
+    });
+
+    it('«Volver» regresa al listado con el último filtro y la página (CA-2)', async () => {
+      await renderizar({ inicial: activo, volverA: { estado: 'revoked', pagina: '2' } });
+
+      expect(screen.getByRole('link', { name: 'Consentimientos' }).getAttribute('href')).toBe(
+        '/auditoria/consentimientos?estado=revoked&pagina=2',
+      );
+    });
+
+    it('sin un listado previo «Volver» lleva al listado sin filtro', async () => {
+      await renderizar({ inicial: activo });
+
+      expect(screen.getByRole('link', { name: 'Consentimientos' }).getAttribute('href')).toBe('/auditoria/consentimientos');
     });
   });
 

@@ -1,5 +1,5 @@
 <div class="pagina" *transloco="let t; prefix: 'auditoria.consentimientos'">
-  <a class="volver" routerLink="/auditoria/consentimientos">
+  <a class="volver" routerLink="/auditoria/consentimientos" [queryParams]="volverA()">
     <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.volver') }}
   </a>
 
@@ -36,8 +36,22 @@
             </div>
             <p class="encabezado__resumen">
               {{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}
-              @if (otorgado(); as fecha) {
-                · {{ t('detalle.otorgado', { fecha: fecha | formatoFechaHora: 'fechaHora' }) }}
+              @if (otorgado(); as otorgadoEl) {
+                @if (e.canalOtorgamiento && entidadOtorgamiento()) {
+                  ·
+                  {{
+                    t('detalle.otorgadoCanal', {
+                      fecha: otorgadoEl | formatoFechaHora: 'fechaHora',
+                      canal: e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento',
+                      entidad: entidadOtorgamiento(),
+                    })
+                  }}
+                } @else {
+                  · {{ t('detalle.otorgado', { fecha: otorgadoEl | formatoFechaHora: 'fechaHora' }) }}
+                }
+              }
+              @if (e.venceEn) {
+                · {{ t('detalle.vence', { fecha: fecha(e.venceEn) }) }}
               }
             </p>
           </div>
@@ -121,7 +135,7 @@
 
         <div class="cuerpo">
           <div class="cuerpo__principal">
-            <!-- Provisional (HU-W4.2-02 F2): finalidad, vigencia, canal y contacto llegan con HU-W4.2-01. -->
+            <!-- CA-4 de HU-W4.2-01. El contacto, el hash de la evidencia y «Descargar evidencia» no se pintan: audit no tiene esos datos. -->
             <section class="tarjeta" aria-labelledby="titulo-datos">
               <h2 id="titulo-datos" class="seccion__titulo">{{ t('detalle.datos.titulo') }}</h2>
               <dl class="datos">
@@ -129,6 +143,37 @@
                   <dt>{{ t('detalle.datos.cliente') }}</dt>
                   <dd>{{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}</dd>
                 </div>
+                @if (e.canalOtorgamiento) {
+                  <div>
+                    <dt>{{ t('detalle.datos.canal') }}</dt>
+                    <dd>
+                      {{
+                        t('detalle.datos.canalValor', {
+                          canal: e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento',
+                          entidad: entidadOtorgamiento() ?? '',
+                        })
+                      }}
+                    </dd>
+                  </div>
+                }
+                @if (e.versionTerminos) {
+                  <div>
+                    <dt>{{ t('detalle.datos.evidencia') }}</dt>
+                    <dd>{{ t('detalle.datos.evidenciaValor', { version: e.versionTerminos }) }}</dd>
+                  </div>
+                }
+                @if (e.finalidad) {
+                  <div>
+                    <dt>{{ t('detalle.datos.finalidad') }}</dt>
+                    <dd>{{ e.finalidad | traducirCodigo: 'auditoria.consentimientos.finalidades' }}</dd>
+                  </div>
+                }
+                @if (otorgado() && e.venceEn) {
+                  <div>
+                    <dt>{{ t('detalle.datos.vigencia') }}</dt>
+                    <dd>{{ t('detalle.datos.vigenciaValor', { desde: fecha(otorgado()), hasta: fecha(e.venceEn) }) }}</dd>
+                  </div>
+                }
                 <div>
                   <dt>{{ t('detalle.datos.alcance') }}</dt>
                   <dd>

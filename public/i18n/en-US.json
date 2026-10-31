@@ -2175,7 +2175,14 @@
         "datos": {
           "titulo": "Customer and consent details",
           "cliente": "Customer",
-          "alcance": "Scope"
+          "alcance": "Scope",
+          "canal": "Grant channel",
+          "canalValor": "{{ canal }} · {{ entidad }}",
+          "evidencia": "Evidence",
+          "evidenciaValor": "Immutable record · terms {{ version }}",
+          "finalidad": "Purpose",
+          "vigencia": "Validity",
+          "vigenciaValor": "{{ desde }} → {{ hasta }}"
         },
         "alcance": {
           "titulo": "Detailed scope"
@@ -2202,7 +2209,9 @@
         "reglas": {
           "titulo": "Revocation from the portal",
           "texto": "Only the operations analyst can revoke. The request is sent to every authorized entity and must complete within 5 minutes; if one doesn't process it, you will see an alert and can retry. A consent that is already revoked or expired can't be revoked."
-        }
+        },
+        "otorgadoCanal": "granted on {{ fecha }} in the {{ canal }} ({{ entidad }})",
+        "vence": "expires on {{ fecha }}"
       },
       "estados": {
         "activo": "Active",
@@ -2231,7 +2240,8 @@
         },
         "plazoHasta": "Deadline {{ hora }}",
         "confirmoEl": "Confirmed on {{ fecha }}",
-        "tiempoAgotado": "Time ran out at {{ hora }}"
+        "tiempoAgotado": "Time ran out at {{ hora }}",
+        "datosAutorizados": "Authorized data"
       },
       "historial": {
         "titulo": "Status history",
@@ -2245,7 +2255,9 @@
           "revocation_not_confirmed": "The entity did not confirm in time",
           "revocation_retry_requested": "Notice retry requested",
           "expired": "Expired"
-        }
+        },
+        "canal": "channel {{ canal }}",
+        "canalOtorgamiento": "channel {{ entidad }} ({{ canal }})"
       },
       "actores": {
         "operations": "Operations analyst",
@@ -2324,6 +2336,12 @@
             }
           }
         }
+      },
+      "finalidades": {
+        "risk_profiling_mortgage_life_offer": "Risk profile and mortgage life insurance offer"
+      },
+      "canalesOtorgamiento": {
+        "embedded": "embedded journey"
       }
     }
   }
