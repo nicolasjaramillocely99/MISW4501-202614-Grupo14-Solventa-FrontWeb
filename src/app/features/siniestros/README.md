@@ -66,9 +66,11 @@ A6b), ruta `/siniestros/radicar`, rol asegurado (`rolGuard('asegurado')` en `sin
   exactamente qué falta; «Antes de radicar» comprueba la póliza y la vigencia. El `422` del backend (`validation_failed` por campo y por
   `supports.<código>`, `policy_not_eligible` por `reason`) se muestra igual, sin perder lo diligenciado.
 - **Soportes (CA-5):** `radicacion/servicios/carga-soportes.service.ts` (provisto en la página) sube cada archivo en cuanto se elige, uno
-  por petición y en secuencia (`POST /v1/claims/supports`). Antes de subir rechaza en el navegador lo que pasa de 10 MiB, el archivo
-  vacío y el formato que el soporte no admite; el `413`/`415`/`422`/`429` del servidor afecta solo a ese archivo. «Quitar» es local (el
-  contrato no tiene `DELETE`). **Provisional hasta HU-M2.1-01** (`grep -rn "HU-W2.1-01 §9"`): la subida pasará a una URL firmada de S3.
+  por petición y en secuencia. `SiniestrosApiService.subirSoporte` lo declara con su SHA-256 (`POST /v1/claims/supports`), lo sube directo a
+  S3 con la URL firmada y lo confirma (`POST /v1/claims/supports/{id}/confirmation`): el archivo no pasa por el API Gateway. Antes de
+  declararlo rechaza en el navegador lo que pasa de 10 MiB, el archivo vacío y el formato que el soporte no admite; el rechazo del servidor
+  (`413`, `415`, `422`, `429`, o `415`/`422` al confirmar el contenido) afecta solo a ese archivo, igual que un fallo del `PUT` a S3.
+  «Quitar» es local (el contrato no tiene `DELETE`).
 - **Radicación idempotente:** `POST /v1/claims/web-filings` con una `Idempotency-Key` que se genera una vez por formulario y se reutiliza
   en cada reintento (`503`, error de red). Ante `422 idempotency_key_reused` el asegurado puede ir a «Mis siniestros» o radicar como un
   caso nuevo (otra clave).

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 /**
  * Modelos de la radicación web del siniestro con soportes (HU-W2.1-01), tipados según
- * `services/claims/api/openapi.yaml` del backend (v0.3.0) y su contrato para el front
+ * `services/claims/api/openapi.yaml` del backend (v0.5.0) y su contrato para el front
  * (`docs/contratos/HU-W2.1-01-api.md`). El cliente traduce el JSON del contrato (snake_case) a estos tipos
  * (camelCase). El catálogo de tipos y soportes **no** se fija aquí: llega en `GET /v1/claims/filing-options`.
  */
@@ -54,14 +54,25 @@ export interface OpcionesRadicacion {
   polizas: PolizaRadicable[];
 }
 
-/** Soporte ya subido, todavía sin asociar a un caso. */
+/** Soporte ya subido a S3 y confirmado por el backend, todavía sin asociar a un caso. */
 export interface SoporteSubido {
   id: string;
   nombreArchivo: string;
   tipoContenido: string;
   tamanoBytes: number;
   sha256: string;
+  /** Instante en que el backend confirmó el archivo (`confirmed_at`). */
   subidoEn: string;
+}
+
+/** Soporte declarado: el backend validó tipo y tamaño y firmó la subida directa a S3. */
+export interface SoporteDeclarado {
+  id: string;
+  /** URL firmada de S3 para el `PUT`; vence en `venceEn` (10 minutos). */
+  urlSubida: string;
+  /** Cabeceras que el `PUT` debe enviar tal cual: la firma las cubre. */
+  cabecerasSubida: Readonly<Record<string, string>>;
+  venceEn: string;
 }
 
 /** Soportes subidos que responden a un requisito del catálogo. */
@@ -112,14 +123,35 @@ export interface OpcionesRadicacionDto {
   policies: PolizaRadicableDto[];
 }
 
+/** Cuerpo de `POST /v1/claims/supports`: la declaración del archivo, no el archivo. */
+export interface DeclaracionSoporteDto {
+  file_name: string;
+  content_type: string;
+  byte_size: number;
+  /** SHA-256 del archivo, en minúsculas y hexadecimal. */
+  sha256: string;
+}
+
 /** Respuesta cruda de `POST /v1/claims/supports` (201). */
+export interface SoporteDeclaradoDto {
+  support_id: string;
+  file_name: string;
+  content_type: string;
+  byte_size: number;
+  sha256: string;
+  upload_url: string;
+  upload_headers: Record<string, string>;
+  expires_at: string;
+}
+
+/** Respuesta cruda de `POST /v1/claims/supports/{support_id}/confirmation` (200). */
 export interface SoporteSubidoDto {
   support_id: string;
   file_name: string;
   content_type: string;
   byte_size: number;
   sha256: string;
-  uploaded_at: string;
+  confirmed_at: string;
 }
 
 function mapearRequisito(dto: RequisitoDto): RequisitoSoporte {
@@ -153,6 +185,15 @@ export function mapearOpcionesRadicacion(dto: OpcionesRadicacionDto): OpcionesRa
   return { versionCatalogo: dto.catalog_version, polizas: dto.policies.map(mapearPoliza) };
 }
 
+export function mapearSoporteDeclarado(dto: SoporteDeclaradoDto): SoporteDeclarado {
+  return {
+    id: dto.support_id,
+    urlSubida: dto.upload_url,
+    cabecerasSubida: dto.upload_headers,
+    venceEn: dto.expires_at,
+  };
+}
+
 export function mapearSoporteSubido(dto: SoporteSubidoDto): SoporteSubido {
   return {
     id: dto.support_id,
@@ -160,8 +201,13 @@ export function mapearSoporteSubido(dto: SoporteSubidoDto): SoporteSubido {
     tipoContenido: dto.content_type,
     tamanoBytes: dto.byte_size,
     sha256: dto.sha256,
-    subidoEn: dto.uploaded_at,
+    subidoEn: dto.confirmed_at,
   };
+}
+
+/** Declaración de un archivo para `POST /v1/claims/supports`. */
+export function aDeclaracionSoporteDto(archivo: File, sha256: string): DeclaracionSoporteDto {
+  return { file_name: archivo.name, content_type: archivo.type, byte_size: archivo.size, sha256 };
 }
 
 /** Cuerpo de `POST /v1/claims/web-filings`. Los grupos sin archivos no se envían. */
@@ -339,34 +385,46 @@ function traducir(error: unknown, indisponible: CodigoErrorRadicacion): ErrorRad
   return new ErrorRadicacion(error.status === 400 ? 'invalid_request' : indisponible);
 }
 
-/** Códigos estables de la subida de un soporte. Un rechazo afecta **solo** a ese archivo (CA-5). */
+/**
+ * Códigos estables de la subida de un soporte (declarar, subir a S3 y confirmar). Un rechazo afecta **solo** a ese
+ * archivo (CA-5).
+ */
 export type CodigoErrorSoporte =
   | 'invalid_request'
+  | 'validation_failed'
   | 'file_too_large'
   | 'unsupported_file_type'
   | 'empty_file'
   | 'too_many_pending_supports'
+  | 'support_not_found'
+  | 'support_not_uploaded'
+  | 'support_mismatch'
   | 'supports_unavailable';
 
 const CODIGOS_SOPORTE: readonly string[] = [
   'invalid_request',
+  'validation_failed',
   'file_too_large',
   'unsupported_file_type',
   'empty_file',
   'too_many_pending_supports',
+  'support_not_found',
+  'support_not_uploaded',
+  'support_mismatch',
   'supports_unavailable',
 ];
 
 /** Estado HTTP → código, para las respuestas sin cuerpo JSON (p. ej. el `413` del propio API Gateway). */
 const CODIGO_SOPORTE_POR_ESTADO: Readonly<Record<number, CodigoErrorSoporte>> = {
   400: 'invalid_request',
+  404: 'support_not_found',
   413: 'file_too_large',
   415: 'unsupported_file_type',
   422: 'empty_file',
   429: 'too_many_pending_supports',
 };
 
-/** Error de `POST /v1/claims/supports`, con el código estable del contrato. */
+/** Error de la declaración, la subida o la confirmación de un soporte, con el código estable del contrato. */
 export class ErrorSoporte extends Error {
   constructor(readonly codigo: CodigoErrorSoporte) {
     super(`Error del soporte: ${codigo}`);
@@ -374,7 +432,11 @@ export class ErrorSoporte extends Error {
   }
 }
 
+/** Traduce un error HTTP de `POST /v1/claims/supports` o de su confirmación. */
 export function traducirErrorSoporte(error: unknown): ErrorSoporte {
+  if (error instanceof ErrorSoporte) {
+    return error;
+  }
   if (!(error instanceof HttpErrorResponse)) {
     return new ErrorSoporte('supports_unavailable');
   }

@@ -6,6 +6,7 @@ import {
   OPCIONES_RADICACION_DTO,
   PAGINA_SINIESTROS_DTO,
   SINIESTRO_RADICADO_DTO,
+  SOPORTE_DECLARADO_DTO,
   SOPORTE_SUBIDO_DTO,
 } from '@testing/siniestros-pruebas';
 
@@ -91,54 +92,80 @@ describe('SiniestrosApiService (HU-W2.1-01)', () => {
   });
 
   describe('subirSoporte', () => {
-    it('envía un multipart con un solo campo file y devuelve el soporte subido', () => {
-      const archivo = new File(['%PDF-1.7'], 'croquis.pdf', { type: 'application/pdf' });
-      let resultado: SoporteSubido | undefined;
-      servicio.subirSoporte(archivo).subscribe((soporte) => (resultado = soporte));
+    const CONFIRMACION = `/v1/claims/supports/${SOPORTE_DECLARADO_DTO.support_id}/confirmation`;
+    const archivo = () => new File(['%PDF-1.7'], 'croquis.pdf', { type: 'application/pdf' });
 
-      const peticion = http.expectOne(url('/v1/claims/supports'));
-      expect(peticion.request.method).toBe('POST');
-      const cuerpo = peticion.request.body as FormData;
-      expect(cuerpo).toBeInstanceOf(FormData);
-      expect([...cuerpo.keys()]).toEqual(['file']);
-      expect((cuerpo.get('file') as File).name).toBe('croquis.pdf');
-      peticion.flush(SOPORTE_SUBIDO_DTO, { status: 201, statusText: 'Created' });
+    /** Deja pasar el cálculo asíncrono del SHA-256 y devuelve la declaración pendiente. */
+    async function declaracion() {
+      return vi.waitFor(() => http.expectOne(url('/v1/claims/supports')));
+    }
 
-      expect(resultado).toEqual({
-        id: 'sup-3f2a9c0d6b8e4f1a9c2d7e5b0a4c6d8e',
-        nombreArchivo: 'croquis.pdf',
-        tipoContenido: 'application/pdf',
-        tamanoBytes: 482113,
-        sha256: SOPORTE_SUBIDO_DTO.sha256,
-        subidoEn: '2026-09-14T23:58:02Z',
+    it('declara el archivo, lo sube a S3 con las cabeceras firmadas y lo confirma', async () => {
+      const resultado: SoporteSubido[] = [];
+      servicio.subirSoporte(archivo()).subscribe((soporte) => resultado.push(soporte));
+
+      const declarar = await declaracion();
+      expect(declarar.request.method).toBe('POST');
+      expect(declarar.request.body).toEqual({
+        file_name: 'croquis.pdf',
+        content_type: 'application/pdf',
+        byte_size: 8,
+        sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
       });
+      declarar.flush(SOPORTE_DECLARADO_DTO, { status: 201, statusText: 'Created' });
+
+      const subir = http.expectOne(SOPORTE_DECLARADO_DTO.upload_url);
+      expect(subir.request.method).toBe('PUT');
+      expect(subir.request.body).toBeInstanceOf(File);
+      expect(subir.request.headers.keys()).toEqual(['Content-Type']);
+      expect(subir.request.headers.get('Content-Type')).toBe('application/pdf');
+      expect(subir.request.headers.has('Authorization')).toBe(false);
+      subir.flush(null);
+
+      const confirmar = http.expectOne(url(CONFIRMACION));
+      expect(confirmar.request.method).toBe('POST');
+      expect(confirmar.request.body).toBeNull();
+      confirmar.flush(SOPORTE_SUBIDO_DTO);
+
+      expect(resultado).toEqual([
+        {
+          id: 'sup-3f2a9c0d6b8e4f1a9c2d7e5b0a4c6d8e',
+          nombreArchivo: 'croquis.pdf',
+          tipoContenido: 'application/pdf',
+          tamanoBytes: 482113,
+          sha256: SOPORTE_SUBIDO_DTO.sha256,
+          subidoEn: '2026-09-14T23:58:02Z',
+        },
+      ]);
     });
 
     it.each([
       [413, 'file_too_large'],
       [415, 'unsupported_file_type'],
       [422, 'empty_file'],
+      [422, 'validation_failed'],
       [429, 'too_many_pending_supports'],
       [400, 'invalid_request'],
       [503, 'supports_unavailable'],
-    ])('traduce el %i con su código del contrato (%s)', (estado, codigo) => {
+    ])('traduce el %i al declarar con su código del contrato (%s)', async (estado, codigo) => {
       let error: unknown;
-      servicio.subirSoporte(new File(['x'], 'a.png')).subscribe({ error: (e: unknown) => (error = e) });
+      servicio.subirSoporte(archivo()).subscribe({ error: (e: unknown) => (error = e) });
 
-      http.expectOne(url('/v1/claims/supports')).flush({ error: codigo, message: 'x' }, { status: estado, statusText: 'Error' });
+      (await declaracion()).flush({ error: codigo, message: 'x' }, { status: estado, statusText: 'Error' });
 
       expect(error).toBeInstanceOf(ErrorSoporte);
       expect((error as ErrorSoporte).codigo).toBe(codigo);
+      http.expectNone(SOPORTE_DECLARADO_DTO.upload_url);
     });
 
-    it('deduce el código por el estado cuando el API Gateway responde sin cuerpo JSON', () => {
+    it('deduce el código por el estado cuando el API Gateway responde sin cuerpo JSON', async () => {
       const codigos: string[] = [];
-      for (const estado of [413, 415, 422, 429, 400, 502]) {
-        servicio.subirSoporte(new File(['x'], 'a.png')).subscribe({ error: (e: ErrorSoporte) => codigos.push(e.codigo) });
-        http.expectOne(url('/v1/claims/supports')).flush('', { status: estado, statusText: 'Error' });
+      for (const estado of [413, 415, 422, 429, 400, 404, 502]) {
+        servicio.subirSoporte(archivo()).subscribe({ error: (e: ErrorSoporte) => codigos.push(e.codigo) });
+        (await declaracion()).flush('', { status: estado, statusText: 'Error' });
       }
-      servicio.subirSoporte(new File(['x'], 'a.png')).subscribe({ error: (e: ErrorSoporte) => codigos.push(e.codigo) });
-      http.expectOne(url('/v1/claims/supports')).error(new ProgressEvent('error'));
+      servicio.subirSoporte(archivo()).subscribe({ error: (e: ErrorSoporte) => codigos.push(e.codigo) });
+      (await declaracion()).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual([
         'file_too_large',
@@ -146,9 +173,45 @@ describe('SiniestrosApiService (HU-W2.1-01)', () => {
         'empty_file',
         'too_many_pending_supports',
         'invalid_request',
+        'support_not_found',
         'supports_unavailable',
         'supports_unavailable',
       ]);
+    });
+
+    it.each([403, 0])('si el PUT a S3 falla (%i) el soporte no está disponible y no se confirma', async (estado) => {
+      let error: unknown;
+      servicio.subirSoporte(archivo()).subscribe({ error: (e: unknown) => (error = e) });
+      (await declaracion()).flush(SOPORTE_DECLARADO_DTO, { status: 201, statusText: 'Created' });
+
+      const subir = http.expectOne(SOPORTE_DECLARADO_DTO.upload_url);
+      if (estado === 0) {
+        subir.error(new ProgressEvent('error'));
+      } else {
+        subir.flush('', { status: estado, statusText: 'Forbidden' });
+      }
+
+      expect(error).toBeInstanceOf(ErrorSoporte);
+      expect((error as ErrorSoporte).codigo).toBe('supports_unavailable');
+      http.expectNone(url(CONFIRMACION));
+    });
+
+    it.each([
+      [404, 'support_not_found'],
+      [415, 'unsupported_file_type'],
+      [422, 'support_not_uploaded'],
+      [422, 'support_mismatch'],
+      [503, 'supports_unavailable'],
+    ])('traduce el %i al confirmar con su código del contrato (%s)', async (estado, codigo) => {
+      let error: unknown;
+      servicio.subirSoporte(archivo()).subscribe({ error: (e: unknown) => (error = e) });
+      (await declaracion()).flush(SOPORTE_DECLARADO_DTO, { status: 201, statusText: 'Created' });
+      http.expectOne(SOPORTE_DECLARADO_DTO.upload_url).flush(null);
+
+      http.expectOne(url(CONFIRMACION)).flush({ error: codigo, message: 'x' }, { status: estado, statusText: 'Error' });
+
+      expect(error).toBeInstanceOf(ErrorSoporte);
+      expect((error as ErrorSoporte).codigo).toBe(codigo);
     });
   });
 

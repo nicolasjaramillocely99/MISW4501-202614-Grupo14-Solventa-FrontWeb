@@ -27,7 +27,11 @@ const CLAVE_RECHAZO: Readonly<Record<MotivoRechazo, string>> = {
   empty_file: 'vacio',
   too_many_pending_supports: 'demasiadosPendientes',
   supports_unavailable: 'noDisponible',
+  support_not_found: 'noDisponible',
+  support_not_uploaded: 'noDisponible',
+  support_mismatch: 'noCoincide',
   invalid_request: 'invalido',
+  validation_failed: 'invalido',
   limite: 'limite',
 };
 

@@ -1,4 +1,4 @@
-import { OpcionesRadicacionDto, SoporteSubidoDto } from '@core/api/siniestros/radicacion.modelos';
+import { OpcionesRadicacionDto, SoporteDeclaradoDto, SoporteSubidoDto } from '@core/api/siniestros/radicacion.modelos';
 import { DetalleSiniestroDto, PaginaSiniestrosDto, ResumenSiniestroDto } from '@core/api/siniestros/siniestro.modelos';
 
 /**
@@ -94,14 +94,26 @@ export const OPCIONES_RADICACION_DTO: OpcionesRadicacionDto = {
   ],
 };
 
-/** Respuesta de `POST /v1/claims/supports` (201) para el croquis. */
+/** Respuesta de `POST /v1/claims/supports` (201) para el croquis: la URL firmada de S3. */
+export const SOPORTE_DECLARADO_DTO: SoporteDeclaradoDto = {
+  support_id: 'sup-3f2a9c0d6b8e4f1a9c2d7e5b0a4c6d8e',
+  file_name: 'croquis.pdf',
+  content_type: 'application/pdf',
+  byte_size: 482113,
+  sha256: '9b1c4f0e7a2d3c5b6e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d',
+  upload_url: 'https://evidencia.s3.us-east-2.amazonaws.com/supports/sub-1/sup-3f2a9c0d?X-Amz-Signature=abc',
+  upload_headers: { 'Content-Type': 'application/pdf', 'Content-Length': '482113' },
+  expires_at: '2026-09-15T00:08:02Z',
+};
+
+/** Respuesta de `POST /v1/claims/supports/{id}/confirmation` (200) para el croquis. */
 export const SOPORTE_SUBIDO_DTO: SoporteSubidoDto = {
   support_id: 'sup-3f2a9c0d6b8e4f1a9c2d7e5b0a4c6d8e',
   file_name: 'croquis.pdf',
   content_type: 'application/pdf',
   byte_size: 482113,
   sha256: '9b1c4f0e7a2d3c5b6e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d',
-  uploaded_at: '2026-09-14T23:58:02Z',
+  confirmed_at: '2026-09-14T23:58:02Z',
 };
 
 /** Caso web recién radicado (201 de la radicación y `GET /v1/claims/{id}`). */

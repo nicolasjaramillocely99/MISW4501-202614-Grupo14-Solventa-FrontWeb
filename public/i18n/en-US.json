@@ -1849,6 +1849,7 @@
           "vacio": "The file is empty.",
           "demasiadosPendientes": "You have too many files that haven't been filed.",
           "noDisponible": "It couldn't be uploaded. Remove it and try again.",
+          "noCoincide": "The uploaded file doesn't match the one you chose. Remove it and try again.",
           "invalido": "The file couldn't be read.",
           "limite": "This support accepts at most {{maximo}} files."
         },
