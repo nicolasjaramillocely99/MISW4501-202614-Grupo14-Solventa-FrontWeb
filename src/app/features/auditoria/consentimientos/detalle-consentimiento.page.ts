@@ -23,7 +23,6 @@ import {
   solicitadaPor,
 } from './modelos/presentacion-revocacion';
 import { TraducirCodigoPipe } from './pipes/traducir-codigo.pipe';
-import { EstadoConsultadoService } from './servicios/estado-consultado.service';
 import { SeguimientoRevocacionService } from './servicios/seguimiento-revocacion.service';
 
 /** Fase de la carga: consultando, con el estado, sin ese consentimiento o con una falla del servicio. */
@@ -67,7 +66,6 @@ type AvisoCarrera = 'consent_already_revoked' | 'consent_not_active';
 })
 export class DetalleConsentimientoPage implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
-  private readonly consultado = inject(EstadoConsultadoService);
   private readonly sesion = inject(SesionService);
   private readonly seguimiento = inject(SeguimientoRevocacionService);
   private readonly destruccion = inject(DestroyRef);
@@ -122,12 +120,7 @@ export class DetalleConsentimientoPage implements OnInit {
 
   ngOnInit(): void {
     this.id.set(this.ruta.snapshot.paramMap.get('id') ?? '');
-    const guardado = this.consultado.de(this.id());
-    this.seguimiento.iniciar(this.id(), guardado ?? undefined);
-    if (guardado) {
-      this.fase.set('listo');
-      return;
-    }
+    this.seguimiento.iniciar(this.id());
     this.cargar();
   }
 

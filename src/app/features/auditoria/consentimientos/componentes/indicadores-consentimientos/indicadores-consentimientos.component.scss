@@ -1,0 +1,45 @@
+// Las cuatro tarjetas del frame 44:4954: etiqueta en mayúsculas, cifra grande y detalle.
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--espacio-16);
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-16) var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+
+  p {
+    margin: 0;
+  }
+}
+
+.indicador__etiqueta {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.indicador__valor {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.indicador__valor--exito {
+  color: var(--color-exito-600);
+}
+
+.indicador__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

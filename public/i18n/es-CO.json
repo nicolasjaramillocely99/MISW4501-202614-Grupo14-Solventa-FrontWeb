@@ -2051,35 +2051,80 @@
       }
     },
     "consentimientos": {
-      "busqueda": {
+      "listado": {
         "titulo": "Consentimientos Open Finance",
-        "descripcion": "Consulta el estado de un consentimiento de Open Finance y, si corresponde, revócalo. Por ahora la búsqueda es por identificador.",
-        "tarjeta": "Buscar consentimiento",
-        "campo": "Identificador del consentimiento",
-        "ejemplo": "cns-0123456789abcdef",
-        "ayuda": "Ingresa el identificador del consentimiento (p. ej. cns-…).",
-        "buscar": "Buscar",
-        "buscando": "Buscando…",
-        "errores": {
-          "requerido": "Ingresa el identificador del consentimiento.",
-          "invalido": "El identificador solo admite letras, números, guion y guion bajo (máximo 64 caracteres)."
-        },
-        "sinResultados": {
-          "titulo": "No encontramos un consentimiento con el identificador {{ id }}",
-          "texto": "Verifica el identificador e inténtalo de nuevo. Por seguridad no se muestra información interna del sistema.",
-          "limpiar": "Limpiar búsqueda"
-        },
+        "descripcion": "Universo de consentimientos otorgados por los clientes. Filtra por estado y fecha de otorgamiento; la revocación desde este portal es efectiva en menos de 5 minutos y solo la ejecuta el rol Responsable de cumplimiento.",
+        "cargando": "Cargando consentimientos…",
+        "rango": "Corrige el rango de fechas para ver los consentimientos.",
         "error": {
-          "titulo": "No pudimos consultar el consentimiento",
-          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo en unos minutos.",
+          "titulo": "No pudimos cargar los consentimientos",
+          "texto": "El servicio de auditoría no respondió. Inténtalo de nuevo.",
           "reintentar": "Reintentar"
         },
-        "incluye": {
-          "titulo": "Qué muestra el detalle",
-          "estado": "Estado del consentimiento y alcance autorizado",
-          "entidades": "Entidades financieras y el avance del aviso de revocación",
-          "revocacion": "Revocación desde el portal, con motivo y referencia",
-          "historial": "Historial de estados con la hora de cada cambio"
+        "indicadores": {
+          "titulo": "Indicadores de los consentimientos",
+          "activos": "Activos",
+          "activosDetalle": "Vigentes hoy",
+          "revocados": "Revocados (30 días)",
+          "revocadosDetalle": "{{ app }} desde la app · {{ portal }} desde el portal",
+          "vencidos": "Vencidos",
+          "vencidosDetalle": "Sin renovación",
+          "fueraDePlazo": "Revocaciones fuera de plazo",
+          "fueraDePlazoDetalle": "Objetivo: 100 % en ≤ 5 min"
+        },
+        "filtros": {
+          "titulo": "Filtrar consentimientos",
+          "estado": "Estado",
+          "todos": "Todos",
+          "desde": "Otorgado desde",
+          "hasta": "Hasta",
+          "ayudaFecha": "DD/MM/AAAA",
+          "rangoInvalido": "«Hasta» no puede ser anterior a «Otorgado desde».",
+          "entidad": "Entidad",
+          "todas": "Todas",
+          "cliente": "Buscar cliente",
+          "clienteEjemplo": "Documento o nombre",
+          "clienteAyuda": "Documento completo, nombre o identificador"
+        },
+        "estados": {
+          "active": "Activo",
+          "revoked": "Revocado",
+          "partially_revoked": "Revocación parcial",
+          "expired": "Vencido"
+        },
+        "tabla": {
+          "titulo": "Consentimientos de Open Finance",
+          "cliente": "Cliente",
+          "otorgado": "Otorgado",
+          "vence": "Vence",
+          "estado": "Estado",
+          "alcance": "Alcance",
+          "acciones": "Acciones",
+          "revocadoEl": "Revocado {{ fecha }}",
+          "ver": "Ver",
+          "verDetalle": "Ver el consentimiento {{ id }}"
+        },
+        "vacio": {
+          "titulo": "Sin consentimientos para el filtro aplicado",
+          "inicio": "No hay consentimientos",
+          "entidad": " de {{ entidad }}",
+          "estado": " en estado {{ estado }}",
+          "entre": ", otorgados entre el {{ desde }} y el {{ hasta }}",
+          "desde": ", otorgados desde el {{ desde }}",
+          "hasta": ", otorgados hasta el {{ hasta }}",
+          "cliente": ", para el cliente buscado",
+          "fin": ".",
+          "fueraDeRango": "Esta página ya no tiene consentimientos",
+          "limpiar": "Limpiar filtros"
+        },
+        "pie": {
+          "rango": "{{ primero }} a {{ ultimo }} de {{ total }} registros",
+          "sinRegistros": "0 registros",
+          "pagina": "página {{ pagina }} de {{ total }}",
+          "conserva": "el filtro se conserva al navegar",
+          "navegacion": "Páginas del listado",
+          "anterior": "Anterior",
+          "siguiente": "Siguiente"
         }
       },
       "detalle": {
