@@ -113,9 +113,11 @@ test.describe('Revocación de consentimientos desde el portal (HU-W4.2-02)', () 
     await expect(registro).toContainText('TCK-2026-0412');
     await expect(registro).toContainText('REV-2026-0089 · Disponible en la app del cliente');
     const historial = page.getByRole('region', { name: 'Historial de estados' }).getByRole('listitem');
-    await expect(historial).toHaveCount(4);
+    // Los 4 hechos con chulo y el paso final con el estado de hoy (frame 44:5400).
+    await expect(historial).toHaveCount(5);
     await expect(historial.nth(1)).toContainText('Revocación solicitada');
     await expect(historial.nth(3)).toContainText('Revocación confirmada por la entidad');
+    await expect(historial.nth(4)).toContainText('Revocado');
     await verificarAccesibilidad(page);
   });
 

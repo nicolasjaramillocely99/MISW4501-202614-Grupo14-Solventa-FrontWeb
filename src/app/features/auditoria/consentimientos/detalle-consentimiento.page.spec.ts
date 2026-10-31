@@ -242,7 +242,8 @@ describe('DetalleConsentimientoPage (O15 · HU-W4.2-02)', () => {
       expect(screen.queryByRole('button', { name: /Reintentar/ })).toBeNull();
       expect(screen.getByText(/ya está revocado: no se puede revocar de nuevo/)).toBeTruthy();
       expect(screen.queryByRole('status')).toBeNull();
-      expect(within(screen.getByRole('region', { name: 'Historial de estados' })).getAllByRole('listitem')).toHaveLength(4);
+      // Los 4 hechos y el paso final con el estado de hoy (frame 44:5400).
+      expect(within(screen.getByRole('region', { name: 'Historial de estados' })).getAllByRole('listitem')).toHaveLength(5);
     });
 
     it('revocado desde la app: «El titular desde la app», sin motivo ni referencia', async () => {

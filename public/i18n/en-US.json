@@ -2257,7 +2257,9 @@
           "expired": "Expired"
         },
         "canal": "channel {{ canal }}",
-        "canalOtorgamiento": "channel {{ entidad }} ({{ canal }})"
+        "canalOtorgamiento": "channel {{ entidad }} ({{ canal }})",
+        "actualVigente": "In force · no revocations",
+        "actualDesde": "Since {{ fecha }}"
       },
       "actores": {
         "operations": "Operations analyst",

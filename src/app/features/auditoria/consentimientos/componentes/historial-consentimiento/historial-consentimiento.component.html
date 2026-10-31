@@ -2,13 +2,9 @@
   <h2 id="titulo-historial" class="seccion__titulo">{{ t('titulo') }}</h2>
   <ol class="linea">
     @for (entrada of entradas(); track $index) {
-      <li class="paso" [class.paso--actual]="entrada.actual" [attr.aria-current]="entrada.actual ? 'step' : null">
+      <li class="paso">
         <span class="paso__marca" aria-hidden="true">
-          @if (entrada.actual) {
-            {{ entrada.numero }}
-          } @else {
-            <svg lucideCheck [size]="16"></svg>
-          }
+          <svg lucideCheck [size]="16"></svg>
         </span>
         <div class="paso__texto">
           <p class="paso__titulo">{{ entrada.estado | traducirCodigo: 'auditoria.consentimientos.historial.estados' }}</p>
@@ -39,6 +35,19 @@
               <span>{{ t(entrada.entidad ? 'referenciaEntidad' : 'referencia', { referencia: entrada.referencia }) }}</span>
             }
           </p>
+        </div>
+      </li>
+    }
+    @if (estadoActual(); as actual) {
+      <li class="paso paso--actual" aria-current="step">
+        <span class="paso__marca" aria-hidden="true">{{ actual.numero }}</span>
+        <div class="paso__texto">
+          <p class="paso__titulo">{{ actual.clave | traducirCodigo: 'auditoria.consentimientos.estados' }}</p>
+          @if (actual.vigente) {
+            <p class="paso__detalle"><span>{{ t('actualVigente') }}</span></p>
+          } @else if (actual.desde) {
+            <p class="paso__detalle"><span>{{ t('actualDesde', { fecha: (actual.desde | formatoFechaHora: 'fechaHora') }) }}</span></p>
+          }
         </div>
       </li>
     }
