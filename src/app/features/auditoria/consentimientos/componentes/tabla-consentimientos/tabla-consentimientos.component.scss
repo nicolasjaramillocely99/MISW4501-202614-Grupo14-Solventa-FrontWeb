@@ -41,6 +41,12 @@
   overflow-wrap: anywhere;
 }
 
+// El identificador (cns- + 32 hex) no se parte en el guion: baja entero a su línea, como en el frame.
+// En pantallas angostas la tabla se desplaza dentro de .tabla-desplazable.
+.tabla__id {
+  white-space: nowrap;
+}
+
 .tabla__fecha {
   white-space: nowrap;
 }

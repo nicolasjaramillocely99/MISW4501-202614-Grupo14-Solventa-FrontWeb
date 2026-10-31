@@ -128,7 +128,7 @@ test.describe('Listado de consentimientos para cumplimiento (HU-W4.2-01)', () =>
     await expect(page).toHaveURL(`/auditoria/consentimientos/${ID}`);
     await expect(page.getByText(/otorgado el 20\/10\/2026, 10:00 en el flujo embebido \(Banco Aliado\) · vence el 20\/10\/2027/)).toBeVisible();
     const datos = page.getByRole('region', { name: 'Datos del cliente y del consentimiento' });
-    await expect(datos).toContainText('flujo embebido · Banco Aliado');
+    await expect(datos).toContainText('Embebido · Banco Aliado');
     await expect(datos).toContainText('Registro inmutable · términos v1');
     await expect(datos).toContainText('Perfil de riesgo y oferta de seguro de vida hipotecario');
     await expect(datos).toContainText('20/10/2026 → 20/10/2027');

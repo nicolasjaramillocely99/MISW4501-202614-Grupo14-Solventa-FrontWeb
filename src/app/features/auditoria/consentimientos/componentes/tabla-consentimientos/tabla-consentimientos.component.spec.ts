@@ -47,7 +47,9 @@ describe('TablaConsentimientosComponent (O14 / O14b · HU-W4.2-01)', () => {
     expect(filas).toHaveLength(6);
     const primera = within(filas[0]);
     expect(primera.getByText('Carolina Pérez Ruiz')).toBeTruthy();
-    expect(primera.getByText('******5678 · cns-55aa31')).toBeTruthy();
+    // El id va en su propio span para no partirse en el guion; la línea completa se sigue leyendo igual.
+    const id = primera.getByText('cns-55aa31');
+    expect(id.parentElement?.textContent).toBe('******5678 · cns-55aa31');
     expect(primera.getByText(fechaHora('2026-09-16T20:52:00Z'))).toBeTruthy();
     expect(primera.getByText(fecha('2027-09-16T20:52:00Z'))).toBeTruthy();
     expect(primera.getByText('Activo')).toBeTruthy();

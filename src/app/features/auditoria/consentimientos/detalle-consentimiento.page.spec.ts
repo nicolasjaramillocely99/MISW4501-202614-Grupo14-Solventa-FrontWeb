@@ -147,7 +147,7 @@ describe('DetalleConsentimientoPage (O15 · HU-W4.2-02)', () => {
       const datos = within(screen.getByRole('region', { name: 'Datos del cliente y del consentimiento' }));
       const valor = (termino: string) => datos.getByText(termino).nextElementSibling?.textContent?.trim();
       expect(valor('Cliente')).toBe('Ana María Pérez · ******4050');
-      expect(valor('Canal de otorgamiento')).toBe('flujo embebido · Banco Aliado');
+      expect(valor('Canal de otorgamiento')).toBe('Embebido · Banco Aliado');
       expect(valor('Evidencia')).toBe('Registro inmutable · términos v1');
       expect(valor('Finalidad')).toBe('Perfil de riesgo y oferta de seguro de vida hipotecario');
       expect(valor('Vigencia')).toBe('20/10/2026 → 20/10/2027');

@@ -19,7 +19,7 @@
             <tr>
               <td>
                 <span class="tabla__nombre">{{ fila.titular.nombreCompleto }}</span>
-                <span class="tabla__secundario">{{ fila.titular.documentoEnmascarado }} · {{ fila.consentimientoId }}</span>
+                <span class="tabla__secundario">{{ fila.titular.documentoEnmascarado }} · <span class="tabla__id">{{ fila.consentimientoId }}</span></span>
               </td>
               <td class="tabla__fecha">{{ fila.otorgadoEn | formatoFechaHora: 'fechaHora' }}</td>
               <td class="tabla__fecha">{{ fecha(fila.venceEn) }}</td>

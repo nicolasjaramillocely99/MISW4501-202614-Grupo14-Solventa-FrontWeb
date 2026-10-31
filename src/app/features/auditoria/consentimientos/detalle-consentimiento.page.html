@@ -26,35 +26,36 @@
     }
     @case ('listo') {
       @if (estado(); as e) {
+        <!-- Como el frame 44:5400: el título con su insignia ocupa todo el ancho y los botones van en la fila del resumen. -->
         <header class="encabezado">
-          <div class="encabezado__texto">
-            <div class="encabezado__fila">
-              <h1 #titulo class="pagina__titulo" tabindex="-1">{{ t('detalle.titulo', { id: e.consentimientoId }) }}</h1>
-              @if (etiqueta(); as etiqueta) {
-                <app-insignia-estado [tono]="etiqueta.tono">{{ t('estados.' + etiqueta.clave) }}</app-insignia-estado>
-              }
-            </div>
+          <div class="encabezado__fila">
+            <h1 #titulo class="pagina__titulo" tabindex="-1">{{ t('detalle.titulo', { id: e.consentimientoId }) }}</h1>
+            @if (etiqueta(); as etiqueta) {
+              <app-insignia-estado [tono]="etiqueta.tono">{{ t('estados.' + etiqueta.clave) }}</app-insignia-estado>
+            }
+          </div>
+          <div class="encabezado__detalle">
             <!-- Una sola línea: los bloques dejarían espacios dobles en el texto que se lee. -->
             <p class="encabezado__resumen">{{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}{{ !otorgado() ? '' : e.canalOtorgamiento && entidadOtorgamiento() ? ' · ' + t('detalle.otorgadoCanal', { fecha: (otorgado() | formatoFechaHora: 'fechaHora'), canal: (e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento'), entidad: entidadOtorgamiento() }) : ' · ' + t('detalle.otorgado', { fecha: (otorgado() | formatoFechaHora: 'fechaHora') }) }}{{ e.venceEn ? ' · ' + t('detalle.vence', { fecha: fecha(e.venceEn) }) : '' }}</p>
-          </div>
-          <div class="acciones">
-            @if (e.revocable) {
-              <button type="button" class="boton-peligro" (click)="abrirConfirmacion()">
-                <svg lucideBan [size]="20" aria-hidden="true"></svg>{{ t('detalle.revocar') }}
-              </button>
-            }
-            @if (e.estado === 'partially_revoked' && sinConfirmar().length > 0) {
-              <button type="button" class="boton boton--primario" [disabled]="reintentando()" (click)="reintentar()">
-                <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
-                @if (reintentando()) {
-                  {{ t('detalle.reintentando') }}
-                } @else if (sinConfirmar().length === 1) {
-                  {{ t('detalle.reintentarEn', { entidad: sinConfirmar()[0].nombre }) }}
-                } @else {
-                  {{ t('detalle.reintentarEnVarias', { cantidad: sinConfirmar().length }) }}
-                }
-              </button>
-            }
+            <div class="acciones">
+              @if (e.revocable) {
+                <button type="button" class="boton-peligro" (click)="abrirConfirmacion()">
+                  <svg lucideBan [size]="20" aria-hidden="true"></svg>{{ t('detalle.revocar') }}
+                </button>
+              }
+              @if (e.estado === 'partially_revoked' && sinConfirmar().length > 0) {
+                <button type="button" class="boton boton--primario" [disabled]="reintentando()" (click)="reintentar()">
+                  <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
+                  @if (reintentando()) {
+                    {{ t('detalle.reintentando') }}
+                  } @else if (sinConfirmar().length === 1) {
+                    {{ t('detalle.reintentarEn', { entidad: sinConfirmar()[0].nombre }) }}
+                  } @else {
+                    {{ t('detalle.reintentarEnVarias', { cantidad: sinConfirmar().length }) }}
+                  }
+                </button>
+              }
+            </div>
           </div>
         </header>
 
@@ -131,7 +132,7 @@
                     <dd>
                       {{
                         t('detalle.datos.canalValor', {
-                          canal: e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento',
+                          canal: e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamientoEtiqueta',
                           entidad: entidadOtorgamiento() ?? '',
                         })
                       }}

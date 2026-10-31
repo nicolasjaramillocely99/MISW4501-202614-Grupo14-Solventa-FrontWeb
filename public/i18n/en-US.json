@@ -2342,6 +2342,9 @@
       },
       "canalesOtorgamiento": {
         "embedded": "embedded journey"
+      },
+      "canalesOtorgamientoEtiqueta": {
+        "embedded": "Embedded"
       }
     }
   }
