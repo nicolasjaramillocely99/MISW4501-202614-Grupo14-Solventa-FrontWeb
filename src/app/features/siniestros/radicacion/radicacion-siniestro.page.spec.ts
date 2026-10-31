@@ -372,4 +372,73 @@ describe('RadicacionSiniestroPage (A6 / A6b · HU-W2.1-01)', () => {
       expect(api.radicar.mock.calls[1][1]).not.toBe(api.radicar.mock.calls[0][1]);
     });
   });
+
+  describe('monto estimado (HU-W2.2-01, F4)', () => {
+    const monto = () => screen.getByLabelText('Monto estimado (opcional)') as HTMLInputElement;
+
+    it('el campo es opcional: con el monto vacío «Radicar siniestro» sigue habilitado y no se envía', async () => {
+      const { usuario } = await renderizar();
+      await llenarDatos(usuario);
+      await adjuntarTodo(usuario);
+
+      expect(radicar().disabled).toBe(false);
+      await usuario.click(radicar());
+
+      expect(api.radicar.mock.calls[0][0]).not.toHaveProperty('montoEstimadoMinor');
+    });
+
+    it('muestra «Se enviará como $ 4.800.000 COP» y envía el entero en centavos', async () => {
+      const { usuario } = await renderizar();
+      await llenarDatos(usuario);
+      await adjuntarTodo(usuario);
+
+      fireEvent.input(monto(), { target: { value: '4.800.000' } });
+
+      expect(screen.getByText(/Se enviará como \$\s4\.800\.000 COP/)).toBeTruthy();
+      await usuario.click(radicar());
+      expect(api.radicar.mock.calls[0][0].montoEstimadoMinor).toBe(480000000);
+    });
+
+    it('un monto con decimales deshabilita «Radicar siniestro» y el aviso lo nombra', async () => {
+      const { usuario } = await renderizar();
+      await llenarDatos(usuario);
+      await adjuntarTodo(usuario);
+
+      fireEvent.input(monto(), { target: { value: '4.800.000,50' } });
+      fireEvent.blur(monto());
+
+      expect(radicar().disabled).toBe(true);
+      expect(monto().getAttribute('aria-invalid')).toBe('true');
+      expect(screen.getByText('El valor no es válido. Revísalo.')).toBeTruthy();
+      expect(within(aviso()).getByText(/Monto estimado \(opcional\)/)).toBeTruthy();
+      expect(screen.queryByText(/Se enviará como/)).toBeNull();
+    });
+
+    it('un monto fuera de rango dice el rango permitido', async () => {
+      const { usuario } = await renderizar();
+      await llenarDatos(usuario);
+
+      fireEvent.input(monto(), { target: { value: '100.000.000.001' } });
+      fireEvent.blur(monto());
+
+      expect(screen.getByText('El monto debe estar entre 1 y 100.000.000.000 de pesos.')).toBeTruthy();
+    });
+
+    it('el 422 del campo estimated_amount_minor se marca en el campo sin perder lo diligenciado', async () => {
+      const { usuario } = await renderizar({
+        radicacion: throwError(
+          () => new ErrorRadicacion('validation_failed', [{ campo: 'montoEstimado', codigo: 'out_of_range' }]),
+        ),
+      });
+      await llenarDatos(usuario);
+      await adjuntarTodo(usuario);
+      fireEvent.input(monto(), { target: { value: '4.800.000' } });
+
+      await usuario.click(radicar());
+
+      expect(screen.getByText('El monto debe estar entre 1 y 100.000.000.000 de pesos.')).toBeTruthy();
+      expect(monto().value).toBe('4.800.000');
+      expect((screen.getByLabelText('Lugar del hecho') as HTMLInputElement).value).toBe('Calle 80 con carrera 30, Bogotá');
+    });
+  });
 });

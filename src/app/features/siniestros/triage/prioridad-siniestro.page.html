@@ -1,0 +1,52 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros.triage.prioridad'">
+  <a class="volver" routerLink="/siniestros/cola" [queryParams]="parametrosCola">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('migas') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="seccion__titulo">{{ t('noEncontrado.titulo') }}</h1>
+        <p>{{ t('noEncontrado.texto') }}</p>
+        <div>
+          <a class="boton boton--secundario" routerLink="/siniestros/cola" [queryParams]="parametrosCola">
+            {{ t('noEncontrado.volver') }}
+          </a>
+        </div>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="seccion__titulo">{{ t('error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('error.texto') }}</p>
+        </div>
+        <div>
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('error.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @default {
+      <h1 class="pagina__titulo">{{ t('titulo', { id }) }}</h1>
+      @if (fase() === 'detenido') {
+        <div class="aviso aviso--advertencia" role="status">
+          <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+          <div>
+            <p class="aviso__titulo">{{ t('detenido.titulo') }}</p>
+            <p>{{ t('detenido.texto') }}</p>
+            <button type="button" class="boton boton--secundario" (click)="cargar()">{{ t('detenido.actualizar') }}</button>
+          </div>
+        </div>
+      } @else if (triage(); as datos) {
+        <app-prioridad-triage [triage]="datos" />
+        @if (datos.estado === 'assessed') {
+          <app-historial-triage [historial]="datos.historial" />
+        }
+      }
+    }
+  }
+</div>

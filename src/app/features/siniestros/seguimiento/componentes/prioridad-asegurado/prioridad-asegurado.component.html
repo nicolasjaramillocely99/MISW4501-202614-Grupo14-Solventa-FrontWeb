@@ -1,0 +1,19 @@
+<ng-container *transloco="let t; prefix: 'siniestros'">
+  @switch (triage().estado) {
+    @case ('assessed') {
+      @if (triage().nivel; as nivel) {
+        <p class="prioridad">
+          <app-insignia-estado [tono]="insigniaNivel(nivel).tono">
+            {{ t('detalle.prioridad.nivel', { nivel: t(insigniaNivel(nivel).clave) }) }}
+          </app-insignia-estado>
+          @if (triage().diasResolucion !== null) {
+            <span>{{ etiquetaResolucion(t, triage().diasResolucion ?? 0) }}</span>
+          }
+        </p>
+      }
+    }
+    @case ('pending') {
+      <p class="prioridad prioridad--calculando" role="status">{{ t('detalle.prioridad.calculando') }}</p>
+    }
+  }
+</ng-container>

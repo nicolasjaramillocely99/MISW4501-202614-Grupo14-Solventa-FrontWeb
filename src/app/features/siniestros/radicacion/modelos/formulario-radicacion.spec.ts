@@ -33,6 +33,7 @@ const COMPLETO: FormularioRadicacion = {
   ocurridoEn: local('2026-09-14T23:40:00Z'),
   lugar: 'Calle 80 con carrera 30, Bogotá',
   descripcion: 'Un vehículo golpeó la parte trasera.',
+  montoEstimado: '',
 };
 const ADJUNTOS_COMPLETOS = { vehicle_photos: 4, driver_document: 1, traffic_report: 1 };
 

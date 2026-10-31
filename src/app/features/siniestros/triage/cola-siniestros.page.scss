@@ -1,0 +1,84 @@
+// O5 provisional · Cola de siniestros: encabezado, regla, indicadores, búsqueda y tabla.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.encabezado__descripcion {
+  margin: var(--espacio-4) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.regla h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.regla p {
+  margin: var(--espacio-4) 0 0;
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.busqueda {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.campo__control--area {
+  resize: vertical;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-12);
+}
+
+.conteo {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.estado-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+
+  p {
+    margin: 0;
+  }
+}

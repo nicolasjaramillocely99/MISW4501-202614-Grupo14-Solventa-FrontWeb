@@ -1,0 +1,50 @@
+// O6 reducida · Tarjeta «Prioridad»: resumen del nivel y lista de datos en dos columnas.
+.prioridad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  box-shadow: none;
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.prioridad__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.prioridad__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.prioridad__estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}

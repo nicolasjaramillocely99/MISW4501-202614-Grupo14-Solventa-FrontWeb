@@ -8,6 +8,7 @@
         <th scope="col">{{ t('fechaHecho') }}</th>
         <th scope="col">{{ t('etapa') }}</th>
         <th scope="col">{{ t('radicadoEn') }}</th>
+        <th scope="col"><span class="visualmente-oculto">{{ t('acciones') }}</span></th>
       </tr>
     </thead>
     <tbody *transloco="let ts; prefix: 'siniestros'">
@@ -23,6 +24,13 @@
           <td>{{ caso.ocurridoEn | formatoFechaHora }}</td>
           <td><app-insignia-estado tono="informacion">{{ ts('estados.' + caso.estado) }}</app-insignia-estado></td>
           <td>{{ caso.radicadoEn | formatoFechaHora }}</td>
+          <td>
+            <a
+              class="boton boton--terciario"
+              [routerLink]="['/siniestros', caso.id]"
+              [attr.aria-label]="t('verDetalleDe', { radicado: caso.numeroRadicado })"
+            >{{ t('verDetalle') }}</a>
+          </td>
         </tr>
       }
     </tbody>

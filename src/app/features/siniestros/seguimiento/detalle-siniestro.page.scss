@@ -1,0 +1,89 @@
+// A8 mínima · Detalle del siniestro del asegurado: migas, encabezado, etapas con la prioridad y datos reportados.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  align-self: flex-start;
+  min-height: var(--control-alto);
+  font-weight: 500;
+  color: var(--color-azul-700);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  box-shadow: none;
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.etapas__prioridad:empty {
+  display: none;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.datos__ancho {
+  grid-column: 1 / -1;
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.estado-tarjeta p {
+  margin: 0;
+}

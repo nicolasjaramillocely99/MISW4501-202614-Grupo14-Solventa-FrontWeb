@@ -52,6 +52,7 @@ export class RadicacionSiniestroPagina {
   readonly fecha: Locator;
   readonly lugar: Locator;
   readonly descripcion: Locator;
+  readonly monto: Locator;
   readonly radicar: Locator;
   readonly soportes: Locator;
   readonly lateral: Locator;
@@ -66,6 +67,7 @@ export class RadicacionSiniestroPagina {
     this.fecha = page.getByLabel('Fecha y hora del hecho');
     this.lugar = page.getByLabel('Lugar del hecho');
     this.descripcion = page.getByLabel('Descripción de los hechos');
+    this.monto = page.getByLabel('Monto estimado (opcional)');
     this.radicar = page.getByRole('button', { name: 'Radicar siniestro' });
     this.soportes = page.getByRole('region', { name: 'Soportes' });
     this.lateral = page.getByRole('complementary', { name: 'Estado de la radicación' });

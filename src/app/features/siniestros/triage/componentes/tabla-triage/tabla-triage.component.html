@@ -1,0 +1,42 @@
+<div class="tabla-contenedor" *transloco="let t; prefix: 'siniestros'">
+  <table class="tabla">
+    <caption class="visualmente-oculto">{{ t('triage.cola.tabla.titulo') }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ t('triage.cola.tabla.caso') }}</th>
+        <th scope="col">{{ t('triage.cola.tabla.prioridad') }}</th>
+        <th scope="col">{{ t('triage.cola.tabla.severidad') }}</th>
+        <th scope="col">{{ t('triage.cola.tabla.monto') }}</th>
+        <th scope="col">{{ t('triage.cola.tabla.objetivo') }}</th>
+        <th scope="col">{{ t('triage.cola.tabla.calculada') }}</th>
+        <th scope="col"><span class="visualmente-oculto">{{ t('misSiniestros.tabla.acciones') }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (fila of visibles(); track fila.siniestroId) {
+        <tr>
+          <th scope="row" class="tabla__caso">{{ fila.siniestroId }}</th>
+          @if (fila.estado === 'assessed' && fila.nivel !== null) {
+            <td>
+              <app-insignia-estado [tono]="insigniaNivel(fila.nivel).tono">{{ t(insigniaNivel(fila.nivel).clave) }}</app-insignia-estado>
+            </td>
+            <td>{{ fila.severidad ? etiquetaSeveridad(t, fila.severidad) : '—' }}</td>
+            <td>{{ fila.banda ? etiquetaBanda(t, fila.banda) : '—' }}</td>
+            <td>{{ fila.objetivo ? etiquetaObjetivo(t, fila.objetivo) : '—' }}</td>
+            <td>{{ fila.evaluadoEn ? (fila.evaluadoEn | formatoFechaHora) : '—' }}</td>
+            <td>
+              <a
+                class="boton boton--terciario"
+                [routerLink]="['/siniestros/cola', fila.siniestroId]"
+                [queryParams]="parametrosEnlace()"
+                [attr.aria-label]="t('triage.cola.tabla.verPrioridadDe', { id: fila.siniestroId })"
+              >{{ t('triage.cola.tabla.verPrioridad') }}</a>
+            </td>
+          } @else {
+            <td colspan="6" class="tabla__estado">{{ etiquetaEstado(t, fila.estado) }}</td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

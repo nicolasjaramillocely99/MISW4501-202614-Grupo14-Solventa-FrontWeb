@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { render, screen, within } from '@testing-library/angular';
 import { PAGINA_SINIESTROS_DTO } from '@testing/siniestros-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
@@ -10,7 +11,11 @@ const CASOS = mapearPaginaSiniestros(PAGINA_SINIESTROS_DTO).items;
 
 describe('TablaSiniestrosComponent (A7 mínima · HU-W2.1-01)', () => {
   beforeEach(async () => {
-    await render(TablaSiniestrosComponent, { imports: [proveerTranslocoPruebas()], inputs: { casos: CASOS } });
+    await render(TablaSiniestrosComponent, {
+      imports: [proveerTranslocoPruebas()],
+      providers: [provideRouter([])],
+      inputs: { casos: CASOS },
+    });
   });
 
   it('tiene encabezados de columna y un nombre accesible', () => {
@@ -21,6 +26,7 @@ describe('TablaSiniestrosComponent (A7 mínima · HU-W2.1-01)', () => {
       'Fecha del hecho',
       'Etapa',
       'Radicado el',
+      'Acciones',
     ]);
   });
 
@@ -38,5 +44,13 @@ describe('TablaSiniestrosComponent (A7 mínima · HU-W2.1-01)', () => {
 
     expect(within(fila).getByText('Hurto')).toBeTruthy();
     expect(within(fila).getByText('AU-2025-118204 · Radicado desde la app')).toBeTruthy();
+  });
+
+  it('«Ver detalle» lleva al detalle del caso y su nombre accesible incluye el radicado (HU-W2.2-01)', () => {
+    const enlace = screen.getByRole('link', { name: 'Ver detalle del siniestro SIN-2026-01712' });
+
+    expect(enlace.textContent?.trim()).toBe('Ver detalle');
+    expect(enlace.getAttribute('href')).toBe('/siniestros/8f14e45f-ceea-467a-9f3a-5a2d0b1c7e90');
+    expect(screen.getAllByRole('link', { name: /^Ver detalle del siniestro/ })).toHaveLength(2);
   });
 });

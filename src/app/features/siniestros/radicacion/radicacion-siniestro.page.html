@@ -189,6 +189,36 @@
                   </p>
                 }
               </div>
+
+              <div class="campo campo--monto">
+                <label class="campo__etiqueta" for="monto-estimado">{{ t('radicacion.campos.montoEstimado.etiqueta') }}</label>
+                <input
+                  id="monto-estimado"
+                  #controlMonto
+                  class="campo__control"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  [value]="formulario().montoEstimado"
+                  [attr.aria-invalid]="errorCampo('montoEstimado') ? 'true' : null"
+                  [attr.aria-describedby]="'monto-estimado-ayuda' + (errorCampo('montoEstimado') ? ' monto-estimado-error' : '')"
+                  (input)="actualizar('montoEstimado', controlMonto.value)"
+                  (blur)="tocar('montoEstimado')"
+                />
+                @if (errorCampo('montoEstimado'); as problema) {
+                  <p id="monto-estimado-error" class="campo__error">
+                    <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                  </p>
+                }
+                <p id="monto-estimado-ayuda" class="campo__ayuda">
+                  {{ t('radicacion.campos.montoEstimado.ayuda') }}
+                  @if (montoEnPesos() !== null) {
+                    <span class="campo__vista" role="status">
+                      {{ t('radicacion.campos.montoEstimado.vista', { monto: (montoEnPesos() | formatoMoneda: 'COP') }) }}
+                    </span>
+                  }
+                </p>
+              </div>
             </fieldset>
 
             @if (formulario().tipoSiniestro) {

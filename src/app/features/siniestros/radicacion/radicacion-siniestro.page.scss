@@ -106,6 +106,17 @@
   color: var(--color-texto-secundario);
 }
 
+.campo--monto {
+  max-width: 24rem;
+}
+
+// Vista previa del monto («Se enviará como $ 4.800.000 COP»).
+.campo__vista {
+  display: block;
+  font-weight: 500;
+  color: var(--color-texto-primario);
+}
+
 .campo__control--area {
   resize: vertical;
 }

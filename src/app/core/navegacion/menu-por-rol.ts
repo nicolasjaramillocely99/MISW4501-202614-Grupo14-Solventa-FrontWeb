@@ -46,7 +46,8 @@ export const MENU_POR_ROL: Readonly<Record<Rol, readonly ItemMenu[]>> = {
       ruta: '/siniestros/mis-siniestros',
       icono: LucideClipboardList,
       // HU-W2.1-01: «Radicar un siniestro» vive dentro de «Mis siniestros» (A6 · migas «← Mis siniestros»).
-      tambienEn: ['/siniestros/radicar'],
+      // HU-W2.2-01: también el detalle del caso, `/siniestros/:id` (A8 · migas «← Mis siniestros»).
+      tambienEn: ['/siniestros/radicar', '/siniestros'],
     },
     { clave: 'menu.misSolicitudes', ruta: '/originacion/solicitudes', icono: LucideInbox },
     { clave: 'menu.miPerfil', ruta: '/perfil', icono: LucideUser },

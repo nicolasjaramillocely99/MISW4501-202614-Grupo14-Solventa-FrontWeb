@@ -1,0 +1,111 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <a class="volver" routerLink="/siniestros/mis-siniestros">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.migas') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('detalle.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="seccion__titulo">{{ t('detalle.noEncontrado.titulo') }}</h1>
+        <p>{{ t('detalle.noEncontrado.texto') }}</p>
+        <div>
+          <a class="boton boton--secundario" routerLink="/siniestros/mis-siniestros">{{ t('detalle.noEncontrado.volver') }}</a>
+        </div>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="seccion__titulo">{{ t('detalle.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('detalle.error.texto') }}</p>
+        </div>
+        <div>
+          <button type="button" class="boton boton--primario" (click)="cargarCaso()">{{ t('detalle.error.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @default {
+      @if (caso(); as caso) {
+        <header class="encabezado">
+          <h1 class="pagina__titulo">{{ t('detalle.titulo', { radicado: caso.numeroRadicado }) }}</h1>
+          <app-insignia-estado tono="informacion">{{ t('estados.' + caso.estado) }}</app-insignia-estado>
+        </header>
+
+        <section class="tarjeta etapas" aria-labelledby="titulo-etapas">
+          <h2 id="titulo-etapas" class="seccion__titulo">{{ t('confirmacion.etapas.etiqueta') }}</h2>
+          <app-indicador-pasos [pasos]="etapas()" etiqueta="siniestros.confirmacion.etapas.etiqueta" />
+
+          <div class="etapas__prioridad" aria-live="polite">
+            @switch (estadoPrioridad()) {
+              @case ('error') {
+                <div class="aviso aviso--advertencia">
+                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('detalle.prioridad.error') }}</p>
+                    <button type="button" class="boton boton--secundario" (click)="cargarPrioridad()">
+                      {{ t('detalle.prioridad.reintentar') }}
+                    </button>
+                  </div>
+                </div>
+              }
+              @case ('detenido') {
+                <div class="aviso aviso--advertencia">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('detalle.prioridad.detenido') }}</p>
+                    <button type="button" class="boton boton--secundario" (click)="cargarPrioridad()">
+                      {{ t('detalle.prioridad.actualizar') }}
+                    </button>
+                  </div>
+                </div>
+              }
+              @default {
+                @if (triage(); as prioridad) {
+                  <app-prioridad-asegurado [triage]="prioridad" />
+                }
+              }
+            }
+          </div>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="titulo-datos">
+          <h2 id="titulo-datos" class="seccion__titulo">{{ t('detalle.datos.titulo') }}</h2>
+          <dl class="datos">
+            <div>
+              <dt>{{ t('detalle.datos.poliza') }}</dt>
+              <dd>{{ poliza(t, caso) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.tipo') }}</dt>
+              <dd>{{ tipo(t, caso) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.fechaHecho') }}</dt>
+              <dd>{{ caso.ocurridoEn | formatoFechaHora }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.lugar') }}</dt>
+              <dd>{{ caso.lugar }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.radicadoEn') }}</dt>
+              <dd>{{ caso.radicadoEn | formatoFechaHora }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.monto') }}</dt>
+              <dd>{{ montoPesos() === null ? t('detalle.datos.sinMonto') : (montoPesos() | formatoMoneda: 'COP') }}</dd>
+            </div>
+            <div class="datos__ancho">
+              <dt>{{ t('detalle.datos.descripcion') }}</dt>
+              <dd>{{ caso.descripcion }}</dd>
+            </div>
+          </dl>
+        </section>
+      }
+    }
+  }
+</div>
