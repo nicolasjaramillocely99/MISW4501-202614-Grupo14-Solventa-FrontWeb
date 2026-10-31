@@ -1,6 +1,7 @@
 /**
  * Datos de las E2E de la revocación de consentimientos desde el portal de cumplimiento (HU-W4.2-02), con la forma de las
- * respuestas de `audit` (contrato `HU-W4.2-02-api.md`, `openapi.yaml` 0.5.0). Los plazos se calculan respecto a «ahora»:
+ * respuestas de `audit` (contrato `HU-W4.2-02-api.md`; desde `openapi.yaml` 0.6.0, con la vigencia, la finalidad y los
+ * canales que agrega HU-W4.2-01). Los plazos se calculan respecto a «ahora»:
  * el sondeo se detiene 30 s después del mayor plazo, así que con fechas fijas el estado «en curso» no se sondearía.
  */
 
@@ -28,6 +29,7 @@ const OTORGADO = {
   occurred_at: '2026-10-20T15:00:00Z',
   entity_code: null,
   actor_type: null,
+  channel: 'embedded',
   reason: null,
   reference: null,
 };
@@ -81,6 +83,12 @@ function estado(
     status,
     revocable: status === 'active',
     holder: TITULAR,
+    granted_at: '2026-10-20T15:00:00Z',
+    expires_at: '2027-10-20T15:00:00Z',
+    ended_at: status === 'active' ? null : (opciones.revocacion?.effective_at ?? '2027-10-20T15:00:00Z'),
+    purpose: 'risk_profiling_mortgage_life_offer',
+    grant_channel: 'embedded',
+    terms_version: 'v1',
     scope: ALCANCE,
     entities: opciones.entidades ?? [BANCO_ALIADO],
     revocation: opciones.revocacion ?? null,

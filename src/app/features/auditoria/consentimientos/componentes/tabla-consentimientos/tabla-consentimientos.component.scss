@@ -41,6 +41,10 @@
   overflow-wrap: anywhere;
 }
 
+.tabla__fecha {
+  white-space: nowrap;
+}
+
 .tabla__alcance {
   max-width: 36ch;
   font-size: 0.875rem;

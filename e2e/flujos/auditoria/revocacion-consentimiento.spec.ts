@@ -16,8 +16,9 @@ import {
   vencido,
 } from '../../fixtures/consentimientos';
 import { simularCognito } from '../../fixtures/sesion-por-rol';
-import { BusquedaConsentimientoPagina } from '../../paginas/busqueda-consentimiento.pagina';
+import { pagina, respuesta } from '../../fixtures/listado-consentimientos';
 import { DetalleConsentimientoPagina } from '../../paginas/detalle-consentimiento.pagina';
+import { ListadoConsentimientosPagina } from '../../paginas/listado-consentimientos.pagina';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 /** El sondeo consulta cada 5 s: se espera un poco más que un ciclo. */
@@ -25,25 +26,27 @@ const UN_CICLO_DE_SONDEO = { timeout: 15_000 };
 
 /**
  * Revocación de un consentimiento de Open Finance desde el portal de cumplimiento (HU-W4.2-02). Cognito y el API Gateway se
- * simulan con `page.route`; la sesión es la de un analista de operaciones.
+ * simulan con `page.route`; la sesión es la de un analista de operaciones. Desde HU-W4.2-01 se entra por el listado (O14),
+ * que reemplazó la búsqueda provisional por identificador.
  */
 test.describe('Revocación de consentimientos desde el portal (HU-W4.2-02)', () => {
-  test('busca el consentimiento y el modal pide confirmar con datos, motivo y referencia (CA-1)', async ({ page }) => {
+  test('desde el listado abre el consentimiento y el modal pide confirmar con datos, motivo y referencia (CA-1)', async ({ page }) => {
     await simularCognito(page);
-    const busqueda = new BusquedaConsentimientoPagina(page);
+    const listado = new ListadoConsentimientosPagina(page);
     const detalle = new DetalleConsentimientoPagina(page);
+    await listado.simularListado();
     const peticiones = await detalle.simularGateway({ lecturas: [ok(activo())], revocaciones: [validacionFallida()] });
 
     await detalle.abrirComo('/auditoria/consentimientos');
-    await expect(busqueda.titulo).toHaveText('Consentimientos Open Finance');
+    await expect(listado.titulo).toHaveText('Consentimientos Open Finance');
     await verificarAccesibilidad(page);
 
-    await busqueda.buscarPor(ID);
+    await listado.ver(ID).click();
 
     await expect(page).toHaveURL(`/auditoria/consentimientos/${ID}`);
     await expect(detalle.titulo).toHaveText(`Consentimiento ${ID}`);
     await expect(detalle.estado).toHaveText('Activo');
-    // El estado pasa de la búsqueda al detalle: una sola lectura.
+    // El detalle lee su estado una sola vez.
     expect(peticiones.lecturas).toEqual([ID]);
     await expect(page.getByText(/Ana María Pérez · \*{6}4050\s+· otorgado el 20\/10\/2026/)).toBeVisible();
     await verificarAccesibilidad(page);
@@ -250,46 +253,36 @@ test.describe('Revocación de consentimientos desde el portal (HU-W4.2-02)', () 
     }
   });
 
-  test('un identificador inexistente muestra «sin resultados» y un enlace directo inexistente, «no encontrado»', async ({ page }) => {
+  test('un enlace directo inexistente muestra «no encontrado» y lleva al listado', async ({ page }) => {
     await simularCognito(page);
-    const busqueda = new BusquedaConsentimientoPagina(page);
+    const listado = new ListadoConsentimientosPagina(page);
     const detalle = new DetalleConsentimientoPagina(page);
+    await listado.simularListado();
     await detalle.simularGateway({ lecturas: [noEncontrado()] });
 
-    await detalle.abrirComo('/auditoria/consentimientos');
-    await busqueda.buscarPor('cns-inexistente');
+    await detalle.abrirComo(`/auditoria/consentimientos/${ID}`);
 
-    await expect(page.getByRole('heading', { name: 'No encontramos un consentimiento con el identificador cns-inexistente' })).toBeVisible();
-    await expect(page.getByRole('status')).toContainText('Por seguridad no se muestra información interna del sistema.');
-    await expect(page).toHaveURL('/auditoria/consentimientos');
-    await verificarAccesibilidad(page);
-    await busqueda.limpiar.click();
-    await expect(busqueda.identificador).toHaveValue('');
-
-    // Un identificador mal formado ni siquiera sale hacia el gateway.
-    await busqueda.buscarPor('../etc');
-    await expect(page.getByRole('alert')).toContainText('El identificador solo admite letras');
-    await verificarAccesibilidad(page);
-
-    await page.goto(`/auditoria/consentimientos/${ID}`);
     await expect(page.getByRole('heading', { name: 'No encontramos este consentimiento' })).toBeVisible();
+    await expect(page.getByRole('status')).toContainText('Por seguridad no se muestra información interna del sistema.');
     await verificarAccesibilidad(page);
     await page.getByRole('link', { name: 'Buscar otro' }).click();
     await expect(page).toHaveURL('/auditoria/consentimientos');
+    await expect(listado.titulo).toHaveText('Consentimientos Open Finance');
   });
 
-  test('una falla del servicio en la búsqueda deja reintentar', async ({ page }) => {
+  test('una falla del servicio en el listado deja reintentar y luego abrir el detalle', async ({ page }) => {
     await simularCognito(page);
-    const busqueda = new BusquedaConsentimientoPagina(page);
+    const listado = new ListadoConsentimientosPagina(page);
     const detalle = new DetalleConsentimientoPagina(page);
-    await detalle.simularGateway({ lecturas: [errorHttp(503, 'service_unavailable'), ok(activo())] });
+    await listado.simularListado([errorHttp(503, 'service_unavailable'), respuesta(pagina())]);
+    await detalle.simularGateway({ lecturas: [ok(activo())] });
 
     await detalle.abrirComo('/auditoria/consentimientos');
-    await busqueda.buscarPor(ID);
 
-    await expect(page.getByRole('alert')).toContainText('No pudimos consultar el consentimiento');
+    await expect(page.getByRole('alert')).toContainText('No pudimos cargar los consentimientos');
     await verificarAccesibilidad(page);
-    await busqueda.reintentar.click();
+    await listado.reintentar.click();
+    await listado.ver(ID).click();
     await expect(page).toHaveURL(`/auditoria/consentimientos/${ID}`);
     await expect(detalle.estado).toHaveText('Activo');
   });

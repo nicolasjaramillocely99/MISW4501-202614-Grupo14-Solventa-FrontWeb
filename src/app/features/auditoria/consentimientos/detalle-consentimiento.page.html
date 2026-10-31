@@ -34,26 +34,8 @@
                 <app-insignia-estado [tono]="etiqueta.tono">{{ t('estados.' + etiqueta.clave) }}</app-insignia-estado>
               }
             </div>
-            <p class="encabezado__resumen">
-              {{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}
-              @if (otorgado(); as otorgadoEl) {
-                @if (e.canalOtorgamiento && entidadOtorgamiento()) {
-                  ·
-                  {{
-                    t('detalle.otorgadoCanal', {
-                      fecha: otorgadoEl | formatoFechaHora: 'fechaHora',
-                      canal: e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento',
-                      entidad: entidadOtorgamiento(),
-                    })
-                  }}
-                } @else {
-                  · {{ t('detalle.otorgado', { fecha: otorgadoEl | formatoFechaHora: 'fechaHora' }) }}
-                }
-              }
-              @if (e.venceEn) {
-                · {{ t('detalle.vence', { fecha: fecha(e.venceEn) }) }}
-              }
-            </p>
+            <!-- Una sola línea: los bloques dejarían espacios dobles en el texto que se lee. -->
+            <p class="encabezado__resumen">{{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}{{ !otorgado() ? '' : e.canalOtorgamiento && entidadOtorgamiento() ? ' · ' + t('detalle.otorgadoCanal', { fecha: (otorgado() | formatoFechaHora: 'fechaHora'), canal: (e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento'), entidad: entidadOtorgamiento() }) : ' · ' + t('detalle.otorgado', { fecha: (otorgado() | formatoFechaHora: 'fechaHora') }) }}{{ e.venceEn ? ' · ' + t('detalle.vence', { fecha: fecha(e.venceEn) }) : '' }}</p>
           </div>
           <div class="acciones">
             @if (e.revocable) {

@@ -21,8 +21,8 @@
                 <span class="tabla__nombre">{{ fila.titular.nombreCompleto }}</span>
                 <span class="tabla__secundario">{{ fila.titular.documentoEnmascarado }} · {{ fila.consentimientoId }}</span>
               </td>
-              <td>{{ fila.otorgadoEn | formatoFechaHora: 'fechaHora' }}</td>
-              <td>{{ fecha(fila.venceEn) }}</td>
+              <td class="tabla__fecha">{{ fila.otorgadoEn | formatoFechaHora: 'fechaHora' }}</td>
+              <td class="tabla__fecha">{{ fecha(fila.venceEn) }}</td>
               <td>
                 <app-insignia-estado [tono]="tono(fila)">
                   @if (fila.estado === 'revoked' && fila.revocacion) {
@@ -62,21 +62,8 @@
   }
 
   <div class="pie">
-    <p class="pie__conteo" aria-live="polite">
-      @if (pagina().totalRegistros === 0) {
-        {{ t('pie.sinRegistros') }}
-      } @else {
-        {{
-          t('pie.rango', {
-            primero: (rango().primero | formatoNumero: 0),
-            ultimo: (rango().ultimo | formatoNumero: 0),
-            total: (pagina().totalRegistros | formatoNumero: 0),
-          })
-        }}
-      }
-      · {{ t('pie.pagina', { pagina: (pagina().pagina | formatoNumero: 0), total: (pagina().totalPaginas | formatoNumero: 0) }) }} ·
-      {{ t('pie.conserva') }}
-    </p>
+    <!-- Una sola línea: los bloques dejarían espacios dobles en el texto que se lee. -->
+    <p class="pie__conteo" aria-live="polite">{{ pagina().totalRegistros === 0 ? t('pie.sinRegistros') : t('pie.rango', { primero: (rango().primero | formatoNumero: 0), ultimo: (rango().ultimo | formatoNumero: 0), total: (pagina().totalRegistros | formatoNumero: 0) }) }} · {{ t('pie.pagina', { pagina: (pagina().pagina | formatoNumero: 0), total: (pagina().totalPaginas | formatoNumero: 0) }) }} · {{ t('pie.conserva') }}</p>
     <nav class="pie__navegacion" [attr.aria-label]="t('pie.navegacion')">
       <button type="button" class="boton boton--terciario" [disabled]="!hayAnterior()" (click)="anterior.emit()">
         <svg lucideChevronLeft [size]="18" aria-hidden="true"></svg>{{ t('pie.anterior') }}
