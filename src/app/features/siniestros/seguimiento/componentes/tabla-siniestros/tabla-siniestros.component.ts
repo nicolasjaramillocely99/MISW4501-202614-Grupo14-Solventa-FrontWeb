@@ -7,6 +7,7 @@ import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 import { InsigniaEstadoComponent } from '@shared/ui/insignia-estado/insignia-estado.component';
 
 import { Traductor, nombreRamo, nombreTipo } from '../../../modelos/catalogo-siniestros';
+import { tonoEstado } from '../../../modelos/estado-siniestro';
 
 /**
  * Tabla de «Mis siniestros» (A7 mínima; HU-W2.1-01, F1): radicado, póliza y tipo, fecha del hecho, etapa y fecha de
@@ -22,6 +23,8 @@ import { Traductor, nombreRamo, nombreTipo } from '../../../modelos/catalogo-sin
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TablaSiniestrosComponent {
+  protected readonly tonoEstado = tonoEstado;
+
   readonly casos = input.required<readonly ResumenSiniestro[]>();
 
   /** «Autos · Colisión», o solo el tipo si el caso no guardó el ramo. */

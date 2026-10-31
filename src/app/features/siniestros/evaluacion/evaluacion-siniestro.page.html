@@ -1,0 +1,265 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <a class="volver" routerLink="/siniestros/evaluacion"> <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('evaluacion.volver') }} </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('evaluacion.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="pagina__titulo">{{ t('evaluacion.noEncontrado.titulo') }}</h1>
+        <p>{{ t('evaluacion.noEncontrado.texto') }}</p>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('evaluacion.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('evaluacion.error.texto') }}</p>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('evaluacion.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @case ('listo') {
+      @if (evaluacion(); as e) {
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <div class="encabezado__fila">
+              <h1 class="pagina__titulo">{{ t('evaluacion.titulo', { radicado: e.siniestro.numeroRadicado }) }}</h1>
+              <app-insignia-estado [tono]="tonoEstado(e.siniestro.estado)">{{ t('estados.' + e.siniestro.estado) }}</app-insignia-estado>
+              @if (e.prioridadActual; as p) {
+                <app-insignia-estado [tono]="tonoPrioridad(p.nivel)">{{ t('casosEvaluacion.triage', { nivel: p.nivel }) }}</app-insignia-estado>
+              }
+            </div>
+            <p class="encabezado__resumen">
+              {{ resumen(t, e) }} · {{ t('evaluacion.radicadoEl', { fecha: (e.siniestro.radicadoEn | formatoFechaHora) }) }}
+            </p>
+          </div>
+          @if (decision()?.pago?.estado === 'failed' && e.asegurado) {
+            <a class="boton boton--secundario" [href]="'mailto:' + e.asegurado.correo">
+              <svg lucideMail [size]="20" aria-hidden="true"></svg>{{ t('evaluacion.contactar') }}
+            </a>
+          }
+        </header>
+
+        @if (errorAccion(); as codigo) {
+          <div class="aviso" [class.aviso--informacion]="codigo === 'claim_not_decidable' || codigo === 'payout_not_retryable'" [class.aviso--error]="codigo !== 'claim_not_decidable' && codigo !== 'payout_not_retryable'" role="alert">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('evaluacion.errores.' + codigo) }}</p>
+          </div>
+        }
+
+        @if (decision(); as d) {
+          @if (d.pago?.estado === 'failed') {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('evaluacion.excepcion.titulo') }}</p>
+                <p>
+                  {{
+                    t('evaluacion.excepcion.' + claveFalla(d), {
+                      neto: (d.aprobacion?.neto | formatoMoneda: d.aprobacion?.moneda ?? 'COP'),
+                      intentos: d.pago.maximoIntentosAutomaticos
+                    })
+                  }}
+                </p>
+              </div>
+            </div>
+          } @else if (d.pago?.estado === 'paid') {
+            <div class="aviso aviso--exito" role="status">
+              <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+              <p>{{ t('evaluacion.pagado', { neto: (d.aprobacion?.neto | formatoMoneda: d.aprobacion?.moneda ?? 'COP') }) }}</p>
+            </div>
+          } @else if (d.pago) {
+            <div class="aviso aviso--informacion" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <p>{{ t('evaluacion.pagoEnCurso') }}</p>
+            </div>
+          }
+        }
+
+        @if (e.polizaNoDisponible) {
+          <div class="aviso aviso--advertencia" role="status">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('evaluacion.polizaNoDisponible') }}</p>
+          </div>
+        }
+
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            @if (decision(); as d) {
+              @if (d.pago) {
+                <div class="tarjeta">
+                  <app-pago-indemnizacion [decision]="d" [enviando]="enviando()" (reintentar)="reintentar($event)" />
+                </div>
+              } @else if (d.rechazo; as r) {
+                <section class="tarjeta" aria-labelledby="titulo-rechazo">
+                  <h2 id="titulo-rechazo" class="seccion__titulo">{{ t('evaluacion.rechazo.titulo') }}</h2>
+                  <dl class="datos">
+                    <div>
+                      <dt>{{ t('evaluacion.rechazo.por') }}</dt>
+                      <dd>{{ d.decididaPor }} · {{ d.decididaEn | formatoFechaHora }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('evaluacion.rechazo.notificado') }}</dt>
+                      <dd>{{ r.notificadoEn ? (r.notificadoEn | formatoFechaHora) : t('evaluacion.rechazo.pendiente') }}</dd>
+                    </div>
+                    <div class="datos__ancho">
+                      <dt>{{ t('evaluacion.rechazo.motivo') }}</dt>
+                      <dd>{{ r.motivo }}</dd>
+                    </div>
+                  </dl>
+                </section>
+              }
+            }
+
+            <section class="tarjeta" aria-labelledby="titulo-caso">
+              <h2 id="titulo-caso" class="seccion__titulo">{{ t('evaluacion.caso.titulo') }}</h2>
+              <dl class="datos datos--tres">
+                <div>
+                  <dt>{{ t('evaluacion.caso.fechaHecho') }}</dt>
+                  <dd>{{ e.siniestro.ocurridoEn | formatoFechaHora }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('evaluacion.caso.lugar') }}</dt>
+                  <dd>{{ e.siniestro.lugar }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('evaluacion.caso.montoEstimado') }}</dt>
+                  <dd>{{ e.siniestro.montoEstimado === null ? t('evaluacion.caso.sinMonto') : (e.siniestro.montoEstimado | formatoMoneda: 'COP') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('evaluacion.caso.descripcion') }}</dt>
+                  <dd>{{ e.siniestro.descripcion }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('evaluacion.caso.cobertura') }}</dt>
+                  <dd>
+                    @if (e.cobertura; as c) {
+                      {{ t('evaluacion.caso.coberturaValor', { tipo: tipo(t, c.incidente), pct: c.deduciblePuntosBasicos / 100 }) }}
+                    } @else {
+                      {{ t(e.polizaNoDisponible ? 'evaluacion.caso.coberturaDesconocida' : 'evaluacion.caso.sinCobertura') }}
+                    }
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('evaluacion.caso.prioridad') }}</dt>
+                  <dd>{{ e.prioridadActual ? t('casosEvaluacion.triage', { nivel: e.prioridadActual.nivel }) : t('casosEvaluacion.sinPrioridad') }}</dd>
+                </div>
+              </dl>
+            </section>
+
+            <!-- HU-W2.2-01: la prioridad del caso y su historial, con los componentes del triage. -->
+            @if (e.triage; as triage) {
+              <app-prioridad-triage [triage]="triage" />
+              @if (triage.estado === 'assessed') {
+                <app-historial-triage [historial]="triage.historial" />
+              }
+            }
+
+            <section class="tarjeta" aria-labelledby="titulo-soportes">
+              <h2 id="titulo-soportes" class="seccion__titulo">{{ t('evaluacion.soportes.titulo') }}</h2>
+              @if (e.soportes.length === 0 && e.siniestro.evidencia.length === 0) {
+                <p class="estado">{{ t('evaluacion.soportes.vacio') }}</p>
+              } @else {
+                <ul class="archivos">
+                  @for (s of e.soportes; track s.soporteId) {
+                    <li>
+                      <span class="archivos__tipo">{{ soporte(t, s.codigoRequisito, s.codigoRequisito) }}</span>
+                      @if (s.urlDescarga) {
+                        <a [href]="s.urlDescarga" target="_blank" rel="noopener">{{ s.nombreArchivo }}</a>
+                      } @else {
+                        <span>{{ s.nombreArchivo }}</span>
+                      }
+                    </li>
+                  }
+                  @for (ev of e.siniestro.evidencia; track $index) {
+                    <li>
+                      <span class="archivos__tipo">{{ t('evaluacion.soportes.evidencia.' + ev.tipo) }}</span>
+                      @if (ev.urlDescarga) {
+                        <a [href]="ev.urlDescarga" target="_blank" rel="noopener">{{ ev.capturadaEn | formatoFechaHora }}</a>
+                      } @else {
+                        <span>{{ ev.capturadaEn | formatoFechaHora }}</span>
+                      }
+                      @if (!ev.ubicacionConfiable) {
+                        <span class="archivos__aviso">{{ t('evaluacion.soportes.ubicacionNoConfiable') }}</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </section>
+
+            @if (decidible()) {
+              <section class="tarjeta" aria-labelledby="titulo-decision">
+                @if (sinTerminos()) {
+                  <div class="aviso aviso--advertencia" role="status">
+                    <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                    <p>{{ t(e.polizaNoDisponible ? 'evaluacion.decision.sinNucleo' : 'evaluacion.decision.sinCobertura') }}</p>
+                  </div>
+                }
+                <app-decision-siniestro
+                  [cobertura]="e.cobertura"
+                  [montoSugerido]="e.siniestro.montoEstimado"
+                  [deshabilitado]="sinTerminos()"
+                  [enviando]="enviando()"
+                  [erroresServidor]="erroresServidor()"
+                  (aprobar)="aprobar($event)"
+                  (rechazar)="rechazar($event)"
+                  (campoEditado)="limpiarErrorServidor($event)"
+                />
+              </section>
+            }
+          </div>
+
+          <aside class="cuerpo__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-poliza">
+              <h2 id="titulo-poliza" class="seccion__titulo">{{ t('evaluacion.poliza.titulo') }}</h2>
+              @if (e.poliza; as p) {
+                <dl class="datos datos--uno">
+                  <div>
+                    <dt>{{ t('evaluacion.poliza.poliza') }}</dt>
+                    <dd>{{ p.id }} · {{ p.producto }} · {{ t('evaluacion.poliza.estados.' + p.estado) }}</dd>
+                  </div>
+                  @if (e.cobertura; as c) {
+                    <div>
+                      <dt>{{ t('evaluacion.poliza.valorAsegurado') }}</dt>
+                      <dd>{{ c.valorAsegurado | formatoMoneda: c.moneda }}</dd>
+                    </div>
+                  }
+                  @if (e.asegurado; as a) {
+                    <div>
+                      <dt>{{ t('evaluacion.poliza.asegurado') }}</dt>
+                      <dd>{{ a.nombreCompleto }} · {{ a.telefono }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('evaluacion.poliza.medioPago') }}</dt>
+                      <dd>{{ a.cuenta.nombreBanco }} {{ a.cuenta.numeroEnmascarado }} / {{ t('evaluacion.pago.tiposCuenta.' + a.cuenta.tipoCuenta) }}</dd>
+                    </div>
+                  }
+                </dl>
+              } @else {
+                <p class="estado">{{ t(e.polizaNoDisponible ? 'evaluacion.poliza.noDisponible' : 'evaluacion.poliza.desconocida') }}</p>
+              }
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-historial-caso">
+              <h2 id="titulo-historial-caso" class="seccion__titulo">{{ t('evaluacion.historial.titulo') }}</h2>
+              <ol class="historial">
+                @for (evento of historial(); track $index) {
+                  <li>
+                    <span class="historial__titulo">{{ t('evaluacion.historial.' + evento.clave, evento.parametros ?? {}) }}</span>
+                    <span class="historial__fecha">{{ evento.fecha | formatoFechaHora }}</span>
+                  </li>
+                }
+              </ol>
+            </section>
+          </aside>
+        </div>
+      }
+    }
+  }
+</div>

@@ -19,6 +19,12 @@
   color: var(--color-texto-secundario);
 }
 
+// HU-W2.2-03: enlace a los casos en evaluación.
+.encabezado__enlace {
+  display: inline-flex;
+  margin-top: var(--espacio-12);
+}
+
 .regla h2 {
   margin: 0;
   font-size: 1rem;

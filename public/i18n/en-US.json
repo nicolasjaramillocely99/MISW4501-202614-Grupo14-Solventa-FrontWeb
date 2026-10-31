@@ -1623,7 +1623,12 @@
   },
   "siniestros": {
     "estados": {
-      "active": "Filed"
+      "active": "Filed",
+      "in_evaluation": "In evaluation",
+      "approved": "Approved · payout in progress",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "payment_exception": "Payment exception"
     },
     "catalogo": {
       "ramos": {
@@ -2035,7 +2040,8 @@
           "calculada": "Calculated on",
           "verPrioridad": "View priority",
           "verPrioridadDe": "View the priority of claim {{id}}"
-        }
+        },
+        "verCasosEvaluacion": "View claims in evaluation"
       },
       "prioridad": {
         "migas": "Claims queue",
@@ -2069,7 +2075,8 @@
           "titulo": "The priority is not available yet",
           "texto": "The calculation is taking longer than expected. Check again in a few seconds.",
           "actualizar": "Refresh"
-        }
+        },
+        "evaluar": "Evaluate"
       },
       "historial": {
         "titulo": "Priority history",
@@ -2116,6 +2123,231 @@
         "titulo": "We could not load your claim",
         "texto": "The service did not respond. Try again in a few minutes.",
         "reintentar": "Retry"
+      }
+    },
+    "casosEvaluacion": {
+      "titulo": "Claims in evaluation",
+      "descripcion": "Claims waiting for the decision of operations, with their automatically calculated priority, oldest first. Open each one to evaluate it.",
+      "actualizar": "Refresh",
+      "pestanas": {
+        "etiqueta": "Queue claims",
+        "evaluations": "In evaluation",
+        "payment-exceptions": "Payment exceptions"
+      },
+      "leyenda": {
+        "evaluations": "Claims in evaluation",
+        "payment-exceptions": "Approved claims whose payout failed"
+      },
+      "cargando": "Loading the queue…",
+      "error": {
+        "titulo": "We could not load the queue",
+        "texto": "The claims service did not respond. Try again in a few seconds."
+      },
+      "reintentar": "Try again",
+      "vacio": {
+        "evaluations": "There are no claims in evaluation.",
+        "payment-exceptions": "There are no payment exceptions."
+      },
+      "columnas": {
+        "prioridad": "Priority",
+        "radicado": "Claim number",
+        "producto": "Product",
+        "montoEstimado": "Estimated amount",
+        "estado": "Status",
+        "espera": "Waiting",
+        "acciones": "Actions"
+      },
+      "triage": "Triage {{nivel}}",
+      "sinPrioridad": "Not calculated",
+      "sinMonto": "Not declared",
+      "esperaDias": "{{dias}} d {{horas}} h",
+      "esperaHoras": "{{horas}} h",
+      "evaluar": "Evaluate",
+      "atender": "Handle",
+      "evaluarEtiqueta": "Open claim {{radicado}}",
+      "cargarMas": "Load more",
+      "buscarPorId": "Search by id",
+      "verPrioridad": "View priority",
+      "verPrioridadEtiqueta": "View the priority of claim {{radicado}}"
+    },
+    "evaluacion": {
+      "volver": "Claims in evaluation",
+      "cargando": "Loading the claim…",
+      "reintentar": "Try again",
+      "noEncontrado": {
+        "titulo": "We could not find the claim",
+        "texto": "The claim does not exist or is no longer available. Go back to the claims queue."
+      },
+      "error": {
+        "titulo": "We could not load the claim",
+        "texto": "The claims service did not respond. Try again in a few seconds."
+      },
+      "titulo": "Claim {{radicado}}",
+      "radicadoEl": "filed on {{fecha}}",
+      "contactar": "Contact the insured",
+      "polizaNoDisponible": "The policy core did not respond: you can review the claim, but not decide it until it is back.",
+      "pagoEnCurso": "Approved. The indemnity payout is in progress; this page refreshes on its own.",
+      "pagado": "Indemnity paid: {{neto}} to the insured.",
+      "excepcion": {
+        "titulo": "The indemnity payout failed",
+        "cuentaInvalida": "The gateway rejected the transfer: invalid destination account. The approval for {{neto}} is kept and the claim is in exception; correct the account and retry with the same idempotency key.",
+        "rechazado": "The gateway rejected the transfer. The approval for {{neto}} is kept and the claim is in exception; check the destination and retry with the same idempotency key.",
+        "sinRespuesta": "The gateway did not respond and the {{intentos}} automatic attempts ran out. The approval for {{neto}} is kept; retry with the same idempotency key."
+      },
+      "errores": {
+        "claim_not_decidable": "Another analyst already decided this claim. This is their decision.",
+        "payout_not_retryable": "The payout is no longer in exception. This is its current status.",
+        "policy_unavailable": "The policy core did not respond. Try again in a few seconds.",
+        "not_covered": "The policy no longer covers this incident or the core does not know the insured.",
+        "no_payout_account": "The insured has no registered account to receive the indemnity.",
+        "no_contact": "The insured has no e-mail to notify the rejection to.",
+        "claim_not_found": "The claim no longer exists.",
+        "invalid_request": "The request is not valid. Check the data and try again.",
+        "claims_unavailable": "We could not record the decision. Try again: it is never recorded twice."
+      },
+      "caso": {
+        "titulo": "Claim information",
+        "fechaHecho": "Date of the incident",
+        "lugar": "Place",
+        "montoEstimado": "Amount estimated by the insured",
+        "sinMonto": "Not declared",
+        "descripcion": "Description",
+        "cobertura": "Applicable coverage",
+        "coberturaValor": "{{tipo}} · {{pct}} % deductible",
+        "coberturaDesconocida": "Not available",
+        "sinCobertura": "The policy does not cover this incident",
+        "prioridad": "Priority"
+      },
+      "soportes": {
+        "titulo": "Supports and evidence",
+        "vacio": "The claim has no supports or evidence.",
+        "evidencia": {
+          "photo": "Photo on site",
+          "video": "Video on site"
+        },
+        "ubicacionNoConfiable": "Untrusted location"
+      },
+      "poliza": {
+        "titulo": "Policy and insured",
+        "poliza": "Policy",
+        "estados": {
+          "active": "Active",
+          "expired": "Expired",
+          "cancelled": "Cancelled",
+          "suspended": "Suspended"
+        },
+        "valorAsegurado": "Insured value",
+        "asegurado": "Insured",
+        "medioPago": "Registered payment method",
+        "noDisponible": "The policy core did not respond.",
+        "desconocida": "The policy core no longer knows this policy."
+      },
+      "historial": {
+        "titulo": "Claim history",
+        "radicado": "Filed",
+        "aprobado": "Approved by {{por}}",
+        "rechazado": "Rejected by {{por}}",
+        "notificado": "Rejection notified to the insured",
+        "excepcion": "Payment exception",
+        "reintento": "Payout retried by {{por}}",
+        "pagado": "Indemnity paid"
+      },
+      "rechazo": {
+        "titulo": "Rejection",
+        "por": "Rejected by",
+        "notificado": "Notified to the insured",
+        "pendiente": "Pending delivery",
+        "motivo": "Reason"
+      },
+      "decision": {
+        "titulo": "Decision",
+        "leyenda": "What do you decide on the claim?",
+        "sinNucleo": "The claim cannot be decided while the policy core does not respond: the insured value and the deductible are missing.",
+        "sinCobertura": "The policy does not cover this incident: the payout cannot be approved.",
+        "opciones": {
+          "aprobar": {
+            "titulo": "Approve",
+            "descripcion": "Records the amount and pays through the gateway"
+          },
+          "rechazar": {
+            "titulo": "Reject",
+            "descripcion": "Reason required · the customer is notified"
+          }
+        },
+        "campos": {
+          "bruto": "Approved repair cost (before the deductible)",
+          "motivo": "Reason for the rejection"
+        },
+        "ayudas": {
+          "bruto": "In pesos. It cannot exceed the insured value ({{tope}}).",
+          "motivo": "The customer receives it by e-mail."
+        },
+        "errores": {
+          "requerido": "Enter a cost greater than zero.",
+          "amount_out_of_range": "Enter a cost greater than zero.",
+          "amount_exceeds_insured_value": "It exceeds the insured value of the coverage ({{tope}}).",
+          "nothing_to_pay": "After the deductible there is nothing to pay.",
+          "reason_required": "The reason is required.",
+          "reason_too_long": "The reason accepts up to {{max}} characters."
+        },
+        "desglose": {
+          "bruto": "Repair cost (gross)",
+          "deducible": "Less deductible ({{pct}} %)",
+          "neto": "Approved amount (net paid by the insurer)",
+          "nota": "Includes the {{pct}} % deductible ({{deducible}} borne by the insured)."
+        },
+        "nota": "On approval the payout runs with an idempotency key (exactly one disbursement) and the claim becomes Paid; if the payout fails, it becomes an exception without losing the approval.",
+        "acciones": {
+          "aprobar": "Approve and pay",
+          "rechazar": "Reject",
+          "registrando": "Recording…"
+        }
+      },
+      "pago": {
+        "titulo": "Indemnity payout",
+        "aprobadoPor": "Approved by",
+        "montoAprobado": "Approved amount",
+        "desglose": "Cost {{bruto}} − {{pct}} % deductible ({{deducible}} borne by the insured)",
+        "referencia": "Reference",
+        "referenciaValor": "{{referencia}} (idempotent)",
+        "intentos": "Automatic attempts",
+        "intentosValor": "{{n}} of {{max}}",
+        "ultimo": "last {{fecha}}",
+        "destino": "Destination",
+        "pagadoEn": "Paid",
+        "reintentosManuales": "Manual retries",
+        "reintentosManualesValor": "{{n}} · last by {{por}}, {{fecha}}",
+        "tiposCuenta": {
+          "savings": "savings account",
+          "checking": "checking account"
+        },
+        "pasos": {
+          "aprobado": "Approval recorded",
+          "solicitado": "Payout requested from the gateway",
+          "reintentos": "Automatic retries",
+          "pagado": "Paid"
+        },
+        "estadosPaso": {
+          "hecho": "Done",
+          "actual": "In progress",
+          "fallido": "Failed",
+          "pendiente": "Pending"
+        },
+        "reintento": {
+          "titulo": "Correct the destination and retry",
+          "ayuda": "The retry uses the same idempotency key: it never pays twice.",
+          "codigoBanco": "Bank code",
+          "nombreBanco": "Destination bank",
+          "tipoCuenta": "Account type",
+          "numeroCuenta": "Destination account",
+          "cuentaAyuda": "Leave it empty to retry to the same account.",
+          "errores": {
+            "banco": "The bank code has 3 to 6 digits.",
+            "cuenta": "The account has 6 to 24 digits and dashes."
+          },
+          "boton": "Retry payout",
+          "enviando": "Retrying…"
+        }
       }
     }
   },

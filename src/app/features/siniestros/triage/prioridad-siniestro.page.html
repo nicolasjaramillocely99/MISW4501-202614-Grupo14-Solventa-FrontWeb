@@ -32,6 +32,8 @@
     }
     @default {
       <h1 class="pagina__titulo">{{ t('titulo', { id }) }}</h1>
+      <!-- HU-W2.2-03: de la prioridad del caso a su evaluación (O6). -->
+      <a class="boton boton--primario pagina__evaluar" [routerLink]="['/siniestros', id, 'evaluar']">{{ t('evaluar') }}</a>
       @if (fase() === 'detenido') {
         <div class="aviso aviso--advertencia" role="status">
           <svg lucideInfo [size]="20" aria-hidden="true"></svg>

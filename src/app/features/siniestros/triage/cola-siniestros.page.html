@@ -2,6 +2,8 @@
   <header class="encabezado">
     <h1 class="pagina__titulo">{{ t('triage.cola.titulo') }}</h1>
     <p class="encabezado__descripcion">{{ t('triage.cola.descripcion') }}</p>
+    <!-- HU-W2.2-03: el listado de los casos en evaluación, para abrirlos sin conocer su id. -->
+    <a class="boton boton--secundario encabezado__enlace" routerLink="/siniestros/evaluacion">{{ t('triage.cola.verCasosEvaluacion') }}</a>
   </header>
 
   <section class="aviso aviso--informacion regla" aria-labelledby="titulo-regla">

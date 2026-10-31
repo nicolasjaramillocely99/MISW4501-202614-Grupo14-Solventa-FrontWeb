@@ -39,6 +39,7 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
+| [O5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=35-3351) | Casos en evaluación (listado de HU-W2.2-03; HU-W2.2-02 lo une a la cola por prioridad) | `/siniestros/evaluacion` | Analista de operaciones | HU-W2.2-03 | S2 |
 | [O6](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=35-3779), [O6b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=35-4168) | Evaluación, aprobación y pago (y pago fallido) | `/siniestros/:id/evaluar` | Analista de operaciones | HU-W2.2-03 | S2 |
 
 ### `asistencias/` — F2.3 · Asignación y seguimiento de prestadores y asistencias
@@ -124,6 +125,38 @@ crudo si no hay clave, así que una causa nueva no rompe la pantalla (`modelos/p
   pagar: HU-W2.2-03); en A8, el resto de etapas y acciones (HU-W2.1-02).
 - **Rutas (S12):** el grupo `cola` (rol operaciones) va **antes** del grupo del asegurado y `:id` después de `radicar` y `mis-siniestros`;
   si no, `:id` capturaría `cola`. Todo lo provisional está marcado: `grep -rn "HU-W2.2-01 F" src`.
+
+**Casos en evaluación (HU-W2.2-03, CA-1)** — `evaluacion/casos-evaluacion.page.ts` (`CasosEvaluacionPage`), ruta
+`/siniestros/evaluacion`, rol operaciones; es la entrada del menú «Siniestros». Pestaña «En evaluación» (`GET /v1/claims/evaluations`)
+con la prioridad de cada caso (Triage 1, 2 o 3 de HU-W2.2-01; «Sin calcular» mientras el barrido no lo evalúa), el radicado, el
+producto, el monto estimado, el estado y el tiempo en cola; por fila, «Ver prioridad» (la pantalla de HU-W2.2-01,
+`/siniestros/cola/:id`) y «Evaluar» (O6). Pestaña «Excepciones de pago» (`GET /v1/claims/payment-exceptions`) con «Atender» (O6b).
+«Cargar más» con `next_page_token`; «Buscar por id» lleva a la cola de HU-W2.2-01. El backend entrega del más antiguo al más nuevo:
+**HU-W2.2-02 une este listado y la cola por id** en la cola ordenada por prioridad del prototipo (O5).
+
+**Evaluación, aprobación y pago (HU-W2.2-03)** — `evaluacion/evaluacion-siniestro.page.ts` (`EvaluacionSiniestroPage`, O6 y O6b),
+ruta `/siniestros/:id/evaluar`, rol operaciones. Contrato: `docs/contratos/HU-W2.2-03-api.md` del backend (`openapi.yaml` v0.8.0).
+
+- **Encadenado con HU-W2.2-01:** la evaluación trae el triage en la misma vista `operations` de `GET /v1/claims/{id}/triage`; se lee con
+  `mapearTriageSiniestro` y O6 lo pinta con `PrioridadTriageComponent` e `HistorialTriageComponent`, sin cambiarlos. La pantalla de
+  prioridad (`/siniestros/cola/:id`) tiene «Evaluar» hacia O6 y la cola por id enlaza a los casos en evaluación.
+- **CA-1:** `GET /v1/claims/{id}/evaluation`: hechos, monto estimado, prioridad, cobertura aplicable con su deducible, soportes y
+  evidencia con su lectura firmada, póliza vigente, asegurado y su medio de pago **enmascarado** (`•••• 4512`), e historial del caso
+  (radicado, la decisión y el pago; los cálculos del triage van en su propio historial). Si el núcleo de pólizas no respondió
+  (`policy_unavailable`) el caso se ve pero no se puede decidir.
+- **CA-2, bruto y neto:** `componentes/decision-siniestro/`. El analista aprueba el **costo bruto** (precargado con el monto estimado;
+  no supera el valor asegurado) y ve el desglose: menos el deducible, que asume el asegurado, el **monto aprobado** neto que paga la
+  aseguradora («Incluye aplicación de deducible del 5 % (… a cargo del asegurado)»). `POST …/approval` envía el bruto
+  (`gross_amount_minor`); el deducible lo calcula el backend (`calcularDesglose` replica su regla solo para mostrarlo). Nota: el
+  Figma de O6 muestra el bruto en «Monto aprobado»; la implementación muestra el neto, como se acordó.
+- **Seguimiento del pago:** tras aprobar, la página vuelve a leer el caso cada 2 s (hasta 15 veces) mientras el pago está pendiente o
+  en curso, y muestra «Indemnización pagada» o la excepción.
+- **CA-3:** «Rechazar» con motivo obligatorio (hasta 1000 caracteres); el detalle muestra el motivo y cuándo se notificó.
+- **CA-4, O6b:** `componentes/pago-indemnizacion/`: motivo de la pasarela (cuenta inválida, rechazo o intentos agotados), referencia
+  idempotente, intentos, pasos del pago y «Contactar al asegurado» (`mailto:`). El analista corrige banco, tipo y cuenta y reintenta
+  (`POST …/payout-retry`); con la cuenta vacía reintenta al mismo destino. La clave no cambia: nunca se paga dos veces.
+- **CA-5 y CA-6:** la decisión muestra su analista, fecha y monto o motivo; solo operaciones entra (las rutas y el backend lo exigen).
+- **Pendiente de otras historias:** el bloque «Resultado de la intervención del prestador» (HU-W2.3-02) y el bruto que recomienda.
 
 ## Cómo trabajar una historia de este dominio
 

@@ -1,0 +1,130 @@
+// Bloque «Pago de la indemnización» (O6, O6b): datos en dos columnas, pasos del pago y la corrección del destino.
+:host {
+  display: block;
+}
+
+.pago {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+  }
+}
+
+.datos__destacado {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.datos__nota,
+.campo__ayuda,
+.paso__estado {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.datos__identificador {
+  overflow-wrap: anywhere;
+}
+
+.pasos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paso {
+  display: flex;
+  gap: var(--espacio-12);
+}
+
+.paso__marca {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-borde-fuerte);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.paso__titulo,
+.paso__estado {
+  display: block;
+}
+
+.paso--hecho .paso__marca {
+  border-color: var(--color-azul-700);
+  background: var(--color-azul-700);
+  color: var(--color-fondo-superficie);
+}
+
+.paso--actual .paso__marca {
+  border-color: var(--color-azul-700);
+  color: var(--color-azul-700);
+}
+
+.paso--fallido .paso__marca {
+  border-color: var(--color-error-500);
+  background: var(--color-error-500);
+  color: var(--color-fondo-superficie);
+}
+
+.paso--pendiente {
+  color: var(--color-texto-secundario);
+}
+
+.reintento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+  padding-top: var(--espacio-16);
+  border-top: 1px solid var(--color-borde-base);
+}
+
+.reintento__titulo {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--espacio-16);
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+}

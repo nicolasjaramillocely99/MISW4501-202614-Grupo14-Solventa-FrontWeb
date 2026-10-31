@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { LucideCircleAlert, LucideInfo } from '@lucide/angular';
 import { Subscription } from 'rxjs';
@@ -37,6 +37,7 @@ type ErrorBusqueda = { tipo: 'vacio' } | { tipo: 'invalidos'; ids: string[] } | 
 @Component({
   selector: 'app-cola-siniestros-page',
   imports: [
+    RouterLink,
     TranslocoDirective,
     FormatoMonedaPipe,
     IndicadoresTriageComponent,
