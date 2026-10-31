@@ -21,6 +21,14 @@ import {
   traducirErrorConsentimiento,
 } from './consentimiento.modelos';
 import {
+  FiltroConsentimientos,
+  PaginaConsentimientos,
+  PaginaConsentimientosDto,
+  aParametrosListado,
+  mapearPaginaConsentimientos,
+  traducirErrorListado,
+} from './listado-consentimientos.modelos';
+import {
   EstadoRevocacion,
   EstadoRevocacionDto,
   ResultadoReintento,
@@ -37,8 +45,8 @@ import {
  * microservicio: ningún dominio usa `HttpClient` directamente. Hoy expone el consentimiento explícito del
  * cliente (HU-W1.2-01). La verificación (`/v1/audit/consent-verifications`) es interna de `origination` y la
  * evidencia (`/v1/audit/consents/{id}`) es del portal de operación: ninguna se consume desde el canal embebido.
- * Para el portal de cumplimiento expone además el estado y la revocación de un consentimiento (HU-W4.2-02), que no
- * traen el documento completo del titular.
+ * Para el portal de cumplimiento expone además el listado de consentimientos (HU-W4.2-01) y el estado y la revocación de
+ * un consentimiento (HU-W4.2-02), que no traen el documento completo del titular.
  */
 @Injectable({ providedIn: 'root' })
 export class AuditoriaApiService {
@@ -82,6 +90,20 @@ export class AuditoriaApiService {
       .pipe(
         map(mapearRegistroDecision),
         catchError((error: unknown) => throwError(() => traducirErrorDecision(error))),
+      );
+  }
+
+  /**
+   * Lista los consentimientos para el portal de cumplimiento (`GET /v1/audit/consents`, solo operaciones, HU-W4.2-01): la
+   * página pedida con el filtro, el total, los cuatro indicadores (sobre todos, sin el filtro) y las entidades del filtro.
+   * Solo envía los filtros con valor. Falla con `ErrorListado`: `validation_failed` trae todos los parámetros inválidos.
+   */
+  listarConsentimientos(filtro: FiltroConsentimientos): Observable<PaginaConsentimientos> {
+    return this.http
+      .get<PaginaConsentimientosDto>(`${this.base}/v1/audit/consents`, { params: aParametrosListado(filtro) })
+      .pipe(
+        map(mapearPaginaConsentimientos),
+        catchError((error: unknown) => throwError(() => traducirErrorListado(error))),
       );
   }
 
