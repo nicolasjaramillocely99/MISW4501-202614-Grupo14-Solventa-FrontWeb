@@ -1,0 +1,125 @@
+<section class="pago" aria-labelledby="titulo-pago" *transloco="let t; prefix: 'siniestros.evaluacion.pago'">
+  <h2 id="titulo-pago" class="seccion__titulo">{{ t('titulo') }}</h2>
+
+  @if (decision().aprobacion; as a) {
+    <dl class="datos">
+      <div>
+        <dt>{{ t('aprobadoPor') }}</dt>
+        <dd>{{ decision().decididaPor }} · {{ decision().decididaEn | formatoFechaHora }}</dd>
+      </div>
+      <div>
+        <dt>{{ t('montoAprobado') }}</dt>
+        <dd class="datos__destacado">{{ a.neto | formatoMoneda: a.moneda }}</dd>
+        <dd class="datos__nota">
+          {{ t('desglose', { bruto: (a.bruto | formatoMoneda: a.moneda), pct: a.deduciblePuntosBasicos / 100, deducible: (a.deducible | formatoMoneda: a.moneda) }) }}
+        </dd>
+      </div>
+      @if (pago(); as p) {
+        <div>
+          <dt>{{ t('referencia') }}</dt>
+          <dd class="datos__identificador">{{ t('referenciaValor', { referencia: p.referencia }) }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('intentos') }}</dt>
+          <dd>
+            {{ t('intentosValor', { n: p.intentosAutomaticos, max: p.maximoIntentosAutomaticos }) }}
+            @if (p.ultimaFallaEn) {
+              · {{ t('ultimo', { fecha: (p.ultimaFallaEn | formatoFechaHora) }) }}
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ t('destino') }}</dt>
+          <dd>{{ p.destino.nombreBanco }} · {{ p.destino.numeroEnmascarado }} · {{ t('tiposCuenta.' + p.destino.tipoCuenta) }}</dd>
+        </div>
+        @if (p.pagadoEn) {
+          <div>
+            <dt>{{ t('pagadoEn') }}</dt>
+            <dd>{{ p.pagadoEn | formatoFechaHora }}</dd>
+          </div>
+        }
+        @if (p.reintentosManuales > 0) {
+          <div>
+            <dt>{{ t('reintentosManuales') }}</dt>
+            <dd>
+              {{ t('reintentosManualesValor', { n: p.reintentosManuales, por: p.ultimoReintentoPor, fecha: (p.ultimoReintentoEn | formatoFechaHora) }) }}
+            </dd>
+          </div>
+        }
+      }
+    </dl>
+  }
+
+  <ol class="pasos">
+    @for (paso of pasos(); track paso.clave; let i = $index) {
+      <li class="paso" [class]="'paso paso--' + paso.estado">
+        <span class="paso__marca" aria-hidden="true">{{ paso.estado === 'hecho' ? '✓' : paso.estado === 'fallido' ? '!' : i + 1 }}</span>
+        <span>
+          <span class="paso__titulo">{{ t('pasos.' + paso.clave) }}</span>
+          <span class="paso__estado">{{ t('estadosPaso.' + paso.estado) }}</span>
+        </span>
+      </li>
+    }
+  </ol>
+
+  @if (fallido()) {
+    <form class="reintento" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      <h3 class="reintento__titulo">{{ t('reintento.titulo') }}</h3>
+      <p class="campo__ayuda">{{ t('reintento.ayuda') }}</p>
+      <div class="campos">
+        <div class="campo">
+          <label class="campo__etiqueta" for="codigoBanco">{{ t('reintento.codigoBanco') }}</label>
+          <input
+            id="codigoBanco"
+            class="campo__control"
+            inputmode="numeric"
+            formControlName="codigoBanco"
+            [attr.aria-invalid]="errorDe('codigoBanco') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('codigoBanco') ? 'codigoBanco-error' : null"
+          />
+          @if (errorDe('codigoBanco')) {
+            <p id="codigoBanco-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('reintento.errores.banco') }}
+            </p>
+          }
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="nombreBanco">{{ t('reintento.nombreBanco') }}</label>
+          <input id="nombreBanco" class="campo__control" maxlength="80" formControlName="nombreBanco" />
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="tipoCuenta">{{ t('reintento.tipoCuenta') }}</label>
+          <select id="tipoCuenta" class="campo__control" formControlName="tipoCuenta">
+            <option value="savings">{{ t('tiposCuenta.savings') }}</option>
+            <option value="checking">{{ t('tiposCuenta.checking') }}</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="numeroCuenta">{{ t('reintento.numeroCuenta') }}</label>
+          <input
+            id="numeroCuenta"
+            class="campo__control"
+            inputmode="numeric"
+            autocomplete="off"
+            formControlName="numeroCuenta"
+            [placeholder]="pago()?.destino?.numeroEnmascarado ?? ''"
+            [attr.aria-invalid]="errorDe('numeroCuenta') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('numeroCuenta') ? 'numeroCuenta-error' : 'numeroCuenta-ayuda'"
+          />
+          @if (errorDe('numeroCuenta')) {
+            <p id="numeroCuenta-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('reintento.errores.cuenta') }}
+            </p>
+          } @else {
+            <p id="numeroCuenta-ayuda" class="campo__ayuda">{{ t('reintento.cuentaAyuda') }}</p>
+          }
+        </div>
+      </div>
+      <div class="acciones">
+        <button type="submit" class="boton boton--primario" [disabled]="enviando()">
+          <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>{{ enviando() ? t('reintento.enviando') : t('reintento.boton') }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

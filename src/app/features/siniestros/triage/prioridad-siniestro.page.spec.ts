@@ -56,6 +56,12 @@ describe('PrioridadSiniestroPage (O6 reducida · HU-W2.2-01, F2)', () => {
     expect(historial.getByText(/Prioridad recalculada: Triage 2 → Triage 1 · Cambió el monto estimado/)).toBeTruthy();
   });
 
+  it('lleva a la evaluación del caso (HU-W2.2-03)', async () => {
+    await renderizar();
+
+    expect(screen.getByRole('link', { name: 'Evaluar' }).getAttribute('href')).toBe(`/siniestros/${ID_CASO_TRIAGE}/evaluar`);
+  });
+
   it('las migas vuelven a la cola y conservan la búsqueda', async () => {
     await renderizar({ casos: 'a,b' });
 

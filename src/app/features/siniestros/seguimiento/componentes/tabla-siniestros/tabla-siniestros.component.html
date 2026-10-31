@@ -22,7 +22,7 @@
             </span>
           </td>
           <td>{{ caso.ocurridoEn | formatoFechaHora }}</td>
-          <td><app-insignia-estado tono="informacion">{{ ts('estados.' + caso.estado) }}</app-insignia-estado></td>
+          <td><app-insignia-estado [tono]="tonoEstado(caso.estado)">{{ ts('estados.' + caso.estado) }}</app-insignia-estado></td>
           <td>{{ caso.radicadoEn | formatoFechaHora }}</td>
           <td>
             <a

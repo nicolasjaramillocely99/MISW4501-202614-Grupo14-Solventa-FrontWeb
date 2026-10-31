@@ -44,6 +44,11 @@ describe('itemActivo', () => {
     ['/siniestros/cola?prioridad=alta', 'menu.siniestros'],
     ['/auditoria/registro/123', 'menu.auditoria'],
     ['/socios#lista', 'menu.socios'],
+    // HU-W2.2-03: la evaluación de un caso es de «Siniestros»; las asistencias siguen siendo suyas.
+    ['/siniestros/8f14e45f/evaluar', 'menu.siniestros'],
+    ['/siniestros/evaluacion', 'menu.siniestros'],
+    ['/siniestros/cola/8f14e45f', 'menu.siniestros'],
+    ['/siniestros/asistencias/12', 'menu.asistencias'],
   ])('%s activa %s', (url, clave) => {
     expect(itemActivo(menu, url)?.clave).toBe(clave);
   });

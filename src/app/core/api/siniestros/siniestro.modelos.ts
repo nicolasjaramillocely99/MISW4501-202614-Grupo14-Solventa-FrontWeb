@@ -8,8 +8,11 @@ import { RamoPoliza } from './radicacion.modelos';
  * guardan la foto de la póliza: llegan con ramo, producto y objeto asegurado en `null` y los soportes en ceros.
  */
 
-/** Hoy el único estado es `active` (la pantalla lo rotula «Radicado»). */
-export type EstadoSiniestro = 'active';
+/**
+ * Estado del caso: `active` al radicar («Radicado»), `in_evaluation`, y los de la decisión de operaciones
+ * (HU-W2.2-03): `approved` (pago en curso), `paid`, `rejected` y `payment_exception`.
+ */
+export type EstadoSiniestro = 'active' | 'in_evaluation' | 'approved' | 'paid' | 'rejected' | 'payment_exception';
 
 export type CanalSiniestro = 'web' | 'mobile';
 

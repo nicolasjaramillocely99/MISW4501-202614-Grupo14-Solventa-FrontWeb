@@ -84,6 +84,12 @@ describe('ColaSiniestrosPage (O5 provisional · HU-W2.2-01, F1)', () => {
   const buscar = () => fireEvent.click(screen.getByRole('button', { name: 'Buscar' }));
   const escribir = (texto: string) => fireEvent.input(campo(), { target: { value: texto } });
 
+  it('enlaza a los casos en evaluación (HU-W2.2-03)', async () => {
+    await renderizar();
+
+    expect(screen.getByRole('link', { name: 'Ver casos en evaluación' }).getAttribute('href')).toBe('/siniestros/evaluacion');
+  });
+
   describe('estado inicial', () => {
     it('muestra el título, la regla con los umbrales de la política y los objetivos por nivel (CA-5)', async () => {
       await renderizar();
