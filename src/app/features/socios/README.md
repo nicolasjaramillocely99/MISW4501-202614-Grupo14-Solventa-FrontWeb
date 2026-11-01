@@ -6,6 +6,17 @@
 - **Shell de navegación:** portal
 - **Requiere sesión:** sí (guard de autenticación en el shell del portal; el rol se restringe por ruta)
 
+**Estado:** `gestion/` implementado para **HU-W3.1-01** (rol operaciones; cliente `SociosApiService`): O10 `listado-socios.page.ts` (tres indicadores, tabla con credenciales, cuota diaria y consumo de hoy del gateway, estados cargando / vacío / error y el modal «Registrar socio», que deja al socio pendiente de aprobación) y O11 `detalle-socio.page.ts` («Aprobar y generar credenciales» para un socio pendiente, «Rotar credenciales» con periodo de transición para uno activo, credenciales sin el secreto, cuota y aislamiento, historial; estados cargando / no encontrado / error). Tras aprobar o rotar, `componentes/secreto-emitido` muestra el secreto **una sola vez** (no cierra con `Escape`; «Ya guardé el secreto» lo borra de memoria). La cuota es diaria (usage plans de API Gateway, decisión del equipo). «Dar de baja» (O11b, HU-W3.1-02) no se muestra y «Uso reciente (24 h)» queda como aviso hasta el tablero (HU-W3.2-01). `credenciales/`, `tablero/` y `desempeno/` siguen vacíos: sus rutas (`/socios/tablero*`, `/socios/credenciales`) redirigen al inicio.
+
+| Archivo de `gestion/` | Qué hace |
+|---|---|
+| `listado-socios.page.ts` | O10. Un 503 muestra «Reintentar»; 401 y 403 los resuelve el interceptor. Registrar navega al detalle del socio creado |
+| `detalle-socio.page.ts` | O11. Errores de aprobación y rotación con texto propio (`partner_not_pending`, `partner_not_active`, `rotation_in_progress`, `gateway_unavailable`) |
+| `componentes/registrar-socio` | Modal del registro: validación local con las reglas del contrato y campos marcados con `validation_failed` o `partner_code_taken` |
+| `componentes/rotar-credenciales` | Modal de la rotación: periodo de transición en horas (1–168, por defecto el del servicio) |
+| `componentes/secreto-emitido` | Modal del secreto: copiar al portapapeles con aviso accesible, sin almacenamiento ni URL |
+| `modelos/presentacion-socios.ts` | Insignias, tono de la barra de consumo, validación del registro y del periodo de transición |
+
 ## Pantallas y dónde va cada una
 
 ### `gestion/` — F3.1 · Incorporación de socios y credenciales (operaciones)

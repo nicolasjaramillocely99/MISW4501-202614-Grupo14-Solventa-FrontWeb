@@ -40,6 +40,10 @@ export const routes: Routes = [
         path: 'siniestros',
         loadChildren: () => import('@features/siniestros/siniestros.routes').then((m) => m.SINIESTROS_ROUTES),
       },
+      {
+        path: 'socios',
+        loadChildren: () => import('@features/socios/socios.routes').then((m) => m.SOCIOS_ROUTES),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
     ],
   },

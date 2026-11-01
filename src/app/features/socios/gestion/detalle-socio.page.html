@@ -1,0 +1,251 @@
+<div class="pagina" *transloco="let t; prefix: 'socios'">
+  <a class="migas" routerLink="/socios">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>
+    {{ t('detalle.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('detalle.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('detalle.noEncontrado.titulo') }}</p>
+          <p>{{ t('detalle.noEncontrado.texto') }}</p>
+        </div>
+      </div>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('detalle.error.titulo') }}</p>
+          <p>{{ t('detalle.error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="cargar()">{{ t('detalle.error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @default {
+      @if (socio(); as s) {
+        <header class="encabezado">
+          <div>
+            <div class="encabezado__titulo">
+              <h1 class="pagina__titulo">{{ s.nombre }}</h1>
+              @let estado = etiquetaEstado(s);
+              <app-insignia-estado [tono]="estado.tono">{{ t('estados.' + estado.clave) }}</app-insignia-estado>
+            </div>
+            <p class="pagina__descripcion">
+              {{
+                t('detalle.subtitulo', {
+                  tipo: t('tipos.' + s.tipo),
+                  fecha: (s.aprobadoEn ?? s.registradoEn | formatoFecha),
+                  productos: s.productos.join(', '),
+                  codigo: s.codigo,
+                  contacto: s.correoContactoTecnico,
+                })
+              }}
+            </p>
+          </div>
+          <div class="encabezado__acciones">
+            @if (s.estado === 'pending_approval') {
+              <button type="button" class="boton boton--primario" [disabled]="aprobando()" (click)="aprobar()">
+                <svg lucideKeyRound [size]="18" aria-hidden="true"></svg>
+                {{ aprobando() ? t('detalle.aprobando') : t('detalle.aprobar') }}
+              </button>
+            } @else if (s.estado === 'active') {
+              <button type="button" class="boton boton--primario" (click)="abrirRotacion()">
+                <svg lucideKeyRound [size]="18" aria-hidden="true"></svg>
+                {{ t('detalle.rotar') }}
+              </button>
+            }
+          </div>
+        </header>
+
+        @if (errorAprobacion(); as clave) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('errores.' + clave) }}</p>
+          </div>
+        }
+
+        <div class="rejilla">
+          <div class="columna">
+            <section class="tarjeta" aria-labelledby="titulo-credenciales">
+              <h2 id="titulo-credenciales" class="tarjeta__titulo">{{ t('detalle.credenciales.titulo') }}</h2>
+              @if (s.credenciales; as c) {
+                <dl class="datos">
+                  <div>
+                    <dt>{{ t('detalle.credenciales.clientId') }}</dt>
+                    <dd>{{ c.activa?.clientId ?? '—' }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.credenciales.clientSecret') }}</dt>
+                    <dd>
+                      <span aria-hidden="true">••••••••••••••••</span>
+                      {{ t('detalle.credenciales.pista', { pista: c.activa?.pistaSecreto ?? '' }) }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.credenciales.autenticacion') }}</dt>
+                    <dd>{{ t('detalle.credenciales.apiKey', { cabecera: c.cabecera }) }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.credenciales.entorno') }}</dt>
+                    <dd>{{ s.entorno }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.credenciales.generadas') }}</dt>
+                    <dd>
+                      @if (c.primeraEmisionEn) {
+                        {{ c.primeraEmisionEn | formatoFecha }} · {{ c.primeraEmisionPor?.etiqueta }}
+                      } @else {
+                        —
+                      }
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('detalle.credenciales.ultimaRotacion') }}</dt>
+                    <dd>
+                      @if (c.ultimaRotacionEn) {
+                        {{ c.ultimaRotacionEn | formatoFecha }} · {{ c.ultimaRotacionPor?.etiqueta }}
+                      } @else {
+                        {{ t('detalle.credenciales.sinRotaciones') }}
+                      }
+                    </dd>
+                  </div>
+                </dl>
+
+                @if (c.anterior; as anterior) {
+                  <div class="aviso aviso--advertencia" role="status">
+                    <p>
+                      {{ t('detalle.credenciales.anterior', { clientId: anterior.clientId, fecha: (anterior.venceEn | formatoFechaHora) }) }}
+                    </p>
+                  </div>
+                }
+
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('detalle.credenciales.avisoTitulo') }}</p>
+                    <p>{{ t('detalle.credenciales.avisoTexto', { horas: c.horasTransicionPorDefecto }) }}</p>
+                  </div>
+                </div>
+              } @else {
+                <p class="estado">{{ t('detalle.credenciales.pendiente') }}</p>
+              }
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-cuota">
+              <h2 id="titulo-cuota" class="tarjeta__titulo">{{ t('detalle.cuota.titulo') }}</h2>
+              @if (s.estadoCredenciales !== 'none') {
+                <p class="consumo">
+                  @if (s.consumo; as consumo) {
+                    {{
+                      t('detalle.cuota.consumo', {
+                        usadas: (consumo.usadas | formatoNumero: 0),
+                        limite: (s.cuota.limiteDiario | formatoNumero: 0),
+                        porcentaje: (consumo.porcentaje | formatoNumero: 0),
+                      })
+                    }}
+                  } @else {
+                    {{ t('detalle.cuota.consumoSinDato') }}
+                  }
+                </p>
+                <span class="barra" aria-hidden="true">
+                  <span class="barra__relleno barra__relleno--{{ tonoConsumo(s.consumo) }}" [style.width.%]="anchoBarra(s.consumo)"></span>
+                </span>
+              }
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('detalle.cuota.asignada') }}</dt>
+                  <dd>{{ t('detalle.cuota.porDia', { limite: (s.cuota.limiteDiario | formatoNumero: 0) }) }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.cuota.rafaga') }}</dt>
+                  <dd>
+                    {{ t('detalle.cuota.porSegundo', { limite: (s.cuota.limiteRafaga | formatoNumero: 0), maximo: (s.cuota.rafagaMaxima | formatoNumero: 0) }) }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.cuota.alExceder') }}</dt>
+                  <dd>{{ t('detalle.cuota.alExcederTexto') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.cuota.aislamiento') }}</dt>
+                  <dd>{{ t('detalle.cuota.aislamientoTexto') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.cuota.limitacion') }}</dt>
+                  <dd>{{ t('detalle.cuota.limitacionTexto') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.cuota.latencia') }}</dt>
+                  <dd>{{ t('detalle.cuota.latenciaTexto') }}</dd>
+                </div>
+              </dl>
+            </section>
+          </div>
+
+          <aside class="columna">
+            <section class="tarjeta" aria-labelledby="titulo-uso">
+              <h2 id="titulo-uso" class="tarjeta__titulo">{{ t('detalle.uso.titulo') }}</h2>
+              <p class="estado">{{ t('detalle.uso.texto') }}</p>
+            </section>
+            <section class="tarjeta destacado" aria-labelledby="titulo-aislamiento">
+              <h2 id="titulo-aislamiento" class="tarjeta__titulo">{{ t('detalle.aislamiento.titulo') }}</h2>
+              <p>{{ t('detalle.aislamiento.texto') }}</p>
+            </section>
+          </aside>
+        </div>
+
+        <section class="tarjeta" aria-labelledby="titulo-historial">
+          <h2 id="titulo-historial" class="tarjeta__titulo">{{ t('detalle.historial.titulo') }}</h2>
+          <div class="tabla-desplazable">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('detalle.historial.fecha') }}</th>
+                  <th scope="col">{{ t('detalle.historial.accion') }}</th>
+                  <th scope="col">{{ t('detalle.historial.quien') }}</th>
+                  <th scope="col">{{ t('detalle.historial.estado') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (evento of s.historial; track evento.eventoId) {
+                  <tr>
+                    <td class="tabla__fecha">{{ evento.ocurridoEn | formatoFechaHora }}</td>
+                    <td>
+                      <span class="tabla__nombre">{{ t('detalle.historial.tipos.' + evento.tipo) }}</span>
+                      <span class="tabla__secundario">{{ t('detalle.historial.detalles.' + evento.tipo, valoresDetalle(evento)) }}</span>
+                    </td>
+                    <td>{{ evento.actor.tipo === 'system' ? t('detalle.historial.sistema') : evento.actor.etiqueta }}</td>
+                    <td>
+                      @if (evento.estado === 'in_progress') {
+                        <app-insignia-estado tono="advertencia">{{ t('detalle.historial.enTransicion') }}</app-insignia-estado>
+                      } @else {
+                        <app-insignia-estado tono="exito">{{ t('detalle.historial.aplicado') }}</app-insignia-estado>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        @if (s.credenciales; as c) {
+          <app-rotar-credenciales
+            [horasPorDefecto]="c.horasTransicionPorDefecto"
+            [enviando]="rotando()"
+            [error]="errorRotacion()"
+            (confirmar)="rotar($event)"
+          />
+        }
+      }
+    }
+  }
+
+  <app-secreto-emitido />
+</div>

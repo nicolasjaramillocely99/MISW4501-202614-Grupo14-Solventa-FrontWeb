@@ -2772,5 +2772,268 @@
         "embedded": "Embedded"
       }
     }
+  },
+  "socios": {
+    "sinDato": "No data",
+    "tipos": {
+      "bank": "Bank",
+      "airline": "Airline",
+      "ecommerce": "E-commerce",
+      "fintech": "Fintech",
+      "cooperative": "Cooperative",
+      "retail": "Retail",
+      "other": "Other"
+    },
+    "credenciales": {
+      "activas": "Active",
+      "rotacion": "Rotation in progress",
+      "inhabilitadas": "Disabled",
+      "sinCredenciales": "No credentials"
+    },
+    "estados": {
+      "pendiente": "Pending approval",
+      "baja": "Offboarded",
+      "excedido": "Limit exceeded",
+      "cercaLimite": "Near the limit",
+      "activo": "Active"
+    },
+    "errores": {
+      "partner_not_pending": "The partner is already approved: its secret is never shown again. If it was lost, rotate the credentials.",
+      "partner_not_active": "Only an active partner can rotate its credentials.",
+      "rotation_in_progress": "A previous credential is still in its transition period. Wait until it ends to rotate again.",
+      "gateway_unavailable": "The credentials could not be managed right now. Nothing changed; try again.",
+      "generico": "The operation could not be completed. Try again."
+    },
+    "listado": {
+      "titulo": "Commercial partners",
+      "descripcion": "Partners integrated through the API with their own credentials, transaction quota and resource isolation. When a partner exceeds its quota, its requests are limited without affecting the others.",
+      "registrar": "Register partner",
+      "cargando": "Loading partners…",
+      "indicadores": {
+        "titulo": "Partner indicators",
+        "activos": "Active partners",
+        "activosDetalle": "With valid credentials",
+        "cuotaMedia": "Average quota used (today)",
+        "cuotaMediaDetalle": "Bursts controlled with HTTP 429",
+        "alertas": "Alerts",
+        "alertasDetalle": "{{nombres}} near the limit",
+        "sinAlertas": "No partner near the limit"
+      },
+      "error": {
+        "titulo": "We could not load the partners",
+        "texto": "The service did not respond. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "vacio": {
+        "titulo": "There are no partners yet",
+        "texto": "Register the first commercial partner to issue its credentials."
+      },
+      "tabla": {
+        "titulo": "Commercial partners and their consumption today",
+        "socio": "Partner",
+        "tipo": "Type",
+        "credenciales": "Credentials",
+        "cuota": "Quota and consumption (today)",
+        "peticiones": "Requests today",
+        "estado": "Status",
+        "acciones": "Actions",
+        "desde": "since {{fecha}}",
+        "sinCuota": "No quota assigned",
+        "consumo": "{{usadas}} / {{limite}} per day",
+        "consumoSinDato": "No data / {{limite}} per day",
+        "ver": "View",
+        "verSocio": "View {{nombre}}"
+      }
+    },
+    "registrar": {
+      "titulo": "Register partner",
+      "cerrar": "Close",
+      "texto": "The partner stays pending approval. Its credentials are issued when it is approved from its detail.",
+      "seleccionar": "Select…",
+      "ayudaProductos": "Separate the products with commas (for example: mortgage life, home).",
+      "cancelar": "Cancel",
+      "enviando": "Registering…",
+      "confirmar": "Register partner",
+      "errorGeneral": "The partner could not be registered. Try again.",
+      "tipos": {
+        "bank": "Bank",
+        "airline": "Airline",
+        "ecommerce": "E-commerce",
+        "fintech": "Fintech",
+        "cooperative": "Cooperative",
+        "retail": "Retail",
+        "other": "Other"
+      },
+      "campos": {
+        "nombre": "Partner name",
+        "codigo": "Tenant code",
+        "tipo": "Type",
+        "correo": "Technical contact e-mail",
+        "productos": "Products",
+        "limiteDiario": "Daily quota (requests)",
+        "limiteRafaga": "Limit per second",
+        "rafagaMaxima": "Maximum burst"
+      },
+      "errores": {
+        "nombre": {
+          "required": "Enter the partner name.",
+          "invalid_format": "The name is not valid.",
+          "out_of_range": "The name must have between 3 and 80 characters."
+        },
+        "codigo": {
+          "required": "Enter the tenant code.",
+          "invalid_format": "Use 3 to 40 lowercase letters, digits or underscores, starting with a letter (for example ten_bancoaliado).",
+          "out_of_range": "The code is not valid.",
+          "taken": "Another partner already uses this code."
+        },
+        "tipo": {
+          "required": "Select the partner type.",
+          "invalid_format": "Select a type from the list.",
+          "out_of_range": "Select a type from the list."
+        },
+        "correo": {
+          "required": "Enter the technical contact e-mail.",
+          "invalid_format": "Enter a valid e-mail.",
+          "out_of_range": "The e-mail is too long."
+        },
+        "productos": {
+          "required": "Enter at least one product.",
+          "invalid_format": "The products are not valid.",
+          "out_of_range": "Enter 1 to 10 products of 2 to 60 characters."
+        },
+        "limiteDiario": {
+          "required": "Enter the daily quota.",
+          "invalid_format": "Enter a whole number.",
+          "out_of_range": "The daily quota must be between 1 and 10,000,000."
+        },
+        "limiteRafaga": {
+          "required": "Enter the limit per second.",
+          "invalid_format": "Enter a whole number.",
+          "out_of_range": "The limit per second must be between 1 and 10,000."
+        },
+        "rafagaMaxima": {
+          "required": "Enter the maximum burst.",
+          "invalid_format": "Enter a whole number.",
+          "out_of_range": "The maximum burst must be at least the limit per second and at most 20,000."
+        }
+      }
+    },
+    "rotar": {
+      "titulo": "Rotate credentials",
+      "cerrar": "Close",
+      "texto": "A new pair of credentials is issued. The previous one keeps working during the transition period and is then revoked, without interrupting the transactions in progress.",
+      "horas": "Transition period (hours)",
+      "ayuda": "Between {{minimo}} and {{maximo}} hours.",
+      "errorHoras": {
+        "required": "Enter the transition period.",
+        "out_of_range": "The period must be a whole number between {{minimo}} and {{maximo}} hours."
+      },
+      "errores": {
+        "partner_not_pending": "The partner is already approved: its secret is never shown again. If it was lost, rotate the credentials.",
+        "partner_not_active": "Only an active partner can rotate its credentials.",
+        "rotation_in_progress": "A previous credential is still in its transition period. Wait until it ends to rotate again.",
+        "gateway_unavailable": "The credentials could not be managed right now. Nothing changed; try again.",
+        "generico": "The operation could not be completed. Try again."
+      },
+      "cancelar": "Cancel",
+      "enviando": "Rotating…",
+      "confirmar": "Rotate credentials"
+    },
+    "secreto": {
+      "titulo": "Credentials issued",
+      "avisoTitulo": "This secret is shown only now",
+      "avisoTexto": "Copy it and hand it to the partner through a secure channel. Once this window is closed it cannot be read again; if it is lost, the credentials must be rotated.",
+      "clientId": "Client ID",
+      "clientSecret": "Client secret",
+      "copiarClientId": "Copy client ID",
+      "copiarSecreto": "Copy secret",
+      "uso": "The partner sends the secret in the {{cabecera}} header of every request.",
+      "copiado": {
+        "clientId": "Client ID copied.",
+        "secreto": "Secret copied.",
+        "error": "It could not be copied. Select the text and copy it manually."
+      },
+      "confirmar": "I saved the secret"
+    },
+    "detalle": {
+      "volver": "Partners",
+      "cargando": "Loading partner…",
+      "noEncontrado": {
+        "titulo": "We could not find this partner",
+        "texto": "Check the link or go back to the list of partners."
+      },
+      "error": {
+        "titulo": "We could not load the partner",
+        "texto": "The service did not respond. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "subtitulo": "{{tipo}} · partner since {{fecha}} · products: {{productos}} · tenant {{codigo}} · technical contact {{contacto}}",
+      "aprobar": "Approve and issue credentials",
+      "aprobando": "Issuing credentials…",
+      "rotar": "Rotate credentials",
+      "credenciales": {
+        "titulo": "Access credentials",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "pista": "ends in {{pista}} · visible only once when issued",
+        "autenticacion": "Authentication",
+        "apiKey": "API key · {{cabecera}} header",
+        "entorno": "Environment",
+        "generadas": "Issued",
+        "ultimaRotacion": "Last rotation",
+        "sinRotaciones": "No rotations",
+        "anterior": "The previous credential ({{clientId}}) remains valid until {{fecha}}; then it is revoked automatically.",
+        "avisoTitulo": "The secret is never shown again",
+        "avisoTexto": "If the partner loses it, rotate the credentials: a new pair is issued and the previous one stops working after the {{horas}}-hour transition period.",
+        "pendiente": "The partner is pending approval. Approving it issues its credentials, its quota and its isolated resources."
+      },
+      "cuota": {
+        "titulo": "Quota and isolation",
+        "consumo": "Consumption today · {{usadas}} of {{limite}} requests ({{porcentaje}} %)",
+        "consumoSinDato": "Consumption today · no data from the gateway",
+        "asignada": "Assigned quota",
+        "porDia": "{{limite}} requests per day",
+        "rafaga": "Burst limit",
+        "porSegundo": "{{limite}} per second (burst of {{maximo}})",
+        "alExceder": "When the quota is exceeded",
+        "alExcederTexto": "HTTP 429 to the partner · without affecting the others",
+        "aislamiento": "Isolation",
+        "aislamientoTexto": "Own usage plan and API key",
+        "limitacion": "Rate limiting",
+        "limitacionTexto": "API Gateway · per credential",
+        "latencia": "Latency budget",
+        "latenciaTexto": "p95 ≤ 400 ms on quoting"
+      },
+      "uso": {
+        "titulo": "Recent usage (24 h)",
+        "texto": "The quotes, issued policies, response times and errors of the partner arrive with the performance dashboard."
+      },
+      "aislamiento": {
+        "titulo": "Isolation per partner",
+        "texto": "Each partner operates with separate resources: its limits, its cache and its queues do not share capacity with other partners. Cutting the access of one does not affect the others."
+      },
+      "historial": {
+        "titulo": "Credential history",
+        "fecha": "Date",
+        "accion": "Action",
+        "quien": "Who",
+        "estado": "Status",
+        "tipos": {
+          "registered": "Partner registered",
+          "credentials_issued": "Credentials issued",
+          "credentials_rotated": "Credentials rotated",
+          "credentials_revoked": "Previous credential revoked"
+        },
+        "detalles": {
+          "registered": "Pending approval",
+          "credentials_issued": "{{client_id}} · quota of {{daily_limit}} requests per day",
+          "credentials_rotated": "New pair {{client_id}} · {{grace_period_hours}} h transition",
+          "credentials_revoked": "{{client_id}} · end of the transition period"
+        },
+        "sistema": "System",
+        "enTransicion": "In transition",
+        "aplicado": "Applied"
+      }
+    }
   }
 }
