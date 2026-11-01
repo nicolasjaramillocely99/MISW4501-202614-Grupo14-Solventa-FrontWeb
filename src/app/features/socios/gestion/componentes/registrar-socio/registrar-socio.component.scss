@@ -1,0 +1,11 @@
+@use '../modal';
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-16);
+}
+
+.rejilla__completa {
+  grid-column: 1 / -1;
+}

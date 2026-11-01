@@ -1,0 +1,173 @@
+// O10 · Socios comerciales: indicadores y tabla con cuota y consumo de hoy.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__descripcion {
+  margin: var(--espacio-4) 0 0;
+  max-width: 90ch;
+  color: var(--color-texto-secundario);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.aviso .boton {
+  margin-top: var(--espacio-8);
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-16);
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-16) var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+
+  p {
+    margin: 0;
+  }
+}
+
+.indicador__etiqueta {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.indicador__valor {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.indicador__valor--exito {
+  color: var(--color-exito-600);
+}
+
+.indicador__valor--alerta {
+  color: var(--color-advertencia-600);
+}
+
+.indicador__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.vacio p {
+  margin: 0;
+}
+
+.tabla-contenedor {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tabla-desplazable {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    padding: var(--espacio-16);
+    background: var(--color-fondo-pagina);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    border-top: 1px solid var(--color-borde-base);
+    vertical-align: middle;
+  }
+}
+
+.tabla__nombre {
+  display: block;
+}
+
+.tabla__secundario {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.tabla .tabla__numero {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tabla__ver {
+  font-weight: 500;
+  color: var(--color-azul-700);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.consumo {
+  min-width: 180px;
+}
+
+.barra {
+  display: block;
+  height: 6px;
+  margin-top: var(--espacio-4);
+  border-radius: 3px;
+  background: var(--color-borde-base);
+  overflow: hidden;
+}
+
+.barra__relleno {
+  display: block;
+  height: 100%;
+  background: var(--color-azul-700);
+}
+
+.barra__relleno--alerta {
+  background: var(--color-advertencia-600);
+}
+
+.barra__relleno--excedido {
+  background: var(--color-error-600);
+}

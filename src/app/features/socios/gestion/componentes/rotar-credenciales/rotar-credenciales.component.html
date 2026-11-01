@@ -1,0 +1,57 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-rotar-credenciales"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'socios.rotar'"
+>
+  @if (abierto()) {
+    <form class="modal__contenido" (submit)="enviar($event)" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-rotar-credenciales" class="modal__titulo">{{ t('titulo') }}</h2>
+        <button type="button" class="modal__cerrar" [attr.aria-label]="t('cerrar')" [disabled]="enviando()" (click)="pedirCierre()">
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">{{ t('texto') }}</p>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="rotar-horas">{{ t('horas') }}</label>
+        <input
+          id="rotar-horas"
+          class="campo__control"
+          type="number"
+          inputmode="numeric"
+          [min]="minimo"
+          [max]="maximo"
+          step="1"
+          required
+          [value]="horas() ?? ''"
+          [attr.aria-invalid]="errorHoras() ? 'true' : null"
+          [attr.aria-describedby]="errorHoras() ? 'rotar-horas-error' : 'rotar-horas-ayuda'"
+          (input)="cambiarHoras($any($event.target).value)"
+        />
+        @if (errorHoras(); as codigo) {
+          <p id="rotar-horas-error" class="campo__error">{{ t('errorHoras.' + codigo, { minimo, maximo }) }}</p>
+        } @else {
+          <p id="rotar-horas-ayuda" class="modal__texto">{{ t('ayuda', { minimo, maximo }) }}</p>
+        }
+      </div>
+
+      @if (error(); as clave) {
+        <div class="aviso aviso--error" role="alert">
+          <p>{{ t('errores.' + clave) }}</p>
+        </div>
+      }
+
+      <div class="modal__acciones">
+        <button type="button" class="boton boton--secundario" [disabled]="enviando()" (click)="pedirCierre()">{{ t('cancelar') }}</button>
+        <button type="submit" class="boton boton--primario" [disabled]="enviando()">
+          {{ enviando() ? t('enviando') : t('confirmar') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

@@ -2772,5 +2772,268 @@
         "embedded": "Embebido"
       }
     }
+  },
+  "socios": {
+    "sinDato": "Sin dato",
+    "tipos": {
+      "bank": "Banco",
+      "airline": "Aerolínea",
+      "ecommerce": "E-commerce",
+      "fintech": "Fintech",
+      "cooperative": "Cooperativa",
+      "retail": "Comercio minorista",
+      "other": "Otro"
+    },
+    "credenciales": {
+      "activas": "Activas",
+      "rotacion": "Rotación en curso",
+      "inhabilitadas": "Inhabilitadas",
+      "sinCredenciales": "Sin credenciales"
+    },
+    "estados": {
+      "pendiente": "Pendiente de aprobación",
+      "baja": "Dado de baja",
+      "excedido": "Límite excedido",
+      "cercaLimite": "Cerca del límite",
+      "activo": "Activo"
+    },
+    "errores": {
+      "partner_not_pending": "El socio ya fue aprobado: su secreto no se vuelve a mostrar. Si lo perdió, rote las credenciales.",
+      "partner_not_active": "Solo un socio activo puede rotar sus credenciales.",
+      "rotation_in_progress": "Ya hay una credencial anterior en periodo de transición. Espere a que termine para volver a rotar.",
+      "gateway_unavailable": "No fue posible gestionar las credenciales en este momento. No se cambió nada; intente de nuevo.",
+      "generico": "No fue posible completar la operación. Intente de nuevo."
+    },
+    "listado": {
+      "titulo": "Socios comerciales",
+      "descripcion": "Aliados integrados por API con credenciales propias, cuota de transacciones y aislamiento de recursos. Cuando un socio excede su cuota, sus peticiones se limitan sin afectar a los demás.",
+      "registrar": "Registrar socio",
+      "cargando": "Cargando socios…",
+      "indicadores": {
+        "titulo": "Indicadores de socios",
+        "activos": "Socios activos",
+        "activosDetalle": "Con credenciales vigentes",
+        "cuotaMedia": "Cuota media usada (hoy)",
+        "cuotaMediaDetalle": "Ráfagas controladas con HTTP 429",
+        "alertas": "Alertas",
+        "alertasDetalle": "{{nombres}} cerca del límite",
+        "sinAlertas": "Ningún socio cerca del límite"
+      },
+      "error": {
+        "titulo": "No pudimos cargar los socios",
+        "texto": "El servicio no respondió. Intente de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "vacio": {
+        "titulo": "Aún no hay socios",
+        "texto": "Registre el primer socio comercial para generar sus credenciales."
+      },
+      "tabla": {
+        "titulo": "Socios comerciales y su consumo de hoy",
+        "socio": "Socio",
+        "tipo": "Tipo",
+        "credenciales": "Credenciales",
+        "cuota": "Cuota y consumo (hoy)",
+        "peticiones": "Peticiones hoy",
+        "estado": "Estado",
+        "acciones": "Acciones",
+        "desde": "desde {{fecha}}",
+        "sinCuota": "Sin cuota asignada",
+        "consumo": "{{usadas}} / {{limite}} por día",
+        "consumoSinDato": "Sin dato / {{limite}} por día",
+        "ver": "Ver",
+        "verSocio": "Ver {{nombre}}"
+      }
+    },
+    "registrar": {
+      "titulo": "Registrar socio",
+      "cerrar": "Cerrar",
+      "texto": "El socio queda pendiente de aprobación. Las credenciales se generan al aprobarlo desde su detalle.",
+      "seleccionar": "Seleccione…",
+      "ayudaProductos": "Separe los productos con comas (por ejemplo: vida hipotecario, hogar).",
+      "cancelar": "Cancelar",
+      "enviando": "Registrando…",
+      "confirmar": "Registrar socio",
+      "errorGeneral": "No fue posible registrar el socio. Intente de nuevo.",
+      "tipos": {
+        "bank": "Banco",
+        "airline": "Aerolínea",
+        "ecommerce": "E-commerce",
+        "fintech": "Fintech",
+        "cooperative": "Cooperativa",
+        "retail": "Comercio minorista",
+        "other": "Otro"
+      },
+      "campos": {
+        "nombre": "Nombre del socio",
+        "codigo": "Código del tenant",
+        "tipo": "Tipo",
+        "correo": "Correo del contacto técnico",
+        "productos": "Productos",
+        "limiteDiario": "Cuota diaria (solicitudes)",
+        "limiteRafaga": "Límite por segundo",
+        "rafagaMaxima": "Ráfaga máxima"
+      },
+      "errores": {
+        "nombre": {
+          "required": "Escriba el nombre del socio.",
+          "invalid_format": "El nombre no es válido.",
+          "out_of_range": "El nombre debe tener entre 3 y 80 caracteres."
+        },
+        "codigo": {
+          "required": "Escriba el código del tenant.",
+          "invalid_format": "Use de 3 a 40 letras minúsculas, dígitos o guion bajo, empezando por una letra (por ejemplo ten_bancoaliado).",
+          "out_of_range": "El código no es válido.",
+          "taken": "Otro socio ya usa este código."
+        },
+        "tipo": {
+          "required": "Seleccione el tipo de socio.",
+          "invalid_format": "Seleccione un tipo de la lista.",
+          "out_of_range": "Seleccione un tipo de la lista."
+        },
+        "correo": {
+          "required": "Escriba el correo del contacto técnico.",
+          "invalid_format": "Escriba un correo válido.",
+          "out_of_range": "El correo es demasiado largo."
+        },
+        "productos": {
+          "required": "Escriba al menos un producto.",
+          "invalid_format": "Los productos no son válidos.",
+          "out_of_range": "Indique de 1 a 10 productos de 2 a 60 caracteres."
+        },
+        "limiteDiario": {
+          "required": "Escriba la cuota diaria.",
+          "invalid_format": "Escriba un número entero.",
+          "out_of_range": "La cuota diaria debe estar entre 1 y 10.000.000."
+        },
+        "limiteRafaga": {
+          "required": "Escriba el límite por segundo.",
+          "invalid_format": "Escriba un número entero.",
+          "out_of_range": "El límite por segundo debe estar entre 1 y 10.000."
+        },
+        "rafagaMaxima": {
+          "required": "Escriba la ráfaga máxima.",
+          "invalid_format": "Escriba un número entero.",
+          "out_of_range": "La ráfaga máxima debe ser mayor o igual al límite por segundo y como máximo 20.000."
+        }
+      }
+    },
+    "rotar": {
+      "titulo": "Rotar credenciales",
+      "cerrar": "Cerrar",
+      "texto": "Se emite un nuevo par de credenciales. El anterior sigue funcionando durante el periodo de transición y luego se revoca, sin interrumpir las transacciones en curso.",
+      "horas": "Periodo de transición (horas)",
+      "ayuda": "Entre {{minimo}} y {{maximo}} horas.",
+      "errorHoras": {
+        "required": "Escriba el periodo de transición.",
+        "out_of_range": "El periodo debe ser un número entero entre {{minimo}} y {{maximo}} horas."
+      },
+      "errores": {
+        "partner_not_pending": "El socio ya fue aprobado: su secreto no se vuelve a mostrar. Si lo perdió, rote las credenciales.",
+        "partner_not_active": "Solo un socio activo puede rotar sus credenciales.",
+        "rotation_in_progress": "Ya hay una credencial anterior en periodo de transición. Espere a que termine para volver a rotar.",
+        "gateway_unavailable": "No fue posible gestionar las credenciales en este momento. No se cambió nada; intente de nuevo.",
+        "generico": "No fue posible completar la operación. Intente de nuevo."
+      },
+      "cancelar": "Cancelar",
+      "enviando": "Rotando…",
+      "confirmar": "Rotar credenciales"
+    },
+    "secreto": {
+      "titulo": "Credenciales generadas",
+      "avisoTitulo": "Este secreto solo se muestra ahora",
+      "avisoTexto": "Cópielo y entréguelo al socio por un canal seguro. Al cerrar esta ventana no se podrá volver a consultar; si se pierde, habrá que rotar las credenciales.",
+      "clientId": "Client ID",
+      "clientSecret": "Client secret",
+      "copiarClientId": "Copiar client ID",
+      "copiarSecreto": "Copiar secreto",
+      "uso": "El socio envía el secreto en la cabecera {{cabecera}} de cada petición.",
+      "copiado": {
+        "clientId": "Client ID copiado.",
+        "secreto": "Secreto copiado.",
+        "error": "No se pudo copiar. Seleccione el texto y cópielo manualmente."
+      },
+      "confirmar": "Ya guardé el secreto"
+    },
+    "detalle": {
+      "volver": "Socios",
+      "cargando": "Cargando socio…",
+      "noEncontrado": {
+        "titulo": "No encontramos este socio",
+        "texto": "Revise el enlace o vuelva al listado de socios."
+      },
+      "error": {
+        "titulo": "No pudimos cargar el socio",
+        "texto": "El servicio no respondió. Intente de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "subtitulo": "{{tipo}} · socio desde {{fecha}} · productos: {{productos}} · tenant {{codigo}} · contacto técnico {{contacto}}",
+      "aprobar": "Aprobar y generar credenciales",
+      "aprobando": "Generando credenciales…",
+      "rotar": "Rotar credenciales",
+      "credenciales": {
+        "titulo": "Credenciales de acceso",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "pista": "termina en {{pista}} · visible una sola vez al generarlo",
+        "autenticacion": "Autenticación",
+        "apiKey": "API key · cabecera {{cabecera}}",
+        "entorno": "Entorno",
+        "generadas": "Generadas",
+        "ultimaRotacion": "Última rotación",
+        "sinRotaciones": "Sin rotaciones",
+        "anterior": "La credencial anterior ({{clientId}}) sigue vigente hasta el {{fecha}}; luego se revoca automáticamente.",
+        "avisoTitulo": "El secreto no se vuelve a mostrar",
+        "avisoTexto": "Si el socio lo pierde, rote las credenciales: se emite un nuevo par y el anterior deja de funcionar tras el periodo de transición de {{horas}} horas.",
+        "pendiente": "El socio está pendiente de aprobación. Al aprobarlo se generan sus credenciales, su cuota y sus recursos aislados."
+      },
+      "cuota": {
+        "titulo": "Cuota y aislamiento",
+        "consumo": "Consumo de hoy · {{usadas}} de {{limite}} solicitudes ({{porcentaje}} %)",
+        "consumoSinDato": "Consumo de hoy · sin dato del gateway",
+        "asignada": "Cuota asignada",
+        "porDia": "{{limite}} solicitudes por día",
+        "rafaga": "Límite de ráfaga",
+        "porSegundo": "{{limite}} por segundo (ráfaga de {{maximo}})",
+        "alExceder": "Al exceder la cuota",
+        "alExcederTexto": "HTTP 429 al socio · sin afectar a los demás",
+        "aislamiento": "Aislamiento",
+        "aislamientoTexto": "Usage plan y API key propios",
+        "limitacion": "Rate limiting",
+        "limitacionTexto": "API Gateway · por credencial",
+        "latencia": "Presupuesto de latencia",
+        "latenciaTexto": "p95 ≤ 400 ms en cotización"
+      },
+      "uso": {
+        "titulo": "Uso reciente (24 h)",
+        "texto": "Las cotizaciones, pólizas emitidas, tiempos de respuesta y errores del socio llegan con el tablero de desempeño."
+      },
+      "aislamiento": {
+        "titulo": "Aislamiento por socio",
+        "texto": "Cada socio opera con recursos separados: sus límites, su caché y sus colas no comparten capacidad con otros aliados. Cortar el acceso de uno no afecta a los demás."
+      },
+      "historial": {
+        "titulo": "Historial de credenciales",
+        "fecha": "Fecha",
+        "accion": "Acción",
+        "quien": "Quién",
+        "estado": "Estado",
+        "tipos": {
+          "registered": "Socio registrado",
+          "credentials_issued": "Credenciales generadas",
+          "credentials_rotated": "Credenciales rotadas",
+          "credentials_revoked": "Credencial anterior revocada"
+        },
+        "detalles": {
+          "registered": "Pendiente de aprobación",
+          "credentials_issued": "{{client_id}} · cuota de {{daily_limit}} solicitudes por día",
+          "credentials_rotated": "Nuevo par {{client_id}} · transición de {{grace_period_hours}} h",
+          "credentials_revoked": "{{client_id}} · fin del periodo de transición"
+        },
+        "sistema": "Sistema",
+        "enTransicion": "En transición",
+        "aplicado": "Aplicado"
+      }
+    }
   }
 }
