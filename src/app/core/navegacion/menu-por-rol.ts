@@ -46,7 +46,8 @@ export const MENU_POR_ROL: Readonly<Record<Rol, readonly ItemMenu[]>> = {
       ruta: '/siniestros/mis-siniestros',
       icono: LucideClipboardList,
       // HU-W2.1-01: «Radicar un siniestro» vive dentro de «Mis siniestros» (A6 · migas «← Mis siniestros»).
-      tambienEn: ['/siniestros/radicar'],
+      // HU-W2.2-01: también el detalle del caso, `/siniestros/:id` (A8 · migas «← Mis siniestros»).
+      tambienEn: ['/siniestros/radicar', '/siniestros'],
     },
     { clave: 'menu.misSolicitudes', ruta: '/originacion/solicitudes', icono: LucideInbox },
     { clave: 'menu.miPerfil', ruta: '/perfil', icono: LucideUser },
@@ -62,7 +63,15 @@ export const MENU_POR_ROL: Readonly<Record<Rol, readonly ItemMenu[]>> = {
     INICIO,
     { clave: 'menu.emisiones', ruta: '/originacion/emisiones', icono: LucideActivity },
     { clave: 'menu.endosos', ruta: '/originacion/endosos', icono: LucidePencil },
-    { clave: 'menu.siniestros', ruta: '/siniestros/cola', icono: LucideClipboardList },
+    {
+      clave: 'menu.siniestros',
+      // HU-W2.2-03: entra a los casos en evaluación. La cola por id y la prioridad de HU-W2.2-01 (`/siniestros/cola`)
+      // y la evaluación de un caso (`/siniestros/:id/evaluar`) también son de «Siniestros»; Asistencias, que cuelga
+      // de `/siniestros`, gana por ser la ruta más específica.
+      ruta: '/siniestros/evaluacion',
+      icono: LucideClipboardList,
+      tambienEn: ['/siniestros'],
+    },
     { clave: 'menu.asistencias', ruta: '/siniestros/asistencias', icono: LucideMapPin },
     { clave: 'menu.socios', ruta: '/socios', icono: LucideBuilding },
     { clave: 'menu.auditoria', ruta: '/auditoria/registro', icono: LucideFileClock },
@@ -83,9 +92,23 @@ export const RUTA_INICIO_POR_ROL: Readonly<Record<Rol, string>> = {
   socio: '/inicio',
 };
 
-/** Ítem del menú que corresponde a una URL (por prefijo de ruta, también las de `tambienEn`), o `null`. */
+/**
+ * Ítem del menú que corresponde a una URL (por prefijo de ruta, también las de `tambienEn`), o `null`. Si varios
+ * coinciden gana la ruta más específica (la más larga): `/siniestros/asistencias` es «Asistencias» aunque «Siniestros»
+ * cubra todo `/siniestros`.
+ */
 export function itemActivo(menu: readonly ItemMenu[], url: string): ItemMenu | null {
   const ruta = url.split(/[?#]/)[0];
   const coincide = (base: string) => ruta === base || ruta.startsWith(`${base}/`);
-  return menu.find((item) => coincide(item.ruta) || (item.tambienEn ?? []).some(coincide)) ?? null;
+  let mejor: ItemMenu | null = null;
+  let largo = -1;
+  for (const item of menu) {
+    for (const base of [item.ruta, ...(item.tambienEn ?? [])]) {
+      if (coincide(base) && base.length > largo) {
+        mejor = item;
+        largo = base.length;
+      }
+    }
+  }
+  return mejor;
 }

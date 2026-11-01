@@ -34,7 +34,12 @@ describe('rutas de siniestros (HU-W2.1-01)', () => {
         ...proveerSesionPrueba(proveedor),
         {
           provide: SiniestrosApiService,
-          useValue: { consultarOpcionesRadicacion: () => NEVER, listarSiniestros: () => NEVER },
+          useValue: {
+            consultarOpcionesRadicacion: () => NEVER,
+            listarSiniestros: () => NEVER,
+            listarCola: () => NEVER,
+            consultarEvaluacion: () => NEVER,
+          },
         },
       ],
     });
@@ -68,6 +73,27 @@ describe('rutas de siniestros (HU-W2.1-01)', () => {
 
     await harness.navigateByUrl('/siniestros/radicar');
 
+    expect(url()).toBe('/acceso/no-autorizado');
+  });
+
+  it('operaciones entra a los casos en evaluación y a la evaluación de un caso (HU-W2.2-03)', async () => {
+    await iniciarSesionComo('operaciones');
+
+    await harness.navigateByUrl('/siniestros/evaluacion');
+    expect(url()).toBe('/siniestros/evaluacion');
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Casos en evaluación');
+
+    await harness.navigateByUrl('/siniestros/caso-1/evaluar');
+    expect(url()).toBe('/siniestros/caso-1/evaluar');
+  });
+
+  it.each(['asegurado', 'asesor', 'socio'] as const)('el rol %s no entra a la evaluación: va a «acceso no autorizado»', async (rol) => {
+    await iniciarSesionComo(rol);
+
+    await harness.navigateByUrl('/siniestros/evaluacion');
+    expect(url()).toBe('/acceso/no-autorizado');
+
+    await harness.navigateByUrl('/siniestros/caso-1/evaluar');
     expect(url()).toBe('/acceso/no-autorizado');
   });
 });

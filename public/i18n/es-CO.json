@@ -1623,7 +1623,12 @@
   },
   "siniestros": {
     "estados": {
-      "active": "Radicado"
+      "active": "Radicado",
+      "in_evaluation": "En evaluación",
+      "approved": "Aprobado · pago en curso",
+      "paid": "Pagado",
+      "rejected": "Rechazado",
+      "payment_exception": "Excepción de pago"
     },
     "catalogo": {
       "ramos": {
@@ -1722,6 +1727,11 @@
         "descripcion": {
           "etiqueta": "Descripción de los hechos",
           "contador": "{{actual}} de {{maximo}} caracteres"
+        },
+        "montoEstimado": {
+          "etiqueta": "Monto estimado (opcional)",
+          "ayuda": "En pesos colombianos, sin centavos (por ejemplo 4.800.000). Nos ayuda a priorizar tu caso.",
+          "vista": "Se enviará como {{monto}}"
         }
       },
       "errores": {
@@ -1733,7 +1743,8 @@
           "fueraVigencia": "La fecha del hecho está fuera de la vigencia de la póliza.",
           "lugarLongitud": "Escribe entre 3 y 160 caracteres.",
           "descripcionLongitud": "Escribe entre 10 y 1.000 caracteres.",
-          "formatoInvalido": "El valor no es válido. Revísalo."
+          "formatoInvalido": "El valor no es válido. Revísalo.",
+          "montoRango": "El monto debe estar entre 1 y 100.000.000.000 de pesos."
         },
         "soporte": {
           "falta": "Falta adjuntar {{nombre}}.",
@@ -1924,7 +1935,419 @@
         "fechaHecho": "Fecha del hecho",
         "etapa": "Etapa",
         "radicadoEn": "Radicado el",
-        "desdeApp": "Radicado desde la app"
+        "desdeApp": "Radicado desde la app",
+        "verDetalle": "Ver detalle",
+        "verDetalleDe": "Ver detalle del siniestro {{radicado}}",
+        "acciones": "Acciones"
+      }
+    },
+    "triage": {
+      "niveles": {
+        "1": "Triage 1",
+        "2": "Triage 2",
+        "3": "Triage 3"
+      },
+      "severidades": {
+        "high": "alta",
+        "medium": "media",
+        "low": "baja"
+      },
+      "bandas": {
+        "high": "monto alto",
+        "medium": "monto medio",
+        "low": "monto bajo",
+        "unknown": "sin monto declarado"
+      },
+      "objetivos": {
+        "inmediato": "Atención inmediata",
+        "diasHabiles": "Objetivo: {{dias}}"
+      },
+      "diasHabilesUno": "1 día hábil",
+      "diasHabiles": "{{dias}} días hábiles",
+      "resolucion": "Tiempo estimado de resolución: {{dias}}",
+      "causas": {
+        "entered_evaluation": "Entró a evaluación",
+        "estimated_amount_changed": "Cambió el monto estimado",
+        "incident_type_changed": "Cambió el tipo de siniestro",
+        "coverage_changed": "Cambió la cobertura",
+        "provider_report_received": "Llegó el informe del prestador",
+        "policy_updated": "Cambió la política de prioridad"
+      },
+      "estados": {
+        "pending": "Calculando prioridad…",
+        "assessed": "Prioridad calculada",
+        "not_applicable": "Sin prioridad (no está en evaluación)",
+        "not_found": "No existe"
+      },
+      "cola": {
+        "titulo": "Cola de siniestros",
+        "descripcion": "Consulta la prioridad automática de los siniestros en evaluación.",
+        "regla": {
+          "titulo": "Cómo se calcula la prioridad",
+          "texto": "El sistema calcula la prioridad solo, con la severidad del siniestro (según su tipo y cobertura) y el rango de su monto estimado: monto bajo, menos de {{bajo}}; monto alto, más de {{alto}}. Si el siniestro no declara monto, se prioriza solo por su severidad. Política vigente: {{version}}.",
+          "textoSinPolitica": "El sistema calcula la prioridad solo, con la severidad del siniestro (según su tipo y cobertura) y el rango de su monto estimado."
+        },
+        "indicadores": {
+          "titulo": "Objetivo de atención por nivel",
+          "cargando": "Consultando la política de prioridad…",
+          "error": "No pudimos consultar el objetivo de cada nivel.",
+          "reintentar": "Reintentar"
+        },
+        "busqueda": {
+          "titulo": "Buscar siniestros",
+          "etiqueta": "Identificadores de caso",
+          "ayuda": "Pega uno o varios identificadores de caso, hasta 50. Sepáralos con comas, espacios o saltos de línea.",
+          "buscar": "Buscar",
+          "limpiar": "Limpiar",
+          "errores": {
+            "vacio": "Escribe al menos un identificador de caso.",
+            "invalidos": "Estos identificadores no son válidos: {{ids}}.",
+            "demasiados": "Pegaste {{cantidad}} identificadores; el máximo es 50."
+          },
+          "repetidos": "Se quitó {{cantidad}} identificador repetido.",
+          "repetidosVarios": "Se quitaron {{cantidad}} identificadores repetidos.",
+          "inexistente": "No encontramos 1 caso con los identificadores buscados.",
+          "inexistentes": "No encontramos {{cantidad}} casos con los identificadores buscados."
+        },
+        "inicial": {
+          "titulo": "Busca un siniestro para ver su prioridad",
+          "texto": "Escribe uno o varios identificadores de caso y consulta su nivel, severidad y objetivo de atención."
+        },
+        "buscando": "Consultando la prioridad…",
+        "sinResultados": {
+          "titulo": "No hay prioridad para mostrar",
+          "texto": "Ningún identificador corresponde a un siniestro existente. Revísalos e intenta de nuevo."
+        },
+        "error": {
+          "titulo": "No pudimos consultar la prioridad",
+          "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "detenido": {
+          "titulo": "La prioridad aún no está disponible",
+          "texto": "Algunos casos siguen sin prioridad. Vuelve a consultar en unos segundos.",
+          "actualizar": "Actualizar"
+        },
+        "conteo": "{{cantidad}} siniestros",
+        "conteoUno": "1 siniestro",
+        "tabla": {
+          "titulo": "Prioridad de los siniestros consultados",
+          "caso": "Caso",
+          "prioridad": "Prioridad",
+          "severidad": "Severidad",
+          "monto": "Rango de monto",
+          "objetivo": "Objetivo",
+          "calculada": "Calculada el",
+          "verPrioridad": "Ver prioridad",
+          "verPrioridadDe": "Ver prioridad del caso {{id}}"
+        },
+        "verCasosEvaluacion": "Ver casos en evaluación"
+      },
+      "prioridad": {
+        "migas": "Cola de siniestros",
+        "titulo": "Siniestro {{id}}",
+        "cargando": "Consultando la prioridad…",
+        "tarjeta": {
+          "titulo": "Prioridad",
+          "resumen": "{{nivel}} · severidad {{severidad}} · {{banda}}",
+          "monto": "Monto estimado",
+          "sinMonto": "—",
+          "tipo": "Tipo de siniestro",
+          "cobertura": "Cobertura",
+          "objetivo": "Objetivo de atención",
+          "calculada": "Calculada el",
+          "politica": "Política",
+          "pendiente": "Calculando prioridad…",
+          "sinPrioridad": "Sin prioridad",
+          "sinPrioridadTexto": "Este siniestro no entró a evaluación, así que no tiene prioridad."
+        },
+        "noEncontrado": {
+          "titulo": "No encontramos este siniestro",
+          "texto": "El identificador no corresponde a un siniestro existente.",
+          "volver": "Volver a la cola"
+        },
+        "error": {
+          "titulo": "No pudimos consultar la prioridad",
+          "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "detenido": {
+          "titulo": "La prioridad aún no está disponible",
+          "texto": "El cálculo está tardando más de lo esperado. Vuelve a consultar en unos segundos.",
+          "actualizar": "Actualizar"
+        },
+        "evaluar": "Evaluar"
+      },
+      "historial": {
+        "titulo": "Historial de prioridad",
+        "asignado": "{{nivel}} asignado · {{actor}}",
+        "recalculado": "Prioridad recalculada: {{anterior}} → {{nivel}} · {{causas}}",
+        "revisado": "Prioridad revisada: se mantiene {{nivel}} · {{causas}}",
+        "actores": {
+          "system": "automático"
+        },
+        "vacio": "Aún no hay cálculos de prioridad."
+      }
+    },
+    "detalle": {
+      "migas": "Mis siniestros",
+      "titulo": "Siniestro {{radicado}}",
+      "cargando": "Consultando tu siniestro…",
+      "datos": {
+        "titulo": "Datos reportados",
+        "poliza": "Póliza",
+        "tipo": "Tipo de siniestro",
+        "fechaHecho": "Fecha del hecho",
+        "lugar": "Lugar del hecho",
+        "radicadoEn": "Radicado el",
+        "monto": "Monto estimado",
+        "sinMonto": "—",
+        "descripcion": "Descripción de los hechos"
+      },
+      "prioridad": {
+        "titulo": "Prioridad",
+        "nivel": "Prioridad {{nivel}}",
+        "linea": "Prioridad {{nivel}} · {{resolucion}}",
+        "calculando": "Calculando prioridad…",
+        "error": "No pudimos consultar la prioridad",
+        "reintentar": "Reintentar",
+        "detenido": "La prioridad aún no está disponible",
+        "actualizar": "Actualizar"
+      },
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o busca el siniestro en tu lista.",
+        "volver": "Volver a Mis siniestros"
+      },
+      "error": {
+        "titulo": "No pudimos consultar tu siniestro",
+        "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
+        "reintentar": "Reintentar"
+      }
+    },
+    "casosEvaluacion": {
+      "titulo": "Casos en evaluación",
+      "descripcion": "Los siniestros que esperan la decisión de operaciones, con su prioridad calculada automáticamente, del más antiguo al más nuevo. Abre cada uno para evaluarlo.",
+      "actualizar": "Actualizar",
+      "pestanas": {
+        "etiqueta": "Casos de la cola",
+        "evaluations": "En evaluación",
+        "payment-exceptions": "Excepciones de pago"
+      },
+      "leyenda": {
+        "evaluations": "Siniestros en evaluación",
+        "payment-exceptions": "Siniestros aprobados cuyo pago falló"
+      },
+      "cargando": "Consultando la cola…",
+      "error": {
+        "titulo": "No pudimos cargar la cola",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos."
+      },
+      "reintentar": "Reintentar",
+      "vacio": {
+        "evaluations": "No hay siniestros en evaluación.",
+        "payment-exceptions": "No hay pagos en excepción."
+      },
+      "columnas": {
+        "prioridad": "Prioridad",
+        "radicado": "Radicado",
+        "producto": "Producto",
+        "montoEstimado": "Monto estimado",
+        "estado": "Estado",
+        "espera": "Espera",
+        "acciones": "Acciones"
+      },
+      "triage": "Triage {{nivel}}",
+      "sinPrioridad": "Sin calcular",
+      "sinMonto": "Sin declarar",
+      "esperaDias": "{{dias}} d {{horas}} h",
+      "esperaHoras": "{{horas}} h",
+      "evaluar": "Evaluar",
+      "atender": "Atender",
+      "evaluarEtiqueta": "Abrir el siniestro {{radicado}}",
+      "cargarMas": "Cargar más",
+      "buscarPorId": "Buscar por id",
+      "verPrioridad": "Ver prioridad",
+      "verPrioridadEtiqueta": "Ver la prioridad del siniestro {{radicado}}"
+    },
+    "evaluacion": {
+      "volver": "Casos en evaluación",
+      "cargando": "Consultando el siniestro…",
+      "reintentar": "Reintentar",
+      "noEncontrado": {
+        "titulo": "No encontramos el siniestro",
+        "texto": "El caso no existe o ya no está disponible. Vuelve a la cola de siniestros."
+      },
+      "error": {
+        "titulo": "No pudimos cargar el siniestro",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos."
+      },
+      "titulo": "Siniestro {{radicado}}",
+      "radicadoEl": "radicado el {{fecha}}",
+      "contactar": "Contactar al asegurado",
+      "polizaNoDisponible": "El núcleo de pólizas no respondió: puedes revisar el caso, pero no decidirlo hasta que vuelva.",
+      "pagoEnCurso": "Aprobado. El pago de la indemnización está en curso; esta página se actualiza sola.",
+      "pagado": "Indemnización pagada: {{neto}} al asegurado.",
+      "excepcion": {
+        "titulo": "El pago de la indemnización falló",
+        "cuentaInvalida": "La pasarela rechazó la transferencia: cuenta destino inválida. La aprobación por {{neto}} se conserva y el caso quedó en excepción; corrige el dato y reintenta con la misma clave idempotente.",
+        "rechazado": "La pasarela rechazó la transferencia. La aprobación por {{neto}} se conserva y el caso quedó en excepción; revisa el destino y reintenta con la misma clave idempotente.",
+        "sinRespuesta": "La pasarela no respondió y los {{intentos}} intentos automáticos se agotaron. La aprobación por {{neto}} se conserva; reintenta con la misma clave idempotente."
+      },
+      "errores": {
+        "claim_not_decidable": "Otro analista ya decidió este siniestro. Esta es su decisión.",
+        "payout_not_retryable": "El pago ya no está en excepción. Este es su estado actual.",
+        "policy_unavailable": "El núcleo de pólizas no respondió. Intenta de nuevo en unos segundos.",
+        "not_covered": "La póliza ya no cubre este incidente o el núcleo no conoce al asegurado.",
+        "no_payout_account": "El asegurado no tiene una cuenta registrada para recibir la indemnización.",
+        "no_contact": "El asegurado no tiene un correo para notificarle el rechazo.",
+        "claim_not_found": "El siniestro ya no existe.",
+        "invalid_request": "La solicitud no es válida. Revisa los datos e intenta de nuevo.",
+        "claims_unavailable": "No pudimos registrar la decisión. Intenta de nuevo: nunca se registra dos veces."
+      },
+      "caso": {
+        "titulo": "Información del caso",
+        "fechaHecho": "Fecha del hecho",
+        "lugar": "Lugar",
+        "montoEstimado": "Monto estimado por el asegurado",
+        "sinMonto": "No declarado",
+        "descripcion": "Descripción",
+        "cobertura": "Cobertura aplicable",
+        "coberturaValor": "{{tipo}} · deducible {{pct}} %",
+        "coberturaDesconocida": "No disponible",
+        "sinCobertura": "La póliza no cubre este incidente",
+        "prioridad": "Prioridad"
+      },
+      "soportes": {
+        "titulo": "Soportes y evidencia",
+        "vacio": "El caso no tiene soportes ni evidencia.",
+        "evidencia": {
+          "photo": "Foto en el lugar",
+          "video": "Video en el lugar"
+        },
+        "ubicacionNoConfiable": "Ubicación no confiable"
+      },
+      "poliza": {
+        "titulo": "Póliza y asegurado",
+        "poliza": "Póliza",
+        "estados": {
+          "active": "Activa",
+          "expired": "Vencida",
+          "cancelled": "Cancelada",
+          "suspended": "Suspendida"
+        },
+        "valorAsegurado": "Valor asegurado",
+        "asegurado": "Asegurado",
+        "medioPago": "Medio de pago registrado",
+        "noDisponible": "El núcleo de pólizas no respondió.",
+        "desconocida": "El núcleo de pólizas ya no conoce esta póliza."
+      },
+      "historial": {
+        "titulo": "Historial del caso",
+        "radicado": "Radicado",
+        "aprobado": "Aprobado por {{por}}",
+        "rechazado": "Rechazado por {{por}}",
+        "notificado": "Rechazo notificado al asegurado",
+        "excepcion": "Pago en excepción",
+        "reintento": "Pago reintentado por {{por}}",
+        "pagado": "Indemnización pagada"
+      },
+      "rechazo": {
+        "titulo": "Rechazo",
+        "por": "Rechazado por",
+        "notificado": "Notificado al asegurado",
+        "pendiente": "Pendiente de envío",
+        "motivo": "Motivo"
+      },
+      "decision": {
+        "titulo": "Decisión",
+        "leyenda": "¿Qué decides sobre el siniestro?",
+        "sinNucleo": "No se puede decidir mientras el núcleo de pólizas no responda: falta el valor asegurado y el deducible.",
+        "sinCobertura": "La póliza no cubre este incidente: no se puede aprobar el pago.",
+        "opciones": {
+          "aprobar": {
+            "titulo": "Aprobar",
+            "descripcion": "Registra el monto y ejecuta el pago por la pasarela"
+          },
+          "rechazar": {
+            "titulo": "Rechazar",
+            "descripcion": "Motivo obligatorio · se notifica al cliente"
+          }
+        },
+        "campos": {
+          "bruto": "Costo de reparación aprobado (antes del deducible)",
+          "motivo": "Motivo del rechazo"
+        },
+        "ayudas": {
+          "bruto": "En pesos. No puede superar el valor asegurado ({{tope}}).",
+          "motivo": "El cliente lo recibe por correo."
+        },
+        "errores": {
+          "requerido": "Escribe un costo mayor que cero.",
+          "amount_out_of_range": "Escribe un costo mayor que cero.",
+          "amount_exceeds_insured_value": "Supera el valor asegurado de la cobertura ({{tope}}).",
+          "nothing_to_pay": "Después del deducible no queda nada por pagar.",
+          "reason_required": "El motivo es obligatorio.",
+          "reason_too_long": "El motivo admite hasta {{max}} caracteres."
+        },
+        "desglose": {
+          "bruto": "Costo de reparación (bruto)",
+          "deducible": "Menos deducible ({{pct}} %)",
+          "neto": "Monto aprobado (neto a pagar por la aseguradora)",
+          "nota": "Incluye aplicación de deducible del {{pct}} % ({{deducible}} a cargo del asegurado)."
+        },
+        "nota": "Al aprobar, el pago se ejecuta con clave idempotente (exactamente un desembolso) y el caso pasa a Pagado; si el pago falla, queda en excepción sin perder la aprobación.",
+        "acciones": {
+          "aprobar": "Aprobar y pagar",
+          "rechazar": "Rechazar",
+          "registrando": "Registrando…"
+        }
+      },
+      "pago": {
+        "titulo": "Pago de la indemnización",
+        "aprobadoPor": "Aprobado por",
+        "montoAprobado": "Monto aprobado",
+        "desglose": "Costo {{bruto}} − deducible {{pct}} % ({{deducible}} a cargo del asegurado)",
+        "referencia": "Referencia",
+        "referenciaValor": "{{referencia}} (idempotente)",
+        "intentos": "Intentos automáticos",
+        "intentosValor": "{{n}} de {{max}}",
+        "ultimo": "último {{fecha}}",
+        "destino": "Destino",
+        "pagadoEn": "Pagado",
+        "reintentosManuales": "Reintentos manuales",
+        "reintentosManualesValor": "{{n}} · último por {{por}}, {{fecha}}",
+        "tiposCuenta": {
+          "savings": "cuenta de ahorros",
+          "checking": "cuenta corriente"
+        },
+        "pasos": {
+          "aprobado": "Aprobación registrada",
+          "solicitado": "Pago solicitado a la pasarela",
+          "reintentos": "Reintentos automáticos",
+          "pagado": "Pagado"
+        },
+        "estadosPaso": {
+          "hecho": "Listo",
+          "actual": "En curso",
+          "fallido": "Falló",
+          "pendiente": "Pendiente"
+        },
+        "reintento": {
+          "titulo": "Corregir el destino y reintentar",
+          "ayuda": "El reintento usa la misma clave idempotente: nunca se paga dos veces.",
+          "codigoBanco": "Código del banco",
+          "nombreBanco": "Banco destino",
+          "tipoCuenta": "Tipo de cuenta",
+          "numeroCuenta": "Cuenta destino",
+          "cuentaAyuda": "Déjala vacía para reintentar a la misma cuenta.",
+          "errores": {
+            "banco": "El código del banco tiene de 3 a 6 dígitos.",
+            "cuenta": "La cuenta tiene de 6 a 24 dígitos y guiones."
+          },
+          "boton": "Reintentar pago",
+          "enviando": "Reintentando…"
+        }
       }
     }
   },

@@ -90,6 +90,8 @@ export interface SolicitudRadicacion {
   lugar: string;
   descripcion: string;
   soportes: GrupoSoportes[];
+  /** Centavos de COP, entero de 1 a 10¹³ (HU-W2.2-01, D12). Opcional: sin él la banda del triage es `unknown`. */
+  montoEstimadoMinor?: number;
 }
 
 interface RequisitoDto {
@@ -212,7 +214,7 @@ export function aDeclaracionSoporteDto(archivo: File, sha256: string): Declaraci
 
 /** Cuerpo de `POST /v1/claims/web-filings`. Los grupos sin archivos no se envían. */
 export function aSolicitudRadicacionDto(solicitud: SolicitudRadicacion): Record<string, unknown> {
-  return {
+  const dto: Record<string, unknown> = {
     policy_id: solicitud.polizaId,
     incident_type: solicitud.tipoSiniestro,
     occurred_at: solicitud.ocurridoEn,
@@ -222,6 +224,11 @@ export function aSolicitudRadicacionDto(solicitud: SolicitudRadicacion): Record<
       .filter((grupo) => grupo.soporteIds.length > 0)
       .map((grupo) => ({ requirement_code: grupo.codigoRequisito, support_ids: grupo.soporteIds })),
   };
+  // El monto es opcional (HU-W2.2-01): sin él el cuerpo es idéntico al de HU-W2.1-01.
+  if (solicitud.montoEstimadoMinor !== undefined) {
+    dto['estimated_amount_minor'] = solicitud.montoEstimadoMinor;
+  }
+  return dto;
 }
 
 /** Códigos estables de la radicación y de sus opciones. La pantalla decide el texto por el código, nunca por `message`. */
@@ -243,7 +250,14 @@ const CODIGOS_RADICACION: readonly string[] = [
 ];
 
 /** Campo del formulario al que apunta un error de validación del backend. */
-export type CampoRadicacion = 'polizaId' | 'tipoSiniestro' | 'ocurridoEn' | 'lugar' | 'descripcion' | 'soportes';
+export type CampoRadicacion =
+  | 'polizaId'
+  | 'tipoSiniestro'
+  | 'ocurridoEn'
+  | 'lugar'
+  | 'descripcion'
+  | 'montoEstimado'
+  | 'soportes';
 
 export type CodigoCampoRadicacion =
   | 'required'
@@ -273,6 +287,7 @@ const CAMPO_DEL_CONTRATO: Readonly<Record<string, CampoRadicacion>> = {
   occurred_at: 'ocurridoEn',
   place: 'lugar',
   description: 'descripcion',
+  estimated_amount_minor: 'montoEstimado',
   supports: 'soportes',
 };
 

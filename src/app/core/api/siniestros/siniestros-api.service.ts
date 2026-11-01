@@ -31,12 +31,40 @@ import {
   traducirErrorSiniestro,
 } from './siniestro.modelos';
 import { calcularSha256 } from './sha256';
+import {
+  PaginaTriageDto,
+  PoliticaTriage,
+  PoliticaTriageDto,
+  ResumenTriage,
+  TriageSiniestro,
+  TriageSiniestroDto,
+  mapearPaginaTriage,
+  mapearPoliticaTriage,
+  mapearTriageSiniestro,
+} from './triage.modelos';
+import {
+  Decision,
+  DecisionDto,
+  DestinoPago,
+  Evaluacion,
+  EvaluacionDto,
+  PaginaCola,
+  PaginaColaDto,
+  aDestinoDto,
+  mapearDecision,
+  mapearEvaluacion,
+  mapearPaginaCola,
+  traducirErrorEvaluacion,
+} from './evaluacion.modelos';
 
 /**
  * Cliente del servicio de siniestros (`claims`) vía API Gateway. Única salida HTTP hacia ese microservicio: ningún
  * dominio usa `HttpClient` directamente. Hoy expone la radicación web con soportes del asegurado (HU-W2.1-01): las
  * opciones del formulario, la subida de cada soporte (declarar, S3 y confirmar), la radicación, el detalle, el PDF del radicado y «Mis
- * siniestros». Todas son rutas humanas del rol `insured` (el interceptor adjunta el token).
+ * siniestros» (rol `insured`), la prioridad automática del siniestro (HU-W2.2-01: detalle, lote y política; el rol
+ * `operations` lee las tres y el `insured` solo la de su caso) y, para `operations`, la evaluación y la decisión
+ * (HU-W2.2-03): los casos en evaluación, las excepciones de pago, el detalle de la evaluación, aprobar, rechazar y
+ * reintentar el pago. El interceptor adjunta el token.
  */
 @Injectable({ providedIn: 'root' })
 export class SiniestrosApiService {
@@ -142,7 +170,91 @@ export class SiniestrosApiService {
       catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
     );
   }
+
+  /**
+   * Prioridad de un caso (`GET /v1/claims/{claim_id}/triage`). La vista depende del rol del token: `operations` trae el
+   * cálculo completo con su historial; `insured` (solo el dueño) trae el nivel y el tiempo estimado. Falla con
+   * `ErrorSiniestro`.
+   */
+  consultarTriage(siniestroId: string): Observable<TriageSiniestro> {
+    return this.http.get<TriageSiniestroDto>(`${this.base}/v1/claims/${encodeURIComponent(siniestroId)}/triage`).pipe(
+      map(mapearTriageSiniestro),
+      catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+    );
+  }
+
+  /**
+   * Cola de operaciones (HU-W2.2-03): los casos en evaluación (`GET /v1/claims/evaluations`) o las excepciones de pago
+   * (`GET /v1/claims/payment-exceptions`), del más antiguo al más nuevo, con su prioridad. Falla con `ErrorEvaluacion`.
+   */
+  listarCola(lista: ListaOperaciones, tokenPagina?: string): Observable<PaginaCola> {
+    const params = tokenPagina ? new HttpParams().set('page_token', tokenPagina) : new HttpParams();
+    return this.http.get<PaginaColaDto>(`${this.base}/v1/claims/${lista}`, { params }).pipe(
+      map(mapearPaginaCola),
+      catchError((error: unknown) => throwError(() => traducirErrorEvaluacion(error))),
+    );
+  }
+
+  /** Todo lo que el analista decide con (`GET /v1/claims/{claim_id}/evaluation`, O6 y O6b). Falla con `ErrorEvaluacion`. */
+  consultarEvaluacion(id: string): Observable<Evaluacion> {
+    return this.http.get<EvaluacionDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/evaluation`).pipe(
+      map(mapearEvaluacion),
+      catchError((error: unknown) => throwError(() => traducirErrorEvaluacion(error))),
+    );
+  }
+
+  /**
+   * Prioridad de una página de casos en **una** llamada (`GET /v1/claims/triage?claim_id=…`, rol `operations`): de 1 a
+   * 50 ids sin repetir, que viajan como `claim_id` repetido. Devuelve una fila por id, en el orden pedido; un id que no
+   * existe vuelve con `estado: 'not_found'`. Falla con `ErrorSiniestro`.
+   */
+  consultarTriageLote(ids: readonly string[]): Observable<ResumenTriage[]> {
+    const params = new HttpParams().appendAll({ claim_id: [...ids] });
+    return this.http.get<PaginaTriageDto>(`${this.base}/v1/claims/triage`, { params }).pipe(
+      map(mapearPaginaTriage),
+      catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+    );
+  }
+
+  /** Política de triage vigente (`GET /v1/claims/triage-policy`, rol `operations`). Falla con `ErrorSiniestro`. */
+  consultarPoliticaTriage(): Observable<PoliticaTriage> {
+    return this.http.get<PoliticaTriageDto>(`${this.base}/v1/claims/triage-policy`).pipe(
+      map(mapearPoliticaTriage),
+      catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+    );
+  }
+
+  /**
+   * Aprueba el caso por el costo **bruto** en pesos (`POST /v1/claims/{claim_id}/approval`, `202`): el backend descuenta
+   * el deducible y paga el neto. Falla con `ErrorEvaluacion`.
+   */
+  aprobar(id: string, brutoPesos: number): Observable<Decision> {
+    return this.decidir(id, 'approval', { gross_amount_minor: Math.round(brutoPesos * 100) });
+  }
+
+  /** Rechaza el caso con su motivo (`POST /v1/claims/{claim_id}/rejection`). Falla con `ErrorEvaluacion`. */
+  rechazar(id: string, motivo: string): Observable<Decision> {
+    return this.decidir(id, 'rejection', { reason: motivo });
+  }
+
+  /**
+   * Reintenta el pago de una excepción con la misma clave (`POST /v1/claims/{claim_id}/payout-retry`), al destino
+   * corregido o, sin destino, al mismo. Falla con `ErrorEvaluacion`.
+   */
+  reintentarPago(id: string, destino?: DestinoPago): Observable<Decision> {
+    return this.decidir(id, 'payout-retry', destino ? { destination: aDestinoDto(destino) } : {});
+  }
+
+  private decidir(id: string, accion: string, cuerpo: object): Observable<Decision> {
+    return this.http.post<DecisionDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/${accion}`, cuerpo).pipe(
+      map(mapearDecision),
+      catchError((error: unknown) => throwError(() => traducirErrorEvaluacion(error))),
+    );
+  }
 }
+
+/** Página de la cola de operaciones: `evaluations` (en evaluación) o `payment-exceptions`. */
+export type ListaOperaciones = 'evaluations' | 'payment-exceptions';
 
 function cabecerasDeSubida(firmadas: Readonly<Record<string, string>>): HttpHeaders {
   return new HttpHeaders(

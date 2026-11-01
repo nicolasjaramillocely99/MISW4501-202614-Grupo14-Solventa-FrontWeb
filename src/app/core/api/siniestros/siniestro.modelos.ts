@@ -8,8 +8,11 @@ import { RamoPoliza } from './radicacion.modelos';
  * guardan la foto de la póliza: llegan con ramo, producto y objeto asegurado en `null` y los soportes en ceros.
  */
 
-/** Hoy el único estado es `active` (la pantalla lo rotula «Radicado»). */
-export type EstadoSiniestro = 'active';
+/**
+ * Estado del caso: `active` al radicar («Radicado»), `in_evaluation`, y los de la decisión de operaciones
+ * (HU-W2.2-03): `approved` (pago en curso), `paid`, `rejected` y `payment_exception`.
+ */
+export type EstadoSiniestro = 'active' | 'in_evaluation' | 'approved' | 'paid' | 'rejected' | 'payment_exception';
 
 export type CanalSiniestro = 'web' | 'mobile';
 
@@ -54,6 +57,8 @@ export interface ResumenSiniestro {
 export interface DetalleSiniestro extends ResumenSiniestro {
   lugar: string;
   descripcion: string;
+  /** Centavos de COP que declaró el asegurado; `null` si no lo declaró (HU-W2.2-01). */
+  montoEstimadoMinor: number | null;
   soportes: ResumenSoportes;
 }
 
@@ -96,6 +101,8 @@ export interface ResumenSiniestroDto {
 export interface DetalleSiniestroDto extends ResumenSiniestroDto {
   place: string;
   description: string;
+  /** Ausente (no `null`) si no se declaró, también en los casos radicados desde el móvil. */
+  estimated_amount_minor?: number | null;
   supports: {
     required_total: number;
     required_attached: number;
@@ -137,6 +144,7 @@ export function mapearDetalleSiniestro(dto: DetalleSiniestroDto): DetalleSiniest
     ...mapearResumenSiniestro(dto),
     lugar: dto.place,
     descripcion: dto.description,
+    montoEstimadoMinor: dto.estimated_amount_minor ?? null,
     soportes: {
       obligatoriosTotal: dto.supports.required_total,
       obligatoriosAdjuntos: dto.supports.required_attached,

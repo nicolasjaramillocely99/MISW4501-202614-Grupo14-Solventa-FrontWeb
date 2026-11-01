@@ -21,6 +21,7 @@ import {
 import { DetalleSiniestro, ErrorSiniestro } from '@core/api/siniestros/siniestro.modelos';
 import { SiniestrosApiService } from '@core/api/siniestros/siniestros-api.service';
 import { FormatoFechaPipe } from '@shared/pipes/formato-fecha.pipe';
+import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
 
 import { Traductor, nombreRamo, nombreSoporte, nombreTipo } from '../modelos/catalogo-siniestros';
 import { ConfirmacionRadicacionComponent } from './componentes/confirmacion-radicacion/confirmacion-radicacion.component';
@@ -42,6 +43,7 @@ import {
   aSolicitud,
   dentroDeVigencia,
   faltantes,
+  leerMonto,
   limitesFechaHecho,
   requisitosDelTipo,
   soportesNoAplica,
@@ -69,6 +71,7 @@ const CAMPO_FORMULARIO: Readonly<Record<Exclude<CampoRadicacion, 'soportes'>, Ca
   ocurridoEn: 'ocurridoEn',
   lugar: 'lugar',
   descripcion: 'descripcion',
+  montoEstimado: 'montoEstimado',
 };
 
 /** Código de campo del `422 validation_failed` → problema que se muestra en el soporte. */
@@ -108,6 +111,7 @@ const CLAVE_NO_ELEGIBLE: Readonly<Record<MotivoPolizaNoElegible, string>> = {
     RouterLink,
     TranslocoDirective,
     FormatoFechaPipe,
+    FormatoMonedaPipe,
     SoportesRadicacionComponent,
     ConfirmacionRadicacionComponent,
     LucideArrowLeft,
@@ -149,6 +153,11 @@ export class RadicacionSiniestroPage implements OnInit {
 
   protected readonly lugarMax = LUGAR_MAX;
   protected readonly descripcionMax = DESCRIPCION_MAX;
+  /** Vista previa de «Monto estimado» (HU-W2.2-01, S2): los pesos que se enviarán, o `null` si está vacío o inválido. */
+  protected readonly montoEnPesos = computed(() => {
+    const lectura = leerMonto(this.formulario().montoEstimado);
+    return lectura.tipo === 'valido' ? lectura.pesos : null;
+  });
 
   protected readonly polizas = computed(() => this.opciones()?.polizas ?? []);
   protected readonly poliza = computed(
@@ -295,7 +304,9 @@ export class RadicacionSiniestroPage implements OnInit {
   protected radicar(): void {
     this.ahora.set(new Date());
     if (!this.puedeRadicar()) {
-      this.tocados.set(new Set<CampoFormulario>(['polizaId', 'tipoSiniestro', 'ocurridoEn', 'lugar', 'descripcion']));
+      this.tocados.set(
+        new Set<CampoFormulario>(['polizaId', 'tipoSiniestro', 'ocurridoEn', 'lugar', 'descripcion', 'montoEstimado']),
+      );
       return;
     }
     this.fase.set('enviando');
@@ -410,7 +421,9 @@ export class RadicacionSiniestroPage implements OnInit {
       return 'requerido';
     }
     if (codigo === 'out_of_range') {
-      return campo === 'lugar'
+      return campo === 'montoEstimado'
+        ? 'montoRango'
+        : campo === 'lugar'
         ? 'lugarLongitud'
         : campo === 'descripcion'
           ? 'descripcionLongitud'

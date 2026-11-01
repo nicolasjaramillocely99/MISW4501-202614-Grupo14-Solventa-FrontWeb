@@ -1,0 +1,35 @@
+// O5 · Indicadores por nivel: una tarjeta por objetivo de atención de la política.
+.indicadores__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+  padding: var(--espacio-16);
+  box-shadow: none;
+}
+
+.indicador__objetivo {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--color-texto-primario);
+}
+
+.indicadores__estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.aviso {
+  align-items: center;
+  justify-content: space-between;
+}

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 
 import { ResumenSiniestro } from '@core/api/siniestros/siniestro.modelos';
@@ -6,20 +7,24 @@ import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 import { InsigniaEstadoComponent } from '@shared/ui/insignia-estado/insignia-estado.component';
 
 import { Traductor, nombreRamo, nombreTipo } from '../../../modelos/catalogo-siniestros';
+import { tonoEstado } from '../../../modelos/estado-siniestro';
 
 /**
  * Tabla de «Mis siniestros» (A7 mínima; HU-W2.1-01, F1): radicado, póliza y tipo, fecha del hecho, etapa y fecha de
  * radicación. Los casos de la app móvil no traen la foto de la póliza: se muestra el tipo y «Radicado desde la app».
- * Sin columna de acciones: «Ver detalle» y «Corregir» son de HU-W2.1-02.
+ * HU-W2.2-01 agrega «Ver detalle» por fila hacia `/siniestros/:id` (A8 mínima); «Corregir» y el resto de las acciones son
+ * de HU-W2.1-02.
  */
 @Component({
   selector: 'app-tabla-siniestros',
-  imports: [TranslocoDirective, FormatoFechaHoraPipe, InsigniaEstadoComponent],
+  imports: [RouterLink, TranslocoDirective, FormatoFechaHoraPipe, InsigniaEstadoComponent],
   templateUrl: './tabla-siniestros.component.html',
   styleUrl: './tabla-siniestros.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TablaSiniestrosComponent {
+  protected readonly tonoEstado = tonoEstado;
+
   readonly casos = input.required<readonly ResumenSiniestro[]>();
 
   /** «Autos · Colisión», o solo el tipo si el caso no guardó el ramo. */
