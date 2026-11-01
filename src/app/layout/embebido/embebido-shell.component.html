@@ -1,0 +1,14 @@
+<div class="embebido" *transloco="let t">
+  <header class="barra">
+    <p class="barra__aliado">
+      <span class="visualmente-oculto">{{ t('embebido.barra.aliado') }}: </span>{{ aliado() ?? t('embebido.barra.aliadoPredeterminado') }}
+    </p>
+    <p class="barra__protegido">
+      {{ t('embebido.barra.protegidoPor') }}
+      <span class="logotipo barra__logotipo">{{ t('app.nombre') }}<span class="logotipo__punto" aria-hidden="true">.</span></span>
+    </p>
+  </header>
+  <main class="embebido__cuerpo">
+    <router-outlet />
+  </main>
+</div>

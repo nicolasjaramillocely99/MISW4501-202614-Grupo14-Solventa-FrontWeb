@@ -1,0 +1,117 @@
+<ng-container *transloco="let t; prefix: 'embebido.aceptacionOferta.oferta'">
+  @if (provisional()) {
+    <div class="aviso aviso--advertencia">
+      <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+      <div>
+        @if (oferta().motivoProvisional === 'cached_profile') {
+          <p class="aviso__titulo">{{ t('provisional.cache.titulo') }}</p>
+          <p>
+            {{
+              t('provisional.cache.texto', {
+                fuente: t('fuente.' + (fuenteNoDisponible() ?? 'otra')),
+                fecha: oferta().fechaPerfil | formatoFechaHora
+              })
+            }}
+          </p>
+        } @else {
+          <p class="aviso__titulo">{{ t('provisional.base.titulo') }}</p>
+          <p>{{ t('provisional.base.texto', { fuente: t('fuente.' + (fuenteNoDisponible() ?? 'otra')) }) }}</p>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="resumen">
+    <div class="resumen__prima">
+      <p class="dato__etiqueta">{{ t(provisional() ? 'primaMensualEstimada' : 'primaMensual') }}</p>
+      <p class="resumen__monto">{{ oferta().primaMensual | formatoMoneda: oferta().moneda }}</p>
+      <p class="resumen__nota">
+        @if (!provisional()) {
+          {{ t('primaNota') }}
+        } @else if (oferta().motivoProvisional === 'cached_profile') {
+          {{ t('primaNotaCache') }}
+        } @else {
+          {{ t('primaNotaBase') }}
+        }
+      </p>
+    </div>
+    <dl class="resumen__datos">
+      @if (oferta().valorAsegurado !== null) {
+        <div>
+          <dt class="dato__etiqueta">{{ t('valorAsegurado') }}</dt>
+          <dd class="resumen__destacado">{{ oferta().valorAsegurado | formatoMoneda: oferta().moneda }}</dd>
+        </div>
+      }
+      @if (vigencia(); as vigenciaPoliza) {
+        <div>
+          <dt class="dato__etiqueta">{{ t('vigencia') }}</dt>
+          <dd>{{ t(vigenciaPoliza.clave, { cantidad: vigenciaPoliza.cantidad }) }}</dd>
+        </div>
+      }
+      @if (beneficiario(); as banco) {
+        @if (oferta().clase === 'personalized') {
+          <div>
+            <dt class="dato__etiqueta">{{ t('beneficiario') }}</dt>
+            <dd>{{ t('beneficiarioValor', { banco }) }}</dd>
+          </div>
+        }
+      }
+      @if (origenPerfil(); as origen) {
+        <div>
+          <dt class="dato__etiqueta">{{ t('perfilAplicado') }}</dt>
+          <dd>
+            @switch (origen) {
+              @case ('individual') {
+                {{ t('perfilAplicadoIndividual', { fecha: oferta().creadaEn | formatoFechaHora }) }}
+              }
+              @case ('cache') {
+                {{ t('perfilAplicadoCache', { fecha: oferta().fechaPerfil | formatoFechaHora }) }}
+              }
+              @case ('vigente') {
+                {{ t('perfilAplicadoVigente') }}
+              }
+              @default {
+                {{ t('perfilBase') }}
+              }
+            }
+          </dd>
+        </div>
+      }
+      @if (provisional() && fuenteNoDisponible(); as fuente) {
+        <div>
+          <dt class="dato__etiqueta">{{ t('fuenteNoDisponible') }}</dt>
+          <dd>{{ t('fuente.' + fuente) }}</dd>
+        </div>
+      }
+    </dl>
+  </div>
+
+  @if (coberturas().length > 0) {
+    <h2 class="coberturas__titulo">{{ t('coberturas') }}</h2>
+    <ul class="coberturas">
+      @for (cobertura of coberturas(); track cobertura.clave) {
+        <li class="cobertura">
+          <svg lucideCircleCheck [size]="18" aria-hidden="true"></svg>
+          <span class="cobertura__nombre">{{ t('cobertura.' + cobertura.clave) }}</span>
+          <span class="cobertura__valor">{{ t('coberturaMonto', { monto: cobertura.valorAsegurado | formatoMoneda: oferta().moneda }) }}</span>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (condiciones().length > 0) {
+    <h2 class="coberturas__titulo">{{ t('condiciones') }}</h2>
+    <ul class="condiciones">
+      @for (condicion of condiciones(); track condicion) {
+        <li>{{ t('condicion.' + condicion) }}</li>
+      }
+    </ul>
+  }
+
+  @if (explicaPrecio()) {
+    <div class="aviso aviso--informacion">
+      <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+      <p>{{ t('avisoPrecio') }}</p>
+    </div>
+  }
+</ng-container>

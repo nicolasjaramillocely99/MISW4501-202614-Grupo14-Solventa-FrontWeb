@@ -1,0 +1,211 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.cotizacionAsistida'">
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('datosCliente.titulo') }}</h1>
+      <p class="pagina__descripcion">{{ t('datosCliente.descripcion') }}</p>
+    </div>
+    <div class="pagina__acciones">
+      <a class="boton boton--secundario" routerLink="/inicio">{{ t('datosCliente.cancelar') }}</a>
+      <button type="submit" form="formulario-cotizacion" class="boton boton--primario" [disabled]="enviando()">
+        {{ enviando() ? t('datosCliente.cotizando') : t('datosCliente.cotizar') }}
+      </button>
+    </div>
+  </header>
+
+  <div class="pagina__cuerpo">
+    <section class="tarjeta formulario" aria-labelledby="titulo-datos">
+      <h2 id="titulo-datos" class="formulario__titulo">{{ t('datosCliente.seccionCliente') }}</h2>
+
+      @if (errorGeneral(); as motivo) {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('datosCliente.errorGeneral.' + motivo) }}</p>
+        </div>
+      }
+
+      <form id="formulario-cotizacion" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate class="formulario__campos">
+        <div class="campo campo--documento">
+          <label class="campo__etiqueta" for="documento">{{ t('campos.documento') }}</label>
+          <div class="campo__fila">
+            <input
+              id="documento"
+              class="campo__control"
+              type="text"
+              formControlName="documento"
+              autocomplete="off"
+              [attr.aria-invalid]="errorDe('documento') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('documento') ? 'documento-error' : 'documento-ayuda'"
+              (keydown.enter)="$event.preventDefault(); buscarCliente()"
+            />
+            <button
+              type="button"
+              class="boton boton--secundario"
+              [disabled]="busqueda() === 'buscando'"
+              (click)="buscarCliente()"
+            >
+              <svg lucideSearch [size]="16" aria-hidden="true"></svg>
+              {{ busqueda() === 'buscando' ? t('datosCliente.buscando') : t('datosCliente.buscar') }}
+            </button>
+          </div>
+          @if (errorDe('documento'); as clave) {
+            <p id="documento-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave) }}
+            </p>
+          } @else {
+            <p id="documento-ayuda" class="campo__ayuda">{{ t('datosCliente.ayudaDocumento') }}</p>
+          }
+        </div>
+
+        <div class="busqueda" aria-live="polite">
+          @switch (busqueda()) {
+            @case ('encontrado') {
+              <div class="aviso aviso--exito">
+                <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+                <p>{{ t('datosCliente.busqueda.encontrado') }}</p>
+              </div>
+            }
+            @case ('noEncontrado') {
+              <div class="aviso aviso--informacion">
+                <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                <p>{{ t('datosCliente.busqueda.noEncontrado') }}</p>
+              </div>
+            }
+            @case ('error') {
+              <div class="aviso aviso--error" role="alert">
+                <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                <p>{{ t('datosCliente.busqueda.error') }}</p>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="nombreCompleto">{{ t('campos.nombreCompleto') }}</label>
+          <input
+            id="nombreCompleto"
+            class="campo__control"
+            type="text"
+            formControlName="nombreCompleto"
+            autocomplete="off"
+            [attr.aria-invalid]="errorDe('nombreCompleto') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('nombreCompleto') ? 'nombreCompleto-error' : null"
+          />
+          @if (errorDe('nombreCompleto'); as clave) {
+            <p id="nombreCompleto-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave) }}
+            </p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="correo">{{ t('campos.correo') }}</label>
+          <input
+            id="correo"
+            class="campo__control"
+            type="email"
+            formControlName="correo"
+            autocomplete="off"
+            inputmode="email"
+            [attr.aria-invalid]="errorDe('correo') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('correo') ? 'correo-error' : null"
+          />
+          @if (errorDe('correo'); as clave) {
+            <p id="correo-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave) }}
+            </p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="fechaNacimiento">{{ t('campos.fechaNacimiento') }}</label>
+          <input
+            id="fechaNacimiento"
+            class="campo__control"
+            type="date"
+            formControlName="fechaNacimiento"
+            [attr.aria-invalid]="errorDe('fechaNacimiento') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('fechaNacimiento') ? 'fechaNacimiento-error' : 'fechaNacimiento-ayuda'"
+          />
+          @if (errorDe('fechaNacimiento'); as clave) {
+            <p id="fechaNacimiento-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave, { min: limites.edadMinima, max: limites.edadMaxima }) }}
+            </p>
+          } @else {
+            <p id="fechaNacimiento-ayuda" class="campo__ayuda">{{ t('datosCliente.ayudaEdad', { min: limites.edadMinima, max: limites.edadMaxima }) }}</p>
+          }
+        </div>
+
+        <div class="campos-pareja">
+          <div class="campo">
+            <label class="campo__etiqueta" for="montoAsegurado">{{ t('campos.montoAsegurado') }}</label>
+            <input
+              id="montoAsegurado"
+              class="campo__control"
+              type="number"
+              formControlName="montoAsegurado"
+              inputmode="numeric"
+              step="1000000"
+              [attr.aria-invalid]="errorDe('montoAsegurado') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('montoAsegurado') ? 'montoAsegurado-error' : 'montoAsegurado-ayuda'"
+            />
+            @if (errorDe('montoAsegurado'); as clave) {
+              <p id="montoAsegurado-error" class="campo__error">
+                <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave, { min: limites.montoMinimo, max: limites.montoMaximo }) }}
+              </p>
+            } @else {
+              <p id="montoAsegurado-ayuda" class="campo__ayuda">{{ t('datosCliente.ayudaMonto') }}</p>
+            }
+          </div>
+
+          <div class="campo">
+            <label class="campo__etiqueta" for="plazoMeses">{{ t('campos.plazoMeses') }}</label>
+            <input
+              id="plazoMeses"
+              class="campo__control"
+              type="number"
+              formControlName="plazoMeses"
+              inputmode="numeric"
+              [attr.aria-invalid]="errorDe('plazoMeses') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('plazoMeses') ? 'plazoMeses-error' : 'plazoMeses-ayuda'"
+            />
+            @if (errorDe('plazoMeses'); as clave) {
+              <p id="plazoMeses-error" class="campo__error">
+                <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave, { min: limites.plazoMinimo, max: limites.plazoMaximo }) }}
+              </p>
+            } @else {
+              <p id="plazoMeses-ayuda" class="campo__ayuda">{{ t('datosCliente.ayudaPlazo', { min: limites.plazoMinimo, max: limites.plazoMaximo }) }}</p>
+            }
+          </div>
+        </div>
+
+        <div class="campo campo--consentimiento">
+          <label class="consentimiento" for="consentimiento">
+            <input
+              id="consentimiento"
+              type="checkbox"
+              formControlName="consentimiento"
+              [attr.aria-invalid]="errorDe('consentimiento') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('consentimiento') ? 'consentimiento-error' : null"
+            />
+            <span>{{ t('datosCliente.consentimiento') }}</span>
+          </label>
+          @if (errorDe('consentimiento'); as clave) {
+            <p id="consentimiento-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t(clave) }}
+            </p>
+          }
+        </div>
+      </form>
+    </section>
+
+    <aside class="tarjeta reglas" aria-labelledby="titulo-reglas">
+      <h2 id="titulo-reglas" class="reglas__titulo">{{ t('reglas.titulo') }}</h2>
+      <ul class="reglas__lista">
+        <li><svg lucideInfo [size]="16" aria-hidden="true"></svg>{{ t('reglas.mismoMotor') }}</li>
+        <li><svg lucideInfo [size]="16" aria-hidden="true"></svg>{{ t('reglas.vigencia') }}</li>
+        <li><svg lucideInfo [size]="16" aria-hidden="true"></svg>{{ t('reglas.degradado') }}</li>
+        <li><svg lucideInfo [size]="16" aria-hidden="true"></svg>{{ t('reglas.camposConError') }}</li>
+      </ul>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+// O12 / O12b · Auditoría de suscripción: búsqueda por identificador y qué incluye el registro.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__descripcion {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--color-texto-secundario);
+}
+
+.cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: var(--espacio-24);
+  align-items: start;
+
+  @media (max-width: 960px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.campo__etiqueta {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 0.75rem;
+}
+
+.busqueda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+  margin-top: var(--espacio-16);
+
+  .campo {
+    flex: 1 1 280px;
+  }
+
+  .boton {
+    margin-top: 1.5rem;
+    gap: var(--espacio-8);
+  }
+}
+
+.campo__ayuda {
+  margin: var(--espacio-4) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin-top: var(--espacio-24);
+  padding: var(--espacio-24) var(--espacio-16);
+  text-align: center;
+}
+
+.vacio__icono {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 2px dashed var(--color-azul-500);
+  border-radius: 50%;
+  color: var(--color-azul-700);
+}
+
+.vacio__titulo {
+  margin: var(--espacio-8) 0 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.vacio__texto {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--color-texto-secundario);
+}
+
+.incluye__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+  margin: var(--espacio-16) 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    gap: var(--espacio-8);
+    align-items: flex-start;
+    font-size: 0.875rem;
+  }
+
+  svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--color-azul-700);
+  }
+}

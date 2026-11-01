@@ -1,0 +1,668 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { CONFIGURACION_PRUEBAS } from '@testing/configuracion-pruebas';
+import { COTIZACION_DTO } from '@testing/cotizacion-asistida-pruebas';
+import { CONFIRMACION_ENVIADA_DTO, FORMALIZACION_DTO } from '@testing/formalizacion-pruebas';
+
+import { COBRO_PENDIENTE_DTO } from '@testing/cobro-pruebas';
+import {
+  CONDICIONES_RENOVACION_DTO,
+  LISTA_POLIZAS_DTO,
+  RENOVACION_ACEPTADA_DTO,
+  RENOVACION_RENOVADA_DTO,
+} from '@testing/renovacion-pruebas';
+import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
+import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
+
+import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
+import { ErrorCobro, mapearCobro } from './cobro.modelos';
+import { OriginacionApiService } from './originacion-api.service';
+import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
+import { ErrorFormalizacion, SolicitudFormalizacion } from './formalizacion.modelos';
+import { ErrorOferta, mapearOferta } from './oferta.modelos';
+import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
+import { ErrorRenovacion, mapearCondicionesRenovacion, mapearPolizaListada, mapearRenovacion } from './renovacion.modelos';
+import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
+
+const DTO: PerfilRiesgoDto = {
+  customer_id: 'cli-1',
+  mode: 'normal',
+  source: 'external_sources',
+  profile: { score: 712.5, category: 'B' },
+  profile_date: '2026-10-11T10:00:00Z',
+  unavailable_source: null,
+  notice: null,
+  partial: true,
+  sources: [
+    { name: 'open_finance', status: 'ok', latency_ms: 90 },
+    { name: 'open_data', status: 'timeout', latency_ms: 120 },
+  ],
+};
+
+const SOLICITUD_FORMALIZACION: SolicitudFormalizacion = {
+  metodo: 'recorded_call',
+  aceptadaEn: '2026-10-16T15:00:00Z',
+  referencia: 'GRAB-2026-88910',
+};
+
+describe('OriginacionApiService', () => {
+  let servicio: OriginacionApiService;
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    servicio = TestBed.inject(OriginacionApiService);
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => http.verify());
+
+  it('publica el cuerpo del contrato (snake_case) en el API Gateway y devuelve el modelo del cliente', () => {
+    let resultado: unknown;
+    servicio
+      .resolverPerfilRiesgo({ clienteId: 'cli-1', consentimientoActivo: true })
+      .subscribe((perfil) => (resultado = perfil));
+
+    const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/risk-profiles/resolve`);
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual({ customer_id: 'cli-1', consent_active: true });
+    peticion.flush(DTO);
+
+    expect(resultado).toEqual(mapearPerfilRiesgo(DTO));
+  });
+
+  it('propaga el error 422 de consentimiento para que la página muestre su estado', () => {
+    let estado: number | undefined;
+    servicio
+      .resolverPerfilRiesgo({ clienteId: 'cli-1', consentimientoActivo: false })
+      .subscribe({ error: (error: { status: number }) => (estado = error.status) });
+
+    http
+      .expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/risk-profiles/resolve`)
+      .flush({ error: 'consent_required', message: 'sin consentimiento' }, { status: 422, statusText: 'Unprocessable' });
+
+    expect(estado).toBe(422);
+  });
+
+  describe('aceptación de la oferta (HU-W1.3-01)', () => {
+    const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+    const ACEPTACION: AceptacionDto = {
+      acceptance_id: 'b310b02b-9820-4725-bded-586d263dd16e',
+      offer_id: 'demo-active-002',
+      customer_id: '0f3c2a9e-1b7d-4c55-9a51-2f0d4e6b8c11',
+      channel: 'web',
+      accepted_at: '2026-10-12T01:54:41.0909319Z',
+      status: 'registered',
+      underwriting: null,
+      processing: { attempts: 0, last_failure_at: null, next_attempt_at: '2026-10-12T01:54:41.0909319Z' },
+      updated_at: '2026-10-12T01:54:41.0909319Z',
+    };
+
+    it('acepta la oferta con el canal web y codifica el identificador en la ruta', () => {
+      let resultado: Aceptacion | undefined;
+      servicio.aceptarOferta('oferta/con espacios').subscribe((aceptacion) => (resultado = aceptacion));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/offers/oferta%2Fcon%20espacios/acceptance`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toEqual({ channel: 'web' });
+      peticion.flush(ACEPTACION, { status: 202, statusText: 'Accepted' });
+
+      expect(resultado).toEqual(mapearAceptacion(ACEPTACION));
+    });
+
+    it('una oferta vencida falla con offer_expired y su vigencia', () => {
+      let error: ErrorAceptacion | undefined;
+      servicio.aceptarOferta('demo-expired-002').subscribe({ error: (e: ErrorAceptacion) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/offers/demo-expired-002/acceptance`).flush(
+        {
+          error: 'offer_expired',
+          message: 'the offer validity is over; request a new offer',
+          offer_id: 'demo-expired-002',
+          expires_at: '2026-10-12T00:54:44.4210077Z',
+        },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+
+      expect(error?.codigo).toBe('offer_expired');
+      expect(error?.venceEn).toBe('2026-10-12T00:54:44.4210077Z');
+    });
+
+    it('sin cuerpo del contrato, una falla al aceptar es acceptance_not_registered y un 404 offer_not_found', () => {
+      const codigos: string[] = [];
+      servicio.aceptarOferta('o-1').subscribe({ error: (e: ErrorAceptacion) => codigos.push(e.codigo) });
+      http.expectOne(`${GATEWAY}/v1/offers/o-1/acceptance`).error(new ProgressEvent('error'));
+      servicio.aceptarOferta('o-2').subscribe({ error: (e: ErrorAceptacion) => codigos.push(e.codigo) });
+      http.expectOne(`${GATEWAY}/v1/offers/o-2/acceptance`).flush(null, { status: 404, statusText: 'Not Found' });
+
+      expect(codigos).toEqual(['acceptance_not_registered', 'offer_not_found']);
+    });
+
+    it('consulta la aceptación por su identificador', () => {
+      let resultado: Aceptacion | undefined;
+      servicio.consultarAceptacion(ACEPTACION.acceptance_id).subscribe((a) => (resultado = a));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/acceptances/${ACEPTACION.acceptance_id}`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush({ ...ACEPTACION, status: 'issuance_pending' });
+
+      expect(resultado?.estado).toBe('issuance_pending');
+    });
+
+    it('consulta la aceptación de una oferta y traduce acceptance_not_found y la falta de servicio', () => {
+      const codigos: string[] = [];
+      servicio.consultarAceptacionDeOferta('demo-active-002').subscribe({
+        error: (e: ErrorAceptacion) => codigos.push(e.codigo),
+      });
+      http
+        .expectOne(`${GATEWAY}/v1/offers/demo-active-002/acceptance`)
+        .flush({ error: 'acceptance_not_found', message: 'x' }, { status: 404, statusText: 'Not Found' });
+      servicio.consultarAceptacionDeOferta('demo-active-002').subscribe({
+        error: (e: ErrorAceptacion) => codigos.push(e.codigo),
+      });
+      http
+        .expectOne(`${GATEWAY}/v1/offers/demo-active-002/acceptance`)
+        .flush(null, { status: 504, statusText: 'Gateway Timeout' });
+
+      expect(codigos).toEqual(['acceptance_not_found', 'acceptance_unavailable']);
+    });
+  });
+
+  describe('cotización asistida (HU-W1.1-01)', () => {
+    const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+    const SOLICITUD = {
+      documento: '1032456789',
+      nombreCompleto: 'Ana María Pérez',
+      correo: 'ana@example.com',
+      fechaNacimiento: '1990-05-20',
+      montoAsegurado: 250000000,
+      plazoMeses: 180,
+      consentimientoActivo: true,
+    };
+
+    it('crea la cotización con el cuerpo del contrato y devuelve el modelo del cliente', () => {
+      let resultado: unknown;
+      servicio.crearCotizacionAsistida(SOLICITUD).subscribe((c) => (resultado = c));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/assisted-quotes`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toEqual({
+        document_id: '1032456789',
+        full_name: 'Ana María Pérez',
+        email: 'ana@example.com',
+        birth_date: '1990-05-20',
+        insured_amount: 250000000,
+        term_months: 180,
+        consent_active: true,
+      });
+      peticion.flush(COTIZACION_DTO, { status: 201, statusText: 'Created' });
+
+      expect(resultado).toEqual(mapearCotizacionAsistida(COTIZACION_DTO));
+    });
+
+    it('traduce el 422 validation_failed a un error con todos los campos', () => {
+      let error: unknown;
+      servicio.crearCotizacionAsistida(SOLICITUD).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes`)
+        .flush(
+          { error: 'validation_failed', message: 'x', fields: [{ field: 'email', code: 'invalid_format' }] },
+          { status: 422, statusText: 'Unprocessable' },
+        );
+
+      expect(error).toBeInstanceOf(ErrorCotizacionAsistida);
+      expect((error as ErrorCotizacionAsistida).campos).toEqual([{ campo: 'correo', codigo: 'invalid_format' }]);
+    });
+
+    it('un fallo de red al cotizar es quote_unavailable', () => {
+      let error: unknown;
+      servicio.crearCotizacionAsistida(SOLICITUD).subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/assisted-quotes`).error(new ProgressEvent('error'));
+
+      expect((error as ErrorCotizacionAsistida).codigo).toBe('quote_unavailable');
+    });
+
+    it('consulta una cotización por id, codificando el identificador', () => {
+      let resultado: unknown;
+      servicio.consultarCotizacionAsistida('a/b').subscribe((c) => (resultado = c));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/assisted-quotes/a%2Fb`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush({ ...COTIZACION_DTO, status: 'expired', can_formalize: false, blocked_reason: 'quote_expired' });
+
+      expect(resultado).toMatchObject({ estado: 'expired', puedeFormalizar: false });
+    });
+
+    it('una cotización inexistente es quote_not_found', () => {
+      let error: unknown;
+      servicio.consultarCotizacionAsistida('nope').subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/assisted-quotes/nope`).flush({ error: 'quote_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect((error as ErrorCotizacionAsistida).codigo).toBe('quote_not_found');
+    });
+
+    it('pide el código de confirmación sin cuerpo y devuelve el correo enmascarado', () => {
+      let resultado: unknown;
+      servicio.solicitarConfirmacion('a/b').subscribe((r) => (resultado = r));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/assisted-quotes/a%2Fb/consent`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toBeNull();
+      peticion.flush(CONFIRMACION_ENVIADA_DTO);
+
+      expect(resultado).toMatchObject({ enviadoA: 'an***@example.com' });
+    });
+
+    it('formaliza la compra con el código y distingue la primera vez (201) de la repetición (200)', () => {
+      const resultados: unknown[] = [];
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe((r) => resultados.push(r));
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe((r) => resultados.push(r));
+
+      const [primera, segunda] = http.match(`${GATEWAY}/v1/assisted-quotes/q1/formalization`);
+      expect(primera.request.method).toBe('POST');
+      expect(primera.request.body).toEqual({
+        acceptance: { method: 'recorded_call', accepted_at: '2026-10-16T15:00:00Z', reference: 'GRAB-2026-88910' },
+      });
+      primera.flush(FORMALIZACION_DTO, { status: 201, statusText: 'Created' });
+      segunda.flush(FORMALIZACION_DTO, { status: 200, statusText: 'OK' });
+
+      expect(resultados).toMatchObject([{ creada: true }, { creada: false }]);
+      expect(resultados[0]).toMatchObject({ formalizacion: { asesorId: FORMALIZACION_DTO.advisor_id } });
+    });
+
+    it('los errores de validación llegan con cada campo', () => {
+      let error: unknown;
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes/q1/formalization`)
+        .flush(
+          { error: 'validation_failed', message: 'm', fields: [{ field: 'acceptance.reference', code: 'required' }] },
+          { status: 422, statusText: 'Unprocessable Entity' },
+        );
+
+      expect((error as ErrorFormalizacion).campos).toEqual([{ campo: 'referencia', codigo: 'required' }]);
+    });
+
+    it('otro asesor que formaliza primero es already_formalized', () => {
+      let error: unknown;
+      servicio.formalizarCompra('q1', SOLICITUD_FORMALIZACION).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes/q1/formalization`)
+        .flush({ error: 'already_formalized', message: 'm' }, { status: 409, statusText: 'Conflict' });
+
+      expect((error as ErrorFormalizacion).codigo).toBe('already_formalized');
+    });
+
+    it('consulta la formalización y una cotización sin formalizar es formalization_not_found', () => {
+      let resultado: unknown;
+      let error: unknown;
+      servicio.consultarFormalizacion('q1').subscribe((r) => (resultado = r));
+      servicio.consultarFormalizacion('q2').subscribe({ error: (e: unknown) => (error = e) });
+
+      http.expectOne(`${GATEWAY}/v1/assisted-quotes/q1/formalization`).flush(FORMALIZACION_DTO);
+      http
+        .expectOne(`${GATEWAY}/v1/assisted-quotes/q2/formalization`)
+        .flush({ error: 'formalization_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect(resultado).toMatchObject({ formalizacionId: FORMALIZACION_DTO.formalization_id });
+      expect((error as ErrorFormalizacion).codigo).toBe('formalization_not_found');
+    });
+
+    it('busca al cliente por documento y devuelve sus datos', () => {
+      let resultado: unknown;
+      servicio.buscarClientePorDocumento('1032456789').subscribe((c) => (resultado = c));
+
+      const peticion = http.expectOne((r) => r.url === `${GATEWAY}/v1/customers`);
+      expect(peticion.request.params.get('document_id')).toBe('1032456789');
+      peticion.flush({
+        customer_id: 'c1',
+        document_id: '1032456789',
+        full_name: 'Ana',
+        email: 'a@x.co',
+        birth_date: '1990-05-20',
+      });
+
+      expect(resultado).toEqual({
+        clienteId: 'c1',
+        documento: '1032456789',
+        nombreCompleto: 'Ana',
+        correo: 'a@x.co',
+        fechaNacimiento: '1990-05-20',
+      });
+    });
+
+    it('un documento sin cliente es customer_not_found', () => {
+      let error: unknown;
+      servicio.buscarClientePorDocumento('999999999').subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne((r) => r.url === `${GATEWAY}/v1/customers`)
+        .flush({ error: 'customer_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect((error as ErrorCotizacionAsistida).codigo).toBe('customer_not_found');
+    });
+  });
+
+  describe('cobro de la prima (HA-D02)', () => {
+    const URL_COBRO = `${CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '')}/v1/acceptances/acc%2F1/charge`;
+
+    it('consulta el cobro codificando la aceptación y devuelve el modelo del cliente', () => {
+      let recibido: unknown;
+      servicio.consultarCobro('acc/1').subscribe((cobro) => (recibido = cobro));
+
+      const peticion = http.expectOne(URL_COBRO);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(COBRO_PENDIENTE_DTO);
+
+      expect(recibido).toEqual(mapearCobro(COBRO_PENDIENTE_DTO));
+    });
+
+    it('traduce charge_not_found y la falta de servicio a ErrorCobro', () => {
+      const codigos: string[] = [];
+      servicio.consultarCobro('acc/1').subscribe({ error: (e: ErrorCobro) => codigos.push(e.codigo) });
+      http.expectOne(URL_COBRO).flush({ error: 'charge_not_found', message: 'x' }, { status: 404, statusText: 'Not Found' });
+
+      servicio.consultarCobro('acc/1').subscribe({ error: (e: ErrorCobro) => codigos.push(e.codigo) });
+      http.expectOne(URL_COBRO).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['charge_not_found', 'charge_unavailable']);
+    });
+  });
+
+  describe('pólizas y renovación en línea (HU-W1.5-02)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('lista las pólizas del asegurado', () => {
+      let recibido: unknown;
+      servicio.listarPolizas().subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${BASE}/v1/policies`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(LISTA_POLIZAS_DTO);
+
+      expect(recibido).toEqual(LISTA_POLIZAS_DTO.items.map(mapearPolizaListada));
+    });
+
+    it('consulta las condiciones de renovación codificando la póliza', () => {
+      let recibido: unknown;
+      servicio.consultarCondicionesRenovacion('pol/1').subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${BASE}/v1/policies/pol%2F1/renewal`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(CONDICIONES_RENOVACION_DTO);
+
+      expect(recibido).toEqual(mapearCondicionesRenovacion(CONDICIONES_RENOVACION_DTO));
+    });
+
+    it('acepta la renovación sin cuerpo: 201 la primera vez y 200 si ya estaba aceptada', () => {
+      const resultados: boolean[] = [];
+      servicio.renovarPoliza('pol-1').subscribe((r) => resultados.push(r.creada));
+      const primera = http.expectOne(`${BASE}/v1/policies/pol-1/renewal`);
+      expect(primera.request.method).toBe('POST');
+      expect(primera.request.body).toBeNull();
+      primera.flush(RENOVACION_ACEPTADA_DTO, { status: 201, statusText: 'Created' });
+
+      let recibido: unknown;
+      servicio.renovarPoliza('pol-1').subscribe((r) => {
+        resultados.push(r.creada);
+        recibido = r.renovacion;
+      });
+      http.expectOne(`${BASE}/v1/policies/pol-1/renewal`).flush(RENOVACION_ACEPTADA_DTO);
+
+      expect(resultados).toEqual([true, false]);
+      expect(recibido).toEqual(mapearRenovacion(RENOVACION_ACEPTADA_DTO));
+    });
+
+    it('consulta el estado de la renovación', () => {
+      let recibido: unknown;
+      servicio.consultarEstadoRenovacion('pol-1').subscribe((r) => (recibido = r));
+
+      http.expectOne(`${BASE}/v1/policies/pol-1/renewal/status`).flush(RENOVACION_RENOVADA_DTO);
+
+      expect(recibido).toEqual(mapearRenovacion(RENOVACION_RENOVADA_DTO));
+    });
+
+    it('traduce los errores del contrato y la falta de servicio a ErrorRenovacion', () => {
+      const codigos: string[] = [];
+      const alFallar = (e: ErrorRenovacion) => codigos.push(e.codigo);
+
+      servicio.consultarCondicionesRenovacion('pol-1').subscribe({ error: alFallar });
+      http
+        .expectOne(`${BASE}/v1/policies/pol-1/renewal`)
+        .flush({ error: 'renewal_not_available', message: 'm' }, { status: 409, statusText: 'Conflict' });
+      servicio.renovarPoliza('pol-1').subscribe({ error: alFallar });
+      http.expectOne(`${BASE}/v1/policies/pol-1/renewal`).error(new ProgressEvent('error'));
+      servicio.listarPolizas().subscribe({ error: alFallar });
+      http.expectOne(`${BASE}/v1/policies`).flush(null, { status: 503, statusText: 'Service Unavailable' });
+      servicio.consultarEstadoRenovacion('pol-1').subscribe({ error: alFallar });
+      http
+        .expectOne(`${BASE}/v1/policies/pol-1/renewal/status`)
+        .flush({ error: 'renewal_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect(codigos).toEqual(['renewal_not_available', 'renewal_unavailable', 'renewal_unavailable', 'renewal_not_found']);
+    });
+  });
+
+  describe('bandeja de decisión humana (HU-W1.1-02)', () => {
+    const GATEWAY = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('lista la bandeja con el estado, el orden y el motivo como parámetros', () => {
+      let recibido: unknown;
+      servicio
+        .listarSolicitudesRevision({ estado: 'decided', motivo: 'high_risk_score', orden: 'desc' })
+        .subscribe((lista) => (recibido = lista));
+
+      const peticion = http.expectOne((r) => r.url === `${GATEWAY}/v1/review-requests`);
+      expect(peticion.request.method).toBe('GET');
+      expect(peticion.request.params.get('status')).toBe('decided');
+      expect(peticion.request.params.get('order')).toBe('desc');
+      expect(peticion.request.params.get('reason')).toBe('high_risk_score');
+      peticion.flush({ items: [SOLICITUD_RECHAZADA_DTO], counts: { pending: 0, decided: 1 } });
+
+      expect(recibido).toEqual(
+        mapearListaSolicitudesRevision({ items: [SOLICITUD_RECHAZADA_DTO], counts: { pending: 0, decided: 1 } }),
+      );
+    });
+
+    it('sin motivo no envía el parámetro reason', () => {
+      servicio.listarSolicitudesRevision({ estado: 'pending', motivo: null, orden: 'asc' }).subscribe();
+
+      const peticion = http.expectOne((r) => r.url === `${GATEWAY}/v1/review-requests`);
+      expect(peticion.request.params.has('reason')).toBe(false);
+      expect(peticion.request.params.get('status')).toBe('pending');
+      peticion.flush({ items: [], counts: { pending: 0, decided: 0 } });
+    });
+
+    it('la bandeja sin servicio falla con review_unavailable', () => {
+      let codigo: string | undefined;
+      servicio
+        .listarSolicitudesRevision({ estado: 'pending', motivo: null, orden: 'asc' })
+        .subscribe({ error: (e: ErrorRevision) => (codigo = e.codigo) });
+      http.expectOne((r) => r.url === `${GATEWAY}/v1/review-requests`).error(new ProgressEvent('error'));
+
+      expect(codigo).toBe('review_unavailable');
+    });
+
+    it('abre un caso codificando la aceptación y traduce review_request_not_found', () => {
+      let recibido: unknown;
+      servicio.consultarSolicitudRevision('acc/1').subscribe((solicitud) => (recibido = solicitud));
+      const peticion = http.expectOne(`${GATEWAY}/v1/review-requests/acc%2F1`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(SOLICITUD_PENDIENTE_DTO);
+      expect(recibido).toEqual(mapearSolicitudRevision(SOLICITUD_PENDIENTE_DTO));
+
+      let codigo: string | undefined;
+      servicio.consultarSolicitudRevision('acc/1').subscribe({ error: (e: ErrorRevision) => (codigo = e.codigo) });
+      http
+        .expectOne(`${GATEWAY}/v1/review-requests/acc%2F1`)
+        .flush({ error: 'review_request_not_found', message: 'x' }, { status: 404, statusText: 'Not Found' });
+      expect(codigo).toBe('review_request_not_found');
+    });
+
+    it('registra la decisión con el cuerpo del contrato y devuelve el caso decidido', () => {
+      let recibido: unknown;
+      servicio
+        .registrarDecision('acc/1', { tipo: 'adjust', observaciones: 'Ingreso declarado sin verificar', ajustePrimaPct: 10 })
+        .subscribe((solicitud) => (recibido = solicitud));
+
+      const peticion = http.expectOne(`${GATEWAY}/v1/review-requests/acc%2F1/decision`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toEqual({
+        type: 'adjust',
+        observations: 'Ingreso declarado sin verificar',
+        premium_adjustment_pct: 10,
+      });
+      peticion.flush(SOLICITUD_AJUSTADA_DTO, { status: 201, statusText: 'Created' });
+
+      expect(recibido).toEqual(mapearSolicitudRevision(SOLICITUD_AJUSTADA_DTO));
+    });
+
+    it('traduce los errores de la decisión; sin cuerpo es decision_not_registered', () => {
+      const codigos: string[] = [];
+      const registrar = () =>
+        servicio
+          .registrarDecision('acc-1', { tipo: 'reject' })
+          .subscribe({ error: (e: ErrorRevision) => codigos.push(e.codigo) });
+      const url = `${GATEWAY}/v1/review-requests/acc-1/decision`;
+
+      registrar();
+      http.expectOne(url).flush({ error: 'observations_required', message: 'x' }, { status: 400, statusText: 'Bad Request' });
+      registrar();
+      http.expectOne(url).flush({ error: 'review_request_already_decided', message: 'x' }, { status: 409, statusText: 'Conflict' });
+      registrar();
+      http.expectOne(url).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['observations_required', 'review_request_already_decided', 'decision_not_registered']);
+    });
+  });
+
+  describe('oferta personalizada (HU-W1.2-03)', () => {
+    const solicitud = {
+      clienteId: 'cli-1',
+      consentimientoId: 'cns-1',
+      aliadoId: 'aliado-1',
+      solicitudId: '48213',
+      documento: '1020304050',
+      nombreCompleto: 'Ana María Pérez',
+      correo: 'ana@example.com',
+      fechaNacimiento: '1988-04-12',
+      valorAsegurado: 250000000,
+      plazoMeses: 240,
+    };
+
+    it('genera la oferta con POST /v1/offers y devuelve el modelo del cliente', () => {
+      let resultado: unknown;
+      servicio.generarOferta(solicitud).subscribe((oferta) => (resultado = oferta));
+
+      const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toMatchObject({ customer_id: 'cli-1', consent_id: 'cns-1', term_months: 240 });
+      peticion.flush(OFERTA_NORMAL_DTO, { status: 201, statusText: 'Created' });
+
+      expect(resultado).toEqual(mapearOferta(OFERTA_NORMAL_DTO));
+    });
+
+    it('falla con el código del contrato cuando falta el consentimiento', () => {
+      let error: unknown;
+      servicio.generarOferta(solicitud).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers`)
+        .flush({ error: 'consent_required', message: 'x' }, { status: 422, statusText: 'Unprocessable Entity' });
+
+      expect(error).toBeInstanceOf(ErrorOferta);
+      expect((error as ErrorOferta).codigo).toBe('consent_required');
+    });
+
+    it('consulta la oferta por su identificador', () => {
+      let resultado: unknown;
+      servicio.consultarOferta('off-seedr1792338656').subscribe((oferta) => (resultado = oferta));
+
+      const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/off-seedr1792338656`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(OFERTA_VENCIDA_DTO);
+
+      expect(resultado).toMatchObject({ estado: 'expired', puedeRenovar: true });
+    });
+
+    it('distingue una oferta inexistente y un servicio caído al consultar', () => {
+      const codigos: string[] = [];
+      servicio.consultarOferta('a').subscribe({ error: (e: ErrorOferta) => codigos.push(e.codigo) });
+      servicio.consultarOferta('b').subscribe({ error: (e: ErrorOferta) => codigos.push(e.codigo) });
+
+      http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/a`).flush(null, { status: 404, statusText: 'Not Found' });
+      http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/b`).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['offer_not_found', 'offer_unavailable']);
+    });
+
+    it('renueva la oferta vencida con POST /v1/offers/{id}/renewal sin cuerpo', () => {
+      let resultado: unknown;
+      servicio.renovarOferta('off-seedr1792338656').subscribe((oferta) => (resultado = oferta));
+
+      const peticion = http.expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/off-seedr1792338656/renewal`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toBeNull();
+      peticion.flush(OFERTA_NORMAL_DTO, { status: 201, statusText: 'Created' });
+
+      expect(resultado).toEqual(mapearOferta(OFERTA_NORMAL_DTO));
+    });
+
+    it('propaga el 409 offer_superseded con la oferta que la reemplazó', () => {
+      let error: unknown;
+      servicio.renovarOferta('a').subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${CONFIGURACION_PRUEBAS.apiGatewayUrl}/v1/offers/a/renewal`)
+        .flush({ error: 'offer_superseded', message: 'x', superseded_by: 'b' }, { status: 409, statusText: 'Conflict' });
+
+      expect((error as ErrorOferta).codigo).toBe('offer_superseded');
+      expect((error as ErrorOferta).reemplazadaPor).toBe('b');
+    });
+  });
+});
+
+describe('mapearPerfilRiesgo', () => {
+  it('traduce el perfil y las fuentes del contrato', () => {
+    expect(mapearPerfilRiesgo(DTO)).toEqual({
+      clienteId: 'cli-1',
+      modo: 'normal',
+      origen: 'external_sources',
+      puntaje: 712.5,
+      categoria: 'B',
+      fechaPerfil: '2026-10-11T10:00:00Z',
+      fuenteNoDisponible: null,
+      aviso: null,
+      parcial: true,
+      fuentes: [
+        { nombre: 'open_finance', estado: 'ok', latenciaMs: 90 },
+        { nombre: 'open_data', estado: 'timeout', latenciaMs: 120 },
+      ],
+    });
+  });
+
+  it('conserva el perfil base provisional sin fecha ni fuentes', () => {
+    const perfil = mapearPerfilRiesgo({
+      ...DTO,
+      mode: 'provisional',
+      source: 'base_actuarial',
+      profile_date: null,
+      unavailable_source: 'open_finance',
+      notice: 'personalization_unavailable',
+      partial: false,
+      sources: [],
+    });
+
+    expect(perfil.fechaPerfil).toBeNull();
+    expect(perfil.aviso).toBe('personalization_unavailable');
+    expect(perfil.fuentes).toEqual([]);
+  });
+});

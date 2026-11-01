@@ -1,0 +1,112 @@
+<section class="tarjeta soportes" aria-labelledby="titulo-soportes" *transloco="let t; prefix: 'siniestros'">
+  <div class="soportes__encabezado">
+    <h2 id="titulo-soportes" class="soportes__titulo">{{ t('radicacion.soportes.titulo') }}</h2>
+    <p class="soportes__conteo">
+      {{ t('radicacion.soportes.conteo', { adjuntos: obligatoriosAdjuntos(), total: obligatorios().length }) }}
+    </p>
+  </div>
+
+  <ul class="soportes__lista">
+    @for (requisito of requisitos(); track requisito.codigo) {
+      <li class="soporte">
+        <div class="soporte__fila">
+          <span [class]="'soporte__icono soporte__icono--' + tono(requisito)" aria-hidden="true">
+            @switch (estado(requisito)) {
+              @case ('adjunto') {
+                <svg lucideCircleCheck [size]="20"></svg>
+              }
+              @case ('falta') {
+                <svg lucideCircleAlert [size]="20"></svg>
+              }
+              @case ('pocos') {
+                <svg lucideCircleAlert [size]="20"></svg>
+              }
+              @default {
+                <svg lucidePaperclip [size]="20"></svg>
+              }
+            }
+          </span>
+          <div class="soporte__texto">
+            <p class="soporte__nombre">{{ titulo(t, requisito) }}</p>
+            <p class="soporte__detalle">{{ detalle(t, requisito) }}</p>
+          </div>
+          <app-insignia-estado [tono]="tono(requisito)">
+            {{ t('radicacion.soportes.estado.' + claveEstado(requisito), { archivos: adjuntos(requisito.codigo), minimo: requisito.minArchivos }) }}
+          </app-insignia-estado>
+          <label class="boton boton--terciario soporte__accion" [class.soporte__accion--inactiva]="deshabilitado() || lleno(requisito)">
+            <svg lucideUpload [size]="20" aria-hidden="true"></svg>
+            <span aria-hidden="true">{{ t('radicacion.soportes.accion.' + accion(requisito)) }}</span>
+            <input
+              #entrada
+              type="file"
+              class="visualmente-oculto"
+              [accept]="aceptaArchivos(requisito)"
+              [multiple]="requisito.maxArchivos > 1"
+              [disabled]="deshabilitado() || lleno(requisito)"
+              [attr.aria-label]="t('radicacion.soportes.accion.etiqueta', { nombre: nombre(t, requisito) })"
+              [attr.aria-describedby]="erroresServidor()[requisito.codigo] ? 'error-soporte-' + requisito.codigo : null"
+              (change)="elegir(requisito, entrada)"
+            />
+          </label>
+        </div>
+
+        @if (erroresServidor()[requisito.codigo]; as problema) {
+          <p class="campo__error soporte__error" [id]="'error-soporte-' + requisito.codigo">
+            <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>
+            {{ t('radicacion.errores.soporte.' + problema, { nombre: nombre(t, requisito), minimo: requisito.minArchivos, maximo: requisito.maxArchivos }) }}
+          </p>
+        }
+
+        @if (lista(requisito.codigo).length > 0) {
+          <ul class="archivos" [attr.aria-label]="t('radicacion.soportes.archivosDe', { nombre: nombre(t, requisito) })">
+            @for (archivo of lista(requisito.codigo); track archivo.clave) {
+              <li class="archivo" [class.archivo--rechazado]="archivo.estado === 'rechazado'">
+                <span class="archivo__nombre">{{ archivo.nombre }}</span>
+                <span class="archivo__tamano">{{ tamano(archivo.tamanoBytes) }}</span>
+                @switch (archivo.estado) {
+                  @case ('subiendo') {
+                    <span class="archivo__estado" role="status">{{ t('radicacion.soportes.archivo.subiendo') }}</span>
+                  }
+                  @case ('adjunto') {
+                    <span class="archivo__estado archivo__estado--adjunto">{{ t('radicacion.soportes.archivo.adjunto') }}</span>
+                  }
+                  @case ('rechazado') {
+                    <span class="archivo__estado archivo__estado--rechazado" role="alert">
+                      <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>
+                      {{ t('radicacion.soportes.rechazo.' + claveRechazo(archivo.motivo), { maximo: requisito.maxArchivos }) }}
+                    </span>
+                  }
+                }
+                <button
+                  type="button"
+                  class="boton boton--terciario archivo__quitar"
+                  [disabled]="deshabilitado()"
+                  [attr.aria-label]="t('radicacion.soportes.archivo.quitarEtiqueta', { nombre: archivo.nombre })"
+                  (click)="quitar.emit({ codigo: requisito.codigo, clave: archivo.clave })"
+                >
+                  <svg lucideX [size]="16" aria-hidden="true"></svg>
+                  {{ t('radicacion.soportes.archivo.quitar') }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </li>
+    }
+
+    @for (requisito of noAplica(); track requisito.codigo) {
+      <li class="soporte soporte--no-aplica">
+        <div class="soporte__fila">
+          <span class="soporte__icono soporte__icono--neutro" aria-hidden="true">
+            <svg lucidePaperclip [size]="20"></svg>
+          </span>
+          <div class="soporte__texto">
+            <p class="soporte__nombre">{{ nombre(t, requisito) }}</p>
+            <p class="soporte__detalle">{{ t('radicacion.soportes.noAplicaDetalle') }}</p>
+          </div>
+          <app-insignia-estado tono="neutro">{{ t('radicacion.soportes.estado.noAplica') }}</app-insignia-estado>
+        </div>
+      </li>
+    }
+  </ul>
+</section>

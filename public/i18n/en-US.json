@@ -1,1 +1,3039 @@
-{}
+{
+  "app": {
+    "nombre": "Solventa"
+  },
+  "comun": {
+    "cargando": "Loading…",
+    "cerrarSesion": "Sign out",
+    "usuarioActual": "Current user",
+    "idioma": {
+      "etiqueta": "Language",
+      "esCO": "Español (Colombia)",
+      "enUS": "English (United States)",
+      "esCOCorto": "ES",
+      "enUSCorto": "EN"
+    },
+    "pasos": {
+      "completado": "completed",
+      "actual": "current step",
+      "pendiente": "pending"
+    }
+  },
+  "acceso": {
+    "panel": {
+      "titular": "One portal to originate, serve and comply",
+      "descripcion": "Advisors, operations, business partners and policyholders work on the same contract state, in real time.",
+      "beneficioCotizacion": "Quoting and issuance in under 5 minutes",
+      "beneficioSiniestros": "Claims with automatic triage and full traceability",
+      "beneficioConsentimientos": "Open Finance consents with effective revocation within 5 minutes"
+    },
+    "iniciarSesion": {
+      "titulo": "Sign in",
+      "descripcion": "Access for staff, business partners and registered policyholders.",
+      "correo": "Email",
+      "contrasena": "Password",
+      "entrar": "Sign in",
+      "entrando": "Signing in…",
+      "correoRequerido": "Enter your email.",
+      "correoInvalido": "Enter a valid email, for example name@company.com.",
+      "contrasenaRequerida": "Enter your password.",
+      "errorCredenciales": "The email or password is incorrect.",
+      "errorServicio": "We couldn't reach the sign-in service. Try again in a few minutes.",
+      "errorAccionRequerida": "Your account needs an additional step before signing in. Contact the portal administrator.",
+      "errorSinRol": "Your user has no role assigned in the portal. Contact the administrator.",
+      "registroAsegurado": "Are you a policyholder without an account? Sign up in the Solventa app with your ID document and biometrics."
+    },
+    "noAutorizado": {
+      "titulo": "Access denied",
+      "mensaje": "Your role is not allowed to view this page. If you think this is a mistake, contact the portal administrator.",
+      "volverAlInicio": "Back to home"
+    },
+    "sesionExpirada": {
+      "titulo": "Your session expired",
+      "mensaje": "For your security we signed you out. Sign in again to continue.",
+      "iniciarSesion": "Sign in again"
+    }
+  },
+  "menu": {
+    "navegacionPrincipal": "Main navigation",
+    "inicio": "Home",
+    "misPolizas": "My policies",
+    "misSiniestros": "My claims",
+    "misSolicitudes": "My requests",
+    "miPerfil": "My profile",
+    "cotizaciones": "Quotes",
+    "bandejaDecision": "Decision inbox",
+    "renovaciones": "Renewals",
+    "siniestros": "Claims",
+    "emisiones": "Issuances",
+    "endosos": "Endorsements",
+    "asistencias": "Assistance",
+    "socios": "Partners",
+    "auditoria": "Audit",
+    "consentimientos": "Consents",
+    "tablero": "Dashboard",
+    "desempenoTecnico": "Technical performance",
+    "credenciales": "Credentials"
+  },
+  "roles": {
+    "asegurado": "Policyholder",
+    "asesor": "Sales advisor",
+    "operaciones": "Operations analyst",
+    "socio": "Business partner"
+  },
+  "inicio": {
+    "accesosRapidos": "Quick links",
+    "asegurado": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Overview of your policies, payments and open requests"
+    },
+    "asesor": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Your sales day at a glance"
+    },
+    "operaciones": {
+      "titulo": "Operations center",
+      "subtitulo": "Exceptions and queues that need attention"
+    },
+    "socio": {
+      "saludo": "Hi, {{nombre}}",
+      "subtitulo": "Your integration with Solventa: credentials and technical performance"
+    }
+  },
+  "embebido": {
+    "barra": {
+      "aliado": "Partner",
+      "aliadoPredeterminado": "Partner",
+      "protegidoPor": "Protected by"
+    },
+    "contexto": {
+      "conSolicitud": "Home loan · Application No. {{numero}} · Mortgage life insurance",
+      "sinSolicitud": "Home loan · Mortgage life insurance"
+    },
+    "pasos": {
+      "navegacion": "Application steps",
+      "consentimiento": "Consent",
+      "perfilRiesgo": "Risk profile",
+      "oferta": "Offer",
+      "pago": "Payment",
+      "poliza": "Policy"
+    },
+    "credito": {
+      "titulo": "Your loan",
+      "banco": "Bank",
+      "montoAprobado": "Approved amount",
+      "plazo": "Term",
+      "plazoAnios": "{{anios}} years",
+      "cuotaEstimada": "Estimated installment",
+      "cuotaMensual": "{{valor}} / month"
+    },
+    "consentimiento": {
+      "titulo": {
+        "cargando": "We are preparing your authorization",
+        "formulario": "Authorize access to your data",
+        "rechazado": "We won't access your data",
+        "sinContexto": "We didn't receive your loan details",
+        "error": "We couldn't complete your authorization"
+      },
+      "descripcion": {
+        "cargando": "Checking the current terms…",
+        "formulario": "To calculate an offer tailored to you instead of a standard rate by age and amount, Solventa will access the following sources only with your express authorization.",
+        "rechazado": "Without your authorization we don't access any source.",
+        "sinContexto": "To authorize we need to know who you are and which loan this is about.",
+        "error": "Nothing was saved. You can try again."
+      },
+      "progreso": "Checking the terms",
+      "fuentes": {
+        "etiqueta": "Data sources we will access"
+      },
+      "fuente": {
+        "openFinance": {
+          "nombre": "Open Finance",
+          "descripcion": "{{datos}} at your financial institutions."
+        },
+        "openData": {
+          "nombre": "Open Data",
+          "descripcion": "{{datos}}: RUNT, Registraduría and watchlists."
+        },
+        "kyc": {
+          "nombre": "Identity (KYC)",
+          "descripcion": "{{datos}} already carried out by the partner bank."
+        }
+      },
+      "categoria": {
+        "productosCredito": "credit products",
+        "saldos": "balances",
+        "comportamientoPago": "payment behavior",
+        "registrosPublicos": "public records",
+        "verificacionIdentidad": "identity verification"
+      },
+      "conjuncion": "and",
+      "vigencia": {
+        "etiqueta": "Validity",
+        "meses12": "12 months",
+        "unicaVez": "One time"
+      },
+      "finalidad": {
+        "etiqueta": "Purpose",
+        "perfilRiesgoVidaHipotecario": "Calculation of the individual risk profile and of the mortgage life insurance offer"
+      },
+      "responsable": {
+        "etiqueta": "Controller"
+      },
+      "politica": {
+        "politicaDatosV1": "Personal data processing policy (Law 1581 of 2012)"
+      },
+      "casillas": {
+        "autorizo": "I authorize Solventa to access my Open Finance and Open Data information for the purpose, scope and validity described. I can revoke this authorization at any time.",
+        "politica": "I have read and accept the personal data processing policy."
+      },
+      "registro": {
+        "titulo": "Your authorization is recorded",
+        "texto": "It is saved with date, time, channel and scope; it is immutable and you will be able to view or revoke it from the portal or the Solventa app."
+      },
+      "terminosActualizados": {
+        "titulo": "We updated the terms",
+        "texto": "The terms changed while you were reading them. Review them and authorize again."
+      },
+      "rechazado": {
+        "avisoTitulo": "Without your authorization we can't calculate your offer",
+        "avisoTexto": "We don't access Open Finance, Open Data or your identity, and we can't personalize the insurance. You can change your mind at any time."
+      },
+      "sinContexto": {
+        "avisoTitulo": "Go back to your bank's website",
+        "avisoTexto": "Your application details didn't arrive. Start the insurance again from your bank's website to be able to authorize."
+      },
+      "error": {
+        "terminos": {
+          "titulo": "We couldn't load the terms",
+          "texto": "Try again in a few seconds. No authorization was recorded."
+        },
+        "registro": {
+          "titulo": "We couldn't record your authorization",
+          "texto": "Nothing was saved and we didn't access your data. Try again in a few seconds."
+        },
+        "datos": {
+          "titulo": "Your application details are not valid",
+          "texto": "Check your application on your bank's website and start the insurance again. No authorization was recorded."
+        }
+      },
+      "acciones": {
+        "ahoraNo": "Not now",
+        "autorizar": "Authorize and continue",
+        "registrando": "Recording…",
+        "volverAutorizar": "Authorize again",
+        "continuarCredito": "Continue with my loan",
+        "reintentar": "Try again"
+      }
+    },
+    "perfilRiesgo": {
+      "titulo": {
+        "calculando": "We are calculating your risk profile",
+        "listo": "Your offer is ready",
+        "error": "We could not calculate your risk profile"
+      },
+      "descripcion": {
+        "calculando": "We query the sources you authorized and apply the pricing rules. This takes a few seconds; please keep this window open.",
+        "listo": "We finished querying the sources you authorized and applying the pricing rules. Review your personalized offer whenever you like.",
+        "error": "Your progress is saved. Review the notice and continue."
+      },
+      "progreso": "Risk profile calculation progress",
+      "fuente": {
+        "openFinance": "Open Finance",
+        "openData": "Open Data",
+        "kyc": "Identity validation (KYC)"
+      },
+      "detalleFuente": {
+        "consultando": "Querying…",
+        "consultado": "Queried · {{ms}} ms",
+        "consultadoSinLatencia": "Queried",
+        "tiempoAgotado": "Did not respond in time · {{ms}} ms",
+        "error": "We could not query it · {{ms}} ms",
+        "aislada": "Temporarily isolated; not queried"
+      },
+      "insignia": {
+        "listo": "Done",
+        "enCurso": "In progress",
+        "sinRespuesta": "No response",
+        "conFalla": "Failed",
+        "noDisponible": "Unavailable",
+        "provisional": "Provisional"
+      },
+      "motor": {
+        "nombre": "Pricing engine",
+        "aplicando": "Applying underwriting rules…",
+        "listo": "Rules applied"
+      },
+      "oferta": {
+        "nombre": "Offer generation",
+        "pendiente": "Pending",
+        "lista": "Ready to review"
+      },
+      "perfilVigente": {
+        "nombre": "Current risk profile",
+        "detalle": "Calculated on {{fecha}} · no external sources were queried"
+      },
+      "perfilBase": {
+        "nombre": "Base actuarial profile",
+        "detalle": "You have no previous profile yet; it does not depend on external sources"
+      },
+      "avisos": {
+        "fuentesNoResponden": {
+          "titulo": "If a source does not respond",
+          "texto": "If a source takes more than 700 ms or is unavailable, we continue with your latest available profile or the base profile and let you know in the offer. You will never lose your progress."
+        },
+        "lista": {
+          "titulo": "Your offer is ready",
+          "texto": "We generated your personalized offer with the information we queried. Nothing is sent or charged until you review and accept it."
+        },
+        "parcial": {
+          "titulo": "We calculated your profile with the sources that responded",
+          "texto": "One or more sources did not respond in time, so your profile was calculated with the information available. You did not lose your progress."
+        },
+        "ultimoPerfil": {
+          "titulo": "We are continuing with your latest profile",
+          "texto": "We could not query {{fuente}} right now. We used your latest profile, calculated on {{fecha}}, and your offer will be marked as provisional."
+        },
+        "perfilBase": {
+          "titulo": "We are using the base profile",
+          "texto": "We do not have a profile for you yet and could not query your sources right now. Your offer uses the base actuarial profile and will be marked as provisional; we will personalize it once the query is restored."
+        },
+        "consentimiento": {
+          "titulo": "We need your consent",
+          "texto": "To calculate your profile you must authorize querying your sources. We query nothing without your authorization."
+        },
+        "error": {
+          "titulo": "We could not calculate your profile",
+          "texto": "A problem occurred while calculating your profile. Your progress is saved; please try again."
+        }
+      },
+      "acciones": {
+        "cancelar": "Cancel",
+        "calculando": "Calculating…",
+        "verOferta": "View my offer",
+        "reintentar": "Try again",
+        "volverConsentimiento": "Back to consent",
+        "generandoOferta": "Generating your offer…"
+      },
+      "errorOferta": {
+        "datos": {
+          "titulo": "We could not generate your offer",
+          "texto": "The details of your loan are not valid for a quote. Contact your bank."
+        },
+        "noDisponible": {
+          "titulo": "We could not generate your offer",
+          "texto": "Try again in a few minutes."
+        },
+        "generico": {
+          "titulo": "We could not generate your offer",
+          "texto": "An unexpected problem occurred. Please try again later."
+        }
+      }
+    },
+    "aceptacionOferta": {
+      "cargando": {
+        "titulo": "We are checking your offer"
+      },
+      "oferta": {
+        "titulo": "Your personalized offer",
+        "insignia": {
+          "normal": "Personalized",
+          "provisional": "Provisional"
+        },
+        "primaMensual": "Monthly premium",
+        "primaNota": "Added to your monthly loan payment",
+        "valorAsegurado": "Sum insured",
+        "vigencia": "Term",
+        "vigenciaValor": "{{cantidad}} years · same as the loan term",
+        "beneficiario": "Loss payee",
+        "beneficiarioValor": "{{banco}} (outstanding balance) · remainder to your heirs",
+        "perfilAplicado": "Applied profile",
+        "perfilBase": "Base actuarial · customer with no previous profile",
+        "coberturas": "Included coverages",
+        "cobertura": {
+          "fallecimiento": "Death from any cause",
+          "incapacidad": "Total and permanent disability"
+        },
+        "avisoPrecio": "Your price is calculated with your individual profile (age, financial habits and public sources), not with a standard rate by age and amount.",
+        "terminos": "I accept the general and specific terms of the mortgage life policy and authorize charging the premium with my loan payment.",
+        "terminosError": "You must accept the terms to continue.",
+        "tituloProvisional": "Your offer (provisional)",
+        "numeroVigencia": "Offer No. {{oferta}} · Valid until {{fecha}}",
+        "primaMensualEstimada": "Estimated monthly premium",
+        "primaNotaCache": "With a cached profile · subject to requoting if you do not accept it",
+        "primaNotaBase": "With the base profile · subject to requoting if you do not accept it",
+        "vigenciaMeses": "{{cantidad}} months · same as the loan term",
+        "perfilAplicadoIndividual": "Individual · calculated on {{fecha}}",
+        "perfilAplicadoCache": "Cached · {{fecha}}",
+        "perfilAplicadoVigente": "Individual · current profile",
+        "fuenteNoDisponible": "Unavailable source",
+        "fuente": {
+          "openFinance": "Open Finance",
+          "openData": "Open Data",
+          "kyc": "Identity verification (KYC)",
+          "otra": "An external source"
+        },
+        "provisional": {
+          "cache": {
+            "titulo": "We calculated your offer with your latest profile",
+            "texto": "We could not query {{fuente}} right now, so we used your latest profile, from {{fecha}}. If the information becomes available again, we will recalculate your offer and let you know."
+          },
+          "base": {
+            "titulo": "We calculated your offer with a general profile",
+            "texto": "We could not query {{fuente}} and we have no previous profile for you, so your offer was calculated with a general profile. If the information becomes available again, we will recalculate your offer and let you know."
+          }
+        },
+        "coberturaMonto": "Up to {{monto}}",
+        "condiciones": "Conditions",
+        "condicion": {
+          "vigencia24h": "The offer is valid for 24 hours from the moment it is generated.",
+          "beneficiarioOneroso": "The bank is the loss payee up to the outstanding loan balance.",
+          "primaMensual": "The premium is charged monthly together with your loan payment.",
+          "edadMaxima70": "The maximum insurable age is 70.",
+          "recotizacion": "If the information becomes available again, we will recalculate your offer and let you know."
+        }
+      },
+      "noRegistrada": {
+        "titulo": "We could not register your acceptance",
+        "texto": "Please try again. Retrying is safe: your acceptance is never registered twice."
+      },
+      "acciones": {
+        "noMeInteresa": "I am not interested",
+        "aceptar": "Accept offer and pay",
+        "aceptando": "Registering your acceptance…",
+        "reintentar": "Try again",
+        "verEstado": "View request status",
+        "verPago": "Check the status of your payment",
+        "continuarCredito": "Continue with my loan",
+        "noGracias": "No, thanks",
+        "nuevaOferta": "Generate a new offer",
+        "volverCotizar": "Get a new quote",
+        "verNuevaOferta": "View the new offer",
+        "generandoOferta": "Generating your new offer…",
+        "verOfertaRenovada": "View my renewed offer",
+        "verOfertaActualizada": "View my updated offer"
+      },
+      "datos": {
+        "numeroSolicitud": "Request number",
+        "estado": "Status",
+        "motivo": "Reason",
+        "aceptacion": "Acceptance",
+        "aceptacionValor": "Registered · {{fecha}}",
+        "proximoIntento": "Next attempt",
+        "proximoIntentoValor": "{{hora}} · automatic",
+        "ofertaAnterior": "Previous offer",
+        "ofertaAnteriorValor": "{{prima}} / month",
+        "vencio": "Expired",
+        "nuevaPrima": "New monthly premium",
+        "nuevaPrimaValor": "{{nueva}} · previously {{anterior}}",
+        "vigenciaNueva": "New offer validity",
+        "vigenciaNuevaValor": "Until {{fecha}} (24 hours)",
+        "decision": "Decision",
+        "decisionRechazo": "Risk not accepted by the advisor",
+        "fechaDecision": "Decision date"
+      },
+      "insignia": {
+        "validando": "Validating",
+        "conservada": "Resuming",
+        "revision": "Under review",
+        "emision": "Issuance started",
+        "vencida": "Expired",
+        "ajustada": "Adjusted",
+        "rechazada": "Rejected",
+        "reemplazada": "Replaced"
+      },
+      "validando": {
+        "titulo": "We registered your acceptance",
+        "texto": "Your acceptance was registered on {{fecha}}. We are validating your request…",
+        "progreso": "Request validation in progress"
+      },
+      "conservada": {
+        "titulo": "Your acceptance is saved",
+        "texto": "Your acceptance from {{fecha}} is saved. We had an issue and are resuming the process automatically; you do not need to repeat it.",
+        "lineaEtiqueta": "Process progress",
+        "linea": {
+          "registrada": "Acceptance registered",
+          "fallas": "Underwriting validation",
+          "fallasDetalle": "Unsuccessful attempts: {{intentos}} · last at {{hora}}",
+          "proximo": "Next automatic attempt",
+          "proximoDetalle": "scheduled {{hora}}",
+          "enCurso": "in progress"
+        },
+        "avisoTitulo": "What happens next",
+        "avisoTexto": "We keep trying without you having to do anything. If you close this window, you will see the status of your process when you return to this flow."
+      },
+      "revision": {
+        "titulo": "Your request is under review",
+        "texto": "We registered your acceptance on {{fecha}}. Automatic underwriting asked for an additional validation, so a Solventa advisor will review your case. We usually respond within 4 business hours.",
+        "motivo": {
+          "ofertaProvisional": "Your offer was calculated with provisional information",
+          "perfilAdicional": "Your profile requires an additional review",
+          "generico": "Additional underwriting validation"
+        },
+        "avisoTitulo": "Your price is reserved",
+        "avisoTexto": "Offer {{oferta}} and its premium of {{prima}} are kept while the review lasts. No charge is made until the risk is accepted."
+      },
+      "emision": {
+        "titulo": "Underwriting approved",
+        "texto": "We registered your acceptance on {{fecha}} and underwriting approved your risk. We have started issuing your policy."
+      },
+      "vencida": {
+        "titulo": "This offer has expired",
+        "texto": "Offer {{oferta}} expired on {{fecha}} and can no longer be accepted. We can generate a new one with your current profile; the price may vary.",
+        "textoSinFecha": "Offer {{oferta}} has expired and can no longer be accepted. We can generate a new one with your current profile; the price may vary."
+      },
+      "error": {
+        "sinOferta": {
+          "titulo": "We could not find an offer to continue",
+          "texto": "Get a new quote to receive an offer."
+        },
+        "ofertaNoExiste": {
+          "titulo": "This offer does not exist or is no longer available",
+          "texto": "Get a new quote to receive a valid offer."
+        },
+        "noDisponible": {
+          "titulo": "We could not check your process",
+          "texto": "If you already accepted the offer, your acceptance is still saved. Please try again in a few seconds."
+        },
+        "generico": {
+          "titulo": "We could not process your request",
+          "texto": "An unexpected problem occurred. Please try again later."
+        }
+      },
+      "ajustada": {
+        "titulo": "An advisor adjusted the terms of your offer",
+        "texto": "A Solventa advisor reviewed your request on {{fecha}} and adjusted the premium. Your previous acceptance is not charged. If you agree with the new terms, review and accept the new offer to continue. We also sent it to your email.",
+        "avisoTitulo": "Nothing has been charged yet",
+        "avisoTexto": "The new offer replaces {{oferta}}. The premium is only charged when you accept the new offer."
+      },
+      "rechazada": {
+        "titulo": "We could not accept your insurance request",
+        "texto": "A Solventa advisor reviewed your request on {{fecha}} and the risk was not accepted. Nothing was charged. You can continue with your loan and the bank will tell you the next steps. We also sent it to your email.",
+        "avisoTitulo": "Nothing was charged",
+        "avisoTexto": "Your request {{numero}} is closed. If you have questions, contact your bank or Solventa."
+      },
+      "reemplazada": {
+        "titulo": "Your offer was updated with your real profile",
+        "texto": "Offer {{oferta}} was provisional. Your financial information is now available and we recalculated your offer with your real profile. The previous offer can no longer be accepted."
+      },
+      "errorRenovacion": {
+        "noRenovable": {
+          "titulo": "You can no longer renew this offer",
+          "texto": "Your details no longer meet the conditions to be insured. Contact your bank or Solventa."
+        },
+        "noDisponible": {
+          "titulo": "We could not generate your new offer",
+          "texto": "Try again in a few minutes. Trying again is safe."
+        },
+        "generico": {
+          "titulo": "We could not generate your new offer",
+          "texto": "An unexpected problem occurred. Please try again later."
+        }
+      }
+    },
+    "pago": {
+      "cargando": {
+        "titulo": "Checking the status of your payment"
+      },
+      "insignia": {
+        "procesando": "Processing",
+        "pendiente": "Payment pending",
+        "confirmado": "Payment confirmed",
+        "excepcion": "Being handled",
+        "rechazado": "Declined"
+      },
+      "procesando": {
+        "titulo": "We are processing your payment",
+        "texto": "Your acceptance was saved on {{fecha}}. We are charging the premium with an idempotency key that guarantees exactly one charge.",
+        "progreso": "Processing the payment"
+      },
+      "pendiente": {
+        "titulo": "Your payment is pending",
+        "texto": "The payment gateway did not respond. Your acceptance was saved and we will retry the charge automatically until {{fin}}, with an idempotency key that guarantees exactly one charge. You do not need to repeat the process.",
+        "lineaEtiqueta": "Charge history",
+        "linea": {
+          "registrada": "Acceptance registered",
+          "solicitado": "Charge requested from the gateway",
+          "sinRespuesta": "No response",
+          "fallas": "Attempts without response: {{intentos}}",
+          "fallasDetalle": "Last at {{hora}}",
+          "proximo": "Next retry scheduled",
+          "proximoDetalle": "{{hora}}"
+        }
+      },
+      "confirmado": {
+        "titulo": "Payment confirmed",
+        "texto": "Your coverage became active on {{fecha}} and we are issuing your policy. We will send you the document by e-mail.",
+        "activando": "We received your payment. We are activating your coverage."
+      },
+      "excepcion": {
+        "titulo": "We could not complete the charge",
+        "ventana": "The payment gateway did not respond during the retry period. An operations analyst will handle your case with you without losing your acceptance.",
+        "rechazo": "The gateway did not approve the payment. An operations analyst will contact you to continue without losing your acceptance."
+      },
+      "datos": {
+        "aceptacion": "Acceptance",
+        "aceptacionValor": "Registered · {{fecha}}",
+        "clave": "Operation key",
+        "claveValor": "{{clave}} (idempotent)",
+        "prima": "Premium",
+        "proximo": "Next retry",
+        "proximoValor": "{{hora}} · growing waits",
+        "enCurso": "In progress",
+        "poliza": "Policy",
+        "estado": "Status",
+        "cobertura": "Coverage",
+        "coberturaPendiente": "Activated once the payment is confirmed",
+        "coberturaActiva": "Active since {{fecha}}"
+      },
+      "aviso": {
+        "titulo": "What happens next",
+        "texto": "We will let you know by e-mail when the payment is confirmed and the coverage is active. If it does not succeed by {{fin}}, the case goes to an operations analyst who will handle it with you without losing your acceptance."
+      },
+      "error": {
+        "sinAceptacion": {
+          "titulo": "We could not find your request",
+          "texto": "Go back to the offer step to resume your process."
+        },
+        "sinCobro": {
+          "titulo": "Your payment has not started yet",
+          "texto": "The charge starts once your request is approved. Check the status of your acceptance."
+        },
+        "generico": {
+          "titulo": "We could not check your payment",
+          "texto": "Your acceptance is still saved. Try again in a few minutes."
+        }
+      },
+      "acciones": {
+        "verPoliza": "View my policy",
+        "continuarCredito": "Continue with my loan",
+        "reintentar": "Retry",
+        "verAceptacion": "Check the status of your acceptance",
+        "otroMedio": "Try another payment method",
+        "otroMedioNota": "The payment method cannot be changed while the charge is running: the gateway has not answered and may already have taken it. It becomes available if the payment is declined."
+      },
+      "medioDePago": {
+        "titulo": "Payment method",
+        "tarjeta": "Debit or credit card",
+        "tarjetaDetalle": "Visa, Mastercard, Amex",
+        "pse": "PSE",
+        "pseDetalle": "Debit from your bank account",
+        "numero": "Card number",
+        "numeroAyuda": "16 digits, spaces optional",
+        "numeroInvalido": "Check the number: it is not a valid card",
+        "vencimiento": "Expiry",
+        "vencimientoAyuda": "MM/YY",
+        "vencimientoInvalido": "Write the expiry as MM/YY",
+        "vencida": "The card has expired",
+        "codigo": "Security code",
+        "codigoAyuda": "3 or 4 digits",
+        "codigoInvalido": "The code has 3 or 4 digits",
+        "titular": "Cardholder name",
+        "titularInvalido": "Write the name as it appears on the card",
+        "cuotas": "Instalments",
+        "unaCuota": "1 instalment · interest free",
+        "variasCuotas": "{{n}} instalments",
+        "banco": "Bank",
+        "pseAyuda": "We will take you to your bank's portal to authorise the debit.",
+        "cifrado": "Encrypted payment · PCI DSS certified gateway · exactly one charge per acceptance",
+        "confirmar": "Pay my first premium",
+        "reintentar": "Retry the payment",
+        "enviando": "Processing…",
+        "errorTarjeta": "The gateway did not accept the card. Check the details and try again.",
+        "errorPasarela": "We could not reach the payment gateway. Please try again in a moment.",
+        "guardar": "Save this payment method for renewals and claim payouts",
+        "volver": "Back to the offer",
+        "pagar": "Pay {{monto}}",
+        "resumen": "Summary",
+        "primaMensual": "Monthly premium",
+        "iva": "VAT",
+        "ivaIncluido": "Included",
+        "totalHoy": "Total due today",
+        "elegirOtro": "Choose another payment method",
+        "otraTarjeta": "Another debit or credit card",
+        "tipoDePersona": "Payer type",
+        "personaNatural": "Individual",
+        "personaJuridica": "Company"
+      },
+      "capturando": {
+        "titulo": "Pay your first premium",
+        "texto": "Your acceptance was registered on {{fecha}}. The charge is processed through the payment gateway and your coverage activates as soon as it is confirmed.",
+        "yaNoAdmite": "This charge no longer takes another payment method. Hold on: the screen updates itself with its state."
+      },
+      "rechazado": {
+        "titulo": "We could not process your payment",
+        "texto": "Your acceptance is still valid and the issuance is now an exception your operations team can see; you can try another payment method without starting over.",
+        "conLaTarjeta": "Declined: {{marca}} ···{{ultimos}}",
+        "avisoTitulo": "The card issuer declined the payment",
+        "codigo": "Code {{codigo}} · {{motivo}}.",
+        "medioUsado": "Method used",
+        "medioValor": "{{marca}} ···{{ultimos}}",
+        "intento": "Attempt",
+        "referencia": "Reference",
+        "oferta": "Offer",
+        "ofertaValor": "Valid until {{fecha}}",
+        "motivos": {
+          "51": "Insufficient funds",
+          "54": "Expired card",
+          "57": "Transaction not permitted for this card",
+          "61": "Exceeds the available limit",
+          "65": "Exceeds the allowed number of transactions",
+          "otro": "The bank did not authorise the charge"
+        }
+      }
+    },
+    "polizaEmitida": {
+      "titulo": {
+        "cargando": "Checking your policy",
+        "esperando": "We are preparing your document",
+        "listo": "Your policy is active!",
+        "error": "We could not show your policy"
+      },
+      "descripcion": {
+        "cargando": "One moment, we are checking the status of your issuance.",
+        "esperando": "Your coverage is active. In less than a minute you will have your contractual document and we will let you know by email.",
+        "listo": "Policy No. {{poliza}} · Coverage active since {{fecha}} · Issued without manual intervention",
+        "error": "Check the details and try again."
+      },
+      "documento": {
+        "nombre": "Policy contractual document",
+        "generando": "We are generating the document with your terms, coverages, premium and validity.",
+        "disponible": "General and special conditions · PDF · {{tamano}} · version {{version}} · also available in your portal"
+      },
+      "notificacion": {
+        "enviada": {
+          "titulo": "Confirmation sent",
+          "texto": "We emailed you the issuance notification and the document on {{fecha}}."
+        },
+        "pendiente": {
+          "titulo": "Confirmation on its way",
+          "texto": "We will email you a secure link to the document."
+        },
+        "reintentando": "Sending the email is taking longer; we keep trying.",
+        "noEntregada": {
+          "titulo": "We could not deliver the email",
+          "texto": "We could not email you the link. Your document is available: download it with this button."
+        }
+      },
+      "app": {
+        "titulo": "Manage your policy from the Solventa app",
+        "texto": "View your certificate offline, report claims with evidence from the place of the event and manage your data consents. Sign up with your ID and your biometrics."
+      },
+      "pie": "You will continue in Solventa's insured portal.",
+      "acciones": {
+        "descargar": "Download",
+        "descargando": "Downloading…",
+        "reintentar": "Retry",
+        "verPoliza": "View my policy in the portal"
+      },
+      "error": {
+        "noEncontrada": "We cannot find an issuance for this policy yet. If you just paid, wait a few seconds and retry.",
+        "permiso": "This policy is not linked to your session. Sign in with the insured's account.",
+        "generico": "There was a problem checking your policy. Try again.",
+        "descarga": "We could not download the document. Try again."
+      }
+    }
+  },
+  "originacion": {
+    "cotizacionAsistida": {
+      "datosCliente": {
+        "titulo": "New assisted quote",
+        "descripcion": "Enter the customer's details, or recover them by document id, and get their quote with the same profiling engine as the embedded channels.",
+        "seccionCliente": "Customer details",
+        "buscar": "Find customer",
+        "buscando": "Searching…",
+        "cancelar": "Cancel",
+        "ayudaDocumento": "Type the document without dots or hyphens. If the customer already exists, their data loads by itself.",
+        "ayudaEdad": "Between {{min}} and {{max}} years old.",
+        "ayudaMonto": "Outstanding mortgage balance to insure, in COP.",
+        "ayudaPlazo": "Between {{min}} and {{max}} months.",
+        "consentimiento": "The customer authorized access to their financial data to calculate their risk profile.",
+        "cotizar": "Generate quote",
+        "cotizando": "Quoting…",
+        "errorGeneral": {
+          "servicio": "We could not generate the quote. Check your connection and try again in a few minutes.",
+          "permiso": "Your session is not allowed to quote. Sign in again or contact the administrator."
+        },
+        "busqueda": {
+          "encontrado": "Customer found: we loaded their data so you do not have to type it again.",
+          "noEncontrado": "No customer has that document. Fill in their details to register them when you quote.",
+          "error": "We could not look the customer up. Try again or fill in their details."
+        }
+      },
+      "campos": {
+        "documento": "Identity document",
+        "nombreCompleto": "Full name",
+        "correo": "Email",
+        "fechaNacimiento": "Date of birth",
+        "montoAsegurado": "Insured amount (COP)",
+        "plazoMeses": "Term (months)"
+      },
+      "errores": {
+        "documento": {
+          "required": "Enter the customer's document.",
+          "invalid_format": "The document must have 5 to 20 letters or digits, without dots or hyphens.",
+          "out_of_range": "The document is not valid."
+        },
+        "nombreCompleto": {
+          "required": "Enter the customer's full name.",
+          "invalid_format": "Enter the full name, with letters (3 to 120 characters).",
+          "out_of_range": "The name is not valid."
+        },
+        "correo": {
+          "required": "Enter the customer's email.",
+          "invalid_format": "Enter a valid email, for example name@company.co.",
+          "out_of_range": "The email is not valid."
+        },
+        "fechaNacimiento": {
+          "required": "Enter the customer's date of birth.",
+          "invalid_format": "Enter a valid date.",
+          "out_of_range": "The customer must be between {{min}} and {{max}} years old for this insurance."
+        },
+        "montoAsegurado": {
+          "required": "Enter the amount to insure.",
+          "invalid_format": "Enter a valid amount.",
+          "out_of_range": "The amount must be between $ 10,000,000 and $ 2,000,000,000 COP."
+        },
+        "plazoMeses": {
+          "required": "Enter the loan term in months.",
+          "invalid_format": "The term must be a whole number of months.",
+          "out_of_range": "The term must be between {{min}} and {{max}} months."
+        },
+        "consentimiento": {
+          "required": "Confirm the customer's consent to be able to quote.",
+          "invalid_format": "Confirm the customer's consent.",
+          "out_of_range": "Confirm the customer's consent."
+        }
+      },
+      "reglas": {
+        "titulo": "Quote rules",
+        "mismoMotor": "The price uses the same profiling and rating engine as the embedded channel: no standard age-and-amount tariff.",
+        "vigencia": "The quote is saved with an identifier and a 24-hour validity so it can be formalized later.",
+        "degradado": "If an external source does not respond, the quote is generated in degraded mode with the last cached profile and you are told.",
+        "camposConError": "Fields with errors prevent the quote from being generated."
+      },
+      "resultado": {
+        "cargando": "Loading the quote…",
+        "titulo": "Assisted quote",
+        "codigo": "Code {{id}}",
+        "generadaEl": "generated on {{fecha}}",
+        "insignia": {
+          "vigente": "Valid {{horas}} h",
+          "provisional": "Provisional",
+          "vencida": "Expired"
+        },
+        "avisos": {
+          "generada": {
+            "titulo": "Quote generated",
+            "texto": "It is valid until {{fecha}}. After that it cannot be formalized."
+          },
+          "ultimoPerfil": {
+            "titulo": "Quote in degraded mode",
+            "texto": "An external source did not respond, so the customer's last cached profile, from {{fecha}}, was used. The price is provisional."
+          },
+          "perfilBase": {
+            "titulo": "Quote in degraded mode",
+            "texto": "The external sources did not respond and the customer has no earlier profile, so the base actuarial profile was used. The price is not personalized."
+          },
+          "vencida": {
+            "titulo": "The quote has expired",
+            "texto": "Its validity ended on {{fecha}}, so it cannot be formalized. Generate a new quote with the customer's data."
+          }
+        },
+        "prima": {
+          "titulo": "Premium",
+          "mensual": "Monthly premium"
+        },
+        "coberturas": {
+          "titulo": "Coverages",
+          "death": "Death of the insured",
+          "total_permanent_disability": "Total and permanent disability"
+        },
+        "vigencia": {
+          "creada": "Generated",
+          "vence": "Valid until"
+        },
+        "cliente": {
+          "titulo": "Customer",
+          "nombre": "Name",
+          "documento": "Document",
+          "correo": "Email",
+          "montoAsegurado": "Insured amount",
+          "plazo": "Term",
+          "plazoMeses": "{{meses}} months"
+        },
+        "perfil": {
+          "titulo": "Price breakdown",
+          "categoria": "Category",
+          "puntaje": "Score",
+          "origen": "Profile source",
+          "fecha": "Profile date",
+          "tarifa": "Rating version",
+          "categorias": {
+            "preferred": "Preferred",
+            "standard": "Standard",
+            "high_risk": "High risk",
+            "base_actuarial": "Base actuarial"
+          },
+          "origenes": {
+            "open_finance": "Open Finance",
+            "external_sources": "External sources, online",
+            "cache": "Recent cached profile",
+            "base_actuarial": "Base actuarial profile"
+          }
+        },
+        "acciones": {
+          "nueva": "New quote",
+          "generarNueva": "Generate a new quote",
+          "reintentar": "Retry",
+          "formalizar": "Formalize purchase"
+        },
+        "noEncontrada": {
+          "titulo": "We could not find the quote",
+          "texto": "The quote does not exist or the code is wrong. Generate a new one."
+        },
+        "error": {
+          "titulo": "We could not load the quote",
+          "texto": "There was a problem fetching the quote. Try again."
+        }
+      }
+    },
+    "bandejaDecision": {
+      "bandeja": {
+        "titulo": "Human decision inbox",
+        "descripcion": "Requests that automatic underwriting routed to review. Sorted by arrival date; the origination flow continues automatically according to your decision.",
+        "registrada": {
+          "titulo": "Decision recorded",
+          "descripcion": "The decision for {{solicitante}} was recorded with its date, advisor and reason. The case left the pending list and the origination flow continues automatically."
+        },
+        "pestanas": {
+          "etiqueta": "Request status",
+          "pending": "Pending",
+          "decided": "Decided",
+          "pendingConteo": "Pending ({{n}})",
+          "decidedConteo": "Decided ({{n}})"
+        },
+        "filtros": {
+          "motivo": "Reason",
+          "todos": "All",
+          "orden": "Order by arrival",
+          "ordenAsc": "Oldest first",
+          "ordenDesc": "Newest first"
+        },
+        "cargando": "Loading the requests…",
+        "vacio": {
+          "pending": "There are no requests pending a decision.",
+          "decided": "There are no decided requests yet.",
+          "filtrado": "There are no requests with this reason."
+        },
+        "error": {
+          "titulo": "We could not load the inbox",
+          "texto": "Try again in a few seconds."
+        },
+        "acciones": {
+          "reintentar": "Retry"
+        }
+      },
+      "tabla": {
+        "leyenda": {
+          "pending": "Requests pending a decision",
+          "decided": "Decided requests"
+        },
+        "columnas": {
+          "solicitud": "Request",
+          "solicitante": "Applicant",
+          "oferta": "Offer",
+          "motivo": "Routing reason",
+          "llegada": "Arrival",
+          "decision": "Decision",
+          "asesor": "Advisor",
+          "decididaEn": "Decided",
+          "acciones": "Actions"
+        },
+        "primaMes": "{{prima}} / month",
+        "revisar": "Review",
+        "revisarEtiqueta": "Review request {{id}}",
+        "verDetalle": "View details",
+        "verDetalleEtiqueta": "View details of request {{id}}"
+      },
+      "motivos": {
+        "provisional_offer": "Provisional profile (source down)",
+        "high_risk_score": "High risk score",
+        "generico": "Additional underwriting validation"
+      },
+      "decisiones": {
+        "accept": "Accepted",
+        "adjust": "Adjusted",
+        "reject": "Rejected"
+      },
+      "detalle": {
+        "volver": "Decision inbox",
+        "cargando": "Loading the request…",
+        "titulo": "Request {{id}}",
+        "estados": {
+          "pending": "Pending",
+          "decided": "Decided"
+        },
+        "resumen": "{{solicitante}} · {{documento}} · arrived on {{llegada}} · Offer {{oferta}}",
+        "yaDecidida": "Another advisor already recorded the decision for this case. This is the decision in force.",
+        "motivo": {
+          "titulo": "Routing reason: {{motivo}}",
+          "explicacion": {
+            "provisional_offer": "The offer was priced in provisional mode because an external source did not answer. The customer sees the request under review and the price stays reserved.",
+            "high_risk_score": "The risk score of the profile is above the review threshold of automatic underwriting. The customer sees the request under review and the price stays reserved.",
+            "generico": "Automatic underwriting asked for an additional validation. The customer sees the request under review and the price stays reserved."
+          }
+        },
+        "solicitante": {
+          "titulo": "Applicant",
+          "nombre": "Name",
+          "documento": "Document",
+          "correo": "Email"
+        },
+        "oferta": {
+          "titulo": "Offer involved",
+          "oferta": "Offer",
+          "prima": "Monthly premium",
+          "vigencia": "Offer validity",
+          "perfil": "Profile",
+          "modos": {
+            "normal": "Priced with the online sources",
+            "provisional": "Provisional (external source down)"
+          }
+        },
+        "decision": {
+          "titulo": "Recorded decision",
+          "tipo": "Decision",
+          "asesor": "Advisor",
+          "fecha": "Date and time",
+          "ajuste": "Premium adjustment",
+          "ajusteValor": "{{pct}} %",
+          "nuevaOferta": "New offer",
+          "nuevaPrima": "New monthly premium",
+          "nuevaVigencia": "New offer validity",
+          "observaciones": "Notes",
+          "sinObservaciones": "No notes"
+        },
+        "alRegistrar": {
+          "titulo": "When you record the decision",
+          "texto": "The origination flow continues automatically: if you accept, issuance starts; if you adjust, the customer gets the new terms; if you reject, the customer is notified. The decision is recorded with your name, the date and the reason, and the case leaves the pending list."
+        },
+        "errorRegistro": {
+          "titulo": "We could not record the decision",
+          "servicio": "The service did not answer. You can safely retry: a case never ends up with two decisions.",
+          "generico": "An unexpected error occurred. Reload the page and try again."
+        },
+        "noEncontrada": {
+          "titulo": "The request does not exist",
+          "texto": "We could not find this request in the inbox. Go back to the inbox to see the current requests."
+        },
+        "error": {
+          "titulo": "We could not load the request",
+          "texto": "Try again in a few seconds."
+        },
+        "acciones": {
+          "reintentar": "Retry"
+        }
+      },
+      "formulario": {
+        "leyenda": "Decision",
+        "opciones": {
+          "accept": {
+            "titulo": "Accept the risk",
+            "descripcion": "Issuance continues with the offered terms"
+          },
+          "adjust": {
+            "titulo": "Adjust",
+            "descripcion": "Surcharge on the premium · notes required"
+          },
+          "reject": {
+            "titulo": "Reject",
+            "descripcion": "The customer is notified · notes required"
+          }
+        },
+        "campos": {
+          "ajustePrimaPct": "Premium adjustment (%)",
+          "observaciones": "Notes"
+        },
+        "ayudas": {
+          "ajustePrimaPct": "Only to adjust: surcharge from 0.01% to 100%",
+          "observaciones": "Required to adjust or reject"
+        },
+        "errores": {
+          "tipo": {
+            "required": "Choose a decision."
+          },
+          "ajustePrimaPct": {
+            "required": "Enter the surcharge to adjust the premium.",
+            "rango": "The surcharge must be greater than 0 and up to 100, with at most two decimals."
+          },
+          "observaciones": {
+            "required": "Write the notes: they are required to adjust or reject.",
+            "maxlength": "Notes allow at most {{max}} characters."
+          }
+        },
+        "acciones": {
+          "registrar": "Record decision",
+          "registrando": "Recording the decision…"
+        }
+      }
+    },
+    "emisiones": {
+      "titulo": "Issuance monitoring",
+      "descripcion": "Real-time status of the issuances in progress and their exceptions. The ones that flow without exceptions need no action.",
+      "panel": "Issuances",
+      "cargando": "Loading issuances…",
+      "actualizadaHace": {
+        "segundos": "Updated {{n}} s ago",
+        "minutos": "Updated {{n}} min ago"
+      },
+      "actualizacionFallida": "We could not refresh the list. We are showing the latest data we have and will try again.",
+      "sinAtender": "Unattended",
+      "tarjetas": {
+        "etiqueta": "Issuances summary",
+        "aceptadas": {
+          "etiqueta": "Accepted",
+          "texto": "Underwriting in progress"
+        },
+        "enCobro": {
+          "etiqueta": "Charging",
+          "texto": "Premium charge in progress",
+          "conReintentos": "{{n}} retrying"
+        },
+        "activas": {
+          "etiqueta": "Active today",
+          "texto": "Coverage activated"
+        },
+        "notificadas": {
+          "etiqueta": "Notified",
+          "texto": "Document delivered today"
+        },
+        "excepcion": {
+          "etiqueta": "In exception",
+          "texto": "Need intervention",
+          "sinAtender": "Need intervention · {{n}} unattended"
+        }
+      },
+      "estados": {
+        "accepted": "Accepted",
+        "charging": "Charging",
+        "active": "Active",
+        "notified": "Notified",
+        "exception": "In exception"
+      },
+      "canales": {
+        "web": "Web",
+        "mobile": "Mobile",
+        "advisor": "Advisor"
+      },
+      "motivos": {
+        "retry_window_expired": "The payment gateway did not respond within the 24-hour window",
+        "payment_rejected": "Payment rejected by the gateway",
+        "payment_method_missing": "The customer did not provide a payment method in time",
+        "document_generation_failed": "The document generator failed after every attempt",
+        "notification_failed": "The notice to the insured could not be delivered after every attempt"
+      },
+      "pasos": {
+        "underwriting": "Automatic underwriting in progress",
+        "awaiting_payment_method": "Waiting for the customer's payment method",
+        "premium_charge": "Premium charge in progress",
+        "premium_charge_retrying": "Retry {{n}} · gateway not responding",
+        "contract_document": "Generating the contractual document",
+        "notification": "Document generated · notice pending",
+        "completed": "Document generated and notified",
+        "retry_window_expired": "Dependency down · payment gateway",
+        "payment_rejected": "Payment rejected by the gateway",
+        "payment_method_missing": "The customer did not provide a payment method in time",
+        "document_generation_failed": "Dependency down · document generator",
+        "notification_failed": "Dependency down · e-mail channel"
+      },
+      "filtros": {
+        "estado": "Status",
+        "desde": "From",
+        "hasta": "Until",
+        "canal": "Channel",
+        "todos": "All",
+        "todosCanales": "All",
+        "formatoFecha": "MM/DD/YYYY",
+        "limpiar": "Clear filters",
+        "rangoInvalido": "The start date cannot be after the end date."
+      },
+      "acciones": {
+        "actualizar": "Refresh",
+        "reintentar": "Try again"
+      },
+      "vacio": {
+        "general": "There are no issuances to show.",
+        "filtrado": "There are no issuances with these filters."
+      },
+      "error": {
+        "titulo": "We could not load the issuances",
+        "texto": "Try again in a few seconds."
+      },
+      "reintentada": {
+        "titulo": "Retry recorded",
+        "texto": "Issuance {{id}} was retried. The action was recorded with your user and the date."
+      },
+      "tabla": {
+        "leyenda": "Issuances, latest accepted first",
+        "columnas": {
+          "emision": "Issuance",
+          "cliente": "Customer",
+          "canal": "Channel",
+          "estado": "Status",
+          "ultimoPaso": "Last step",
+          "hora": "Time",
+          "acciones": "Actions"
+        },
+        "sinNombre": "No name on record",
+        "ver": "View",
+        "verEtiqueta": "View issuance {{id}}",
+        "gestionar": "Manage",
+        "gestionarEtiqueta": "Manage the exception of issuance {{id}}"
+      },
+      "detalle": {
+        "titulo": "Issuance detail",
+        "tituloExcepcion": "Issuance exception",
+        "cerrar": "Close",
+        "cliente": "Customer",
+        "canal": "Channel",
+        "estado": "Status",
+        "motivo": "Reason",
+        "falloEn": "Failed on",
+        "ultimoPaso": "Last step",
+        "prima": "Premium",
+        "intentos": "Attempts",
+        "aceptadaEn": "Accepted on",
+        "oferta": "Offer",
+        "poliza": "Policy",
+        "notificadaEn": "Notified on",
+        "sinAtender": "It has gone more than 30 minutes without an analyst taking it.",
+        "historial": {
+          "titulo": "Recorded actions",
+          "cargando": "Loading the history…",
+          "error": "We could not load the history.",
+          "vacio": "Nobody has acted on this issuance yet.",
+          "por": "By {{autor}}",
+          "accion": {
+            "resume": "Charge retried",
+            "retry": "Contractual issuance retried"
+          }
+        },
+        "nota": {
+          "etiqueta": "Retry note",
+          "ayuda": "Required. It is recorded with your user and the date (up to {{max}} characters).",
+          "errores": {
+            "requerida": "Write a note to retry.",
+            "larga": "The note is too long."
+          }
+        },
+        "errores": {
+          "issuance_not_retryable": {
+            "titulo": "There is nothing left to retry",
+            "texto": "Another analyst or the automatic process already handled it. Nothing was charged or notified again. Refresh the list to see its status."
+          },
+          "issuance_not_found": {
+            "titulo": "We could not find the issuance",
+            "texto": "The acceptance no longer has a charge or a contractual issuance to retry."
+          },
+          "invalid_request": {
+            "titulo": "The note is not valid",
+            "texto": "Check that it has between 1 and 500 characters."
+          },
+          "charge_unavailable": {
+            "titulo": "We could not retry",
+            "texto": "Nothing was changed. Try again in a few seconds."
+          }
+        },
+        "acciones": {
+          "cancelar": "Cancel",
+          "reintentar": "Retry",
+          "reintentando": "Retrying…",
+          "actualizar": "Refresh list",
+          "cerrar": "Close"
+        }
+      }
+    },
+    "formalizacion": {
+      "cargando": "Loading the quote…",
+      "titulo": "Formalize purchase",
+      "subtitulo": "Confirm the details and the offered conditions. Formalizing triggers the issuance with no further manual steps.",
+      "volver": "Quote {{id}}",
+      "insignia": {
+        "vigente": "Quote valid",
+        "vencida": "Expired"
+      },
+      "acciones": {
+        "volver": "Back",
+        "nueva": "New quote",
+        "generarNueva": "Generate a new quote",
+        "reintentar": "Retry",
+        "volverCotizacion": "Back to the quote",
+        "verCotizacion": "View quote",
+        "formalizar": "Formalize and issue",
+        "formalizando": "Formalizing…",
+        "enviarCodigo": "Send code to the customer",
+        "reenviarCodigo": "Resend code"
+      },
+      "cliente": {
+        "titulo": "Customer data confirmation",
+        "tituloConfirmados": "Confirmed customer data",
+        "nombre": "Customer",
+        "documento": "Document",
+        "correo": "Email"
+      },
+      "condiciones": {
+        "titulo": "Offered conditions",
+        "primaMensual": "Monthly premium",
+        "valorAsegurado": "Insured amount",
+        "vigencia": "Term",
+        "plazoAnio": "{{n}} year",
+        "plazoAnios": "{{n}} years",
+        "plazoMeses": "{{n}} months",
+        "cotizacionVigenteHasta": "Quote valid until",
+        "coberturas": "Coverages",
+        "cobertura": {
+          "death": "Death of the insured",
+          "total_permanent_disability": "Total and permanent disability"
+        }
+      },
+      "aceptacion": {
+        "titulo": "Customer acceptance",
+        "texto": "Record how and when the customer accepted the conditions. This record is tied to the policy for auditing.",
+        "tituloRegistrada": "Acceptance recorded",
+        "textoRegistrada": "How and when the customer accepted the conditions. This record is tied to the policy for auditing.",
+        "medio": "Acceptance method",
+        "fechaHora": "Date and time",
+        "formatoFecha": "DD/MM/YYYY · HH:MM",
+        "referencia": "Reference",
+        "sinReferencia": "No reference (confirmation code)",
+        "codigoTexto": "For this method, the customer receives a code by email and must give it to you.",
+        "codigoEnviado": "We sent the code to {{correo}}. It is valid until {{hasta}}.",
+        "codigo": "Confirmation code",
+        "codigoAyuda": "It has 6 digits. The customer receives it by email.",
+        "confirmo": "I confirm that the customer accepted the offered conditions and authorized the premium charge with the indicated method."
+      },
+      "metodos": {
+        "recorded_call": "Recorded call",
+        "remote_signature": "Remote signature",
+        "confirmation_code": "Confirmation code"
+      },
+      "pasos": {
+        "titulo": "What happens when you formalize",
+        "tituloProximos": "Next issuance steps",
+        "items": {
+          "1": {
+            "titulo": "Automatic underwriting",
+            "texto": "If it is routed to human decision, the case reaches your inbox"
+          },
+          "2": {
+            "titulo": "Premium charge",
+            "texto": "Idempotent retries if the gateway fails"
+          },
+          "3": {
+            "titulo": "Coverage activation",
+            "texto": "Only with a confirmed payment"
+          },
+          "4": {
+            "titulo": "Document and notification",
+            "texto": "The customer receives the policy by email and in the app"
+          }
+        }
+      },
+      "registro": {
+        "titulo": "Record",
+        "texto": "Recorded: advisor, date and time, source quote and the customer's acceptance."
+      },
+      "vencida": {
+        "titulo": "The quote expired on {{fecha}}",
+        "texto": "The purchase cannot be formalized with an expired quote. Generate a new quote with the customer's data; the engine will recalculate the profile and the price may change.",
+        "subtitulo": "{{nombre}} · ID {{documento}} · generated on {{fecha}}",
+        "tarjeta": "Expired quote",
+        "primaCotizada": "Quoted premium",
+        "generada": "Generated",
+        "vencio": "Expired on",
+        "siguientePaso": "Next step",
+        "siguienteTexto": "Generate a new quote with the customer's pre-filled data. The engine recalculates the profile and the price."
+      },
+      "formalizada": {
+        "titulo": "Purchase formalized",
+        "subtitulo": "The purchase was recorded with the customer's acceptance. The issuance continues automatically, with no further manual steps."
+      },
+      "trazabilidad": {
+        "titulo": "Formalization traceability",
+        "texto": "Recorded: advisor {{asesor}}, date and time {{fecha}}, source quote {{cotizacion}} and the customer's acceptance."
+      },
+      "noEncontrada": {
+        "titulo": "We couldn't find the quote",
+        "texto": "The quote does not exist or the code is wrong. Generate a new one."
+      },
+      "errorCarga": {
+        "titulo": "We couldn't load the quote",
+        "texto": "There was a problem fetching the quote. Try again."
+      },
+      "errores": {
+        "invalid_request": "We couldn't read the request. Check the data and try again.",
+        "quote_not_found": "The quote no longer exists. Generate a new one.",
+        "already_formalized": "Another advisor already formalized the purchase of this quote.",
+        "consent_code_required": "Send the confirmation code to the customer first.",
+        "invalid_confirmation_code": "The code is not the one the customer received. Check it with them.",
+        "confirmation_code_expired": "The code expired. Resend a new one to the customer.",
+        "too_many_attempts": "The attempts for this code ran out. Generate a new quote.",
+        "too_many_codes": "All the codes allowed for this quote were already sent.",
+        "code_delivery_unavailable": "We couldn't send the code to the customer. Try again in a few minutes, or record another acceptance method.",
+        "formalization_not_found": "The purchase has not been formalized yet.",
+        "formalization_unavailable": "We couldn't formalize the purchase. Try again in a few seconds.",
+        "campos": {
+          "fecha": {
+            "required": "Enter when the customer accepted.",
+            "invalid_format": "The date and time are not valid.",
+            "out_of_range": "The customer could not accept in the future or before the quote existed."
+          },
+          "referencia": {
+            "required": "Enter the reference of the recording or the signature.",
+            "invalid_format": "The reference only allows letters, numbers and . _ : / # - (up to {{max}} characters)."
+          },
+          "codigo": {
+            "required": "Enter the 6-digit code the customer received.",
+            "invalid_format": "The code has 6 digits."
+          },
+          "metodo": {
+            "required": "Choose the acceptance method.",
+            "invalid_format": "Choose an acceptance method from the list."
+          },
+          "confirmo": {
+            "required": "Confirm that the customer accepted the conditions and authorized the charge."
+          }
+        }
+      }
+    },
+    "polizas": {
+      "titulo": "My policies",
+      "subtitulo": "Your active policies and their renewal.",
+      "cargando": "Loading your policies…",
+      "poliza": "Policy {{id}}",
+      "titular": "Holder",
+      "vigencia": "Coverage period",
+      "prima": "Premium",
+      "valorAsegurado": "Insured amount",
+      "ventanaAbierta": "Renewal is open until {{fecha}}.",
+      "ventanaAbre": "You will be able to renew it from {{fecha}}.",
+      "estado": {
+        "vigente": "Active",
+        "porVencer": "Expiring soon",
+        "enRenovacion": "Renewal in progress",
+        "renovada": "Renewed",
+        "noRenovada": "Not renewed",
+        "finalizada": "Ended"
+      },
+      "acciones": {
+        "renovar": "Renew",
+        "verRenovacion": "View renewal",
+        "reintentar": "Try again",
+        "radicar": "File a claim"
+      },
+      "vacio": {
+        "titulo": "You have no active policies yet",
+        "texto": "Once the payment of a policy is confirmed you will see it here, with its coverage period and the option to renew it."
+      },
+      "error": {
+        "titulo": "We could not load your policies",
+        "texto": "Try again in a few moments."
+      },
+      "subtituloDe": "Coverage, term and renewal of {{nombre}}",
+      "resumen": {
+        "titulo": "Summary of your policies",
+        "activas": "Active policies",
+        "porVencer": "Expiring soon",
+        "vence": "Expires on {{fecha}}"
+      },
+      "aviso": {
+        "titulo": "Your policy {{id}} expires in {{dias}} days",
+        "tituloUno": "Your policy {{id}} expires tomorrow",
+        "tituloHoy": "Your policy {{id}} expires today",
+        "texto": "Renew it online with the re-quoted conditions so your coverage is not interrupted."
+      },
+      "filtros": {
+        "estado": "Status",
+        "todas": "All"
+      },
+      "contador": "{{n}} policies",
+      "contadorUno": "1 policy",
+      "tabla": {
+        "poliza": "Policy",
+        "vigencia": "Coverage period",
+        "prima": "Premium",
+        "estado": "Status",
+        "acciones": "Actions",
+        "valorAsegurado": "Insured for {{monto}}"
+      }
+    },
+    "renovacion": {
+      "titulo": "Renew policy",
+      "cargando": "Loading the renewal…",
+      "subtitulo": "{{id}} · Renewal window open until {{fecha}}",
+      "insignia": {
+        "vence": "Expires on {{fecha}}",
+        "fueraDeVentana": "Outside the window",
+        "procesando": "Processing the payment",
+        "capturando": "Payment method missing",
+        "rechazado": "Payment declined",
+        "excepcion": "Under review",
+        "renovada": "Renewed",
+        "noRenovada": "Not renewed"
+      },
+      "acciones": {
+        "renovar": "Renew and pay {{monto}}",
+        "renovarSinMonto": "Renew and pay",
+        "misPolizas": "My policies",
+        "volverPolizas": "Back to my policies",
+        "certificado": "Download renewed certificate",
+        "reintentar": "Try again"
+      },
+      "recotizada": {
+        "titulo": "Re-quoted conditions",
+        "texto": "We re-quoted with your updated profile and the current insured amount.",
+        "textoConDescuento": "We re-quoted with your updated profile: no claims this year ({{descuento}} % discount) and the current insured amount."
+      },
+      "sinRecotizar": {
+        "titulo": "We keep your conditions",
+        "texto": "We could not re-quote right now, so we renew with the conditions of your current policy."
+      },
+      "condiciones": {
+        "titulo": "Your renewal conditions",
+        "condicion": "Condition",
+        "vigente": "Current period",
+        "renovacion": "Renewal (re-quoted)",
+        "prima": "Premium",
+        "vigencia": "Coverage period",
+        "valorAsegurado": "Insured amount",
+        "descuento": "Good experience discount",
+        "descuentoAplicado": "{{descuento}} % applied",
+        "coberturas": "Coverages",
+        "sinCambios": "No changes"
+      },
+      "coberturas": {
+        "death": "Death of the insured",
+        "total_permanent_disability": "Total and permanent disability"
+      },
+      "prima": {
+        "titulo": "New premium",
+        "desde": "From {{fecha}} · {{meses}} months"
+      },
+      "siNoRenuevas": {
+        "titulo": "If you do not renew",
+        "texto": "Your coverage ends on {{fecha}}. After that date the option to renew is no longer available and you will have to quote again."
+      },
+      "cobro": {
+        "titulo": "Payment and issuance",
+        "texto": "The renewal reuses the issuance flow: we charge the premium with the registered payment method, issue the renewed certificate and notify you, with no gap in coverage.",
+        "medioPago": "Payment method",
+        "sinMedio": "No method registered: you will enter it when you pay",
+        "primerCobro": "Charge",
+        "alConfirmar": "On confirmation · {{monto}}",
+        "certificado": "Renewed certificate",
+        "certificadoDisponible": "Available once the payment is confirmed",
+        "acepto": "I accept the renewed conditions and authorize the charge with the registered payment method."
+      },
+      "medio": {
+        "tarjeta": "{{marca}} •••• {{ultimos}}",
+        "pse": "PSE"
+      },
+      "fueraDeVentana": {
+        "titulo": "Renewal is not available",
+        "texto": "This policy is not inside its renewal window. The option to renew opens a few days before the coverage ends and is no longer available once it ends."
+      },
+      "estados": {
+        "procesando": {
+          "subtitulo": "{{id}} · We are processing your payment",
+          "titulo": "We are charging your renewal",
+          "texto": "We received your acceptance and we are charging {{monto}}. Keep this screen open: it updates by itself."
+        },
+        "capturando": {
+          "subtitulo": "{{id}} · Payment method missing",
+          "titulo": "Tell us how to pay",
+          "texto": "You accepted the renewal, but there is no registered payment method. Provide one before {{hasta}} so we can charge {{monto}}."
+        },
+        "rechazado": {
+          "subtitulo": "{{id}} · The payment was declined",
+          "titulo": "Your payment was declined",
+          "texto": "Your renewal request is still saved. Try another payment method before {{hasta}}; you do not need to create another request. Operations can also see this case."
+        },
+        "excepcion": {
+          "subtitulo": "{{id}} · Renewal under review",
+          "titulo": "We are reviewing your renewal",
+          "texto": "We could not complete the charge, but your request was not lost: the operations team is reviewing it and we will let you know."
+        },
+        "noRenovadaSinRespuesta": {
+          "subtitulo": "{{id}} · Policy not renewed",
+          "titulo": "Your policy was not renewed",
+          "texto": "We did not receive your answer before the renewal window closed, so the coverage ended. You can quote again with an advisor."
+        },
+        "noRenovadaPago": {
+          "subtitulo": "{{id}} · Policy not renewed",
+          "titulo": "Your policy was not renewed",
+          "texto": "The payment was not completed in time and the coverage ended. You can quote again with an advisor."
+        }
+      },
+      "otroMedio": {
+        "titulo": "Try another payment method",
+        "tituloEntregar": "Provide your payment method"
+      },
+      "solicitud": {
+        "titulo": "Your request",
+        "aceptadaEl": "Accepted on"
+      },
+      "confirmada": {
+        "titulo": "Renewal confirmed",
+        "subtitulo": "Renewed on {{fecha}} · Policy {{id}}",
+        "avisoTitulo": "Renewal confirmed",
+        "avisoTexto": "The charge of {{monto}} was confirmed and your coverage continues with no gap from {{desde}}. The renewed certificate is available and we also sent it to your e-mail.",
+        "detalle": "Renewal detail",
+        "nuevaPrima": "New premium",
+        "vigenciaRenovada": "Renewed coverage period",
+        "descuentoAplicado": "{{descuento}} % good experience",
+        "estadoPago": "Payment status",
+        "pagado": "Paid",
+        "estadoPoliza": "Policy status",
+        "estado": "Status",
+        "activaRenovada": "Active · renewed",
+        "polizaNueva": "Renewed policy",
+        "proximaRenovacion": "Next renewal",
+        "descuento": "Discount applied"
+      },
+      "errores": {
+        "aceptoRequerido": "To renew you must accept the renewed conditions and authorize the charge.",
+        "invalid_request": "We could not process the request. Try again.",
+        "policy_not_found": "We could not find the policy.",
+        "renewal_not_found": "This policy has no renewal yet.",
+        "renewal_not_available": "This policy is no longer inside its renewal window.",
+        "renewal_closed": "The renewal of this period already has an outcome.",
+        "renewal_unavailable": "We could not process the renewal. Try again in a few moments; your request is not lost.",
+        "plazoVencido": "The deadline to pay the renewal has passed."
+      },
+      "noEncontrada": {
+        "titulo": "We could not find the policy",
+        "texto": "Check that the link is correct or go back to your policies."
+      },
+      "errorCarga": {
+        "titulo": "We could not load the renewal",
+        "texto": "Try again in a few moments."
+      }
+    }
+  },
+  "siniestros": {
+    "estados": {
+      "active": "Filed",
+      "in_evaluation": "In evaluation",
+      "approved": "Approved · payout in progress",
+      "paid": "Paid",
+      "rejected": "Rejected",
+      "payment_exception": "Payment exception"
+    },
+    "catalogo": {
+      "ramos": {
+        "autos": "Auto",
+        "hogar": "Home"
+      },
+      "tipos": {
+        "colision": {
+          "nombre": "Collision with damage to the vehicle",
+          "corto": "Collision"
+        },
+        "hurto": {
+          "nombre": "Theft",
+          "corto": "Theft"
+        },
+        "danoTerceros": {
+          "nombre": "Third-party damage",
+          "corto": "Third-party damage"
+        },
+        "cristales": {
+          "nombre": "Glass",
+          "corto": "Glass"
+        },
+        "danoAgua": {
+          "nombre": "Water damage",
+          "corto": "Water damage"
+        },
+        "otro": {
+          "nombre": "Other",
+          "corto": "Other"
+        }
+      },
+      "soportes": {
+        "fotosVehiculo": "Photos of the vehicle",
+        "documentoConductor": "Driver's ID",
+        "informeTransito": "Traffic report or accident sketch",
+        "denuncia": "Police report",
+        "fotosCristales": "Photos of the glass",
+        "documentoSoporte": "Supporting document",
+        "fotosDano": "Photos of the damage",
+        "cotizacionReparacion": "Repair invoice or quote"
+      }
+    },
+    "radicacion": {
+      "volver": "My claims",
+      "cargando": "Looking up your policies…",
+      "titulo": "File a claim",
+      "descripcion": "The claim is created as Active once you attach every required support. You can also file from the app with geotagged photos.",
+      "lateral": "Filing status",
+      "error": {
+        "opciones": {
+          "titulo": "We couldn't look up your policies",
+          "texto": "The policy service didn't respond. Try again in a few minutes."
+        },
+        "caso": {
+          "titulo": "We couldn't look up your claim",
+          "texto": "The claim was filed, but we can't show it right now. Try again in a few minutes."
+        },
+        "casoNoEncontrado": {
+          "titulo": "We couldn't find that claim",
+          "texto": "The link doesn't match any of your claims. You can file a new one."
+        }
+      },
+      "acciones": {
+        "radicar": "File claim",
+        "radicando": "Filing…",
+        "reintentar": "Try again",
+        "radicarOtro": "File a claim",
+        "recargarPolizas": "Reload my policies",
+        "radicarComoNuevo": "File as a new claim"
+      },
+      "sinPolizas": {
+        "titulo": "You have no active policies to file a claim on",
+        "texto": "You can only file on an active Auto or Home policy. Travel claims are paid automatically."
+      },
+      "datos": {
+        "titulo": "Claim details"
+      },
+      "campos": {
+        "polizaId": {
+          "etiqueta": "Affected policy",
+          "elegir": "Choose a policy"
+        },
+        "tipoSiniestro": {
+          "etiqueta": "Claim type",
+          "elegir": "Choose the claim type",
+          "ayuda": "The required supports depend on the type"
+        },
+        "ocurridoEn": {
+          "etiqueta": "Date and time of the incident",
+          "ayuda": "When the incident happened"
+        },
+        "lugar": {
+          "etiqueta": "Place of the incident"
+        },
+        "descripcion": {
+          "etiqueta": "Description of the incident",
+          "contador": "{{actual}} of {{maximo}} characters"
+        },
+        "montoEstimado": {
+          "etiqueta": "Estimated amount (optional)",
+          "ayuda": "In Colombian pesos, without cents (for example 4,800,000). It helps us prioritize your claim.",
+          "vista": "It will be sent as {{monto}}"
+        }
+      },
+      "errores": {
+        "campo": {
+          "requerido": "This field is required.",
+          "fechaFutura": "The date of the incident can't be later than today.",
+          "fechaAntigua": "The date of the incident can't be more than 5 years ago.",
+          "fechaFueraRango": "The date of the incident can't be in the future or more than 5 years ago.",
+          "fueraVigencia": "The date of the incident is outside the policy's coverage period.",
+          "lugarLongitud": "Write between 3 and 160 characters.",
+          "descripcionLongitud": "Write between 10 and 1,000 characters.",
+          "formatoInvalido": "The value isn't valid. Please check it.",
+          "montoRango": "The amount must be between 1 and 100,000,000,000 pesos."
+        },
+        "soporte": {
+          "falta": "{{nombre}} is missing.",
+          "pocos": "{{nombre}} needs at least {{minimo}} files.",
+          "muchos": "{{nombre}} accepts at most {{maximo}} files.",
+          "formato": "A file has a format that {{nombre}} doesn't accept.",
+          "noAplica": "This support doesn't apply to the chosen claim type.",
+          "noEncontrado": "A file is no longer available. Remove it and upload it again."
+        }
+      },
+      "envio": {
+        "validacion": {
+          "titulo": "The claim couldn't be filed",
+          "texto": "Check the highlighted details and supports."
+        },
+        "noElegible": {
+          "noEncontrada": {
+            "titulo": "The policy isn't available",
+            "texto": "The chosen policy isn't among your policies. Reload them and choose another one."
+          },
+          "noActiva": {
+            "titulo": "The policy is no longer active",
+            "texto": "You can only file on an active policy. Reload your policies."
+          },
+          "noCubierto": {
+            "titulo": "The policy doesn't cover this claim type",
+            "texto": "Choose another claim type or another policy."
+          },
+          "fueraVigencia": {
+            "titulo": "The incident happened outside the coverage period",
+            "texto": "The date of the incident must be within the policy's coverage period."
+          },
+          "generico": {
+            "titulo": "The policy doesn't allow this claim",
+            "texto": "Check the policy, the claim type and the date of the incident."
+          }
+        },
+        "vigencia": "Coverage period: from {{desde}} to {{hasta}}.",
+        "claveReusada": {
+          "titulo": "This request was already used for another claim",
+          "texto": "Check My claims before filing again, so the claim isn't duplicated."
+        },
+        "indisponible": {
+          "titulo": "We couldn't complete the filing",
+          "texto": "The service didn't respond. Your details and supports are still here; trying again won't duplicate the claim."
+        },
+        "invalido": {
+          "titulo": "The claim couldn't be filed",
+          "texto": "The request isn't valid. Reload the page and try again."
+        }
+      },
+      "faltantes": {
+        "tituloSoporte": "{{cantidad}} required support is missing",
+        "tituloSoportes": "{{cantidad}} required supports are missing",
+        "tituloDatos": "Some claim details are missing",
+        "texto": "You can't file until you complete: {{lista}}.",
+        "total": "at most 20 files in all",
+        "subiendo": "Wait for the files to finish uploading before filing."
+      },
+      "antes": {
+        "titulo": "Before filing",
+        "poliza": {
+          "ok": "The policy is active and covers the selected claim type.",
+          "pendiente": "Choose the policy and the claim type."
+        },
+        "vigencia": {
+          "ok": "Date of the incident within the coverage period.",
+          "error": "The date of the incident is outside the coverage period (from {{desde}} to {{hasta}}).",
+          "pendiente": "Enter the date and time of the incident."
+        },
+        "asesor": "A claims advisor will review the filing; if something is missing, they'll send it back with the reason."
+      },
+      "app": {
+        "titulo": "Are you at the scene?",
+        "texto": "In the app you can take photos and video with certified location and time, even offline: they're sent once you're back online."
+      },
+      "soportes": {
+        "titulo": "Supports",
+        "conteo": "{{adjuntos}} of {{total}} required attached",
+        "conMinimo": "{{nombre}} (at least {{minimo}})",
+        "detalle": "{{obligatoriedad}} · {{formatos}} · max. 10 MB each · up to {{maximo}}",
+        "obligatorio": "Required",
+        "opcional": "Optional",
+        "formatos": {
+          "imagen": "JPG or PNG",
+          "documento": "PDF or image",
+          "pdf": "PDF"
+        },
+        "estado": {
+          "adjunto": "Attached · {{archivos}} files",
+          "adjuntoUno": "Attached",
+          "falta": "Missing",
+          "pocos": "{{archivos}} of {{minimo}} minimum",
+          "subiendo": "Uploading",
+          "opcional": "Optional",
+          "noAplica": "Not applicable"
+        },
+        "accion": {
+          "subir": "Upload",
+          "agregar": "Add",
+          "etiqueta": "Upload files for {{nombre}}"
+        },
+        "archivosDe": "Files for {{nombre}}",
+        "archivo": {
+          "subiendo": "Uploading…",
+          "adjunto": "Attached",
+          "quitar": "Remove",
+          "quitarEtiqueta": "Remove {{nombre}}"
+        },
+        "rechazo": {
+          "muyGrande": "The file is larger than 10 MB.",
+          "formatoNoAdmitido": "Format not accepted for this support.",
+          "vacio": "The file is empty.",
+          "demasiadosPendientes": "You have too many files that haven't been filed.",
+          "noDisponible": "It couldn't be uploaded. Remove it and try again.",
+          "noCoincide": "The uploaded file doesn't match the one you chose. Remove it and try again.",
+          "invalido": "The file couldn't be read.",
+          "limite": "This support accepts at most {{maximo}} files."
+        },
+        "noAplicaDetalle": "Doesn't apply to this claim type"
+      }
+    },
+    "confirmacion": {
+      "titulo": "Claim {{numero}}",
+      "radicadoEl": "Filed on {{fecha}} at {{hora}}",
+      "descargar": "Download filing receipt",
+      "descargando": "Downloading…",
+      "volver": "Back to my claims",
+      "errorDescarga": "We couldn't download the filing receipt. Try again in a few minutes.",
+      "exito": {
+        "titulo": "Your claim has been filed",
+        "texto": "A claims advisor will review the filing within 2 business days. If a support is missing, they'll send it back with the reason, and you can fix it from My claims."
+      },
+      "etapas": {
+        "etiqueta": "Claim stages",
+        "radicado": "Filed",
+        "revision": "Advisor review",
+        "evaluacion": "Under assessment",
+        "aprobado": "Approved",
+        "pagado": "Paid"
+      },
+      "datos": {
+        "radicado": "Filing number",
+        "poliza": "Affected policy",
+        "fechaHecho": "Date and time of the incident",
+        "soportes": "Attached supports",
+        "soportesValor": "{{adjuntos}} of {{total}} required · {{archivos}} files"
+      },
+      "queSigue": {
+        "titulo": "What's next",
+        "texto": "The claim is in the review queue. If the advisor approves it, it moves to assessment with the priority set by triage."
+      }
+    },
+    "misSiniestros": {
+      "titulo": "My claims",
+      "descripcion": "See the claims you've filed from the portal or the app.",
+      "radicar": "File a claim",
+      "cargando": "Looking up your claims…",
+      "cargandoMas": "Loading…",
+      "cargarMas": "Load more",
+      "conteo": "{{cantidad}} claims",
+      "conteoUno": "1 claim",
+      "filtros": {
+        "etiqueta": "Filters",
+        "poliza": "Policy",
+        "todas": "All",
+        "desde": "From",
+        "desdeAyuda": "Filed on or after that day",
+        "limpiar": "Clear filters"
+      },
+      "vacio": {
+        "titulo": "You haven't filed any claims yet",
+        "texto": "When you file a claim you'll see it here with its status."
+      },
+      "sinResultados": {
+        "titulo": "No claims match these filters",
+        "texto": "Change the policy or the date, or clear the filters."
+      },
+      "error": {
+        "titulo": "We couldn't look up your claims",
+        "texto": "The service didn't respond. Try again in a few minutes.",
+        "reintentar": "Try again"
+      },
+      "tabla": {
+        "titulo": "Filed claims",
+        "radicado": "Filing number",
+        "polizaTipo": "Policy and type",
+        "fechaHecho": "Date of the incident",
+        "etapa": "Stage",
+        "radicadoEn": "Filed on",
+        "desdeApp": "Filed from the app",
+        "verDetalle": "View details",
+        "verDetalleDe": "View details of claim {{radicado}}",
+        "acciones": "Actions"
+      }
+    },
+    "triage": {
+      "niveles": {
+        "1": "Triage 1",
+        "2": "Triage 2",
+        "3": "Triage 3"
+      },
+      "severidades": {
+        "high": "high",
+        "medium": "medium",
+        "low": "low"
+      },
+      "bandas": {
+        "high": "high amount",
+        "medium": "medium amount",
+        "low": "low amount",
+        "unknown": "no declared amount"
+      },
+      "objetivos": {
+        "inmediato": "Immediate attention",
+        "diasHabiles": "Target: {{dias}}"
+      },
+      "diasHabilesUno": "1 business day",
+      "diasHabiles": "{{dias}} business days",
+      "resolucion": "Estimated resolution time: {{dias}}",
+      "causas": {
+        "entered_evaluation": "Entered evaluation",
+        "estimated_amount_changed": "The estimated amount changed",
+        "incident_type_changed": "The claim type changed",
+        "coverage_changed": "The coverage changed",
+        "provider_report_received": "The provider report arrived",
+        "policy_updated": "The priority policy changed"
+      },
+      "estados": {
+        "pending": "Calculating priority…",
+        "assessed": "Priority calculated",
+        "not_applicable": "No priority (not under evaluation)",
+        "not_found": "Does not exist"
+      },
+      "cola": {
+        "titulo": "Claims queue",
+        "descripcion": "Check the automatic priority of the claims under evaluation.",
+        "regla": {
+          "titulo": "How the priority is calculated",
+          "texto": "The system calculates the priority on its own, from the claim's severity (by type and coverage) and the range of its estimated amount: low amount, under {{bajo}}; high amount, over {{alto}}. A claim without a declared amount is prioritized by severity alone. Policy in force: {{version}}.",
+          "textoSinPolitica": "The system calculates the priority on its own, from the claim's severity (by type and coverage) and the range of its estimated amount."
+        },
+        "indicadores": {
+          "titulo": "Attention target by level",
+          "cargando": "Loading the priority policy…",
+          "error": "We could not load the target of each level.",
+          "reintentar": "Retry"
+        },
+        "busqueda": {
+          "titulo": "Search claims",
+          "etiqueta": "Claim identifiers",
+          "ayuda": "Paste one or more claim identifiers, up to 50. Separate them with commas, spaces or line breaks.",
+          "buscar": "Search",
+          "limpiar": "Clear",
+          "errores": {
+            "vacio": "Enter at least one claim identifier.",
+            "invalidos": "These identifiers are not valid: {{ids}}.",
+            "demasiados": "You pasted {{cantidad}} identifiers; the maximum is 50."
+          },
+          "repetidos": "{{cantidad}} repeated identifier was removed.",
+          "repetidosVarios": "{{cantidad}} repeated identifiers were removed.",
+          "inexistente": "We did not find 1 claim with the identifiers searched.",
+          "inexistentes": "We did not find {{cantidad}} claims with the identifiers searched."
+        },
+        "inicial": {
+          "titulo": "Search a claim to see its priority",
+          "texto": "Enter one or more claim identifiers and check their level, severity and attention target."
+        },
+        "buscando": "Loading the priority…",
+        "sinResultados": {
+          "titulo": "There is no priority to show",
+          "texto": "No identifier matches an existing claim. Check them and try again."
+        },
+        "error": {
+          "titulo": "We could not load the priority",
+          "texto": "The service did not respond. Try again in a few minutes.",
+          "reintentar": "Retry"
+        },
+        "detenido": {
+          "titulo": "The priority is not available yet",
+          "texto": "Some claims still have no priority. Check again in a few seconds.",
+          "actualizar": "Refresh"
+        },
+        "conteo": "{{cantidad}} claims",
+        "conteoUno": "1 claim",
+        "tabla": {
+          "titulo": "Priority of the claims searched",
+          "caso": "Claim",
+          "prioridad": "Priority",
+          "severidad": "Severity",
+          "monto": "Amount range",
+          "objetivo": "Target",
+          "calculada": "Calculated on",
+          "verPrioridad": "View priority",
+          "verPrioridadDe": "View the priority of claim {{id}}"
+        },
+        "verCasosEvaluacion": "View claims in evaluation"
+      },
+      "prioridad": {
+        "migas": "Claims queue",
+        "titulo": "Claim {{id}}",
+        "cargando": "Loading the priority…",
+        "tarjeta": {
+          "titulo": "Priority",
+          "resumen": "{{nivel}} · {{severidad}} severity · {{banda}}",
+          "monto": "Estimated amount",
+          "sinMonto": "—",
+          "tipo": "Claim type",
+          "cobertura": "Coverage",
+          "objetivo": "Attention target",
+          "calculada": "Calculated on",
+          "politica": "Policy",
+          "pendiente": "Calculating priority…",
+          "sinPrioridad": "No priority",
+          "sinPrioridadTexto": "This claim did not enter evaluation, so it has no priority."
+        },
+        "noEncontrado": {
+          "titulo": "We did not find this claim",
+          "texto": "The identifier does not match an existing claim.",
+          "volver": "Back to the queue"
+        },
+        "error": {
+          "titulo": "We could not load the priority",
+          "texto": "The service did not respond. Try again in a few minutes.",
+          "reintentar": "Retry"
+        },
+        "detenido": {
+          "titulo": "The priority is not available yet",
+          "texto": "The calculation is taking longer than expected. Check again in a few seconds.",
+          "actualizar": "Refresh"
+        },
+        "evaluar": "Evaluate"
+      },
+      "historial": {
+        "titulo": "Priority history",
+        "asignado": "{{nivel}} assigned · {{actor}}",
+        "recalculado": "Priority recalculated: {{anterior}} → {{nivel}} · {{causas}}",
+        "revisado": "Priority reviewed: stays at {{nivel}} · {{causas}}",
+        "actores": {
+          "system": "automatic"
+        },
+        "vacio": "There are no priority calculations yet."
+      }
+    },
+    "detalle": {
+      "migas": "My claims",
+      "titulo": "Claim {{radicado}}",
+      "cargando": "Loading your claim…",
+      "datos": {
+        "titulo": "Reported data",
+        "poliza": "Policy",
+        "tipo": "Claim type",
+        "fechaHecho": "Date of the event",
+        "lugar": "Place of the event",
+        "radicadoEn": "Filed on",
+        "monto": "Estimated amount",
+        "sinMonto": "—",
+        "descripcion": "Description of the events"
+      },
+      "prioridad": {
+        "titulo": "Priority",
+        "nivel": "Priority {{nivel}}",
+        "linea": "Priority {{nivel}} · {{resolucion}}",
+        "calculando": "Calculating priority…",
+        "error": "We could not load the priority",
+        "reintentar": "Retry",
+        "detenido": "The priority is not available yet",
+        "actualizar": "Refresh"
+      },
+      "noEncontrado": {
+        "titulo": "We did not find this claim",
+        "texto": "Check the link or look for the claim in your list.",
+        "volver": "Back to My claims"
+      },
+      "error": {
+        "titulo": "We could not load your claim",
+        "texto": "The service did not respond. Try again in a few minutes.",
+        "reintentar": "Retry"
+      }
+    },
+    "casosEvaluacion": {
+      "titulo": "Claims in evaluation",
+      "descripcion": "Claims waiting for the decision of operations, with their automatically calculated priority, oldest first. Open each one to evaluate it.",
+      "actualizar": "Refresh",
+      "pestanas": {
+        "etiqueta": "Queue claims",
+        "evaluations": "In evaluation",
+        "payment-exceptions": "Payment exceptions"
+      },
+      "leyenda": {
+        "evaluations": "Claims in evaluation",
+        "payment-exceptions": "Approved claims whose payout failed"
+      },
+      "cargando": "Loading the queue…",
+      "error": {
+        "titulo": "We could not load the queue",
+        "texto": "The claims service did not respond. Try again in a few seconds."
+      },
+      "reintentar": "Try again",
+      "vacio": {
+        "evaluations": "There are no claims in evaluation.",
+        "payment-exceptions": "There are no payment exceptions."
+      },
+      "columnas": {
+        "prioridad": "Priority",
+        "radicado": "Claim number",
+        "producto": "Product",
+        "montoEstimado": "Estimated amount",
+        "estado": "Status",
+        "espera": "Waiting",
+        "acciones": "Actions"
+      },
+      "triage": "Triage {{nivel}}",
+      "sinPrioridad": "Not calculated",
+      "sinMonto": "Not declared",
+      "esperaDias": "{{dias}} d {{horas}} h",
+      "esperaHoras": "{{horas}} h",
+      "evaluar": "Evaluate",
+      "atender": "Handle",
+      "evaluarEtiqueta": "Open claim {{radicado}}",
+      "cargarMas": "Load more",
+      "buscarPorId": "Search by id",
+      "verPrioridad": "View priority",
+      "verPrioridadEtiqueta": "View the priority of claim {{radicado}}"
+    },
+    "evaluacion": {
+      "volver": "Claims in evaluation",
+      "cargando": "Loading the claim…",
+      "reintentar": "Try again",
+      "noEncontrado": {
+        "titulo": "We could not find the claim",
+        "texto": "The claim does not exist or is no longer available. Go back to the claims queue."
+      },
+      "error": {
+        "titulo": "We could not load the claim",
+        "texto": "The claims service did not respond. Try again in a few seconds."
+      },
+      "titulo": "Claim {{radicado}}",
+      "radicadoEl": "filed on {{fecha}}",
+      "contactar": "Contact the insured",
+      "polizaNoDisponible": "The policy core did not respond: you can review the claim, but not decide it until it is back.",
+      "pagoEnCurso": "Approved. The indemnity payout is in progress; this page refreshes on its own.",
+      "pagado": "Indemnity paid: {{neto}} to the insured.",
+      "excepcion": {
+        "titulo": "The indemnity payout failed",
+        "cuentaInvalida": "The gateway rejected the transfer: invalid destination account. The approval for {{neto}} is kept and the claim is in exception; correct the account and retry with the same idempotency key.",
+        "rechazado": "The gateway rejected the transfer. The approval for {{neto}} is kept and the claim is in exception; check the destination and retry with the same idempotency key.",
+        "sinRespuesta": "The gateway did not respond and the {{intentos}} automatic attempts ran out. The approval for {{neto}} is kept; retry with the same idempotency key."
+      },
+      "errores": {
+        "claim_not_decidable": "Another analyst already decided this claim. This is their decision.",
+        "payout_not_retryable": "The payout is no longer in exception. This is its current status.",
+        "policy_unavailable": "The policy core did not respond. Try again in a few seconds.",
+        "not_covered": "The policy no longer covers this incident or the core does not know the insured.",
+        "no_payout_account": "The insured has no registered account to receive the indemnity.",
+        "no_contact": "The insured has no e-mail to notify the rejection to.",
+        "claim_not_found": "The claim no longer exists.",
+        "invalid_request": "The request is not valid. Check the data and try again.",
+        "claims_unavailable": "We could not record the decision. Try again: it is never recorded twice."
+      },
+      "caso": {
+        "titulo": "Claim information",
+        "fechaHecho": "Date of the incident",
+        "lugar": "Place",
+        "montoEstimado": "Amount estimated by the insured",
+        "sinMonto": "Not declared",
+        "descripcion": "Description",
+        "cobertura": "Applicable coverage",
+        "coberturaValor": "{{tipo}} · {{pct}} % deductible",
+        "coberturaDesconocida": "Not available",
+        "sinCobertura": "The policy does not cover this incident",
+        "prioridad": "Priority"
+      },
+      "soportes": {
+        "titulo": "Supports and evidence",
+        "vacio": "The claim has no supports or evidence.",
+        "evidencia": {
+          "photo": "Photo on site",
+          "video": "Video on site"
+        },
+        "ubicacionNoConfiable": "Untrusted location"
+      },
+      "poliza": {
+        "titulo": "Policy and insured",
+        "poliza": "Policy",
+        "estados": {
+          "active": "Active",
+          "expired": "Expired",
+          "cancelled": "Cancelled",
+          "suspended": "Suspended"
+        },
+        "valorAsegurado": "Insured value",
+        "asegurado": "Insured",
+        "medioPago": "Registered payment method",
+        "noDisponible": "The policy core did not respond.",
+        "desconocida": "The policy core no longer knows this policy."
+      },
+      "historial": {
+        "titulo": "Claim history",
+        "radicado": "Filed",
+        "aprobado": "Approved by {{por}}",
+        "rechazado": "Rejected by {{por}}",
+        "notificado": "Rejection notified to the insured",
+        "excepcion": "Payment exception",
+        "reintento": "Payout retried by {{por}}",
+        "pagado": "Indemnity paid"
+      },
+      "rechazo": {
+        "titulo": "Rejection",
+        "por": "Rejected by",
+        "notificado": "Notified to the insured",
+        "pendiente": "Pending delivery",
+        "motivo": "Reason"
+      },
+      "decision": {
+        "titulo": "Decision",
+        "leyenda": "What do you decide on the claim?",
+        "sinNucleo": "The claim cannot be decided while the policy core does not respond: the insured value and the deductible are missing.",
+        "sinCobertura": "The policy does not cover this incident: the payout cannot be approved.",
+        "opciones": {
+          "aprobar": {
+            "titulo": "Approve",
+            "descripcion": "Records the amount and pays through the gateway"
+          },
+          "rechazar": {
+            "titulo": "Reject",
+            "descripcion": "Reason required · the customer is notified"
+          }
+        },
+        "campos": {
+          "bruto": "Approved repair cost (before the deductible)",
+          "motivo": "Reason for the rejection"
+        },
+        "ayudas": {
+          "bruto": "In pesos. It cannot exceed the insured value ({{tope}}).",
+          "motivo": "The customer receives it by e-mail."
+        },
+        "errores": {
+          "requerido": "Enter a cost greater than zero.",
+          "amount_out_of_range": "Enter a cost greater than zero.",
+          "amount_exceeds_insured_value": "It exceeds the insured value of the coverage ({{tope}}).",
+          "nothing_to_pay": "After the deductible there is nothing to pay.",
+          "reason_required": "The reason is required.",
+          "reason_too_long": "The reason accepts up to {{max}} characters."
+        },
+        "desglose": {
+          "bruto": "Repair cost (gross)",
+          "deducible": "Less deductible ({{pct}} %)",
+          "neto": "Approved amount (net paid by the insurer)",
+          "nota": "Includes the {{pct}} % deductible ({{deducible}} borne by the insured)."
+        },
+        "nota": "On approval the payout runs with an idempotency key (exactly one disbursement) and the claim becomes Paid; if the payout fails, it becomes an exception without losing the approval.",
+        "acciones": {
+          "aprobar": "Approve and pay",
+          "rechazar": "Reject",
+          "registrando": "Recording…"
+        }
+      },
+      "pago": {
+        "titulo": "Indemnity payout",
+        "aprobadoPor": "Approved by",
+        "montoAprobado": "Approved amount",
+        "desglose": "Cost {{bruto}} − {{pct}} % deductible ({{deducible}} borne by the insured)",
+        "referencia": "Reference",
+        "referenciaValor": "{{referencia}} (idempotent)",
+        "intentos": "Automatic attempts",
+        "intentosValor": "{{n}} of {{max}}",
+        "ultimo": "last {{fecha}}",
+        "destino": "Destination",
+        "pagadoEn": "Paid",
+        "reintentosManuales": "Manual retries",
+        "reintentosManualesValor": "{{n}} · last by {{por}}, {{fecha}}",
+        "tiposCuenta": {
+          "savings": "savings account",
+          "checking": "checking account"
+        },
+        "pasos": {
+          "aprobado": "Approval recorded",
+          "solicitado": "Payout requested from the gateway",
+          "reintentos": "Automatic retries",
+          "pagado": "Paid"
+        },
+        "estadosPaso": {
+          "hecho": "Done",
+          "actual": "In progress",
+          "fallido": "Failed",
+          "pendiente": "Pending"
+        },
+        "reintento": {
+          "titulo": "Correct the destination and retry",
+          "ayuda": "The retry uses the same idempotency key: it never pays twice.",
+          "codigoBanco": "Bank code",
+          "nombreBanco": "Destination bank",
+          "tipoCuenta": "Account type",
+          "numeroCuenta": "Destination account",
+          "cuentaAyuda": "Leave it empty to retry to the same account.",
+          "errores": {
+            "banco": "The bank code has 3 to 6 digits.",
+            "cuenta": "The account has 6 to 24 digits and dashes."
+          },
+          "boton": "Retry payout",
+          "enviando": "Retrying…"
+        }
+      }
+    }
+  },
+  "auditoria": {
+    "registro": {
+      "busqueda": {
+        "titulo": "Underwriting audit",
+        "descripcion": "Reconstruct which input data and rating rules set the price and the decision of any policy. The record is read-only.",
+        "tarjeta": "Search the audit record",
+        "campo": "Policy identifier",
+        "ejemplo": "off-0123456789abcdef",
+        "ayuda": "It also accepts the offer number (off-…) or the partner's request number.",
+        "buscar": "Search",
+        "buscando": "Searching…",
+        "errores": {
+          "requerido": "Enter the policy identifier.",
+          "invalido": "The identifier only accepts letters, numbers, hyphen and underscore (up to 128 characters)."
+        },
+        "sinResultados": {
+          "titulo": "We found no results for {{ id }}",
+          "texto": "Check the identifier and try again. For security, no internal system information is shown.",
+          "limpiar": "Clear search"
+        },
+        "error": {
+          "titulo": "We could not look up the record",
+          "texto": "The audit service did not respond. Try again in a few minutes."
+        },
+        "incluye": {
+          "titulo": "What the record includes",
+          "fecha": "Date and time of the request with time zone",
+          "motor": "Version of the rating engine used",
+          "fuentes": "Sources consulted (Open Finance, Open Data, KYC) and the value each one returned",
+          "reglas": "Rating rules applied, in order, with the output of each one",
+          "prima": "Calculated premium and final decision (accepted, rejected or deferred with a reason)"
+        }
+      },
+      "detalle": {
+        "volver": "Audit",
+        "cargando": "Loading the record…",
+        "titulo": "Audit record · {{ id }}",
+        "soloLectura": "Read-only",
+        "resumen": "Underwriting request of {{ fecha }} ({{ zona }}) · Rating engine {{ motor }} · Final decision: {{ decision }}",
+        "reintentar": "Try again",
+        "error": {
+          "titulo": "We could not load the record",
+          "texto": "The audit service did not respond. Try again."
+        },
+        "solicitud": {
+          "titulo": "Request",
+          "fecha": "Date and time",
+          "canal": "Channel",
+          "oferta": "Offer",
+          "consentimiento": "Consent",
+          "cliente": "Customer",
+          "aliado": "Partner",
+          "solicitud": "Partner request",
+          "motor": "Engine version"
+        },
+        "fuentes": {
+          "titulo": "Data sources consulted",
+          "fuente": "Source",
+          "consultada": "Consulted",
+          "latencia": "Latency",
+          "valor": "Value returned",
+          "valorFuente": "Score {{ puntaje }} · category {{ categoria }}",
+          "sinValor": "No value: the source did not respond",
+          "milisegundos": "{{ ms }} ms",
+          "vacio": "No external source was consulted."
+        },
+        "perfil": "Resulting profile: score {{ puntaje }}, category {{ categoria }}.",
+        "perfilParcial": "The profile is partial because a source did not respond.",
+        "reglas": {
+          "titulo": "Rating rules applied (in execution order)",
+          "orden": "#",
+          "regla": "Rule",
+          "salida": "Output"
+        },
+        "resultado": {
+          "titulo": "Outcome",
+          "prima": "Calculated premium",
+          "primaMes": "{{ prima }} / month",
+          "decision": "Final decision",
+          "motivo": "Reason",
+          "registradaEn": "Recorded in audit"
+        }
+      },
+      "decisiones": {
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "deferred": "Deferred"
+      },
+      "canales": {
+        "embedded": "Embedded",
+        "assisted": "Advisor-assisted"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "estadosFuente": {
+        "ok": "Responded",
+        "timeout": "No response in time",
+        "error": "Responded with an error",
+        "circuit_open": "Isolated by the circuit breaker"
+      },
+      "categorias": {
+        "preferred": "preferred",
+        "standard": "standard",
+        "high_risk": "high risk",
+        "base_actuarial": "base actuarial"
+      },
+      "reglas": {
+        "base_monthly_rate": "Base monthly rate",
+        "age_factor": "Age factor",
+        "risk_factor": "Risk profile factor",
+        "term_factor": "Term factor",
+        "rounding_step": "Rounding step"
+      },
+      "motivos": {
+        "cached_profile": "The last saved profile was used because a source did not respond",
+        "base_actuarial_profile": "The base actuarial profile was used because a source did not respond",
+        "provisional_offer": "Provisional offer until the source is back"
+      }
+    },
+    "consentimientos": {
+      "listado": {
+        "titulo": "Open Finance consents",
+        "descripcion": "Every consent granted by the customers. Filter by status and grant date; a revocation from this portal takes effect in less than 5 minutes and only the Compliance officer role can run it.",
+        "cargando": "Loading consents…",
+        "rango": "Fix the date range to see the consents.",
+        "error": {
+          "titulo": "We could not load the consents",
+          "texto": "The audit service did not respond. Try again.",
+          "reintentar": "Try again"
+        },
+        "indicadores": {
+          "titulo": "Consent indicators",
+          "activos": "Active",
+          "activosDetalle": "Current today",
+          "revocados": "Revoked (30 days)",
+          "revocadosDetalle": "{{ app }} from the app · {{ portal }} from the portal",
+          "vencidos": "Expired",
+          "vencidosDetalle": "Not renewed",
+          "fueraDePlazo": "Revocations out of deadline",
+          "fueraDePlazoDetalle": "Target: 100 % within ≤ 5 min"
+        },
+        "filtros": {
+          "titulo": "Filter consents",
+          "estado": "Status",
+          "todos": "All",
+          "desde": "Granted from",
+          "hasta": "To",
+          "ayudaFecha": "MM/DD/YYYY",
+          "rangoInvalido": "«To» cannot be before «Granted from».",
+          "entidad": "Entity",
+          "todas": "All",
+          "cliente": "Search customer",
+          "clienteEjemplo": "Document or name",
+          "clienteAyuda": "Full document, name or identifier"
+        },
+        "estados": {
+          "active": "Active",
+          "revoked": "Revoked",
+          "partially_revoked": "Partial revocation",
+          "expired": "Expired"
+        },
+        "tabla": {
+          "titulo": "Open Finance consents",
+          "cliente": "Customer",
+          "otorgado": "Granted",
+          "vence": "Expires",
+          "estado": "Status",
+          "alcance": "Scope",
+          "acciones": "Actions",
+          "revocadoEl": "Revoked {{ fecha }}",
+          "ver": "View",
+          "verDetalle": "View consent {{ id }}"
+        },
+        "vacio": {
+          "titulo": "No consents for the applied filter",
+          "inicio": "There are no consents",
+          "entidad": " of {{ entidad }}",
+          "estado": " with status {{ estado }}",
+          "entre": ", granted between {{ desde }} and {{ hasta }}",
+          "desde": ", granted since {{ desde }}",
+          "hasta": ", granted until {{ hasta }}",
+          "cliente": ", for the searched customer",
+          "fin": ".",
+          "fueraDeRango": "This page has no consents anymore",
+          "limpiar": "Clear filters"
+        },
+        "pie": {
+          "rango": "{{ primero }} to {{ ultimo }} of {{ total }} records",
+          "sinRegistros": "0 records",
+          "pagina": "page {{ pagina }} of {{ total }}",
+          "conserva": "the filter is kept while browsing",
+          "navegacion": "List pages",
+          "anterior": "Previous",
+          "siguiente": "Next"
+        }
+      },
+      "detalle": {
+        "volver": "Consents",
+        "cargando": "Loading the consent…",
+        "titulo": "Consent {{ id }}",
+        "otorgado": "granted on {{ fecha }}",
+        "revocar": "Revoke consent",
+        "reintentarEn": "Retry at {{ entidad }}",
+        "reintentarEnVarias": "Retry at {{ cantidad }} entities",
+        "reintentando": "Retrying…",
+        "reintentar": "Try again",
+        "error": {
+          "titulo": "We couldn't load the consent",
+          "texto": "The audit service did not respond. Try again."
+        },
+        "noEncontrado": {
+          "titulo": "We couldn't find this consent",
+          "texto": "There is no consent with the identifier {{ id }}. For security, no internal system information is shown.",
+          "buscarOtro": "Search for another"
+        },
+        "noRevocable": {
+          "revocado": "This consent is already revoked: it can't be revoked again.",
+          "parcial": "This consent is already revoked in Solventa; only the entities without confirmation still need to respond. You can retry the notice.",
+          "vencido": "This consent has expired: there is nothing to revoke."
+        },
+        "carrera": {
+          "consent_already_revoked": "This consent was already revoked while you were confirming (for example, by the holder from the app). No new request was sent and we updated the status.",
+          "consent_not_active": "This consent expired while you were confirming, so it can no longer be revoked. We updated the status."
+        },
+        "parcial": {
+          "titulo": "Partial revocation: some entities have not confirmed",
+          "texto": "Solventa no longer queries this customer's data, but not every entity confirmed within the 5-minute window.",
+          "noConfirmo": "{{ entidad }}: no confirmation, time ran out at {{ hora }}",
+          "confirmo": "{{ entidad }}: confirmed at {{ hora }}"
+        },
+        "enCurso": {
+          "titulo": "Revocation in progress",
+          "tituloReintento": "Retry in progress",
+          "texto": "Solventa no longer queries this customer's data. We are notifying the entities: they have until {{ hora }} to confirm."
+        },
+        "sondeoDetenido": {
+          "titulo": "We couldn't update the status",
+          "texto": "We stopped checking the status automatically. What you see may not be the latest.",
+          "actualizar": "Refresh"
+        },
+        "falloReintento": "We couldn't retry the notice to the entities. Nothing was changed: try again.",
+        "datos": {
+          "titulo": "Customer and consent details",
+          "cliente": "Customer",
+          "alcance": "Scope",
+          "canal": "Grant channel",
+          "canalValor": "{{ canal }} · {{ entidad }}",
+          "evidencia": "Evidence",
+          "evidenciaValor": "Immutable record · terms {{ version }}",
+          "finalidad": "Purpose",
+          "vigencia": "Validity",
+          "vigenciaValor": "{{ desde }} → {{ hasta }}"
+        },
+        "alcance": {
+          "titulo": "Detailed scope"
+        },
+        "efecto": {
+          "titulo": "Immediate effect in Solventa",
+          "texto": "Solventa no longer queries this customer's data. The notice to each entity continues within the 5-minute window."
+        },
+        "registro": {
+          "titulo": "Operation record",
+          "solicitadaPor": "Requested by",
+          "solicitantes": {
+            "tu": "{{ nombre }} · Operations analyst",
+            "operaciones": "Operations analyst",
+            "titular": "The holder from the app"
+          },
+          "motivo": "Reason",
+          "referencia": "Reference",
+          "fecha": "Date and time",
+          "canal": "Channel",
+          "comprobante": "Receipt for the customer",
+          "enLaApp": "Available in the customer's app"
+        },
+        "reglas": {
+          "titulo": "Revocation from the portal",
+          "texto": "Only the operations analyst can revoke. The request is sent to every authorized entity and must complete within 5 minutes; if one doesn't process it, you will see an alert and can retry. A consent that is already revoked or expired can't be revoked."
+        },
+        "otorgadoCanal": "granted on {{ fecha }} in the {{ canal }} ({{ entidad }})",
+        "vence": "expires on {{ fecha }}"
+      },
+      "estados": {
+        "activo": "Active",
+        "enCurso": "Revocation in progress",
+        "revocado": "Revoked",
+        "parcial": "Partial revocation",
+        "vencido": "Expired"
+      },
+      "entidades": {
+        "titulo": "Authorized financial entities",
+        "entidad": "Entity",
+        "estadoEnEntidad": "Status at the entity",
+        "revocacion": "Revocation",
+        "confirmacion": "Confirmation",
+        "estados": {
+          "pending": "Pending",
+          "confirmed": "Revoked",
+          "not_confirmed": "No confirmation"
+        },
+        "estadoConsentimiento": {
+          "activo": "Active",
+          "enCurso": "Revocation in progress",
+          "revocado": "Revoked",
+          "parcial": "Partial revocation",
+          "vencido": "Expired"
+        },
+        "plazoHasta": "Deadline {{ hora }}",
+        "confirmoEl": "Confirmed on {{ fecha }}",
+        "tiempoAgotado": "Time ran out at {{ hora }}",
+        "datosAutorizados": "Authorized data"
+      },
+      "historial": {
+        "titulo": "Status history",
+        "referencia": "Reference {{ referencia }}",
+        "referenciaEntidad": "Entity reference {{ referencia }}",
+        "estados": {
+          "granted": "Granted",
+          "revocation_requested": "Revocation requested",
+          "revoked": "Consent revoked in Solventa",
+          "revocation_confirmed": "Revocation confirmed by the entity",
+          "revocation_not_confirmed": "The entity did not confirm in time",
+          "revocation_retry_requested": "Notice retry requested",
+          "expired": "Expired"
+        },
+        "canal": "channel {{ canal }}",
+        "canalOtorgamiento": "channel {{ entidad }} ({{ canal }})",
+        "actualVigente": "In force · no revocations",
+        "actualDesde": "Since {{ fecha }}"
+      },
+      "actores": {
+        "operations": "Operations analyst",
+        "holder": "Holder",
+        "system": "System"
+      },
+      "motivos": {
+        "customer_request": "Customer request",
+        "regulatory_order": "Regulatory order"
+      },
+      "canales": {
+        "compliance_portal": "Compliance portal",
+        "mobile_app": "Mobile app"
+      },
+      "fuentes": {
+        "open_finance": "Open Finance",
+        "open_data": "Open Data",
+        "kyc": "KYC"
+      },
+      "categorias": {
+        "credit_products": "credit products",
+        "balances": "balances",
+        "payment_behavior": "payment behavior",
+        "public_records": "public records",
+        "identity_verification": "identity verification"
+      },
+      "vigencias": {
+        "12_months": "Validity: 12 months",
+        "single_use": "Validity: single use"
+      },
+      "revocar": {
+        "titulo": "Revoke {{ nombre }}'s consent",
+        "efectivo": "Effective within ≤ 5 min",
+        "cerrar": "Close",
+        "introduccion": "The revocation request will be sent to every authorized entity. The status will change to Revoked once all of them confirm; if one doesn't respond within 5 minutes, you will see an alert and can retry.",
+        "cliente": "Customer",
+        "alcance": "Scope being revoked",
+        "entidades": "Entities",
+        "consultasFuturas": "Future queries",
+        "consultasBloqueadas": "Blocked immediately in Solventa",
+        "motivo": "Reason",
+        "motivoPlaceholder": "Select a reason",
+        "motivos": {
+          "customer_request": "Customer request",
+          "regulatory_order": "Regulatory order"
+        },
+        "referencia": "Reference (ticket or order)",
+        "referenciaAyuda": "3 to 64 characters: unaccented letters, numbers, space and . / # _ -",
+        "confirmoRol": "I confirm that I act as compliance officer and that the request is documented.",
+        "faltan": "To revoke you still need:",
+        "faltantes": {
+          "motivo": "the reason",
+          "referencia": "a valid reference",
+          "rolConfirmado": "to confirm your role"
+        },
+        "cancelar": "Cancel",
+        "revocarAhora": "Revoke now",
+        "revocando": "Revoking…",
+        "errores": {
+          "service_unavailable": "We couldn't record the revocation and nothing was changed. We kept what you filled in: press “Revoke now” to try again.",
+          "idempotency_key_reused": "The request couldn't be processed. Press “Revoke now” to try again.",
+          "invalid_request": "The request couldn't be processed. Press “Revoke now” to try again.",
+          "generico": "We couldn't revoke the consent. Try again.",
+          "campos": {
+            "motivo": {
+              "required": "Select the reason for the revocation.",
+              "invalid_format": "Select one of the reasons in the list."
+            },
+            "referencia": {
+              "required": "Enter the ticket or order reference.",
+              "out_of_range": "The reference must be 3 to 64 characters long.",
+              "invalid_format": "The reference only accepts unaccented letters, numbers, space and . / # _ -"
+            },
+            "rolConfirmado": {
+              "must_be_true": "Confirm that you act as compliance officer."
+            }
+          }
+        }
+      },
+      "finalidades": {
+        "risk_profiling_mortgage_life_offer": "Risk profile and mortgage life insurance offer"
+      },
+      "canalesOtorgamiento": {
+        "embedded": "embedded journey"
+      },
+      "canalesOtorgamientoEtiqueta": {
+        "embedded": "Embedded"
+      }
+    }
+  },
+  "socios": {
+    "sinDato": "No data",
+    "tipos": {
+      "bank": "Bank",
+      "airline": "Airline",
+      "ecommerce": "E-commerce",
+      "fintech": "Fintech",
+      "cooperative": "Cooperative",
+      "retail": "Retail",
+      "other": "Other"
+    },
+    "credenciales": {
+      "activas": "Active",
+      "rotacion": "Rotation in progress",
+      "inhabilitadas": "Disabled",
+      "sinCredenciales": "No credentials"
+    },
+    "estados": {
+      "pendiente": "Pending approval",
+      "baja": "Offboarded",
+      "excedido": "Limit exceeded",
+      "cercaLimite": "Near the limit",
+      "activo": "Active"
+    },
+    "errores": {
+      "partner_not_pending": "The partner is already approved: its secret is never shown again. If it was lost, rotate the credentials.",
+      "partner_not_active": "Only an active partner can rotate its credentials.",
+      "rotation_in_progress": "A previous credential is still in its transition period. Wait until it ends to rotate again.",
+      "gateway_unavailable": "The credentials could not be managed right now. Nothing changed; try again.",
+      "generico": "The operation could not be completed. Try again."
+    },
+    "listado": {
+      "titulo": "Commercial partners",
+      "descripcion": "Partners integrated through the API with their own credentials, transaction quota and resource isolation. When a partner exceeds its quota, its requests are limited without affecting the others.",
+      "registrar": "Register partner",
+      "cargando": "Loading partners…",
+      "indicadores": {
+        "titulo": "Partner indicators",
+        "activos": "Active partners",
+        "activosDetalle": "With valid credentials",
+        "cuotaMedia": "Average quota used (today)",
+        "cuotaMediaDetalle": "Bursts controlled with HTTP 429",
+        "alertas": "Alerts",
+        "alertasDetalle": "{{nombres}} near the limit",
+        "sinAlertas": "No partner near the limit"
+      },
+      "error": {
+        "titulo": "We could not load the partners",
+        "texto": "The service did not respond. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "vacio": {
+        "titulo": "There are no partners yet",
+        "texto": "Register the first commercial partner to issue its credentials."
+      },
+      "tabla": {
+        "titulo": "Commercial partners and their consumption today",
+        "socio": "Partner",
+        "tipo": "Type",
+        "credenciales": "Credentials",
+        "cuota": "Quota and consumption (today)",
+        "peticiones": "Requests today",
+        "estado": "Status",
+        "acciones": "Actions",
+        "desde": "since {{fecha}}",
+        "sinCuota": "No quota assigned",
+        "consumo": "{{usadas}} / {{limite}} per day",
+        "consumoSinDato": "No data / {{limite}} per day",
+        "ver": "View",
+        "verSocio": "View {{nombre}}"
+      }
+    },
+    "registrar": {
+      "titulo": "Register partner",
+      "cerrar": "Close",
+      "texto": "The partner stays pending approval. Its credentials are issued when it is approved from its detail.",
+      "seleccionar": "Select…",
+      "ayudaProductos": "Separate the products with commas (for example: mortgage life, home).",
+      "cancelar": "Cancel",
+      "enviando": "Registering…",
+      "confirmar": "Register partner",
+      "errorGeneral": "The partner could not be registered. Try again.",
+      "tipos": {
+        "bank": "Bank",
+        "airline": "Airline",
+        "ecommerce": "E-commerce",
+        "fintech": "Fintech",
+        "cooperative": "Cooperative",
+        "retail": "Retail",
+        "other": "Other"
+      },
+      "campos": {
+        "nombre": "Partner name",
+        "codigo": "Tenant code",
+        "tipo": "Type",
+        "correo": "Technical contact e-mail",
+        "productos": "Products",
+        "limiteDiario": "Daily quota (requests)",
+        "limiteRafaga": "Limit per second",
+        "rafagaMaxima": "Maximum burst"
+      },
+      "errores": {
+        "nombre": {
+          "required": "Enter the partner name.",
+          "invalid_format": "The name is not valid.",
+          "out_of_range": "The name must have between 3 and 80 characters."
+        },
+        "codigo": {
+          "required": "Enter the tenant code.",
+          "invalid_format": "Use 3 to 40 lowercase letters, digits or underscores, starting with a letter (for example ten_bancoaliado).",
+          "out_of_range": "The code is not valid.",
+          "taken": "Another partner already uses this code."
+        },
+        "tipo": {
+          "required": "Select the partner type.",
+          "invalid_format": "Select a type from the list.",
+          "out_of_range": "Select a type from the list."
+        },
+        "correo": {
+          "required": "Enter the technical contact e-mail.",
+          "invalid_format": "Enter a valid e-mail.",
+          "out_of_range": "The e-mail is too long."
+        },
+        "productos": {
+          "required": "Enter at least one product.",
+          "invalid_format": "The products are not valid.",
+          "out_of_range": "Enter 1 to 10 products of 2 to 60 characters."
+        },
+        "limiteDiario": {
+          "required": "Enter the daily quota.",
+          "invalid_format": "Enter a whole number.",
+          "out_of_range": "The daily quota must be between 1 and 10,000,000."
+        },
+        "limiteRafaga": {
+          "required": "Enter the limit per second.",
+          "invalid_format": "Enter a whole number.",
+          "out_of_range": "The limit per second must be between 1 and 10,000."
+        },
+        "rafagaMaxima": {
+          "required": "Enter the maximum burst.",
+          "invalid_format": "Enter a whole number.",
+          "out_of_range": "The maximum burst must be at least the limit per second and at most 20,000."
+        }
+      }
+    },
+    "rotar": {
+      "titulo": "Rotate credentials",
+      "cerrar": "Close",
+      "texto": "A new pair of credentials is issued. The previous one keeps working during the transition period and is then revoked, without interrupting the transactions in progress.",
+      "horas": "Transition period (hours)",
+      "ayuda": "Between {{minimo}} and {{maximo}} hours.",
+      "errorHoras": {
+        "required": "Enter the transition period.",
+        "out_of_range": "The period must be a whole number between {{minimo}} and {{maximo}} hours."
+      },
+      "errores": {
+        "partner_not_pending": "The partner is already approved: its secret is never shown again. If it was lost, rotate the credentials.",
+        "partner_not_active": "Only an active partner can rotate its credentials.",
+        "rotation_in_progress": "A previous credential is still in its transition period. Wait until it ends to rotate again.",
+        "gateway_unavailable": "The credentials could not be managed right now. Nothing changed; try again.",
+        "generico": "The operation could not be completed. Try again."
+      },
+      "cancelar": "Cancel",
+      "enviando": "Rotating…",
+      "confirmar": "Rotate credentials"
+    },
+    "secreto": {
+      "titulo": "Credentials issued",
+      "avisoTitulo": "This secret is shown only now",
+      "avisoTexto": "Copy it and hand it to the partner through a secure channel. Once this window is closed it cannot be read again; if it is lost, the credentials must be rotated.",
+      "clientId": "Client ID",
+      "clientSecret": "Client secret",
+      "copiarClientId": "Copy client ID",
+      "copiarSecreto": "Copy secret",
+      "uso": "The partner sends the secret in the {{cabecera}} header of every request.",
+      "copiado": {
+        "clientId": "Client ID copied.",
+        "secreto": "Secret copied.",
+        "error": "It could not be copied. Select the text and copy it manually."
+      },
+      "confirmar": "I saved the secret"
+    },
+    "detalle": {
+      "volver": "Partners",
+      "cargando": "Loading partner…",
+      "noEncontrado": {
+        "titulo": "We could not find this partner",
+        "texto": "Check the link or go back to the list of partners."
+      },
+      "error": {
+        "titulo": "We could not load the partner",
+        "texto": "The service did not respond. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "subtitulo": "{{tipo}} · partner since {{fecha}} · products: {{productos}} · tenant {{codigo}} · technical contact {{contacto}}",
+      "aprobar": "Approve and issue credentials",
+      "aprobando": "Issuing credentials…",
+      "rotar": "Rotate credentials",
+      "credenciales": {
+        "titulo": "Access credentials",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "pista": "ends in {{pista}} · visible only once when issued",
+        "autenticacion": "Authentication",
+        "apiKey": "API key · {{cabecera}} header",
+        "entorno": "Environment",
+        "generadas": "Issued",
+        "ultimaRotacion": "Last rotation",
+        "sinRotaciones": "No rotations",
+        "anterior": "The previous credential ({{clientId}}) remains valid until {{fecha}}; then it is revoked automatically.",
+        "avisoTitulo": "The secret is never shown again",
+        "avisoTexto": "If the partner loses it, rotate the credentials: a new pair is issued and the previous one stops working after the {{horas}}-hour transition period.",
+        "pendiente": "The partner is pending approval. Approving it issues its credentials, its quota and its isolated resources."
+      },
+      "cuota": {
+        "titulo": "Quota and isolation",
+        "consumo": "Consumption today · {{usadas}} of {{limite}} requests ({{porcentaje}} %)",
+        "consumoSinDato": "Consumption today · no data from the gateway",
+        "asignada": "Assigned quota",
+        "porDia": "{{limite}} requests per day",
+        "rafaga": "Burst limit",
+        "porSegundo": "{{limite}} per second (burst of {{maximo}})",
+        "alExceder": "When the quota is exceeded",
+        "alExcederTexto": "HTTP 429 to the partner · without affecting the others",
+        "aislamiento": "Isolation",
+        "aislamientoTexto": "Own usage plan and API key",
+        "limitacion": "Rate limiting",
+        "limitacionTexto": "API Gateway · per credential",
+        "latencia": "Latency budget",
+        "latenciaTexto": "p95 ≤ 400 ms on quoting"
+      },
+      "uso": {
+        "titulo": "Recent usage (24 h)",
+        "texto": "The quotes, issued policies, response times and errors of the partner arrive with the performance dashboard."
+      },
+      "aislamiento": {
+        "titulo": "Isolation per partner",
+        "texto": "Each partner operates with separate resources: its limits, its cache and its queues do not share capacity with other partners. Cutting the access of one does not affect the others."
+      },
+      "historial": {
+        "titulo": "Credential history",
+        "fecha": "Date",
+        "accion": "Action",
+        "quien": "Who",
+        "estado": "Status",
+        "tipos": {
+          "registered": "Partner registered",
+          "credentials_issued": "Credentials issued",
+          "credentials_rotated": "Credentials rotated",
+          "credentials_revoked": "Previous credential revoked"
+        },
+        "detalles": {
+          "registered": "Pending approval",
+          "credentials_issued": "{{client_id}} · quota of {{daily_limit}} requests per day",
+          "credentials_rotated": "New pair {{client_id}} · {{grace_period_hours}} h transition",
+          "credentials_revoked": "{{client_id}} · end of the transition period"
+        },
+        "sistema": "System",
+        "enTransicion": "In transition",
+        "aplicado": "Applied"
+      }
+    }
+  }
+}

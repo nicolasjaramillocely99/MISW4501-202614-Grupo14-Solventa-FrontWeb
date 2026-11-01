@@ -1,0 +1,256 @@
+// Paso 4 del canal embebido (E4b, HA-D02): contexto, tarjeta «Tu crédito» y estado del cobro de la prima.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 8vw, 120px);
+}
+
+.pagina__contexto {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.pagina__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+p {
+  margin: 0;
+}
+
+.flujo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  box-shadow: none;
+}
+
+.flujo__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+}
+
+.flujo__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.flujo__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.flujo__texto,
+.resultado__texto {
+  color: var(--color-texto-secundario);
+}
+
+// Confirmado y excepción: ícono en círculo, título y texto centrados.
+.resultado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-12);
+  text-align: center;
+}
+
+.resultado__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radio-completo);
+  background: var(--color-azul-100);
+  color: var(--color-azul-700);
+}
+
+.resultado__icono--confirmado {
+  background: var(--color-exito-100);
+  color: var(--color-exito-600);
+}
+
+.resultado__icono--excepcion {
+  background: var(--color-error-100);
+  color: var(--color-error-600);
+}
+
+// La tira de datos del rechazo (E4c) comparte la tipografia de .datos pero
+// no su caja: en el frame va suelta sobre el fondo, en cuatro columnas.
+.datos,
+.rechazo {
+  display: grid;
+  gap: var(--espacio-16) var(--espacio-24);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+  }
+}
+
+.datos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 20px var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-base);
+  background: var(--color-fondo-pagina);
+}
+
+.rechazo {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+// La marca llega de la pasarela en minuscula («visa»).
+.rechazo__medio {
+  text-transform: capitalize;
+}
+
+.acciones__nota {
+  margin: var(--espacio-8) 0 0;
+  text-align: right;
+  font-size: 0.8125rem;
+  color: var(--color-texto-secundario);
+}
+
+.datos__identificador {
+  overflow-wrap: anywhere;
+}
+
+.progreso {
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radio-completo);
+  background: var(--color-borde-base);
+}
+
+.progreso__barra {
+  width: 40%;
+  height: 100%;
+  background: var(--color-azul-700);
+  animation: progreso-indeterminado 1.4s ease-in-out infinite;
+}
+
+@keyframes progreso-indeterminado {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progreso__barra {
+    width: 60%;
+    animation: none;
+  }
+}
+
+.linea {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linea__paso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  padding: var(--espacio-12) 0;
+
+  & + & {
+    border-top: 1px solid var(--color-borde-base);
+  }
+}
+
+.linea__icono {
+  flex-shrink: 0;
+}
+
+.linea__icono--listo {
+  color: var(--color-exito-500);
+}
+
+.linea__icono--alerta {
+  color: var(--color-advertencia-600);
+}
+
+.linea__icono--enCurso {
+  color: var(--color-azul-700);
+}
+
+.linea__nombre {
+  flex: 1;
+  font-weight: 500;
+}
+
+.linea__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+.acciones--centradas {
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .pagina__cuerpo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 720px) {
+  .datos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .acciones .boton {
+    flex: 1 1 100%;
+  }
+}
+
+// E4 y E4c (HU-W1.3-02): formulario a la izquierda y resumen a la derecha,
+// como el frame. En pantalla angosta el resumen baja debajo.
+.pago__columnas {
+  display: grid;
+  gap: var(--espacio-24);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+  align-items: start;
+
+  @media (width < 48rem) {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,0 +1,199 @@
+// S2 / S2b · Cotización asistida · Resultado: prima, coberturas y explicación del precio a la izquierda; cliente a la derecha.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.pagina__codigo {
+  margin: var(--espacio-4) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+.pagina__cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.principal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  min-width: 0;
+}
+
+.pagina__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+// Bloque destacado del frame S2: fondo azul claro y borde izquierdo azul, con la prima y las cifras clave.
+.prima {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  border-left: 4px solid var(--color-azul-700);
+  background: var(--color-azul-50);
+}
+
+.principal > .tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.prima__cifras {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-24) var(--espacio-32);
+}
+
+.prima__etiqueta {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.datos--cifras {
+  flex: 1;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin: 0;
+}
+
+.prima--vencida .prima__valor {
+  color: var(--color-texto-secundario);
+  text-decoration: line-through;
+}
+
+.prima__valor {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.coberturas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-8);
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: var(--color-exito-500);
+  }
+}
+
+.coberturas__monto {
+  margin-left: auto;
+  font-weight: 500;
+}
+
+.detalle {
+  display: flex;
+  flex: 0 0 352px;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  min-width: 0;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--espacio-16);
+  margin: var(--espacio-16) 0 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: 2px 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.datos--pie {
+  padding-top: var(--espacio-16);
+  border-top: 1px solid var(--color-borde-base);
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-8);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.estado-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  max-width: 560px;
+}
+
+@media (max-width: 960px) {
+  .pagina__cuerpo {
+    flex-direction: column;
+  }
+
+  .detalle {
+    flex-basis: auto;
+    width: 100%;
+  }
+}

@@ -1,0 +1,64 @@
+// Tokens del sistema de diseño Solventa (wiki «Sistema de Diseño», §2 a §4; colección `Solventa` de Figma).
+// Subconjunto que usan hoy el acceso, el shell del portal y los inicios por rol (HA-S01); el resto llega con T7.
+// Regla: ningún valor hexadecimal fuera de este archivo.
+
+:root {
+  // Primario (§2.1)
+  --color-azul-900: #06225a;
+  --color-azul-700: #0b3b8c;
+  --color-azul-500: #1d5bd6;
+  --color-azul-100: #e4ebfa;
+  --color-azul-50: #f1f5fd;
+
+  // Acento (§2.2): solo sobre azul/900 o azul/700, nunca como texto sobre blanco
+  --color-lima-500: #c8e11b;
+
+  // Neutros (§2.3)
+  --color-texto-primario: #1b1f2a;
+  --color-texto-secundario: #5b6472;
+  --color-texto-inverso: #ffffff;
+  --color-borde-base: #d9dee7;
+  --color-borde-fuerte: #aeb6c4;
+  --color-fondo-pagina: #f6f8fb;
+  --color-fondo-superficie: #ffffff;
+
+  // Semánticos (§2.4): 600 texto · 500 ícono y borde · 100 fondo
+  --color-exito-600: #166b2f;
+  --color-exito-500: #1e8e3e;
+  --color-exito-100: #e6f4ea;
+  --color-error-600: #a61e1e;
+  --color-error-500: #c62828;
+  --color-error-100: #fce8e8;
+  --color-advertencia-600: #8a5300;
+  --color-advertencia-500: #f5a623;
+  --color-advertencia-100: #fff4d6;
+  --color-informacion-600: #0b3b8c;
+  --color-informacion-500: #1d5bd6;
+  --color-informacion-100: #e4ebfa;
+
+  // Tipografía (§3)
+  --fuente-familia: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  // Espaciado (§4.1)
+  --espacio-4: 0.25rem;
+  --espacio-8: 0.5rem;
+  --espacio-12: 0.75rem;
+  --espacio-16: 1rem;
+  --espacio-24: 1.5rem;
+  --espacio-32: 2rem;
+  --espacio-48: 3rem;
+  --espacio-64: 4rem;
+
+  // Radios y sombra (§4.3)
+  --radio-pequeno: 6px;
+  --radio-base: 8px;
+  --radio-tarjeta: 12px;
+  --radio-completo: 999px;
+  --sombra-elevacion: 0 2px 8px rgba(6, 34, 90, 0.08);
+
+  // Medidas del shell (§4.2 y §5)
+  --shell-barra-superior: 64px;
+  --shell-barra-lateral: 240px;
+  --shell-contenedor: 1200px;
+  --control-alto: 40px;
+}

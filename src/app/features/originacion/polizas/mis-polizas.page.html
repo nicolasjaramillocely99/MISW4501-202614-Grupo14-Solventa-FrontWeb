@@ -1,0 +1,152 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.polizas'">
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+      <p class="pagina__subtitulo">
+        {{ titular() ? t('subtituloDe', { nombre: titular() }) : t('subtitulo') }}
+      </p>
+    </div>
+    <a class="boton boton--secundario" routerLink="/siniestros/radicar">
+      <svg lucidePlus [size]="16" aria-hidden="true"></svg>
+      {{ t('acciones.radicar') }}
+    </a>
+  </header>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h2 id="titulo-error" class="seccion__titulo">{{ t('error.titulo') }}</h2>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('error.texto') }}</p>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">
+            {{ t('acciones.reintentar') }}
+          </button>
+        </div>
+      </section>
+    }
+    @case ('listo') {
+      @if (polizas().length === 0) {
+        <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-vacio">
+          <h2 id="titulo-vacio" class="seccion__titulo">{{ t('vacio.titulo') }}</h2>
+          <p>{{ t('vacio.texto') }}</p>
+        </section>
+      } @else {
+        <section class="resumen" [attr.aria-label]="t('resumen.titulo')">
+          <div class="tarjeta resumen__tarjeta">
+            <p class="resumen__etiqueta">{{ t('resumen.activas') }}</p>
+            <p class="resumen__cifra">{{ activas().length }}</p>
+          </div>
+          <div class="tarjeta resumen__tarjeta">
+            <p class="resumen__etiqueta">{{ t('resumen.porVencer') }}</p>
+            <p class="resumen__cifra resumen__cifra--aviso">{{ porVencer().length }}</p>
+            @if (porVencer()[0]; as proxima) {
+              <p class="texto-suave">
+                {{ t('resumen.vence', { fecha: proxima.vigenciaHasta | formatoFecha }) }}
+              </p>
+            }
+          </div>
+        </section>
+
+        @if (porVencer()[0]; as proxima) {
+          <div class="aviso aviso--advertencia" role="status">
+            <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">
+                {{
+                  diasParaVencer() === 0
+                    ? t('aviso.tituloHoy', { id: proxima.polizaId })
+                    : diasParaVencer() === 1
+                      ? t('aviso.tituloUno', { id: proxima.polizaId })
+                      : t('aviso.titulo', { id: proxima.polizaId, dias: diasParaVencer() })
+                }}
+              </p>
+              <p>{{ t('aviso.texto') }}</p>
+            </div>
+          </div>
+        }
+
+        <div class="filtros">
+          <label class="campo">
+            <span class="campo__etiqueta">{{ t('filtros.estado') }}</span>
+            <select class="campo__control" [formControl]="filtro">
+              <option value="">{{ t('filtros.todas') }}</option>
+              @for (e of estados; track e) {
+                <option [value]="e">{{ t('estado.' + e) }}</option>
+              }
+            </select>
+          </label>
+          <p class="texto-suave filtros__contador" role="status">
+            {{
+              visibles().length === 1 ? t('contadorUno') : t('contador', { n: visibles().length })
+            }}
+          </p>
+        </div>
+
+        <div class="tabla-envoltorio tarjeta">
+          <table class="tabla">
+            <caption class="solo-lectores">
+              {{
+                t('titulo')
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">{{ t('tabla.poliza') }}</th>
+                <th scope="col">{{ t('tabla.vigencia') }}</th>
+                <th scope="col" class="tabla__numero">{{ t('tabla.prima') }}</th>
+                <th scope="col">{{ t('tabla.estado') }}</th>
+                <th scope="col">
+                  <span class="solo-lectores">{{ t('tabla.acciones') }}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of visibles(); track p.polizaId) {
+                <tr>
+                  <th scope="row" class="tabla__poliza">
+                    {{ p.polizaId }}
+                    <span class="texto-suave">{{
+                      t('tabla.valorAsegurado', {
+                        monto: (p.valorAsegurado | formatoMoneda: p.moneda),
+                      })
+                    }}</span>
+                  </th>
+                  <td>
+                    {{ p.vigenciaDesde | formatoFecha }} → {{ p.vigenciaHasta | formatoFecha }}
+                  </td>
+                  <td class="tabla__numero">{{ p.prima | formatoMoneda: p.moneda }}</td>
+                  <td>
+                    <app-insignia-estado [tono]="tono(p)">{{
+                      t('estado.' + estado(p))
+                    }}</app-insignia-estado>
+                  </td>
+                  <td class="tabla__accion">
+                    @if (p.puedeRenovar) {
+                      <a
+                        class="enlace"
+                        [routerLink]="['/originacion/polizas', p.polizaId, 'renovar']"
+                        >{{ t('acciones.renovar') }}</a
+                      >
+                    } @else if (p.renovacion !== null) {
+                      <a
+                        class="enlace"
+                        [routerLink]="['/originacion/polizas', p.polizaId, 'renovar']"
+                        >{{ t('acciones.verRenovacion') }}</a
+                      >
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</div>

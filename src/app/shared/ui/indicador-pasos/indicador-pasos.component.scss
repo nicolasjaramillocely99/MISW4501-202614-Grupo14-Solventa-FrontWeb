@@ -1,0 +1,67 @@
+.pasos {
+  display: flex;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paso {
+  display: flex;
+  flex: 0 0 120px;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-8);
+}
+
+.paso__circulo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-completo);
+  font-weight: 500;
+}
+
+.paso__circulo--completado {
+  background: var(--color-azul-700);
+  color: var(--color-texto-inverso);
+}
+
+.paso__circulo--actual {
+  border: 2px solid var(--color-azul-700);
+  background: var(--color-fondo-superficie);
+  color: var(--color-azul-700);
+}
+
+.paso__circulo--pendiente {
+  border: 1px solid var(--color-borde-base);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-secundario);
+}
+
+.paso__etiqueta {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  text-align: center;
+  color: var(--color-texto-primario);
+}
+
+.paso__etiqueta--pendiente {
+  color: var(--color-texto-secundario);
+}
+
+.pasos__linea {
+  flex: 1 1 0;
+  align-self: flex-start;
+  min-width: 0;
+  height: 2px;
+  margin-top: 15px;
+  background: var(--color-borde-base);
+}
+
+.pasos__linea--alcanzada {
+  background: var(--color-lima-500);
+}

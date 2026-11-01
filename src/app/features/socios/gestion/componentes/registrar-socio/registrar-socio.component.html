@@ -1,0 +1,117 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-registrar-socio"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'socios.registrar'"
+>
+  @if (abierto()) {
+    <form class="modal__contenido" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-registrar-socio" class="modal__titulo">{{ t('titulo') }}</h2>
+        <button type="button" class="modal__cerrar" [attr.aria-label]="t('cerrar')" [disabled]="enviando()" (click)="pedirCierre()">
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">{{ t('texto') }}</p>
+
+      <div class="rejilla">
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-nombre">{{ t('campos.nombre') }}</label>
+          <input id="registrar-nombre" class="campo__control" formControlName="nombre" autocomplete="organization" required
+            [attr.aria-invalid]="errores().has('nombre') ? 'true' : null" [attr.aria-describedby]="idError('nombre')" />
+          @if (errores().get('nombre'); as codigo) {
+            <p id="registrar-nombre-error" class="campo__error">{{ t('errores.nombre.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-codigo">{{ t('campos.codigo') }}</label>
+          <input id="registrar-codigo" class="campo__control" formControlName="codigo" autocomplete="off" spellcheck="false" required
+            [attr.aria-invalid]="errores().has('codigo') ? 'true' : null" [attr.aria-describedby]="idError('codigo')" />
+          @if (errores().get('codigo'); as codigo) {
+            <p id="registrar-codigo-error" class="campo__error">{{ t('errores.codigo.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-tipo">{{ t('campos.tipo') }}</label>
+          <select id="registrar-tipo" class="campo__control" formControlName="tipo" required
+            [attr.aria-invalid]="errores().has('tipo') ? 'true' : null" [attr.aria-describedby]="idError('tipo')">
+            <option value="">{{ t('seleccionar') }}</option>
+            @for (tipo of tipos; track tipo) {
+              <option [value]="tipo">{{ t('tipos.' + tipo) }}</option>
+            }
+          </select>
+          @if (errores().get('tipo'); as codigo) {
+            <p id="registrar-tipo-error" class="campo__error">{{ t('errores.tipo.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-correoContactoTecnico">{{ t('campos.correo') }}</label>
+          <input id="registrar-correoContactoTecnico" class="campo__control" type="email" formControlName="correoContactoTecnico"
+            autocomplete="email" required [attr.aria-invalid]="errores().has('correoContactoTecnico') ? 'true' : null"
+            [attr.aria-describedby]="idError('correoContactoTecnico')" />
+          @if (errores().get('correoContactoTecnico'); as codigo) {
+            <p id="registrar-correoContactoTecnico-error" class="campo__error">{{ t('errores.correo.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo rejilla__completa">
+          <label class="campo__etiqueta" for="registrar-productos">{{ t('campos.productos') }}</label>
+          <input id="registrar-productos" class="campo__control" formControlName="productos" required
+            [attr.aria-invalid]="errores().has('productos') ? 'true' : null"
+            [attr.aria-describedby]="idError('productos') ?? 'registrar-productos-ayuda'" />
+          @if (errores().get('productos'); as codigo) {
+            <p id="registrar-productos-error" class="campo__error">{{ t('errores.productos.' + codigo) }}</p>
+          } @else {
+            <p id="registrar-productos-ayuda" class="modal__texto">{{ t('ayudaProductos') }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-limiteDiario">{{ t('campos.limiteDiario') }}</label>
+          <input id="registrar-limiteDiario" class="campo__control" type="number" min="1" step="1" formControlName="limiteDiario" required
+            [attr.aria-invalid]="errores().has('limiteDiario') ? 'true' : null" [attr.aria-describedby]="idError('limiteDiario')" />
+          @if (errores().get('limiteDiario'); as codigo) {
+            <p id="registrar-limiteDiario-error" class="campo__error">{{ t('errores.limiteDiario.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-limiteRafaga">{{ t('campos.limiteRafaga') }}</label>
+          <input id="registrar-limiteRafaga" class="campo__control" type="number" min="1" step="1" formControlName="limiteRafaga" required
+            [attr.aria-invalid]="errores().has('limiteRafaga') ? 'true' : null" [attr.aria-describedby]="idError('limiteRafaga')" />
+          @if (errores().get('limiteRafaga'); as codigo) {
+            <p id="registrar-limiteRafaga-error" class="campo__error">{{ t('errores.limiteRafaga.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="registrar-rafagaMaxima">{{ t('campos.rafagaMaxima') }}</label>
+          <input id="registrar-rafagaMaxima" class="campo__control" type="number" min="1" step="1" formControlName="rafagaMaxima" required
+            [attr.aria-invalid]="errores().has('rafagaMaxima') ? 'true' : null" [attr.aria-describedby]="idError('rafagaMaxima')" />
+          @if (errores().get('rafagaMaxima'); as codigo) {
+            <p id="registrar-rafagaMaxima-error" class="campo__error">{{ t('errores.rafagaMaxima.' + codigo) }}</p>
+          }
+        </div>
+      </div>
+
+      @if (errorGeneral()) {
+        <div class="aviso aviso--error" role="alert">
+          <p>{{ t('errorGeneral') }}</p>
+        </div>
+      }
+
+      <div class="modal__acciones">
+        <button type="button" class="boton boton--secundario" [disabled]="enviando()" (click)="pedirCierre()">{{ t('cancelar') }}</button>
+        <button type="submit" class="boton boton--primario" [disabled]="enviando()">
+          {{ enviando() ? t('enviando') : t('confirmar') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

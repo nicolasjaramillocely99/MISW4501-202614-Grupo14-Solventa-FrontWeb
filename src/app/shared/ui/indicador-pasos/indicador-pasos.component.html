@@ -1,0 +1,20 @@
+<ol class="pasos" [attr.aria-label]="t(etiqueta())" *transloco="let t">
+  @for (paso of pasos(); track $index; let i = $index) {
+    @if (i > 0) {
+      <li class="pasos__linea" [class.pasos__linea--alcanzada]="paso.estado !== 'pendiente'" aria-hidden="true"></li>
+    }
+    <li class="paso" [attr.aria-current]="paso.estado === 'actual' ? 'step' : null">
+      <span class="paso__circulo paso__circulo--{{ paso.estado }}" aria-hidden="true">
+        @if (paso.estado === 'completado') {
+          <svg lucideCheck [size]="18"></svg>
+        } @else {
+          {{ i + 1 }}
+        }
+      </span>
+      <span class="paso__etiqueta" [class.paso__etiqueta--pendiente]="paso.estado === 'pendiente'">
+        {{ t(paso.etiqueta) }}
+        <span class="visualmente-oculto">· {{ t('comun.pasos.' + paso.estado) }}</span>
+      </span>
+    </li>
+  }
+</ol>

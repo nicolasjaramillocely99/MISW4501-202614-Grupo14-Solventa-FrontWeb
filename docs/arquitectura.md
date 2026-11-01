@@ -17,10 +17,11 @@ Resumen de lo que los [modelos de arquitectura](https://github.com/leonelparrale
 | Elemento | Valor | Consecuencia en el código |
 |---|---|---|
 | Nodo de ejecución | «executionEnvironment» Navegador web en el «device» PC del usuario; una instancia por sesión | Aplicación de una sola página; sin SSR |
-| Acceso de clientes | HTTPS/TLS → Amazon API Gateway (tipo REST) | `apiGatewayUrl` en `src/environments/` |
+| Archivos del portal (T5) | Bucket S3 privado detrás de Amazon CloudFront; el API Gateway en el **mismo dominio** (`/v1/*`, `/pasarela/*`). Decisión de despliegue de T5 informada al equipo; *Arquitectura final* no modela dónde se sirve el portal | Sin CORS; la configuración del ambiente se lee de `config.json` al arrancar (`core/configuracion/`) |
+| Acceso de clientes | HTTPS/TLS → Amazon API Gateway (tipo REST), por CloudFront | `apiGatewayUrl` de `CONFIGURACION_EJECUCION` (`config.json` en la nube, `environment.development.ts` en local) |
 | Identidad (HA-S01) | HTTPS/TLS (OIDC) → Amazon Cognito User Pool; un *user pool* con grupos por rol; el *authorizer* del gateway valida el JWT sin salto de red | `core/auth/` emite y refresca tokens solo al iniciar sesión; el JWT viaja en cada petición (`core/auth/interceptores/`) |
 | Roles humanos | asegurado · asesor comercial · analista de operaciones · socio comercial | Tipo `Rol` en `core/auth/`, *guards* por ruta, menú por rol en `core/navegacion/` |
-| Socios embebidos | Autentican con API keys y *usage plans* del gateway, **no** con Cognito | El canal embebido (`features/embebido/`) es público para el usuario final; la credencial del socio la maneja el sitio del aliado |
+| Socios embebidos | Autentican con API keys y *usage plans* del gateway, **no** con Cognito | El canal embebido (`features/embebido/`) es público para el usuario final; la credencial del socio la maneja el sitio del aliado. En la demo desplegada (T5) CloudFront hace de sitio del aliado: agrega la key del socio de demostración `portal-embebido` a las rutas de socio y el navegador nunca la ve |
 | Timeout de integración del gateway | 5 s en las rutas de cotización (ADR-02) | Las pantallas de cotización muestran estado de carga y degradación antes de ese límite |
 
 ## 3. Atributos de calidad que el cliente web debe evidenciar
@@ -42,8 +43,8 @@ Resumen de lo que los [modelos de arquitectura](https://github.com/leonelparrale
 | **Layer-N** | `features` → `shared`/`core` → API Gateway. Nunca al revés |
 | **Microservicios acotados** | Un dominio por servicio, cargado como *chunk* perezoso independiente; cambiar un dominio no recompila a los demás |
 | **Publicador/suscriptor** | No aplica al cliente web: no consume eventos; el estado se consulta por API |
-| **API Gateway «Facade»** | Un solo origen (`apiGatewayUrl`); los prefijos por servicio se concentran en `core/api/` |
+| **API Gateway «Facade»** | Un solo origen (`apiGatewayUrl`, que en la nube es el propio portal en CloudFront); los prefijos por servicio se concentran en `core/api/` |
 
 ## 5. Ambientes
 
-Los cuatro ambientes de [frameworks y ambientes](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/frameworks): local (Docker Compose del backend), test/CI (efímero por *pull request*), staging (experimentos, encendido por ventana) y producción demo (CI/CD). En este repositorio se corresponden con `environment.development.ts`, el pipeline de `.github/workflows/`, `environment.staging.ts` y `environment.ts`.
+Los cuatro ambientes de [frameworks y ambientes](https://github.com/leonelparrales22/MISW4501-202614-Grupo14-Solventa/wiki/frameworks): local (Docker Compose del backend), test/CI (efímero por *pull request*), staging (experimentos, encendido por ventana) y producción demo (CI/CD). En este repositorio se corresponden con `environment.development.ts` (`configuracionLocal`), el pipeline de `.github/workflows/` y, para staging y producción demo, el mismo *build* de producción con el `config.json` de cada ambiente (T5). Staging se publica con `cd-portal.yml` bajo demanda desde `develop`; producción demo, con `scripts/publicar-portal.sh` desde `main` (lo corre `scripts/environment/up.sh` del backend o el pipeline de `main`).

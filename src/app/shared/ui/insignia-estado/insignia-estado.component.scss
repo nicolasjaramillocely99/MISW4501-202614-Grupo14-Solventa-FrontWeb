@@ -1,0 +1,65 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 2px var(--espacio-8);
+  border-radius: var(--radio-pequeno);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+
+.insignia__punto {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radio-completo);
+  background: currentColor;
+}
+
+:host(.insignia--exito) {
+  background: var(--color-exito-100);
+  color: var(--color-exito-600);
+
+  .insignia__punto {
+    background: var(--color-exito-500);
+  }
+}
+
+:host(.insignia--advertencia) {
+  background: var(--color-advertencia-100);
+  color: var(--color-advertencia-600);
+
+  .insignia__punto {
+    background: var(--color-advertencia-500);
+  }
+}
+
+:host(.insignia--error) {
+  background: var(--color-error-100);
+  color: var(--color-error-600);
+
+  .insignia__punto {
+    background: var(--color-error-500);
+  }
+}
+
+:host(.insignia--informacion) {
+  background: var(--color-informacion-100);
+  color: var(--color-informacion-600);
+
+  .insignia__punto {
+    background: var(--color-informacion-500);
+  }
+}
+
+// Neutro: el sistema de diseño (§5) no fija sus colores. Texto primario sobre borde/base = 12,19:1 (§8 pide 4,5:1;
+// el secundario daba 4,43:1 y axe lo marcaba en E7). El punto es decorativo (aria-hidden): el estado va en el texto.
+:host(.insignia--neutro) {
+  background: var(--color-borde-base);
+  color: var(--color-texto-primario);
+
+  .insignia__punto {
+    background: var(--color-borde-fuerte);
+  }
+}

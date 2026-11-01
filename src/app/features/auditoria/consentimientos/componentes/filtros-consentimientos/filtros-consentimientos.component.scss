@@ -1,0 +1,30 @@
+// Filtros del frame 44:4954: cinco campos en una fila que se pliega, con etiqueta permanente y ayuda debajo.
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+}
+
+.filtros__estado,
+.filtros__fecha {
+  flex: 0 1 170px;
+}
+
+.filtros__entidad {
+  flex: 0 1 200px;
+}
+
+.filtros__cliente {
+  flex: 1 1 240px;
+}
+
+.campo__control {
+  width: 100%;
+}
+
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

@@ -1,0 +1,90 @@
+<form
+  class="formulario"
+  [formGroup]="formulario"
+  (ngSubmit)="enviar()"
+  novalidate
+  *transloco="let t; prefix: 'originacion.bandejaDecision.formulario'"
+>
+  <fieldset class="opciones" [attr.aria-describedby]="errorDe('tipo') ? 'tipo-error' : null">
+    <legend class="opciones__leyenda">{{ t('leyenda') }}</legend>
+    @for (opcion of opciones; track opcion) {
+      <label class="opcion" [class.opcion--elegida]="formulario.controls.tipo.value === opcion">
+        <input class="opcion__radio" type="radio" name="tipo" formControlName="tipo" [value]="opcion" />
+        <span class="opcion__icono" aria-hidden="true">
+          @switch (opcion) {
+            @case ('accept') {
+              <svg lucideCircleCheck [size]="20"></svg>
+            }
+            @case ('adjust') {
+              <svg lucideSlidersHorizontal [size]="20"></svg>
+            }
+            @default {
+              <svg lucideCircleX [size]="20"></svg>
+            }
+          }
+        </span>
+        <span class="opcion__texto">
+          <span class="opcion__titulo">{{ t('opciones.' + opcion + '.titulo') }}</span>
+          <span class="opcion__descripcion">{{ t('opciones.' + opcion + '.descripcion') }}</span>
+        </span>
+      </label>
+    }
+    @if (errorDe('tipo'); as clave) {
+      <p id="tipo-error" class="campo__error">
+        <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.' + clave) }}
+      </p>
+    }
+  </fieldset>
+
+  <div class="campos">
+    <div class="campo">
+      <label class="campo__etiqueta" for="ajustePrimaPct">{{ t('campos.ajustePrimaPct') }}</label>
+      <input
+        id="ajustePrimaPct"
+        class="campo__control"
+        type="number"
+        inputmode="decimal"
+        min="0.01"
+        max="100"
+        step="0.01"
+        formControlName="ajustePrimaPct"
+        [placeholder]="formulario.controls.ajustePrimaPct.disabled ? '—' : ''"
+        [attr.aria-invalid]="errorDe('ajustePrimaPct') ? 'true' : null"
+        [attr.aria-describedby]="errorDe('ajustePrimaPct') ? 'ajustePrimaPct-error' : 'ajustePrimaPct-ayuda'"
+      />
+      @if (errorDe('ajustePrimaPct'); as clave) {
+        <p id="ajustePrimaPct-error" class="campo__error">
+          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.' + clave) }}
+        </p>
+      } @else {
+        <p id="ajustePrimaPct-ayuda" class="campo__ayuda">{{ t('ayudas.ajustePrimaPct') }}</p>
+      }
+    </div>
+
+    <div class="campo">
+      <label class="campo__etiqueta" for="observaciones">{{ t('campos.observaciones') }}</label>
+      <textarea
+        id="observaciones"
+        class="campo__control campo__control--area"
+        rows="4"
+        [attr.maxlength]="maxObservaciones"
+        formControlName="observaciones"
+        [attr.aria-invalid]="errorDe('observaciones') ? 'true' : null"
+        [attr.aria-describedby]="errorDe('observaciones') ? 'observaciones-error' : 'observaciones-ayuda'"
+      ></textarea>
+      @if (errorDe('observaciones'); as clave) {
+        <p id="observaciones-error" class="campo__error">
+          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.' + clave, { max: maxObservaciones }) }}
+        </p>
+      } @else {
+        <p id="observaciones-ayuda" class="campo__ayuda">{{ t('ayudas.observaciones') }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="acciones">
+    <button type="submit" class="boton boton--primario" [disabled]="enviando()">
+      {{ enviando() ? t('acciones.registrando') : t('acciones.registrar') }}
+    </button>
+  </div>
+</form>

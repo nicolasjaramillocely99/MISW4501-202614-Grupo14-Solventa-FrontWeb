@@ -1,0 +1,84 @@
+// Tabla de la bandeja (S4): encabezados en mayúsculas pequeñas, filas separadas por el borde base.
+:host {
+  display: block;
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-borde-base);
+  }
+
+  th {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+    background: var(--color-fondo-pagina);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.tabla__leyenda {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tabla__oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tabla__principal,
+.tabla__secundario {
+  display: block;
+}
+
+.tabla__secundario {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.tabla__identificador {
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.tabla__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-alto);
+  font-weight: 500;
+  color: var(--color-azul-700);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}

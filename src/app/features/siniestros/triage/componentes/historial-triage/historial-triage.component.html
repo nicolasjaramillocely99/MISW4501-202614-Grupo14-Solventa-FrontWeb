@@ -1,0 +1,45 @@
+<section class="tarjeta historial" *transloco="let t; prefix: 'siniestros'" aria-labelledby="titulo-historial">
+  <h2 id="titulo-historial" class="seccion__titulo">{{ t('triage.historial.titulo') }}</h2>
+
+  @if (filas().length === 0) {
+    <p class="historial__vacio">{{ t('triage.historial.vacio') }}</p>
+  } @else {
+    <ol class="historial__lista">
+      @for (fila of filas(); track fila.entrada.evaluadoEn) {
+        <li class="historial__fila">
+          @switch (fila.descripcion.tipo) {
+            @case ('asignado') {
+              <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+            }
+            @case ('recalculado') {
+              <svg lucideArrowRightLeft [size]="20" aria-hidden="true"></svg>
+            }
+            @default {
+              <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
+            }
+          }
+          <div>
+            <p class="historial__texto">
+              @switch (fila.descripcion.tipo) {
+                @case ('asignado') {
+                  {{ t('triage.historial.asignado', { nivel: etiquetaNivel(t, fila.descripcion.nivel), actor: actor(t, fila) }) }}
+                }
+                @case ('recalculado') {
+                  {{ t('triage.historial.recalculado', {
+                    anterior: etiquetaNivel(t, fila.descripcion.nivelAnterior ?? fila.descripcion.nivel),
+                    nivel: etiquetaNivel(t, fila.descripcion.nivel),
+                    causas: causas(t, fila)
+                  }) }}
+                }
+                @default {
+                  {{ t('triage.historial.revisado', { nivel: etiquetaNivel(t, fila.descripcion.nivel), causas: causas(t, fila) }) }}
+                }
+              }
+            </p>
+            <p class="historial__fecha">{{ fila.entrada.evaluadoEn | formatoFechaHora }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  }
+</section>

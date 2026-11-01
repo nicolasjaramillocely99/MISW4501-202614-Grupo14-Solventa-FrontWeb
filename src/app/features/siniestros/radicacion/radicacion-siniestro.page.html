@@ -1,0 +1,345 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <a class="volver" routerLink="/siniestros/mis-siniestros">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('radicacion.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('radicacion.cargando') }}</p>
+    }
+
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('radicacion.error.' + motivoError() + '.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('radicacion.error.' + motivoError() + '.texto') }}</p>
+        </div>
+        <div class="acciones">
+          @if (motivoError() === 'casoNoEncontrado') {
+            <button type="button" class="boton boton--primario" (click)="nuevaRadicacion()">{{ t('radicacion.acciones.radicarOtro') }}</button>
+          } @else {
+            <button type="button" class="boton boton--primario" (click)="reintentarCarga()">{{ t('radicacion.acciones.reintentar') }}</button>
+          }
+        </div>
+      </section>
+    }
+
+    @case ('sin-polizas') {
+      <h1 class="pagina__titulo">{{ t('radicacion.titulo') }}</h1>
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-sin-polizas">
+        <h2 id="titulo-sin-polizas" class="seccion__titulo">{{ t('radicacion.sinPolizas.titulo') }}</h2>
+        <p>{{ t('radicacion.sinPolizas.texto') }}</p>
+        <div class="acciones">
+          <a class="boton boton--secundario" routerLink="/siniestros/mis-siniestros">{{ t('radicacion.volver') }}</a>
+        </div>
+      </section>
+    }
+
+    @case ('confirmacion') {
+      @if (caso(); as datos) {
+        <app-confirmacion-radicacion
+          [caso]="datos"
+          [descargando]="descargando()"
+          [errorDescarga]="errorDescarga()"
+          (descargar)="descargar()"
+        />
+      }
+    }
+
+    @default {
+      <form class="radicacion" novalidate (submit)="$event.preventDefault(); radicar()">
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <h1 class="pagina__titulo">{{ t('radicacion.titulo') }}</h1>
+            <p class="encabezado__descripcion">{{ t('radicacion.descripcion') }}</p>
+          </div>
+          <button type="submit" class="boton boton--primario" [disabled]="!puedeRadicar()">
+            {{ fase() === 'enviando' ? t('radicacion.acciones.radicando') : t('radicacion.acciones.radicar') }}
+          </button>
+        </header>
+
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            <fieldset class="tarjeta datos" [disabled]="fase() === 'enviando'">
+              <legend class="seccion__titulo">{{ t('radicacion.datos.titulo') }}</legend>
+
+              <div class="datos__fila">
+                <div class="campo">
+                  <label class="campo__etiqueta" for="poliza">{{ t('radicacion.campos.polizaId.etiqueta') }}</label>
+                  <select
+                    id="poliza"
+                    #controlPoliza
+                    class="campo__control"
+                    [attr.aria-invalid]="errorCampo('polizaId') ? 'true' : null"
+                    [attr.aria-describedby]="errorCampo('polizaId') ? 'poliza-error' : null"
+                    (change)="actualizar('polizaId', controlPoliza.value)"
+                    (blur)="tocar('polizaId')"
+                  >
+                    <option value="" [selected]="!formulario().polizaId">{{ t('radicacion.campos.polizaId.elegir') }}</option>
+                    @for (opcion of polizas(); track opcion.id) {
+                      <option [value]="opcion.id" [selected]="opcion.id === formulario().polizaId">{{ etiquetaPoliza(t, opcion.id) }}</option>
+                    }
+                  </select>
+                  @if (errorCampo('polizaId'); as problema) {
+                    <p id="poliza-error" class="campo__error">
+                      <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                    </p>
+                  }
+                </div>
+
+                <div class="campo">
+                  <label class="campo__etiqueta" for="tipo">{{ t('radicacion.campos.tipoSiniestro.etiqueta') }}</label>
+                  <select
+                    id="tipo"
+                    #controlTipo
+                    class="campo__control"
+                    [disabled]="!poliza()"
+                    [attr.aria-invalid]="errorCampo('tipoSiniestro') ? 'true' : null"
+                    [attr.aria-describedby]="errorCampo('tipoSiniestro') ? 'tipo-error' : 'tipo-ayuda'"
+                    (change)="actualizar('tipoSiniestro', controlTipo.value)"
+                    (blur)="tocar('tipoSiniestro')"
+                  >
+                    <option value="" [selected]="!formulario().tipoSiniestro">{{ t('radicacion.campos.tipoSiniestro.elegir') }}</option>
+                    @for (tipo of poliza()?.tiposSiniestro ?? []; track tipo.codigo) {
+                      <option [value]="tipo.codigo" [selected]="tipo.codigo === formulario().tipoSiniestro">
+                        {{ etiquetaTipo(t, tipo.codigo, tipo.etiqueta) }}
+                      </option>
+                    }
+                  </select>
+                  @if (errorCampo('tipoSiniestro'); as problema) {
+                    <p id="tipo-error" class="campo__error">
+                      <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                    </p>
+                  } @else {
+                    <p id="tipo-ayuda" class="campo__ayuda">{{ t('radicacion.campos.tipoSiniestro.ayuda') }}</p>
+                  }
+                </div>
+              </div>
+
+              <div class="datos__fila">
+                <div class="campo">
+                  <label class="campo__etiqueta" for="fecha">{{ t('radicacion.campos.ocurridoEn.etiqueta') }}</label>
+                  <input
+                    id="fecha"
+                    #controlFecha
+                    class="campo__control"
+                    type="datetime-local"
+                    [min]="limites().min"
+                    [max]="limites().max"
+                    [value]="formulario().ocurridoEn"
+                    [attr.aria-invalid]="errorCampo('ocurridoEn') ? 'true' : null"
+                    [attr.aria-describedby]="errorCampo('ocurridoEn') ? 'fecha-error' : 'fecha-ayuda'"
+                    (input)="actualizar('ocurridoEn', controlFecha.value)"
+                    (blur)="tocar('ocurridoEn')"
+                  />
+                  @if (errorCampo('ocurridoEn'); as problema) {
+                    <p id="fecha-error" class="campo__error">
+                      <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                    </p>
+                  } @else {
+                    <p id="fecha-ayuda" class="campo__ayuda">{{ t('radicacion.campos.ocurridoEn.ayuda') }}</p>
+                  }
+                </div>
+
+                <div class="campo">
+                  <label class="campo__etiqueta" for="lugar">{{ t('radicacion.campos.lugar.etiqueta') }}</label>
+                  <input
+                    id="lugar"
+                    #controlLugar
+                    class="campo__control"
+                    type="text"
+                    autocomplete="off"
+                    [attr.maxlength]="lugarMax"
+                    [value]="formulario().lugar"
+                    [attr.aria-invalid]="errorCampo('lugar') ? 'true' : null"
+                    [attr.aria-describedby]="errorCampo('lugar') ? 'lugar-error' : null"
+                    (input)="actualizar('lugar', controlLugar.value)"
+                    (blur)="tocar('lugar')"
+                  />
+                  @if (errorCampo('lugar'); as problema) {
+                    <p id="lugar-error" class="campo__error">
+                      <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                    </p>
+                  }
+                </div>
+              </div>
+
+              <div class="campo">
+                <label class="campo__etiqueta" for="descripcion">{{ t('radicacion.campos.descripcion.etiqueta') }}</label>
+                <textarea
+                  id="descripcion"
+                  #controlDescripcion
+                  class="campo__control campo__control--area"
+                  rows="3"
+                  [attr.maxlength]="descripcionMax"
+                  [value]="formulario().descripcion"
+                  [attr.aria-invalid]="errorCampo('descripcion') ? 'true' : null"
+                  [attr.aria-describedby]="errorCampo('descripcion') ? 'descripcion-error' : 'descripcion-ayuda'"
+                  (input)="actualizar('descripcion', controlDescripcion.value)"
+                  (blur)="tocar('descripcion')"
+                ></textarea>
+                @if (errorCampo('descripcion'); as problema) {
+                  <p id="descripcion-error" class="campo__error">
+                    <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                  </p>
+                } @else {
+                  <p id="descripcion-ayuda" class="campo__ayuda">
+                    {{ t('radicacion.campos.descripcion.contador', { actual: numero(formulario().descripcion.length), maximo: numero(descripcionMax) }) }}
+                  </p>
+                }
+              </div>
+
+              <div class="campo campo--monto">
+                <label class="campo__etiqueta" for="monto-estimado">{{ t('radicacion.campos.montoEstimado.etiqueta') }}</label>
+                <input
+                  id="monto-estimado"
+                  #controlMonto
+                  class="campo__control"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  [value]="formulario().montoEstimado"
+                  [attr.aria-invalid]="errorCampo('montoEstimado') ? 'true' : null"
+                  [attr.aria-describedby]="'monto-estimado-ayuda' + (errorCampo('montoEstimado') ? ' monto-estimado-error' : '')"
+                  (input)="actualizar('montoEstimado', controlMonto.value)"
+                  (blur)="tocar('montoEstimado')"
+                />
+                @if (errorCampo('montoEstimado'); as problema) {
+                  <p id="monto-estimado-error" class="campo__error">
+                    <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('radicacion.errores.campo.' + problema) }}
+                  </p>
+                }
+                <p id="monto-estimado-ayuda" class="campo__ayuda">
+                  {{ t('radicacion.campos.montoEstimado.ayuda') }}
+                  @if (montoEnPesos() !== null) {
+                    <span class="campo__vista" role="status">
+                      {{ t('radicacion.campos.montoEstimado.vista', { monto: (montoEnPesos() | formatoMoneda: 'COP') }) }}
+                    </span>
+                  }
+                </p>
+              </div>
+            </fieldset>
+
+            @if (formulario().tipoSiniestro) {
+              <app-soportes-radicacion
+                [requisitos]="requisitos()"
+                [noAplica]="noAplica()"
+                [archivos]="carga.archivos()"
+                [erroresServidor]="erroresSoporteServidor()"
+                [deshabilitado]="fase() === 'enviando'"
+                (agregar)="agregarArchivos($event)"
+                (quitar)="quitarArchivo($event)"
+              />
+            }
+          </div>
+
+          <aside class="cuerpo__lateral" [attr.aria-label]="t('radicacion.lateral')">
+            <div aria-live="polite">
+              @if (errorEnvio(); as error) {
+                <div class="aviso aviso--error" role="alert">
+                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    @switch (error.tipo) {
+                      @case ('noElegible') {
+                        @if (error.tipo === 'noElegible') {
+                          <p class="aviso__titulo">{{ t('radicacion.envio.noElegible.' + claveNoElegible(error.motivo) + '.titulo') }}</p>
+                          <p>{{ t('radicacion.envio.noElegible.' + claveNoElegible(error.motivo) + '.texto') }}</p>
+                          @if (error.desde && error.hasta) {
+                            <p>{{ t('radicacion.envio.vigencia', { desde: error.desde | formatoFecha, hasta: error.hasta | formatoFecha }) }}</p>
+                          }
+                          @if (error.motivo === 'policy_not_found' || error.motivo === 'policy_not_active') {
+                            <button type="button" class="boton boton--secundario aviso__accion" (click)="cargarOpciones()">
+                              {{ t('radicacion.acciones.recargarPolizas') }}
+                            </button>
+                          }
+                        }
+                      }
+                      @case ('claveReusada') {
+                        <p class="aviso__titulo">{{ t('radicacion.envio.claveReusada.titulo') }}</p>
+                        <p>{{ t('radicacion.envio.claveReusada.texto') }}</p>
+                        <div class="aviso__acciones">
+                          <a class="boton boton--secundario" routerLink="/siniestros/mis-siniestros">{{ t('radicacion.volver') }}</a>
+                          <button type="button" class="boton boton--terciario" (click)="radicarComoNuevo()">
+                            {{ t('radicacion.acciones.radicarComoNuevo') }}
+                          </button>
+                        </div>
+                      }
+                      @case ('indisponible') {
+                        <p class="aviso__titulo">{{ t('radicacion.envio.indisponible.titulo') }}</p>
+                        <p>{{ t('radicacion.envio.indisponible.texto') }}</p>
+                        <button type="button" class="boton boton--secundario aviso__accion" [disabled]="!puedeRadicar()" (click)="radicar()">
+                          {{ t('radicacion.acciones.reintentar') }}
+                        </button>
+                      }
+                      @default {
+                        <p class="aviso__titulo">{{ t('radicacion.envio.' + error.tipo + '.titulo') }}</p>
+                        <p>{{ t('radicacion.envio.' + error.tipo + '.texto') }}</p>
+                      }
+                    }
+                  </div>
+                </div>
+              } @else if (carga.subiendo()) {
+                <div class="aviso aviso--informacion" role="status">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <p>{{ t('radicacion.faltantes.subiendo') }}</p>
+                </div>
+              } @else if (mostrarFaltantes()) {
+                <div class="aviso aviso--error" role="status">
+                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ tituloFaltantes(t) }}</p>
+                    <p>{{ textoFaltantes(t) }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <section class="tarjeta" aria-labelledby="titulo-antes">
+              <h2 id="titulo-antes" class="seccion__titulo">{{ t('radicacion.antes.titulo') }}</h2>
+              <ul class="comprobaciones">
+                <li [class]="'comprobacion comprobacion--' + comprobacionPoliza()">
+                  @if (comprobacionPoliza() === 'ok') {
+                    <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+                  } @else {
+                    <svg lucideCircle [size]="20" aria-hidden="true"></svg>
+                  }
+                  <span>{{ t('radicacion.antes.poliza.' + comprobacionPoliza()) }}</span>
+                </li>
+                <li [class]="'comprobacion comprobacion--' + comprobacionVigencia()">
+                  @switch (comprobacionVigencia()) {
+                    @case ('ok') {
+                      <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+                    }
+                    @case ('error') {
+                      <svg lucideCircleX [size]="20" aria-hidden="true"></svg>
+                    }
+                    @default {
+                      <svg lucideCircle [size]="20" aria-hidden="true"></svg>
+                    }
+                  }
+                  <span>
+                    @if (comprobacionVigencia() === 'error' && poliza(); as elegida) {
+                      {{ t('radicacion.antes.vigencia.error', { desde: elegida.vigenteDesde | formatoFecha, hasta: elegida.vigenteHasta | formatoFecha }) }}
+                    } @else {
+                      {{ t('radicacion.antes.vigencia.' + comprobacionVigencia()) }}
+                    }
+                  </span>
+                </li>
+                <li class="comprobacion comprobacion--aviso">
+                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                  <span>{{ t('radicacion.antes.asesor') }}</span>
+                </li>
+              </ul>
+            </section>
+
+            <section class="tarjeta tarjeta--app" aria-labelledby="titulo-app">
+              <h2 id="titulo-app" class="seccion__titulo">{{ t('radicacion.app.titulo') }}</h2>
+              <p>{{ t('radicacion.app.texto') }}</p>
+            </section>
+          </aside>
+        </div>
+      </form>
+    }
+  }
+</div>

@@ -1,0 +1,99 @@
+<div class="pagina" *transloco="let t">
+  <aside class="panel" [attr.aria-label]="t('app.nombre')">
+    <div class="panel__contenido">
+      <p class="logotipo logotipo--claro panel__logotipo">
+        {{ t('app.nombre') }}<span class="logotipo__punto" aria-hidden="true">.</span>
+      </p>
+      <p class="panel__titular">{{ t('acceso.panel.titular') }}</p>
+      <p class="panel__descripcion">{{ t('acceso.panel.descripcion') }}</p>
+      <ul class="panel__beneficios">
+        <li>
+          <span class="panel__icono"><svg lucideShieldCheck [size]="20"></svg></span>
+          {{ t('acceso.panel.beneficioCotizacion') }}
+        </li>
+        <li>
+          <span class="panel__icono"><svg lucideActivity [size]="20"></svg></span>
+          {{ t('acceso.panel.beneficioSiniestros') }}
+        </li>
+        <li>
+          <span class="panel__icono"><svg lucideDatabase [size]="20"></svg></span>
+          {{ t('acceso.panel.beneficioConsentimientos') }}
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="contenido">
+    <section class="tarjeta formulario" aria-labelledby="titulo-iniciar-sesion">
+      <div class="formulario__encabezado">
+        <h1 id="titulo-iniciar-sesion" class="formulario__titulo">
+          {{ t('acceso.iniciarSesion.titulo') }}
+        </h1>
+        <app-selector-idioma
+          [idioma]="idiomas.idioma()"
+          [idiomas]="idiomas.disponibles"
+          (cambio)="idiomas.cambiar($event)"
+        />
+      </div>
+      <p class="formulario__descripcion">{{ t('acceso.iniciarSesion.descripcion') }}</p>
+
+      @if (error(); as motivo) {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20"></svg>
+          <p>{{ t(mensajeError(motivo)) }}</p>
+        </div>
+      }
+
+      <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+        <div class="campo">
+          <label class="campo__etiqueta" for="correo">{{ t('acceso.iniciarSesion.correo') }}</label>
+          <input
+            id="correo"
+            class="campo__control"
+            type="email"
+            formControlName="correo"
+            autocomplete="username"
+            inputmode="email"
+            [attr.aria-invalid]="errorDe('correo') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('correo') ? 'correo-error' : null"
+          />
+          @if (errorDe('correo'); as clave) {
+            <p id="correo-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16"></svg>{{ t(clave) }}
+            </p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="contrasena">{{ t('acceso.iniciarSesion.contrasena') }}</label>
+          <input
+            id="contrasena"
+            class="campo__control"
+            type="password"
+            formControlName="contrasena"
+            autocomplete="current-password"
+            [attr.aria-invalid]="errorDe('contrasena') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('contrasena') ? 'contrasena-error' : null"
+          />
+          @if (errorDe('contrasena'); as clave) {
+            <p id="contrasena-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16"></svg>{{ t(clave) }}
+            </p>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="boton boton--primario boton--bloque"
+          [disabled]="enviando()"
+          [attr.aria-busy]="enviando()"
+        >
+          <svg lucideLogIn [size]="20"></svg>
+          {{ enviando() ? t('acceso.iniciarSesion.entrando') : t('acceso.iniciarSesion.entrar') }}
+        </button>
+      </form>
+
+      <p class="formulario__pie">{{ t('acceso.iniciarSesion.registroAsegurado') }}</p>
+    </section>
+  </main>
+</div>

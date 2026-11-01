@@ -1,0 +1,557 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  ErrorHandler,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoDirective } from '@jsverse/transloco';
+import {
+  LucideArrowRight,
+  LucideCircleAlert,
+  LucideCircleCheck,
+  LucideCircleX,
+  LucideClock,
+  LucideInfo,
+  LucideLandmark,
+  LucideRefreshCw,
+  LucideSlidersHorizontal,
+  LucideTriangleAlert,
+} from '@lucide/angular';
+import { finalize } from 'rxjs';
+
+import { ContextoAliadoService } from '@core/aliado/contexto-aliado.service';
+import {
+  Aceptacion,
+  CodigoErrorAceptacion,
+  ErrorAceptacion,
+  MotivoRevision,
+} from '@core/api/originacion/aceptacion.modelos';
+import { ErrorOferta, Oferta } from '@core/api/originacion/oferta.modelos';
+import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
+import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
+import { IndicadorPasosComponent, PasoFlujo } from '@shared/ui/indicador-pasos/indicador-pasos.component';
+import { InsigniaEstadoComponent, TonoInsignia } from '@shared/ui/insignia-estado/insignia-estado.component';
+
+import { TarjetaCreditoComponent } from '../componentes/tarjeta-credito/tarjeta-credito.component';
+import { FlujoEmbebidoService } from '../servicios/flujo-embebido.service';
+import { ACCIONES_ACEPTACION_OFERTA } from './aceptacion-oferta.config';
+import { DetalleOfertaComponent } from './componentes/detalle-oferta/detalle-oferta.component';
+import {
+  INTERVALO_CONSULTA_MS,
+  PRIMERA_CONSULTA_MS,
+  SeguimientoAceptacionService,
+} from './servicios/seguimiento-aceptacion.service';
+import { TramiteAceptacionService } from './servicios/tramite-aceptacion.service';
+
+/**
+ * `cargando` consultando la oferta y retomando el trámite; `oferta` sin aceptación (con «Aceptar», variantes E3, E3b
+ * y E3c); `seguimiento` con la aceptación registrada; `vencida` (E7) cuando la oferta venció; `reemplazada` cuando una
+ * recotización la sustituyó por una con el perfil real; `error` cuando no hay nada que mostrar.
+ */
+type Fase = 'cargando' | 'oferta' | 'seguimiento' | 'vencida' | 'reemplazada' | 'error';
+
+/** Falla al generar la oferta nueva de una vencida; se muestra junto a «Generar una nueva oferta». */
+type MotivoErrorRenovacion = 'noRenovable' | 'noDisponible' | 'generico';
+
+/** Estados de error de página completa. El fallo al registrar la aceptación se muestra junto a la oferta. */
+type MotivoError = 'sinOferta' | 'ofertaNoExiste' | 'noDisponible' | 'generico';
+
+/**
+ * Vista de la aceptación registrada (contrato §4): `validando` (registered, sin fallas), `conservada`
+ * (registered con intentos fallidos o más de 2 minutos), `revision` (in_review), `emision` (issuance_pending) y,
+ * tras la decisión del asesor (HU-W1.1-02), `ajustada` (adjusted, E6b) y `rechazada` (rejected, E6c).
+ */
+export type VistaSeguimiento = 'validando' | 'conservada' | 'revision' | 'emision' | 'ajustada' | 'rechazada';
+
+const TONO_POR_VISTA: Readonly<Record<VistaSeguimiento, TonoInsignia>> = {
+  validando: 'informacion',
+  conservada: 'advertencia',
+  revision: 'informacion',
+  emision: 'exito',
+  ajustada: 'advertencia',
+  rechazada: 'error',
+};
+
+const CLAVE_MOTIVO_REVISION: Readonly<Record<MotivoRevision, string>> = {
+  provisional_offer: 'ofertaProvisional',
+  high_risk_score: 'perfilAdicional',
+};
+
+/**
+ * Paso 3 · Oferta personalizada, aceptación y disparo de la emisión (E3, E3b, E3c, E6, E7 y aceptación conservada;
+ * HU-W1.2-03 y HU-W1.3-01). Primero lee la oferta con `GET /v1/offers/{id}` (el primer asegurado que la abre la
+ * reclama; una vencida o reemplazada también se lee) y retoma el trámite con `GET /v1/offers/{id}/acceptance`; si la
+ * oferta no tiene aceptación muestra la oferta con «Aceptar» (`POST /v1/offers/{id}/acceptance`) y luego sigue su
+ * estado con polling hasta `issuance_pending` o `in_review`. Una vencida ofrece «Generar una nueva oferta»
+ * (`POST /v1/offers/{id}/renewal`); una reemplazada muestra el aviso «Tu oferta se actualizó con tu perfil real» con
+ * el enlace a la oferta nueva, tanto al cargarla como cuando aceptarla responde `422 offer_expired`. Todos los estados viven en esta página; los textos salen del código
+ * estable `error` del contrato, nunca de `message`. 401 y 403 los resuelve el interceptor.
+ *
+ * HU-W1.1-02: cuando el asesor decide, el cliente lo ve al volver a consultar: E6b «Solicitud ajustada» (nueva
+ * prima, vigencia y «Ver la nueva oferta», que abre la oferta ajustada en esta misma página) y E6c «Solicitud
+ * rechazada». Por eso la página sigue los cambios del parámetro de la ruta: Angular la reutiliza al pasar de
+ * `/embebido/oferta/A` a `/embebido/oferta/B`.
+ *
+ * Ruta: `/embebido/oferta/:ofertaId` (o `/embebido/oferta`, que retoma la oferta guardada en la sesión del
+ * navegador). Exige la sesión de un asegurado dueño de la oferta.
+ */
+@Component({
+  selector: 'app-aceptacion-oferta-page',
+  imports: [
+    RouterLink,
+    TranslocoDirective,
+    IndicadorPasosComponent,
+    InsigniaEstadoComponent,
+    TarjetaCreditoComponent,
+    DetalleOfertaComponent,
+    FormatoFechaHoraPipe,
+    FormatoMonedaPipe,
+    LucideArrowRight,
+    LucideCircleAlert,
+    LucideCircleCheck,
+    LucideCircleX,
+    LucideClock,
+    LucideInfo,
+    LucideLandmark,
+    LucideRefreshCw,
+    LucideSlidersHorizontal,
+    LucideTriangleAlert,
+  ],
+  providers: [SeguimientoAceptacionService],
+  templateUrl: './aceptacion-oferta.page.html',
+  styleUrl: './aceptacion-oferta.page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class AceptacionOfertaPage implements OnInit {
+  private readonly ruta = inject(ActivatedRoute);
+  private readonly api = inject(OriginacionApiService);
+  private readonly seguimiento = inject(SeguimientoAceptacionService);
+  private readonly tramite = inject(TramiteAceptacionService);
+  private readonly router = inject(Router);
+  private readonly flujo = inject(FlujoEmbebidoService);
+  private readonly aliado = inject(ContextoAliadoService);
+  private readonly manejadorErrores = inject(ErrorHandler);
+  private readonly destruccion = inject(DestroyRef);
+  /** El identificador no vino en la URL: el trámite se retomó desde la sesión del navegador. */
+  private desdeSesion = false;
+  private readonly casillaTerminos = viewChild<ElementRef<HTMLInputElement>>('casillaTerminos');
+
+  protected readonly acciones = inject(ACCIONES_ACEPTACION_OFERTA);
+  protected readonly solicitud = this.flujo.solicitud;
+  protected readonly aceptacion = this.seguimiento.aceptacion;
+
+  protected readonly ofertaId = signal<string | null>(null);
+  /** La oferta consultada; `null` hasta que llega. */
+  protected readonly oferta = signal<Oferta | null>(null);
+  /** La oferta que reemplazó a la consultada, para mostrar su prima en el aviso; `null` si no se pudo leer. */
+  protected readonly ofertaNueva = signal<Oferta | null>(null);
+  /** `POST …/renewal` en curso. */
+  protected readonly renovando = signal(false);
+  protected readonly errorRenovacion = signal<MotivoErrorRenovacion | null>(null);
+  protected readonly fase = signal<Fase>('cargando');
+  protected readonly motivoError = signal<MotivoError>('generico');
+  /** `POST` en curso: «Aceptar» queda deshabilitado. */
+  protected readonly enviando = signal(false);
+  /** `acceptance_not_registered`: se ofrece reenviar el mismo `POST`, que es seguro. */
+  protected readonly errorRegistro = signal(false);
+  protected readonly terminosAceptados = signal(false);
+  protected readonly errorTerminos = signal(false);
+  /** Fin de la vigencia que informa `offer_expired`. */
+  protected readonly venceEn = signal<string | null>(null);
+
+  protected readonly vista = computed<VistaSeguimiento>(() => {
+    const aceptacion = this.aceptacion();
+    switch (aceptacion?.estado) {
+      case 'issuance_pending':
+        return 'emision';
+      case 'in_review':
+        return 'revision';
+      case 'adjusted':
+        return 'ajustada';
+      case 'rejected':
+        return 'rechazada';
+      default:
+        return (aceptacion?.procesamiento.intentos ?? 0) > 0 || this.seguimiento.lento()
+          ? 'conservada'
+          : 'validando';
+    }
+  });
+
+  protected readonly tonoInsignia = TONO_POR_VISTA;
+
+  /** Fecha del texto principal: la de la decisión del asesor en E6b/E6c; si no, la de la aceptación. */
+  protected readonly fechaTexto = computed(() => {
+    const aceptacion = this.aceptacion();
+    const vista = this.vista();
+    return (vista === 'ajustada' || vista === 'rechazada') && aceptacion?.revision
+      ? aceptacion.revision.decididaEn
+      : (aceptacion?.aceptadaEn ?? null);
+  });
+
+  /**
+   * Clave del motivo de la revisión (`underwriting.reason`); solo varía el texto, contrato §4. Un motivo
+   * que el cliente no conoce (p. ej. uno nuevo del motor de suscripción) muestra el texto genérico, nunca
+   * la clave sin traducir.
+   */
+  protected readonly motivoRevision = computed(() => {
+    const motivo = this.aceptacion()?.suscripcion?.motivo;
+    return motivo ? (CLAVE_MOTIVO_REVISION[motivo] ?? 'generico') : 'generico';
+  });
+
+  protected readonly pasos = computed<readonly PasoFlujo[]>(() => {
+    // Con la oferta ajustada (E6b) el cliente vuelve al paso de la oferta: debe aceptar la nueva.
+    const aceptada = this.fase() === 'seguimiento' && this.vista() !== 'ajustada';
+    return [
+      { etiqueta: 'embebido.pasos.consentimiento', estado: 'completado' },
+      { etiqueta: 'embebido.pasos.perfilRiesgo', estado: 'completado' },
+      { etiqueta: 'embebido.pasos.oferta', estado: aceptada ? 'completado' : 'actual' },
+      { etiqueta: 'embebido.pasos.pago', estado: aceptada ? 'actual' : 'pendiente' },
+      { etiqueta: 'embebido.pasos.poliza', estado: 'pendiente' },
+    ];
+  });
+
+  constructor() {
+    effect(() => {
+      const error = this.seguimiento.error();
+      if (error) {
+        untracked(() => this.alDetenerseSeguimiento(error));
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.aliado.establecer(this.solicitud()?.aliado ?? null);
+    this.ruta.paramMap
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe((parametros) => this.abrir(parametros.get('ofertaId')));
+  }
+
+  /** Abre la oferta de la ruta (o la guardada en la sesión del navegador) desde cero. */
+  private abrir(desdeRuta: string | null): void {
+    const ofertaId = desdeRuta ?? this.tramite.leer()?.ofertaId ?? null;
+    this.desdeSesion = desdeRuta === null;
+    this.seguimiento.detener();
+    this.terminosAceptados.set(false);
+    this.errorTerminos.set(false);
+    this.errorRegistro.set(false);
+    this.errorRenovacion.set(null);
+    this.venceEn.set(null);
+    this.oferta.set(null);
+    this.ofertaNueva.set(null);
+    this.ofertaId.set(ofertaId);
+    if (ofertaId) {
+      this.reanudar();
+    } else {
+      this.mostrarError('sinOferta');
+    }
+  }
+
+  /** Consulta la oferta y, según su estado, retoma el trámite o muestra su variante (vencida o reemplazada). */
+  protected reanudar(): void {
+    const ofertaId = this.ofertaId();
+    if (!ofertaId) {
+      return;
+    }
+    this.fase.set('cargando');
+    this.api
+      .consultarOferta(ofertaId)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (oferta) => {
+          this.oferta.set(oferta);
+          this.resolver(oferta);
+        },
+        error: (error: unknown) => {
+          switch (error instanceof ErrorOferta ? error.codigo : 'offer_unavailable') {
+            case 'offer_not_found':
+            case 'invalid_request':
+              this.mostrarError('ofertaNoExiste');
+              break;
+            case 'offer_unavailable':
+              this.mostrarError('noDisponible');
+              break;
+            case 'unauthorized':
+            case 'forbidden':
+              // El interceptor ya llevó a «sesión expirada» o «acceso no autorizado».
+              break;
+            default:
+              this.registrar(error);
+              this.mostrarError('generico');
+          }
+        },
+      });
+  }
+
+  /**
+   * Una reemplazada o una vencida ya renovada se sigue sola cuando el trámite se retoma desde la sesión del
+   * navegador (sin identificador en la URL); con el identificador en la URL se muestra el aviso. Cualquier otra
+   * oferta busca su aceptación.
+   */
+  private resolver(oferta: Oferta): void {
+    if (oferta.estado === 'superseded') {
+      if (this.desdeSesion && oferta.reemplazadaPor) {
+        this.abrirOferta(oferta.reemplazadaPor);
+      } else {
+        this.mostrarReemplazo(oferta);
+      }
+      return;
+    }
+    if (oferta.estado === 'expired') {
+      this.venceEn.set(oferta.venceEn);
+      if (this.desdeSesion && oferta.renovadaPor) {
+        this.abrirOferta(oferta.renovadaPor);
+        return;
+      }
+    }
+    this.consultarAceptacion(oferta.id);
+  }
+
+  /** Retoma el trámite: si la oferta ya tiene aceptación la sigue; si no, muestra la oferta con «Aceptar». */
+  private consultarAceptacion(ofertaId: string): void {
+    this.api
+      .consultarAceptacionDeOferta(ofertaId)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (aceptacion) => this.seguir(aceptacion, INTERVALO_CONSULTA_MS),
+        error: (error: unknown) => {
+          switch (codigoDe(error)) {
+            case 'acceptance_not_found':
+              this.fase.set(this.faseSinAceptacion());
+              break;
+            case 'acceptance_unavailable':
+              this.mostrarError('noDisponible');
+              break;
+            case 'unauthorized':
+            case 'forbidden':
+              break;
+            default:
+              this.registrar(error);
+              this.mostrarError('generico');
+          }
+        },
+      });
+  }
+
+  /** Sin aceptación, una oferta vencida muestra E7 y las demás la oferta con «Aceptar». */
+  private faseSinAceptacion(): Fase {
+    return this.oferta()?.estado === 'expired' ? 'vencida' : 'oferta';
+  }
+
+  /** Muestra el aviso de oferta reemplazada y, si se puede, lee la nueva para mostrar su prima. */
+  private mostrarReemplazo(oferta: Oferta): void {
+    this.fase.set('reemplazada');
+    if (!oferta.reemplazadaPor) {
+      return;
+    }
+    this.api
+      .consultarOferta(oferta.reemplazadaPor)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (nueva) => this.ofertaNueva.set(nueva),
+        // La prima nueva es un dato de apoyo: sin ella el aviso y el enlace siguen funcionando.
+        error: () => this.ofertaNueva.set(null),
+      });
+  }
+
+  private abrirOferta(ofertaId: string): void {
+    void this.router.navigate([this.acciones.oferta, ofertaId], { replaceUrl: true });
+  }
+
+  /**
+   * «Generar una nueva oferta» de una vencida: `POST …/renewal` es idempotente, así que reintentar es seguro. La
+   * oferta nueva se abre en esta misma página.
+   */
+  protected renovar(): void {
+    const ofertaId = this.ofertaId();
+    if (this.renovando() || !ofertaId) {
+      return;
+    }
+    this.renovando.set(true);
+    this.errorRenovacion.set(null);
+    this.api
+      .renovarOferta(ofertaId)
+      .pipe(
+        finalize(() => this.renovando.set(false)),
+        takeUntilDestroyed(this.destruccion),
+      )
+      .subscribe({
+        next: (nueva) => this.abrirOferta(nueva.id),
+        error: (error: unknown) => this.alFallarRenovacion(error),
+      });
+  }
+
+  private alFallarRenovacion(error: unknown): void {
+    const falla = error instanceof ErrorOferta ? error : new ErrorOferta('offer_unavailable');
+    switch (falla.codigo) {
+      case 'offer_still_valid':
+        // Aún se puede aceptar: se vuelve a leer la oferta.
+        this.reanudar();
+        break;
+      case 'offer_superseded':
+        if (falla.reemplazadaPor) {
+          this.abrirOferta(falla.reemplazadaPor);
+        } else {
+          this.reanudar();
+        }
+        break;
+      case 'consent_required':
+      case 'consent_mismatch':
+        void this.router.navigateByUrl(this.acciones.nuevaOferta);
+        break;
+      case 'validation_failed':
+        this.errorRenovacion.set('noRenovable');
+        break;
+      case 'consent_unverifiable':
+      case 'offer_unavailable':
+        this.errorRenovacion.set('noDisponible');
+        break;
+      case 'offer_not_found':
+        this.mostrarError('ofertaNoExiste');
+        break;
+      case 'unauthorized':
+      case 'forbidden':
+        break;
+      default:
+        this.registrar(error);
+        this.errorRenovacion.set('generico');
+    }
+  }
+
+  /** «Ver estado de la solicitud»: vuelve a consultar sin dejar la pantalla actual. */
+  protected actualizarEstado(): void {
+    const ofertaId = this.ofertaId();
+    if (!ofertaId) {
+      return;
+    }
+    this.api
+      .consultarAceptacionDeOferta(ofertaId)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (aceptacion) => this.seguir(aceptacion, INTERVALO_CONSULTA_MS),
+        error: (error: unknown) => {
+          // Sin servicio se mantiene la última pantalla conocida (contrato §3).
+          if (codigoDe(error) !== 'acceptance_unavailable') {
+            this.alDetenerseSeguimiento(error instanceof ErrorAceptacion ? error : new ErrorAceptacion('invalid_request'));
+          }
+        },
+      });
+  }
+
+  protected alCambiarTerminos(evento: Event): void {
+    const marcada = (evento.target as HTMLInputElement).checked;
+    this.terminosAceptados.set(marcada);
+    if (marcada) {
+      this.errorTerminos.set(false);
+    }
+  }
+
+  /** Acepta la oferta. Reenviar el mismo `POST` es seguro: la aceptación es idempotente por oferta. */
+  protected aceptar(): void {
+    const ofertaId = this.ofertaId();
+    if (this.enviando() || !ofertaId) {
+      return;
+    }
+    if (!this.terminosAceptados()) {
+      this.errorTerminos.set(true);
+      this.casillaTerminos()?.nativeElement.focus();
+      return;
+    }
+    this.enviando.set(true);
+    this.errorRegistro.set(false);
+    this.api
+      .aceptarOferta(ofertaId)
+      .pipe(
+        finalize(() => this.enviando.set(false)),
+        takeUntilDestroyed(this.destruccion),
+      )
+      .subscribe({
+        next: (aceptacion) => this.seguir(aceptacion, PRIMERA_CONSULTA_MS),
+        error: (error: unknown) => {
+          switch (codigoDe(error)) {
+            case 'offer_expired':
+              this.venceEn.set(error instanceof ErrorAceptacion ? error.venceEn : null);
+              this.alVencerOferta(ofertaId);
+              break;
+            case 'offer_not_found':
+              this.mostrarError('ofertaNoExiste');
+              break;
+            case 'acceptance_not_registered':
+              this.errorRegistro.set(true);
+              break;
+            case 'unauthorized':
+            case 'forbidden':
+              break;
+            default:
+              this.registrar(error);
+              this.mostrarError('generico');
+          }
+        },
+      });
+  }
+
+  /**
+   * `422 offer_expired` también lo responde una oferta reemplazada: se lee la oferta para distinguir «vencida» de
+   * «reemplazada». Si no se puede leer, se informa como vencida.
+   */
+  private alVencerOferta(ofertaId: string): void {
+    this.api
+      .consultarOferta(ofertaId)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (oferta) => {
+          this.oferta.set(oferta);
+          if (oferta.estado === 'superseded') {
+            this.mostrarReemplazo(oferta);
+          } else {
+            this.fase.set('vencida');
+          }
+        },
+        error: () => this.fase.set('vencida'),
+      });
+  }
+
+  private seguir(aceptacion: Aceptacion, primeraEsperaMs: number): void {
+    this.fase.set('seguimiento');
+    this.seguimiento.seguir(aceptacion, primeraEsperaMs);
+  }
+
+  private alDetenerseSeguimiento(error: ErrorAceptacion): void {
+    switch (error.codigo) {
+      case 'acceptance_not_found':
+        // La oferta ya no tiene aceptación (el backend la perdió al reiniciarse, contrato §8): se puede aceptar de nuevo.
+        this.fase.set(this.faseSinAceptacion());
+        break;
+      case 'unauthorized':
+      case 'forbidden':
+        break;
+      default:
+        this.registrar(error);
+        this.mostrarError('generico');
+    }
+  }
+
+  private mostrarError(motivo: MotivoError): void {
+    this.motivoError.set(motivo);
+    this.fase.set('error');
+  }
+
+  /** `invalid_request` y respuestas inesperadas son errores de programación: se registran en el manejador global. */
+  private registrar(error: unknown): void {
+    this.manejadorErrores.handleError(error);
+  }
+}
+
+function codigoDe(error: unknown): CodigoErrorAceptacion {
+  return error instanceof ErrorAceptacion ? error.codigo : 'invalid_request';
+}

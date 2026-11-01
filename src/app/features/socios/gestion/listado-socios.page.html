@@ -1,0 +1,141 @@
+<div class="pagina" *transloco="let t; prefix: 'socios'">
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('listado.titulo') }}</h1>
+      <p class="pagina__descripcion">{{ t('listado.descripcion') }}</p>
+    </div>
+    <button type="button" class="boton boton--primario" (click)="abrirRegistro()">
+      <svg lucidePlus [size]="18" aria-hidden="true"></svg>
+      {{ t('listado.registrar') }}
+    </button>
+  </header>
+
+  @if (listado(); as datos) {
+    <section class="indicadores" [attr.aria-label]="t('listado.indicadores.titulo')">
+      <div class="indicador">
+        <p class="indicador__etiqueta">{{ t('listado.indicadores.activos') }}</p>
+        <p class="indicador__valor indicador__valor--exito">{{ datos.indicadores.sociosActivos | formatoNumero: 0 }}</p>
+        <p class="indicador__detalle">{{ t('listado.indicadores.activosDetalle') }}</p>
+      </div>
+      <div class="indicador">
+        <p class="indicador__etiqueta">{{ t('listado.indicadores.cuotaMedia') }}</p>
+        <p class="indicador__valor">
+          @if (datos.indicadores.cuotaMediaUsada !== null) {
+            {{ datos.indicadores.cuotaMediaUsada | formatoNumero: 0 }} %
+          } @else {
+            {{ t('sinDato') }}
+          }
+        </p>
+        <p class="indicador__detalle">{{ t('listado.indicadores.cuotaMediaDetalle') }}</p>
+      </div>
+      <div class="indicador">
+        <p class="indicador__etiqueta">{{ t('listado.indicadores.alertas') }}</p>
+        <p class="indicador__valor" [class.indicador__valor--alerta]="datos.indicadores.cercaDelLimite > 0">
+          {{ datos.indicadores.cercaDelLimite | formatoNumero: 0 }}
+        </p>
+        <p class="indicador__detalle">
+          @if (datos.indicadores.nombresCercaDelLimite.length > 0) {
+            {{ t('listado.indicadores.alertasDetalle', { nombres: datos.indicadores.nombresCercaDelLimite.join(', ') }) }}
+          } @else {
+            {{ t('listado.indicadores.sinAlertas') }}
+          }
+        </p>
+      </div>
+    </section>
+  }
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('listado.cargando') }}</p>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('listado.error.titulo') }}</p>
+          <p>{{ t('listado.error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="cargar()">{{ t('listado.error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @case ('vacio') {
+      <div class="tarjeta vacio">
+        <p class="aviso__titulo">{{ t('listado.vacio.titulo') }}</p>
+        <p>{{ t('listado.vacio.texto') }}</p>
+      </div>
+    }
+    @default {
+      @if (listado(); as datos) {
+        <div class="tarjeta tabla-contenedor">
+          <div class="tabla-desplazable">
+            <table class="tabla">
+              <caption class="visualmente-oculto">{{ t('listado.tabla.titulo') }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('listado.tabla.socio') }}</th>
+                  <th scope="col">{{ t('listado.tabla.tipo') }}</th>
+                  <th scope="col">{{ t('listado.tabla.credenciales') }}</th>
+                  <th scope="col">{{ t('listado.tabla.cuota') }}</th>
+                  <th scope="col" class="tabla__numero">{{ t('listado.tabla.peticiones') }}</th>
+                  <th scope="col">{{ t('listado.tabla.estado') }}</th>
+                  <th scope="col"><span class="visualmente-oculto">{{ t('listado.tabla.acciones') }}</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (socio of datos.items; track socio.socioId) {
+                  <tr>
+                    <td>
+                      <span class="tabla__nombre">{{ socio.nombre }}</span>
+                      <span class="tabla__secundario">
+                        {{ socio.codigo }} · {{ t('listado.tabla.desde', { fecha: (socio.aprobadoEn ?? socio.registradoEn | formatoFecha) }) }}
+                      </span>
+                    </td>
+                    <td>{{ t('tipos.' + socio.tipo) }}</td>
+                    <td>
+                      @let credenciales = etiquetaCredenciales(socio.estadoCredenciales);
+                      <app-insignia-estado [tono]="credenciales.tono">{{ t('credenciales.' + credenciales.clave) }}</app-insignia-estado>
+                    </td>
+                    <td class="consumo">
+                      @if (socio.estadoCredenciales === 'none') {
+                        <span class="tabla__secundario">{{ t('listado.tabla.sinCuota') }}</span>
+                      } @else {
+                        <span>
+                          @if (socio.consumo; as consumo) {
+                            {{ t('listado.tabla.consumo', { usadas: (consumo.usadas | formatoNumero: 0), limite: (socio.cuota.limiteDiario | formatoNumero: 0) }) }}
+                          } @else {
+                            {{ t('listado.tabla.consumoSinDato', { limite: (socio.cuota.limiteDiario | formatoNumero: 0) }) }}
+                          }
+                        </span>
+                        <span class="barra" aria-hidden="true">
+                          <span class="barra__relleno barra__relleno--{{ tonoConsumo(socio.consumo) }}" [style.width.%]="anchoBarra(socio.consumo)"></span>
+                        </span>
+                      }
+                    </td>
+                    <td class="tabla__numero">
+                      @if (socio.consumo; as consumo) {
+                        {{ consumo.usadas | formatoNumero: 0 }}
+                      } @else {
+                        <span [attr.aria-label]="t('sinDato')">—</span>
+                      }
+                    </td>
+                    <td>
+                      @let estado = etiquetaEstado(socio);
+                      <app-insignia-estado [tono]="estado.tono">{{ t('estados.' + estado.clave) }}</app-insignia-estado>
+                    </td>
+                    <td>
+                      <a class="tabla__ver" [routerLink]="['/socios', socio.socioId]" [attr.aria-label]="t('listado.tabla.verSocio', { nombre: socio.nombre })">
+                        {{ t('listado.tabla.ver') }}
+                      </a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <app-registrar-socio [enviando]="registrando()" [error]="errorRegistro()" (registrar)="registrar($event)" />
+</div>

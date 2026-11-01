@@ -1,0 +1,50 @@
+<div class="tabla-contenedor" *transloco="let t; prefix: 'originacion.bandejaDecision'">
+  <table class="tabla">
+    <caption class="tabla__leyenda">{{ t('tabla.leyenda.' + estado()) }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ t('tabla.columnas.solicitud') }}</th>
+        <th scope="col">{{ t('tabla.columnas.solicitante') }}</th>
+        <th scope="col">{{ t('tabla.columnas.oferta') }}</th>
+        <th scope="col">{{ t('tabla.columnas.motivo') }}</th>
+        <th scope="col">{{ t('tabla.columnas.llegada') }}</th>
+        @if (estado() === 'decided') {
+          <th scope="col">{{ t('tabla.columnas.decision') }}</th>
+          <th scope="col">{{ t('tabla.columnas.asesor') }}</th>
+          <th scope="col">{{ t('tabla.columnas.decididaEn') }}</th>
+        }
+        <th scope="col"><span class="tabla__oculto">{{ t('tabla.columnas.acciones') }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of solicitudes(); track s.aceptacionId) {
+        <tr>
+          <td class="tabla__identificador">{{ s.aceptacionId }}</td>
+          <td>
+            <span class="tabla__principal">{{ s.solicitante.nombreCompleto }}</span>
+            <span class="tabla__secundario">{{ s.solicitante.documento }}</span>
+          </td>
+          <td>
+            <span class="tabla__principal tabla__identificador">{{ s.ofertaId }}</span>
+            <span class="tabla__secundario">{{ t('tabla.primaMes', { prima: s.oferta.prima | formatoMoneda: s.oferta.moneda }) }}</span>
+          </td>
+          <td>{{ t('motivos.' + claveMotivo(s.motivo)) }}</td>
+          <td>{{ s.llegadaEn | formatoFechaHora }}</td>
+          @if (estado() === 'decided') {
+            <td>{{ s.decision ? t('decisiones.' + s.decision.tipo) : '' }}</td>
+            <td class="tabla__identificador">{{ s.decision?.asesor.correo }}</td>
+            <td>{{ s.decision?.decididaEn | formatoFechaHora }}</td>
+          }
+          <td>
+            <a
+              class="tabla__enlace"
+              [routerLink]="['/originacion/bandeja-decision', s.aceptacionId]"
+              [attr.aria-label]="t(estado() === 'pending' ? 'tabla.revisarEtiqueta' : 'tabla.verDetalleEtiqueta', { id: s.aceptacionId })"
+              >{{ t(estado() === 'pending' ? 'tabla.revisar' : 'tabla.verDetalle') }}</a
+            >
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

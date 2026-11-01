@@ -1,0 +1,25 @@
+<section class="indicadores" *transloco="let t; prefix: 'siniestros'" [attr.aria-label]="t('triage.cola.indicadores.titulo')">
+  @switch (estado()) {
+    @case ('cargando') {
+      <p class="indicadores__estado" role="status">{{ t('triage.cola.indicadores.cargando') }}</p>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <p>{{ t('triage.cola.indicadores.error') }}</p>
+        <button type="button" class="boton boton--terciario" (click)="reintentar.emit()">
+          {{ t('triage.cola.indicadores.reintentar') }}
+        </button>
+      </div>
+    }
+    @default {
+      <ul class="indicadores__lista">
+        @for (fila of politica()?.objetivos ?? []; track fila.nivel) {
+          <li class="tarjeta indicador">
+            <app-insignia-estado [tono]="insigniaNivel(fila.nivel).tono">{{ t(insigniaNivel(fila.nivel).clave) }}</app-insignia-estado>
+            <span class="indicador__objetivo">{{ etiquetaObjetivo(t, fila.objetivo) }}</span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

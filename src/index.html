@@ -10,5 +10,11 @@
 </head>
 <body>
   <app-root></app-root>
+  <!-- Aviso fijo y bilingüe si no carga config.json (T5, decisión D-5): aparece antes de que exista Transloco. -->
+  <div id="aviso-configuracion" role="alert" hidden
+       style="max-width: 40rem; margin: 4rem auto; padding: 1.5rem; font-family: system-ui, sans-serif; color: #1a1a1a; background: #ffffff; border: 2px solid #1a1a1a; border-radius: 8px; line-height: 1.5;">
+    <p lang="es" style="margin: 0 0 0.75rem; font-weight: 600;">No pudimos cargar la configuración del portal. Intenta de nuevo en unos minutos.</p>
+    <p lang="en" style="margin: 0;">We could not load the portal configuration. Please try again in a few minutes.</p>
+  </div>
 </body>
 </html>

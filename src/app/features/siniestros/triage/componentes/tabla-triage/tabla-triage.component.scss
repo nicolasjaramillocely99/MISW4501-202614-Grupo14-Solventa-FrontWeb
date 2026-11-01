@@ -1,0 +1,44 @@
+// O5 · Tabla de la cola: mismo trazo que «Mis siniestros» (encabezado en etiqueta, filas con borde superior).
+.tabla-contenedor {
+  overflow-x: auto;
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: var(--espacio-16);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+    background: var(--color-fondo-pagina);
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--color-borde-base);
+  }
+}
+
+.tabla__caso {
+  font-weight: 500;
+  font-size: 0.875rem;
+  word-break: break-all;
+}
+
+.tabla__estado {
+  color: var(--color-texto-secundario);
+}

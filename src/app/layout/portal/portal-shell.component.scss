@@ -1,0 +1,143 @@
+// Shell del portal: barra superior de 64 px y barra lateral de 240 px (sistema de diseño §4.2 y §5).
+.shell {
+  display: grid;
+  grid-template-columns: var(--shell-barra-lateral) 1fr;
+  grid-template-rows: var(--shell-barra-superior) 1fr;
+  min-height: 100vh;
+}
+
+.barra-superior {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-24);
+  padding: 0 var(--espacio-32);
+  border-bottom: 1px solid var(--color-borde-base);
+  background: var(--color-fondo-superficie);
+}
+
+.barra-superior__logotipo {
+  padding-right: var(--espacio-24);
+  border-right: 1px solid var(--color-borde-base);
+  font-size: 1.25rem;
+  text-decoration: none;
+}
+
+.barra-superior__modulo {
+  flex: 1;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.usuario__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-completo);
+  background: var(--color-azul-100);
+  color: var(--color-azul-700);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.usuario__datos {
+  display: flex;
+  flex-direction: column;
+}
+
+.usuario__nombre {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.usuario__rol {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.barra-lateral {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--espacio-16);
+  border-right: 1px solid var(--color-borde-base);
+  background: var(--color-fondo-superficie);
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--espacio-8) var(--espacio-12);
+  border: 0;
+  border-radius: var(--radio-base);
+  background: transparent;
+  color: var(--color-texto-primario);
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  svg {
+    flex-shrink: 0;
+    color: var(--color-texto-secundario);
+  }
+
+  &:hover {
+    background: var(--color-fondo-pagina);
+  }
+}
+
+.menu__item--activo {
+  background: var(--color-azul-100);
+  color: var(--color-azul-700);
+
+  svg {
+    color: var(--color-azul-700);
+  }
+
+  &:hover {
+    background: var(--color-azul-100);
+  }
+}
+
+.menu__cerrar {
+  margin-top: var(--espacio-16);
+  border-top: 1px solid var(--color-borde-base);
+  border-radius: 0;
+  padding-top: var(--espacio-16);
+}
+
+.contenido {
+  padding: var(--espacio-32);
+  background: var(--color-fondo-pagina);
+}
+
+.contenido__contenedor {
+  max-width: var(--shell-contenedor);
+  margin: 0 auto;
+}

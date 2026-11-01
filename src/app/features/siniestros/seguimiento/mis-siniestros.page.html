@@ -1,0 +1,92 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <header class="encabezado">
+    <div class="encabezado__texto">
+      <h1 class="pagina__titulo">{{ t('misSiniestros.titulo') }}</h1>
+      <p class="encabezado__descripcion">{{ t('misSiniestros.descripcion') }}</p>
+    </div>
+    <a class="boton boton--primario" routerLink="/siniestros/radicar">
+      <svg lucidePlus [size]="20" aria-hidden="true"></svg>{{ t('misSiniestros.radicar') }}
+    </a>
+  </header>
+
+  <div class="filtros" role="group" [attr.aria-label]="t('misSiniestros.filtros.etiqueta')">
+    @if (polizas().length > 0) {
+      <div class="campo">
+        <label class="campo__etiqueta" for="filtro-poliza">{{ t('misSiniestros.filtros.poliza') }}</label>
+        <select id="filtro-poliza" #controlPoliza class="campo__control" (change)="filtrar('polizaId', controlPoliza.value)">
+          <option value="" [selected]="!filtro().polizaId">{{ t('misSiniestros.filtros.todas') }}</option>
+          @for (poliza of polizas(); track poliza.id) {
+            <option [value]="poliza.id" [selected]="poliza.id === filtro().polizaId">{{ etiquetaPoliza(t, poliza) }}</option>
+          }
+        </select>
+      </div>
+    }
+    <div class="campo">
+      <label class="campo__etiqueta" for="filtro-desde">{{ t('misSiniestros.filtros.desde') }}</label>
+      <input
+        id="filtro-desde"
+        #controlDesde
+        class="campo__control"
+        type="date"
+        aria-describedby="filtro-desde-ayuda"
+        [value]="filtro().desde"
+        (change)="filtrar('desde', controlDesde.value)"
+      />
+      <p id="filtro-desde-ayuda" class="campo__ayuda">{{ t('misSiniestros.filtros.desdeAyuda') }}</p>
+    </div>
+    @if (fase() === 'lista') {
+      <p class="filtros__conteo" role="status">
+        {{ casos().length === 1 ? t('misSiniestros.conteoUno') : t('misSiniestros.conteo', { cantidad: casos().length }) }}
+      </p>
+    }
+  </div>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('misSiniestros.cargando') }}</p>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h2 id="titulo-error" class="seccion__titulo">{{ t('misSiniestros.error.titulo') }}</h2>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('misSiniestros.error.texto') }}</p>
+        </div>
+        <div>
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('misSiniestros.error.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @case ('vacio') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-vacio">
+        <h2 id="titulo-vacio" class="seccion__titulo">{{ t('misSiniestros.vacio.titulo') }}</h2>
+        <p>{{ t('misSiniestros.vacio.texto') }}</p>
+      </section>
+    }
+    @case ('sin-resultados') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-sin-resultados">
+        <h2 id="titulo-sin-resultados" class="seccion__titulo">{{ t('misSiniestros.sinResultados.titulo') }}</h2>
+        <p>{{ t('misSiniestros.sinResultados.texto') }}</p>
+        <div>
+          <button type="button" class="boton boton--secundario" (click)="limpiarFiltros()">{{ t('misSiniestros.filtros.limpiar') }}</button>
+        </div>
+      </section>
+    }
+    @default {
+      <app-tabla-siniestros [casos]="casos()" />
+      @if (errorMas()) {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('misSiniestros.error.texto') }}</p>
+        </div>
+      }
+      @if (siguienteToken()) {
+        <div class="mas">
+          <button type="button" class="boton boton--secundario" [disabled]="cargandoMas()" (click)="cargarMas()">
+            {{ cargandoMas() ? t('misSiniestros.cargandoMas') : t('misSiniestros.cargarMas') }}
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

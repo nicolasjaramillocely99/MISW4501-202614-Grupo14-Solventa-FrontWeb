@@ -1,0 +1,55 @@
+<section class="tarjeta prioridad" *transloco="let t; prefix: 'siniestros'" aria-labelledby="titulo-prioridad">
+  <h2 id="titulo-prioridad" class="seccion__titulo">{{ t('triage.prioridad.tarjeta.titulo') }}</h2>
+
+  @switch (triage().estado) {
+    @case ('assessed') {
+      @if (actual(); as actual) {
+        <p class="prioridad__resumen">
+          <app-insignia-estado [tono]="insigniaNivel(actual.nivel).tono">{{ t(insigniaNivel(actual.nivel).clave) }}</app-insignia-estado>
+          <span>
+            {{ t('triage.prioridad.tarjeta.resumen', {
+              nivel: t(insigniaNivel(actual.nivel).clave),
+              severidad: etiquetaSeveridad(t, actual.severidad),
+              banda: etiquetaBanda(t, actual.banda)
+            }) }}
+          </span>
+        </p>
+        <dl class="prioridad__datos">
+          <div>
+            <dt>{{ t('triage.prioridad.tarjeta.monto') }}</dt>
+            <dd>{{ montoPesos() === null ? t('triage.prioridad.tarjeta.sinMonto') : (montoPesos() | formatoMoneda: actual.moneda) }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('triage.prioridad.tarjeta.tipo') }}</dt>
+            <dd>{{ nombreTipo(t, actual.tipoSiniestro) }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('triage.prioridad.tarjeta.cobertura') }}</dt>
+            <dd>{{ nombreTipo(t, actual.cobertura) }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('triage.prioridad.tarjeta.objetivo') }}</dt>
+            <dd>{{ etiquetaObjetivo(t, actual.objetivo) }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('triage.prioridad.tarjeta.calculada') }}</dt>
+            <dd>{{ actual.evaluadoEn | formatoFechaHora }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('triage.prioridad.tarjeta.politica') }}</dt>
+            <dd>{{ actual.versionPolitica }}</dd>
+          </div>
+        </dl>
+      }
+    }
+    @case ('pending') {
+      <p class="prioridad__estado" role="status">{{ t('triage.prioridad.tarjeta.pendiente') }}</p>
+    }
+    @default {
+      <p class="prioridad__estado">
+        <strong>{{ t('triage.prioridad.tarjeta.sinPrioridad') }}</strong><br />
+        {{ t('triage.prioridad.tarjeta.sinPrioridadTexto') }}
+      </p>
+    }
+  }
+</section>

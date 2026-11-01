@@ -1,0 +1,76 @@
+// Línea de tiempo del historial: marca de 28 px con su conector y el texto de cada cambio de estado.
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.linea {
+  margin: var(--espacio-16) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paso {
+  position: relative;
+  display: flex;
+  gap: var(--espacio-12);
+  padding-bottom: var(--espacio-12);
+
+  // Conector hacia el paso siguiente.
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    bottom: 0;
+    left: 13px;
+    width: 2px;
+    background: var(--color-azul-700);
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.paso__marca {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radio-completo);
+  background: var(--color-azul-700);
+  color: var(--color-texto-inverso);
+}
+
+.paso--actual .paso__marca {
+  border: 2px solid var(--color-azul-700);
+  background: var(--color-fondo-superficie);
+  color: var(--color-azul-700);
+  font-weight: 500;
+}
+
+.paso__texto {
+  min-width: 0;
+}
+
+.paso__titulo {
+  margin: 0;
+  font-weight: 500;
+}
+
+.paso__detalle {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+
+  span + span::before {
+    content: '·';
+    margin: 0 var(--espacio-4);
+  }
+}

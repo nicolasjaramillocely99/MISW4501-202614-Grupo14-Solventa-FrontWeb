@@ -1,0 +1,15 @@
+<main class="mensaje" *transloco="let t">
+  <section class="tarjeta mensaje__tarjeta" aria-labelledby="titulo-no-autorizado">
+    <span class="mensaje__icono"><svg lucideShieldAlert [size]="32"></svg></span>
+    <h1 id="titulo-no-autorizado" class="mensaje__titulo">{{ t('acceso.noAutorizado.titulo') }}</h1>
+    <p class="mensaje__texto">{{ t('acceso.noAutorizado.mensaje') }}</p>
+    <div class="mensaje__acciones">
+      <a class="boton boton--primario" routerLink="/inicio">{{ t('acceso.noAutorizado.volverAlInicio') }}</a>
+      @if (sesion.autenticado()) {
+        <button type="button" class="boton boton--secundario" (click)="cerrarSesion()">
+          {{ t('comun.cerrarSesion') }}
+        </button>
+      }
+    </div>
+  </section>
+</main>

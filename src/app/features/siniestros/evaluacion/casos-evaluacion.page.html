@@ -1,0 +1,119 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <header class="encabezado">
+    <div class="encabezado__texto">
+      <h1 class="pagina__titulo">{{ t('casosEvaluacion.titulo') }}</h1>
+      <p class="encabezado__descripcion">{{ t('casosEvaluacion.descripcion') }}</p>
+    </div>
+    <div class="encabezado__acciones">
+      <a class="boton boton--terciario" routerLink="/siniestros/cola">{{ t('casosEvaluacion.buscarPorId') }}</a>
+      <button type="button" class="boton boton--secundario" (click)="cargar()">
+        <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>{{ t('casosEvaluacion.actualizar') }}
+      </button>
+    </div>
+  </header>
+
+  <div class="pestanas" role="tablist" [attr.aria-label]="t('casosEvaluacion.pestanas.etiqueta')">
+    @for (p of pestanas; track p) {
+      <button
+        type="button"
+        role="tab"
+        class="pestanas__pestana"
+        [id]="'pestana-' + p"
+        [class.pestanas__pestana--activa]="lista() === p"
+        [attr.aria-selected]="lista() === p"
+        [attr.tabindex]="lista() === p ? 0 : -1"
+        aria-controls="panel-cola"
+        (click)="seleccionarPestana(p)"
+        (keydown)="alTeclearPestana($event)"
+      >
+        {{ t('casosEvaluacion.pestanas.' + p) }}
+      </button>
+    }
+  </div>
+
+  <section id="panel-cola" role="tabpanel" [attr.aria-labelledby]="'pestana-' + lista()" [attr.aria-busy]="fase() === 'cargando'">
+    @switch (fase()) {
+      @case ('cargando') {
+        <p class="estado" role="status">{{ t('casosEvaluacion.cargando') }}</p>
+      }
+      @case ('error') {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <div>
+            <p class="aviso__titulo">{{ t('casosEvaluacion.error.titulo') }}</p>
+            <p>{{ t('casosEvaluacion.error.texto') }}</p>
+          </div>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('casosEvaluacion.reintentar') }}</button>
+        </div>
+      }
+      @case ('lista') {
+        @if (casos().length === 0) {
+          <div class="vacio" role="status">
+            <svg lucideCircleCheck [size]="24" aria-hidden="true"></svg>
+            <p>{{ t('casosEvaluacion.vacio.' + lista()) }}</p>
+          </div>
+        } @else {
+          <div class="tabla-contenedor">
+            <table class="tabla">
+              <caption class="tabla__leyenda">{{ t('casosEvaluacion.leyenda.' + lista()) }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('casosEvaluacion.columnas.prioridad') }}</th>
+                  <th scope="col">{{ t('casosEvaluacion.columnas.radicado') }}</th>
+                  <th scope="col">{{ t('casosEvaluacion.columnas.producto') }}</th>
+                  <th scope="col" class="tabla__numero">{{ t('casosEvaluacion.columnas.montoEstimado') }}</th>
+                  <th scope="col">{{ t('casosEvaluacion.columnas.estado') }}</th>
+                  <th scope="col">{{ t('casosEvaluacion.columnas.espera') }}</th>
+                  <th scope="col"><span class="tabla__oculto">{{ t('casosEvaluacion.columnas.acciones') }}</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (caso of casos(); track caso.id) {
+                  <tr>
+                    <td>
+                      <app-insignia-estado [tono]="tonoPrioridad(caso.prioridad.nivel)">
+                        {{ caso.prioridad.nivel ? t('casosEvaluacion.triage', { nivel: caso.prioridad.nivel }) : t('casosEvaluacion.sinPrioridad') }}
+                      </app-insignia-estado>
+                    </td>
+                    <td class="tabla__identificador">{{ caso.numeroRadicado }}</td>
+                    <td>{{ producto(t, caso) }}</td>
+                    <td class="tabla__numero">
+                      {{ caso.montoEstimado === null ? t('casosEvaluacion.sinMonto') : (caso.montoEstimado | formatoMoneda: 'COP') }}
+                    </td>
+                    <td>
+                      <app-insignia-estado [tono]="tonoEstado(caso.estado)">{{ t('estados.' + caso.estado) }}</app-insignia-estado>
+                    </td>
+                    <td>{{ espera(t, caso) }}</td>
+                    <td class="tabla__acciones">
+                      <a
+                        class="tabla__enlace"
+                        [routerLink]="['/siniestros/cola', caso.id]"
+                        [attr.aria-label]="t('casosEvaluacion.verPrioridadEtiqueta', { radicado: caso.numeroRadicado })"
+                        >{{ t('casosEvaluacion.verPrioridad') }}</a
+                      >
+                      <a
+                        class="tabla__enlace"
+                        [routerLink]="['/siniestros', caso.id, 'evaluar']"
+                        [attr.aria-label]="t('casosEvaluacion.evaluarEtiqueta', { radicado: caso.numeroRadicado })"
+                        >{{ t(lista() === 'evaluations' ? 'casosEvaluacion.evaluar' : 'casosEvaluacion.atender') }}</a
+                      >
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          @if (siguienteToken()) {
+            <div class="acciones">
+              <button type="button" class="boton boton--secundario" [disabled]="cargandoMas()" (click)="cargarMas()">
+                {{ cargandoMas() ? t('casosEvaluacion.cargando') : t('casosEvaluacion.cargarMas') }}
+              </button>
+            </div>
+          }
+        }
+      }
+    }
+  </section>
+</div>

@@ -1,0 +1,333 @@
+<div class="pagina" *transloco="let t; prefix: 'embebido'">
+  <p class="pagina__contexto">
+    <svg lucideLandmark [size]="16" aria-hidden="true"></svg>
+    @if (solicitud(); as datos) {
+      {{ t('contexto.conSolicitud', { numero: datos.numero }) }}
+    } @else {
+      {{ t('contexto.sinSolicitud') }}
+    }
+  </p>
+
+  <div class="pagina__cuerpo">
+    @if (solicitud(); as datos) {
+      <app-tarjeta-credito [solicitud]="datos" />
+    }
+
+    <section class="tarjeta flujo" aria-labelledby="titulo-pago" [attr.aria-busy]="fase() === 'cargando'">
+      <app-indicador-pasos [pasos]="pasos()" etiqueta="embebido.pasos.navegacion" />
+
+      @switch (fase()) {
+        @case ('cargando') {
+          <div class="resultado" role="status">
+            <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.cargando.titulo') }}</h1>
+            <div class="progreso" aria-hidden="true"><div class="progreso__barra"></div></div>
+          </div>
+        }
+
+        @case ('cobro') {
+          @if (cobro(); as actual) {
+            @switch (vista()) {
+              @case ('capturando') {
+                <div class="flujo__encabezado">
+                  <div class="flujo__fila">
+                    <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.capturando.titulo') }}</h1>
+                  </div>
+                  <p class="flujo__texto">
+                    {{ t('pago.capturando.texto', { fecha: actual.aceptadaEn | formatoFechaHora }) }}
+                  </p>
+                </div>
+                <div class="pago__columnas">
+                  <app-formulario-medio-pago
+                    [enviando]="entregandoMedioDePago()"
+                    [monto]="actual.monto"
+                    [moneda]="actual.moneda"
+                    [volverA]="acciones.verAceptacion"
+                    (medioElegido)="entregarMedioDePago($event)"
+                  />
+                  <app-resumen-pago [monto]="actual.monto" [moneda]="actual.moneda" />
+                </div>
+                @if (medioDePagoRechazado()) {
+                  <p class="aviso aviso--error" role="alert">{{ t('pago.capturando.yaNoAdmite') }}</p>
+                }
+              }
+
+              @case ('rechazado') {
+                <div class="flujo__encabezado" role="status">
+                  <div class="flujo__fila">
+                    <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.rechazado.titulo') }}</h1>
+                    <app-insignia-estado [tono]="tonoInsignia.rechazado">
+                      {{ t('pago.insignia.rechazado') }}
+                    </app-insignia-estado>
+                  </div>
+                </div>
+
+                <!-- Lo que el emisor dijo. Viaja el codigo y la frase la pone
+                     esta pantalla, que es donde vive el idioma. -->
+                <div class="aviso aviso--error">
+                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('pago.rechazado.avisoTitulo') }}</p>
+                    <p>
+                      @if (actual.codigoRechazo; as codigo) {
+                        {{ t('pago.rechazado.codigo', { codigo, motivo: t(glosaDelRechazo()) }) }}
+                      }
+                      {{ t('pago.rechazado.texto') }}
+                    </p>
+                  </div>
+                </div>
+
+                <dl class="rechazo">
+                  @if (actual.medioDePago; as medio) {
+                    <div>
+                      <dt>{{ t('pago.rechazado.medioUsado') }}</dt>
+                      <dd class="rechazo__medio">
+                        {{ t('pago.rechazado.medioValor', { marca: medio.marca, ultimos: medio.ultimosCuatro }) }}
+                      </dd>
+                    </div>
+                  }
+                  <div>
+                    <dt>{{ t('pago.rechazado.intento') }}</dt>
+                    <dd>{{ actual.intentoDePago }}</dd>
+                  </div>
+                  @if (actual.referenciaPasarela; as referencia) {
+                    <div>
+                      <dt>{{ t('pago.rechazado.referencia') }}</dt>
+                      <dd class="datos__identificador">{{ referencia }}</dd>
+                    </div>
+                  }
+                  @if (actual.ofertaVigenteHasta; as vigencia) {
+                    <div>
+                      <dt>{{ t('pago.rechazado.oferta') }}</dt>
+                      <dd>{{ t('pago.rechazado.ofertaValor', { fecha: vigencia | formatoFechaHora }) }}</dd>
+                    </div>
+                  }
+                </dl>
+
+                <app-formulario-medio-pago
+                  [enviando]="entregandoMedioDePago()"
+                  [reintento]="true"
+                  [monto]="actual.monto"
+                  [moneda]="actual.moneda"
+                  [volverA]="acciones.verAceptacion"
+                  (medioElegido)="entregarMedioDePago($event)"
+                />
+                @if (medioDePagoRechazado()) {
+                  <p class="aviso aviso--error" role="alert">{{ t('pago.capturando.yaNoAdmite') }}</p>
+                }
+              }
+
+              @case ('procesando') {
+                <div class="flujo__encabezado" role="status">
+                  <div class="flujo__fila">
+                    <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.procesando.titulo') }}</h1>
+                    <app-insignia-estado [tono]="tonoInsignia.procesando">{{ t('pago.insignia.procesando') }}</app-insignia-estado>
+                  </div>
+                  <p class="flujo__texto">{{ t('pago.procesando.texto', { fecha: actual.aceptadaEn | formatoFechaHora }) }}</p>
+                </div>
+                <div class="progreso" role="progressbar" [attr.aria-label]="t('pago.procesando.progreso')">
+                  <div class="progreso__barra"></div>
+                </div>
+              }
+
+              @case ('pendiente') {
+                <div class="flujo__encabezado" role="status">
+                  <div class="flujo__fila">
+                    <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.pendiente.titulo') }}</h1>
+                    <app-insignia-estado [tono]="tonoInsignia.pendiente">{{ t('pago.insignia.pendiente') }}</app-insignia-estado>
+                  </div>
+                  <p class="flujo__texto">
+                    {{ t('pago.pendiente.texto', { fin: actual.ventana.terminaEn | formatoFechaHora }) }}
+                  </p>
+                </div>
+              }
+
+              @case ('confirmado') {
+                <div class="resultado" role="status">
+                  <span class="resultado__icono resultado__icono--confirmado" aria-hidden="true">
+                    <svg lucideCircleCheck [size]="28"></svg>
+                  </span>
+                  <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.confirmado.titulo') }}</h1>
+                  <p class="resultado__texto">
+                    @if (actual.polizaId) {
+                      {{ t('pago.confirmado.texto', { fecha: actual.coberturaActivadaEn | formatoFechaHora }) }}
+                    } @else {
+                      {{ t('pago.confirmado.activando') }}
+                    }
+                  </p>
+                </div>
+              }
+
+              @case ('excepcion') {
+                <div class="resultado" role="alert">
+                  <span class="resultado__icono resultado__icono--excepcion" aria-hidden="true">
+                    <svg lucideCircleAlert [size]="28"></svg>
+                  </span>
+                  <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.excepcion.titulo') }}</h1>
+                  <p class="resultado__texto">
+                    {{ t(actual.motivoFalla === 'payment_rejected' ? 'pago.excepcion.rechazo' : 'pago.excepcion.ventana') }}
+                  </p>
+                </div>
+              }
+            }
+
+            @if (vista() !== 'capturando' && vista() !== 'rechazado') {
+            <dl class="datos">
+              <div>
+                <dt>{{ t('pago.datos.aceptacion') }}</dt>
+                <dd>{{ t('pago.datos.aceptacionValor', { fecha: actual.aceptadaEn | formatoFechaHora }) }}</dd>
+              </div>
+              <div>
+                <dt>{{ t('pago.datos.clave') }}</dt>
+                <dd class="datos__identificador">{{ t('pago.datos.claveValor', { clave: actual.claveIdempotencia }) }}</dd>
+              </div>
+              <div>
+                <dt>{{ t('pago.datos.prima') }}</dt>
+                <dd>{{ actual.monto | formatoMoneda: actual.moneda }}</dd>
+              </div>
+              @switch (vista()) {
+                @case ('pendiente') {
+                  <div>
+                    <dt>{{ t('pago.datos.proximo') }}</dt>
+                    <dd>
+                      @if (actual.proximoIntentoEn) {
+                        {{ t('pago.datos.proximoValor', { hora: actual.proximoIntentoEn | formatoFechaHora: 'hora' }) }}
+                      } @else {
+                        {{ t('pago.datos.enCurso') }}
+                      }
+                    </dd>
+                  </div>
+                }
+                @case ('confirmado') {
+                  @if (actual.polizaId) {
+                    <div>
+                      <dt>{{ t('pago.datos.poliza') }}</dt>
+                      <dd class="datos__identificador">{{ actual.polizaId }}</dd>
+                    </div>
+                  }
+                }
+                @case ('excepcion') {
+                  <div>
+                    <dt>{{ t('pago.datos.estado') }}</dt>
+                    <dd>
+                      <app-insignia-estado [tono]="tonoInsignia.excepcion">{{ t('pago.insignia.excepcion') }}</app-insignia-estado>
+                    </dd>
+                  </div>
+                }
+              }
+              <div>
+                <dt>{{ t('pago.datos.cobertura') }}</dt>
+                <dd>
+                  @if (actual.coberturaActivadaEn) {
+                    {{ t('pago.datos.coberturaActiva', { fecha: actual.coberturaActivadaEn | formatoFechaHora }) }}
+                  } @else {
+                    {{ t('pago.datos.coberturaPendiente') }}
+                  }
+                </dd>
+              </div>
+            </dl>
+            }
+
+            @if (vista() === 'pendiente') {
+              <ul class="linea" [attr.aria-label]="t('pago.pendiente.lineaEtiqueta')">
+                <li class="linea__paso">
+                  <svg lucideCircleCheck class="linea__icono linea__icono--listo" [size]="18" aria-hidden="true"></svg>
+                  <span class="linea__nombre">{{ t('pago.pendiente.linea.registrada') }}</span>
+                  <span class="linea__detalle">{{ actual.aceptadaEn | formatoFechaHora }}</span>
+                </li>
+                <li class="linea__paso">
+                  <svg lucideTriangleAlert class="linea__icono linea__icono--alerta" [size]="18" aria-hidden="true"></svg>
+                  <span class="linea__nombre">{{ t('pago.pendiente.linea.solicitado') }}</span>
+                  <span class="linea__detalle">{{ t('pago.pendiente.linea.sinRespuesta') }}</span>
+                </li>
+                <li class="linea__paso">
+                  <svg lucideTriangleAlert class="linea__icono linea__icono--alerta" [size]="18" aria-hidden="true"></svg>
+                  <span class="linea__nombre">{{ t('pago.pendiente.linea.fallas', { intentos: actual.intentos }) }}</span>
+                  <span class="linea__detalle">
+                    {{ t('pago.pendiente.linea.fallasDetalle', { hora: actual.ultimaFallaEn | formatoFechaHora: 'hora' }) }}
+                  </span>
+                </li>
+                <li class="linea__paso">
+                  <svg lucideClock class="linea__icono linea__icono--enCurso" [size]="18" aria-hidden="true"></svg>
+                  <span class="linea__nombre">{{ t('pago.pendiente.linea.proximo') }}</span>
+                  <span class="linea__detalle">
+                    @if (actual.proximoIntentoEn) {
+                      {{ t('pago.pendiente.linea.proximoDetalle', { hora: actual.proximoIntentoEn | formatoFechaHora: 'hora' }) }}
+                    } @else {
+                      {{ t('pago.datos.enCurso') }}
+                    }
+                  </span>
+                </li>
+              </ul>
+            }
+
+            @if (vista() === 'pendiente' || vista() === 'procesando') {
+              <div class="aviso aviso--informacion">
+                <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                <div>
+                  <p class="aviso__titulo">{{ t('pago.aviso.titulo') }}</p>
+                  <p>{{ t('pago.aviso.texto', { fin: actual.ventana.terminaEn | formatoFechaHora }) }}</p>
+                </div>
+              </div>
+            }
+
+            <!-- E4 y E4c traen sus propios botones dentro del formulario. -->
+            @if (vista() !== 'capturando' && vista() !== 'rechazado') {
+            <div class="acciones">
+              @if (vista() === 'confirmado' && actual.polizaId) {
+                <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('pago.acciones.continuarCredito') }}</a>
+                <a class="boton boton--primario" [routerLink]="[acciones.verPoliza, actual.polizaId]">
+                  <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                  {{ t('pago.acciones.verPoliza') }}
+                </a>
+              } @else {
+                @if (vista() === 'pendiente') {
+                  <!-- Esta accion esta en el frame E4b y por eso se mantiene,
+                       pero llega deshabilitada mientras el cobro esta en
+                       curso: la pasarela no ha respondido y pudo haber
+                       cobrado ya, asi que cambiar el medio de pago ahora
+                       arriesgaria un segundo cobro. Es la garantia de HA-D02,
+                       y el backend responde 409 charge_not_payable. Se
+                       habilita sola el dia que la pasarela rechace, que es
+                       E4c. -->
+                  <button type="button" class="boton boton--secundario" disabled aria-describedby="porque-no-otro-medio">
+                    {{ t('pago.acciones.otroMedio') }}
+                  </button>
+                }
+                <a class="boton boton--primario" [routerLink]="acciones.salir">
+                  <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                  {{ t('pago.acciones.continuarCredito') }}
+                </a>
+              }
+            </div>
+            @if (vista() === 'pendiente') {
+              <p id="porque-no-otro-medio" class="acciones__nota">{{ t('pago.acciones.otroMedioNota') }}</p>
+            }
+            }
+          }
+        }
+
+        @case ('error') {
+          <div class="resultado" role="alert">
+            <span class="resultado__icono resultado__icono--excepcion" aria-hidden="true">
+              <svg lucideCircleAlert [size]="28"></svg>
+            </span>
+            <h1 id="titulo-pago" class="flujo__titulo">{{ t('pago.error.' + motivoError() + '.titulo') }}</h1>
+            <p class="resultado__texto">{{ t('pago.error.' + motivoError() + '.texto') }}</p>
+          </div>
+
+          <div class="acciones acciones--centradas">
+            @switch (motivoError()) {
+              @case ('generico') {
+                <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('pago.acciones.reintentar') }}</button>
+                <a class="boton boton--primario" [routerLink]="acciones.salir">{{ t('pago.acciones.continuarCredito') }}</a>
+              }
+              @default {
+                <a class="boton boton--primario" [routerLink]="acciones.verAceptacion">{{ t('pago.acciones.verAceptacion') }}</a>
+              }
+            }
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>

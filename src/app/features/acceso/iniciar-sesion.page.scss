@@ -1,0 +1,121 @@
+// P0: panel de marca (azul/900) a la izquierda y tarjeta del formulario a la derecha.
+.pagina {
+  display: grid;
+  grid-template-columns: minmax(320px, 620px) 1fr;
+  min-height: 100vh;
+}
+
+.panel {
+  display: flex;
+  align-items: center;
+  padding: var(--espacio-64);
+  background: var(--color-azul-900);
+  color: var(--color-texto-inverso);
+}
+
+.panel__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  max-width: 492px;
+}
+
+.panel__logotipo {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.panel__titular {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.panel__descripcion {
+  margin: 0;
+}
+
+.panel__beneficios {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-12);
+  }
+}
+
+.panel__icono {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: var(--espacio-8);
+  border-radius: var(--radio-base);
+  background: var(--color-azul-700);
+  color: var(--color-lima-500);
+}
+
+.contenido {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacio-32);
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  width: 100%;
+  max-width: 440px;
+  padding: var(--espacio-32);
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-16);
+  }
+}
+
+.formulario__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-12);
+}
+
+.formulario__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.formulario__descripcion,
+.formulario__pie {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.formulario__pie {
+  padding-top: var(--espacio-16);
+  border-top: 1px solid var(--color-borde-base);
+  text-align: center;
+}
+
+@media (max-width: 1023px) {
+  .pagina {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: var(--espacio-32);
+  }
+}

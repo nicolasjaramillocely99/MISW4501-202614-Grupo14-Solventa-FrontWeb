@@ -1,0 +1,159 @@
+<div class="pagina" *transloco="let t; prefix: 'embebido'">
+  <p class="pagina__contexto">
+    <svg lucideLandmark [size]="16" aria-hidden="true"></svg>
+    @if (solicitud(); as datos) {
+      {{ t('contexto.conSolicitud', { numero: datos.numero }) }}
+    } @else {
+      {{ t('contexto.sinSolicitud') }}
+    }
+  </p>
+
+  <div class="pagina__cuerpo">
+    @if (solicitud(); as datos) {
+      <section class="tarjeta credito" aria-labelledby="titulo-credito">
+        <h2 id="titulo-credito" class="credito__titulo">{{ t('credito.titulo') }}</h2>
+        <dl class="credito__datos">
+          <div>
+            <dt>{{ t('credito.banco') }}</dt>
+            <dd>{{ datos.banco }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('credito.montoAprobado') }}</dt>
+            <dd class="credito__monto">{{ datos.montoAprobado | formatoMoneda: datos.moneda }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('credito.plazo') }}</dt>
+            <dd>{{ t('credito.plazoAnios', { anios: datos.plazoAnios }) }}</dd>
+          </div>
+          <div>
+            <dt>{{ t('credito.cuotaEstimada') }}</dt>
+            <dd>{{ t('credito.cuotaMensual', { valor: datos.cuotaEstimada | formatoMoneda: datos.moneda }) }}</dd>
+          </div>
+        </dl>
+      </section>
+    }
+
+    <section class="tarjeta calculo" aria-labelledby="titulo-calculo" [attr.aria-busy]="fase() === 'calculando'">
+      <app-indicador-pasos [pasos]="pasos()" etiqueta="embebido.pasos.navegacion" />
+
+      <div class="calculo__encabezado" role="status">
+        <h1 id="titulo-calculo" class="calculo__titulo">{{ t('perfilRiesgo.titulo.' + fase()) }}</h1>
+        <p class="calculo__descripcion">{{ t('perfilRiesgo.descripcion.' + fase()) }}</p>
+      </div>
+
+      @if (fase() !== 'error') {
+        <div
+          class="progreso"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="fase() === 'listo' ? 100 : null"
+          [attr.aria-label]="t('perfilRiesgo.progreso')"
+        >
+          <div class="progreso__barra" [class.progreso__barra--indeterminada]="fase() === 'calculando'"></div>
+        </div>
+
+        <ul class="filas">
+          @for (fila of filas(); track fila.clave) {
+            <li class="fila" [class.fila--atenuada]="fila.atenuada">
+              <span class="fila__icono fila__icono--{{ fila.icono }}" aria-hidden="true">
+                @switch (fila.icono) {
+                  @case ('listo') {
+                    <svg lucideCircleCheck [size]="20"></svg>
+                  }
+                  @case ('enCurso') {
+                    <svg lucideClock [size]="20"></svg>
+                  }
+                  @case ('alerta') {
+                    <svg lucideTriangleAlert [size]="20"></svg>
+                  }
+                  @default {
+                    <svg lucideEllipsis [size]="20"></svg>
+                  }
+                }
+              </span>
+              <div class="fila__texto">
+                <p class="fila__nombre">{{ t('perfilRiesgo.' + fila.nombre) }}</p>
+                <p class="fila__detalle">
+                  {{
+                    t('perfilRiesgo.' + fila.detalle, {
+                      ms: fila.detalleParametros?.['ms'],
+                      fecha: fila.detalleFecha | formatoFecha
+                    })
+                  }}
+                </p>
+              </div>
+              @if (fila.insignia; as insignia) {
+                <app-insignia-estado [tono]="insignia.tono">{{ t('perfilRiesgo.' + insignia.texto) }}</app-insignia-estado>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (aviso(); as avisoActual) {
+        <div
+          class="aviso aviso--{{ avisoActual.tono }}"
+          [attr.role]="fase() === 'error' ? 'alert' : null"
+        >
+          @switch (avisoActual.tono) {
+            @case ('exito') {
+              <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+            }
+            @case ('advertencia') {
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            }
+            @case ('error') {
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            }
+            @default {
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            }
+          }
+          <div>
+            <p class="aviso__titulo">{{ t('perfilRiesgo.' + avisoActual.titulo) }}</p>
+            <p>
+              {{
+                t('perfilRiesgo.' + avisoActual.texto, {
+                  fuente: avisoActual.fuente ? t('perfilRiesgo.fuente.' + avisoActual.fuente) : '',
+                  fecha: avisoActual.fecha | formatoFecha
+                })
+              }}
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (errorOferta(); as motivoOferta) {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <div>
+            <p class="aviso__titulo">{{ t('perfilRiesgo.errorOferta.' + motivoOferta + '.titulo') }}</p>
+            <p>{{ t('perfilRiesgo.errorOferta.' + motivoOferta + '.texto') }}</p>
+          </div>
+        </div>
+      }
+
+      <div class="acciones">
+        @if (fase() === 'error' && motivoError() === 'consentimiento') {
+          <a class="boton boton--primario" routerLink="/embebido/consentimiento">{{ t('perfilRiesgo.acciones.volverConsentimiento') }}</a>
+        } @else {
+          <a class="boton boton--secundario" routerLink="/embebido/consentimiento">{{ t('perfilRiesgo.acciones.cancelar') }}</a>
+          @switch (fase()) {
+            @case ('listo') {
+              <button type="button" class="boton boton--primario" [disabled]="generandoOferta()" (click)="verOferta()">
+                {{ t(generandoOferta() ? 'perfilRiesgo.acciones.generandoOferta' : 'perfilRiesgo.acciones.verOferta') }}
+              </button>
+            }
+            @case ('error') {
+              <button type="button" class="boton boton--primario" (click)="calcular()">{{ t('perfilRiesgo.acciones.reintentar') }}</button>
+            }
+            @default {
+              <button type="button" class="boton boton--primario" disabled>{{ t('perfilRiesgo.acciones.calculando') }}</button>
+            }
+          }
+        }
+      </div>
+    </section>
+  </div>
+</div>

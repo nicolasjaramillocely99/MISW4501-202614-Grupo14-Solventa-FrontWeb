@@ -1,0 +1,13 @@
+{
+  "/v1": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/pasarela": {
+    "target": "http://localhost:9040",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/pasarela": "" }
+  }
+}

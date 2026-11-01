@@ -1,0 +1,104 @@
+<form class="formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate *transloco="let t; prefix: 'siniestros.evaluacion.decision'">
+  <h2 id="titulo-decision" class="seccion__titulo">{{ t('titulo') }}</h2>
+
+  <fieldset class="opciones">
+    <legend class="opciones__leyenda">{{ t('leyenda') }}</legend>
+    @for (o of opciones; track o) {
+      <label class="opcion" [class.opcion--elegida]="opcion() === o">
+        <input class="opcion__radio" type="radio" formControlName="opcion" [value]="o" />
+        <span class="opcion__icono" aria-hidden="true">
+          @if (o === 'aprobar') {
+            <svg lucideCircleCheck [size]="20"></svg>
+          } @else {
+            <svg lucideCircleX [size]="20"></svg>
+          }
+        </span>
+        <span class="opcion__texto">
+          <span class="opcion__titulo">{{ t('opciones.' + o + '.titulo') }}</span>
+          <span class="opcion__descripcion">{{ t('opciones.' + o + '.descripcion') }}</span>
+        </span>
+      </label>
+    }
+  </fieldset>
+
+  @if (opcion() === 'aprobar') {
+    <div class="campo">
+      <label class="campo__etiqueta" for="bruto">{{ t('campos.bruto') }}</label>
+      <input
+        id="bruto"
+        class="campo__control"
+        type="number"
+        inputmode="numeric"
+        min="1"
+        step="1"
+        formControlName="bruto"
+        [attr.aria-invalid]="errorDe('bruto') ? 'true' : null"
+        [attr.aria-describedby]="errorDe('bruto') ? 'bruto-error' : 'bruto-ayuda'"
+        (input)="editado('bruto')"
+      />
+      @if (errorDe('bruto'); as clave) {
+        <p id="bruto-error" class="campo__error">
+          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg
+          >{{ t('errores.' + clave, { tope: (cobertura()?.valorAsegurado | formatoMoneda: cobertura()?.moneda ?? 'COP') }) }}
+        </p>
+      } @else {
+        <p id="bruto-ayuda" class="campo__ayuda">
+          {{ t('ayudas.bruto', { tope: (cobertura()?.valorAsegurado | formatoMoneda: cobertura()?.moneda ?? 'COP') }) }}
+        </p>
+      }
+    </div>
+
+    @if (desglose(); as d) {
+      <dl class="desglose" aria-live="polite">
+        <div>
+          <dt>{{ t('desglose.bruto') }}</dt>
+          <dd>{{ d.bruto | formatoMoneda: cobertura()!.moneda }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('desglose.deducible', { pct: porcentajeDeducible() }) }}</dt>
+          <dd>− {{ d.deducible | formatoMoneda: cobertura()!.moneda }}</dd>
+        </div>
+        <div class="desglose__total">
+          <dt>{{ t('desglose.neto') }}</dt>
+          <dd>{{ d.neto | formatoMoneda: cobertura()!.moneda }}</dd>
+        </div>
+      </dl>
+      <p class="campo__ayuda">
+        {{ t('desglose.nota', { pct: porcentajeDeducible(), deducible: (d.deducible | formatoMoneda: cobertura()!.moneda) }) }}
+      </p>
+    }
+  } @else {
+    <div class="campo">
+      <label class="campo__etiqueta" for="motivo">{{ t('campos.motivo') }}</label>
+      <textarea
+        id="motivo"
+        class="campo__control campo__control--area"
+        rows="4"
+        [attr.maxlength]="maxMotivo"
+        formControlName="motivo"
+        [attr.aria-invalid]="errorDe('motivo') ? 'true' : null"
+        [attr.aria-describedby]="errorDe('motivo') ? 'motivo-error' : 'motivo-ayuda'"
+        (input)="editado('motivo')"
+      ></textarea>
+      @if (errorDe('motivo'); as clave) {
+        <p id="motivo-error" class="campo__error">
+          <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.' + clave, { max: maxMotivo }) }}
+        </p>
+      } @else {
+        <p id="motivo-ayuda" class="campo__ayuda">{{ t('ayudas.motivo') }}</p>
+      }
+    </div>
+  }
+
+  <p class="nota">{{ t('nota') }}</p>
+
+  <div class="acciones">
+    <button type="submit" class="boton boton--primario" [disabled]="deshabilitado() || enviando()">
+      @if (enviando()) {
+        {{ t('acciones.registrando') }}
+      } @else {
+        {{ t('acciones.' + opcion()) }}
+      }
+    </button>
+  </div>
+</form>

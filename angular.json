@@ -3,7 +3,10 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ],
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -95,7 +98,8 @@
               "buildTarget": "solventa-front-web:build:staging"
             },
             "development": {
-              "buildTarget": "solventa-front-web:build:development"
+              "buildTarget": "solventa-front-web:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -104,6 +108,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "tsconfig.spec.json",
+            "providersFile": "src/testing/configuracion-pruebas.ts",
             "coverageExclude": ["src/main.ts", "src/testing/**", "src/environments/**"],
             "coverageReporters": ["text", "html", "lcov"],
             "coverageThresholds": {

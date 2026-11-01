@@ -1,0 +1,127 @@
+// Tabla del frame 44:4954 y estado sin resultados del frame 877:9304.
+.tabla-contenedor {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tabla-desplazable {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    padding: var(--espacio-16);
+    background: var(--color-fondo-pagina);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    border-top: 1px solid var(--color-borde-base);
+    vertical-align: middle;
+  }
+}
+
+.tabla__nombre {
+  display: block;
+}
+
+.tabla__secundario {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+// El identificador (cns- + 32 hex) no se parte en el guion: baja entero a su línea, como en el frame.
+// En pantallas angostas la tabla se desplaza dentro de .tabla-desplazable.
+.tabla__id {
+  white-space: nowrap;
+}
+
+.tabla__fecha {
+  white-space: nowrap;
+}
+
+.tabla__alcance {
+  max-width: 36ch;
+  font-size: 0.875rem;
+}
+
+.tabla__ver {
+  font-weight: 500;
+  color: var(--color-azul-700);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-8);
+  padding: var(--espacio-48) var(--espacio-16);
+  text-align: center;
+}
+
+.vacio__icono {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border: 2px dashed var(--color-azul-500);
+  border-radius: 50%;
+  color: var(--color-azul-700);
+}
+
+.vacio__titulo {
+  margin: var(--espacio-16) 0 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.vacio__texto {
+  margin: 0;
+  max-width: 48ch;
+  color: var(--color-texto-secundario);
+}
+
+.vacio .boton {
+  margin-top: var(--espacio-8);
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-12);
+  padding: var(--espacio-12) var(--espacio-16);
+  border-top: 1px solid var(--color-borde-base);
+}
+
+.pie__conteo {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.pie__navegacion {
+  display: flex;
+  gap: var(--espacio-8);
+
+  .boton {
+    gap: var(--espacio-4);
+  }
+}

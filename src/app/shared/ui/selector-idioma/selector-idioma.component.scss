@@ -1,0 +1,52 @@
+// Selector de idioma: globo + código + chevron (frames P0 17-174 y barra superior del portal).
+// El <select> ocupa todo el control para que cualquier punto abra la lista; los íconos no capturan clics.
+:host {
+  display: inline-flex;
+}
+
+.selector-idioma {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-texto-primario);
+}
+
+.selector-idioma__globo,
+.selector-idioma__chevron {
+  position: absolute;
+  pointer-events: none;
+}
+
+.selector-idioma__globo {
+  left: var(--espacio-8);
+}
+
+.selector-idioma__chevron {
+  right: var(--espacio-8);
+  color: var(--color-texto-secundario);
+}
+
+.selector-idioma__control {
+  appearance: none;
+  min-height: 32px;
+  padding: var(--espacio-4) calc(var(--espacio-8) + 16px + var(--espacio-4)) var(--espacio-4)
+    calc(var(--espacio-8) + 18px + var(--espacio-4));
+  border: 1px solid transparent;
+  border-radius: var(--radio-pequeno);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-azul-50);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}

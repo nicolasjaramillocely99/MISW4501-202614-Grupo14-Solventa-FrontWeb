@@ -1,0 +1,23 @@
+<aside class="resumen" *transloco="let m; read: 'embebido.pago.medioDePago'">
+  <h2 class="resumen__titulo">{{ m('resumen') }}</h2>
+  <dl class="resumen__lista">
+    <div>
+      <dt>{{ m('primaMensual') }}</dt>
+      <dd>{{ monto() | formatoMoneda: moneda() }}</dd>
+    </div>
+    <div>
+      <dt>{{ m('iva') }}</dt>
+      <dd>{{ m('ivaIncluido') }}</dd>
+    </div>
+  </dl>
+  <dl class="resumen__total">
+    <div>
+      <dt>{{ m('totalHoy') }}</dt>
+      <dd>{{ monto() | formatoMoneda: moneda() }}</dd>
+    </div>
+  </dl>
+  <p class="resumen__cifrado">
+    <svg lucideLock [size]="16" aria-hidden="true"></svg>
+    {{ m('cifrado') }}
+  </p>
+</aside>

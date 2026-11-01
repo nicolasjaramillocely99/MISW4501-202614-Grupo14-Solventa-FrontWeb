@@ -1,0 +1,171 @@
+<div
+  class="pagina"
+  [class.pagina--sola]="!solicitud()"
+  *transloco="let t; prefix: 'embebido.polizaEmitida'"
+>
+  <p class="pagina__contexto" *transloco="let c; prefix: 'embebido.contexto'">
+    <svg lucideLandmark [size]="16" aria-hidden="true"></svg>
+    @if (solicitud(); as datos) {
+      {{ c('conSolicitud', { numero: datos.numero }) }}
+    } @else {
+      {{ c('sinSolicitud') }}
+    }
+  </p>
+
+  <div class="pagina__cuerpo">
+    @if (solicitud(); as datos) {
+      <app-tarjeta-credito [solicitud]="datos" />
+    }
+
+    <section
+      class="tarjeta emision"
+      aria-labelledby="titulo-emision"
+      [attr.aria-busy]="fase() === 'cargando' || fase() === 'esperando'"
+    >
+      <app-indicador-pasos [pasos]="pasos()" etiqueta="embebido.pasos.navegacion" />
+
+      <div class="emision__encabezado" role="status">
+        @if (fase() === 'listo') {
+          <span class="emision__sello" aria-hidden="true"
+            ><svg lucideCircleCheck [size]="24"></svg
+          ></span>
+        }
+        <div>
+          <h1 id="titulo-emision" class="emision__titulo">{{ t('titulo.' + fase()) }}</h1>
+          <p class="emision__descripcion">
+            @if (fase() === 'listo' && emision(); as datos) {
+              {{
+                t('descripcion.listo', {
+                  poliza: polizaId,
+                  fecha: datos.activadaEn | formatoFechaHora,
+                })
+              }}
+            } @else {
+              {{ t('descripcion.' + fase()) }}
+            }
+          </p>
+        </div>
+      </div>
+
+      @if (fase() === 'error') {
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('error.' + motivoError()) }}</p>
+        </div>
+        <div class="acciones">
+          @if (motivoError() !== 'permiso') {
+            <button type="button" class="boton boton--primario" (click)="consultar()">
+              {{ t('acciones.reintentar') }}
+            </button>
+          }
+        </div>
+      } @else if (fase() !== 'cargando') {
+        @if (emision(); as datos) {
+          <div class="documento">
+            <span
+              class="documento__icono"
+              [class.documento__icono--listo]="datos.documento"
+              aria-hidden="true"
+            >
+              @if (datos.documento) {
+                <svg lucideFileText [size]="20"></svg>
+              } @else {
+                <svg lucideClock [size]="20"></svg>
+              }
+            </span>
+            <div class="documento__texto">
+              <p class="documento__nombre">{{ t('documento.nombre') }}</p>
+              <p class="documento__detalle">
+                @if (datos.documento; as documento) {
+                  {{
+                    t('documento.disponible', {
+                      tamano: tamano(documento.tamanoBytes),
+                      version: documento.version,
+                    })
+                  }}
+                } @else {
+                  {{ t('documento.generando') }}
+                }
+              </p>
+            </div>
+            <button
+              type="button"
+              class="boton boton--secundario"
+              [disabled]="!datos.documento || descargando()"
+              (click)="descargar()"
+            >
+              <svg lucideDownload [size]="16" aria-hidden="true"></svg>
+              {{ descargando() ? t('acciones.descargando') : t('acciones.descargar') }}
+            </button>
+          </div>
+
+          @if (errorDescarga()) {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <p>{{ t('error.descarga') }}</p>
+            </div>
+          }
+
+          @switch (datos.notificacion.estado) {
+            @case ('sent') {
+              <div class="aviso aviso--exito">
+                <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+                <div>
+                  <p class="aviso__titulo">{{ t('notificacion.enviada.titulo') }}</p>
+                  <p>
+                    {{
+                      t('notificacion.enviada.texto', {
+                        fecha: datos.notificacion.enviadaEn | formatoFechaHora,
+                      })
+                    }}
+                  </p>
+                </div>
+              </div>
+            }
+            @case ('failed') {
+              <div class="aviso aviso--advertencia">
+                <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+                <div>
+                  <p class="aviso__titulo">{{ t('notificacion.noEntregada.titulo') }}</p>
+                  <p>{{ t('notificacion.noEntregada.texto') }}</p>
+                </div>
+              </div>
+            }
+            @default {
+              <div class="aviso aviso--informacion">
+                <svg lucideClock [size]="20" aria-hidden="true"></svg>
+                <div>
+                  <p class="aviso__titulo">{{ t('notificacion.pendiente.titulo') }}</p>
+                  <p>
+                    {{
+                      datos.notificacion.intentos > 0
+                        ? t('notificacion.reintentando')
+                        : t('notificacion.pendiente.texto')
+                    }}
+                  </p>
+                </div>
+              </div>
+            }
+          }
+
+          <aside class="app" aria-labelledby="titulo-app">
+            <span class="app__icono" aria-hidden="true"
+              ><svg lucideSmartphone [size]="32"></svg
+            ></span>
+            <div>
+              <h2 id="titulo-app" class="app__titulo">{{ t('app.titulo') }}</h2>
+              <p class="app__texto">{{ t('app.texto') }}</p>
+            </div>
+          </aside>
+
+          <div class="acciones">
+            <a class="boton boton--secundario" [routerLink]="rutaPortal">{{
+              t('acciones.verPoliza')
+            }}</a>
+          </div>
+          <p class="emision__pie">{{ t('pie') }}</p>
+        }
+      }
+    </section>
+  </div>
+</div>

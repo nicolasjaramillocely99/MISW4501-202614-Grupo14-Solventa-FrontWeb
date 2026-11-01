@@ -1,0 +1,434 @@
+<div class="pagina" *transloco="let t; prefix: 'embebido'">
+  <p class="pagina__contexto">
+    <svg lucideLandmark [size]="16" aria-hidden="true"></svg>
+    @if (solicitud(); as datos) {
+      {{ t('contexto.conSolicitud', { numero: datos.numero }) }}
+    } @else {
+      {{ t('contexto.sinSolicitud') }}
+    }
+  </p>
+
+  <div class="pagina__cuerpo">
+    @if (solicitud(); as datos) {
+      <app-tarjeta-credito [solicitud]="datos" />
+    }
+
+    <section class="tarjeta flujo" aria-labelledby="titulo-aceptacion" [attr.aria-busy]="fase() === 'cargando'">
+      <app-indicador-pasos [pasos]="pasos()" etiqueta="embebido.pasos.navegacion" />
+
+      @switch (fase()) {
+        @case ('cargando') {
+          <div class="resultado" role="status">
+            <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.cargando.titulo') }}</h1>
+            <div class="progreso" aria-hidden="true"><div class="progreso__barra"></div></div>
+          </div>
+        }
+
+        @case ('oferta') {
+          @if (oferta(); as ofertaActual) {
+            <div class="flujo__encabezado">
+              <div class="flujo__fila">
+                <h1 id="titulo-aceptacion" class="flujo__titulo">
+                  {{ t(ofertaActual.modo === 'provisional' ? 'aceptacionOferta.oferta.tituloProvisional' : 'aceptacionOferta.oferta.titulo') }}
+                </h1>
+                <app-insignia-estado [tono]="ofertaActual.modo === 'normal' ? 'exito' : 'advertencia'">
+                  {{ t('aceptacionOferta.oferta.insignia.' + ofertaActual.modo) }}
+                </app-insignia-estado>
+              </div>
+              <p class="flujo__subtitulo">
+                {{ t('aceptacionOferta.oferta.numeroVigencia', { oferta: ofertaActual.id, fecha: ofertaActual.venceEn | formatoFechaHora }) }}
+              </p>
+            </div>
+
+            <app-detalle-oferta [oferta]="ofertaActual" [beneficiario]="solicitud()?.banco ?? null" />
+          }
+
+          <div class="casilla">
+            <input
+              #casillaTerminos
+              id="terminos"
+              type="checkbox"
+              class="casilla__control"
+              [checked]="terminosAceptados()"
+              [attr.aria-invalid]="errorTerminos() ? 'true' : null"
+              [attr.aria-describedby]="errorTerminos() ? 'terminos-error' : null"
+              (change)="alCambiarTerminos($event)"
+            />
+            <label for="terminos">{{ t('aceptacionOferta.oferta.terminos') }}</label>
+          </div>
+          @if (errorTerminos()) {
+            <p id="terminos-error" class="campo__error">
+              <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>
+              {{ t('aceptacionOferta.oferta.terminosError') }}
+            </p>
+          }
+
+          @if (errorRegistro()) {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('aceptacionOferta.noRegistrada.titulo') }}</p>
+                <p>{{ t('aceptacionOferta.noRegistrada.texto') }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="acciones">
+            <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('aceptacionOferta.acciones.noMeInteresa') }}</a>
+            <button type="button" class="boton boton--primario" [disabled]="enviando()" (click)="aceptar()">
+              @if (enviando()) {
+                {{ t('aceptacionOferta.acciones.aceptando') }}
+              } @else {
+                <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                {{ t(errorRegistro() ? 'aceptacionOferta.acciones.reintentar' : 'aceptacionOferta.acciones.aceptar') }}
+              }
+            </button>
+          </div>
+        }
+
+        @case ('seguimiento') {
+          @if (aceptacion(); as actual) {
+            <div class="resultado" role="status">
+              <span class="resultado__icono resultado__icono--{{ vista() }}" aria-hidden="true">
+                @switch (vista()) {
+                  @case ('emision') {
+                    <svg lucideCircleCheck [size]="28"></svg>
+                  }
+                  @case ('conservada') {
+                    <svg lucideRefreshCw [size]="28"></svg>
+                  }
+                  @case ('ajustada') {
+                    <svg lucideSlidersHorizontal [size]="28"></svg>
+                  }
+                  @case ('rechazada') {
+                    <svg lucideCircleX [size]="28"></svg>
+                  }
+                  @default {
+                    <svg lucideClock [size]="28"></svg>
+                  }
+                }
+              </span>
+              <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.' + vista() + '.titulo') }}</h1>
+              <p class="resultado__texto">
+                {{ t('aceptacionOferta.' + vista() + '.texto', { fecha: fechaTexto() | formatoFechaHora }) }}
+              </p>
+            </div>
+
+            <dl class="datos">
+              @if (vista() !== 'validando' && vista() !== 'conservada') {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.numeroSolicitud') }}</dt>
+                  <dd class="datos__identificador">{{ actual.aceptacionId }}</dd>
+                </div>
+              }
+              <div>
+                <dt>{{ t('aceptacionOferta.datos.estado') }}</dt>
+                <dd>
+                  <app-insignia-estado [tono]="tonoInsignia[vista()]">{{ t('aceptacionOferta.insignia.' + vista()) }}</app-insignia-estado>
+                </dd>
+              </div>
+              @if (vista() === 'revision') {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.motivo') }}</dt>
+                  <dd>{{ t('aceptacionOferta.revision.motivo.' + motivoRevision()) }}</dd>
+                </div>
+              }
+              @if (vista() === 'ajustada' && actual.revision?.ofertaAjustada; as nueva) {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.nuevaPrima') }}</dt>
+                  <dd>
+                    {{
+                      t('aceptacionOferta.datos.nuevaPrimaValor', {
+                        nueva: nueva.prima | formatoMoneda: nueva.moneda,
+                        anterior: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP')
+                      })
+                    }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.vigenciaNueva') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.vigenciaNuevaValor', { fecha: nueva.venceEn | formatoFechaHora }) }}</dd>
+                </div>
+              }
+              @if (vista() === 'rechazada') {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.decision') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.decisionRechazo') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.fechaDecision') }}</dt>
+                  <dd>{{ fechaTexto() | formatoFechaHora }}</dd>
+                </div>
+              }
+              @if (vista() !== 'ajustada' && vista() !== 'rechazada') {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.aceptacion') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.aceptacionValor', { fecha: actual.aceptadaEn | formatoFechaHora }) }}</dd>
+                </div>
+              }
+              @if (vista() === 'conservada' && actual.procesamiento.proximoIntentoEn) {
+                <div>
+                  <dt>{{ t('aceptacionOferta.datos.proximoIntento') }}</dt>
+                  <dd>{{ t('aceptacionOferta.datos.proximoIntentoValor', { hora: actual.procesamiento.proximoIntentoEn | formatoFechaHora: 'hora' }) }}</dd>
+                </div>
+              }
+            </dl>
+
+            @switch (vista()) {
+              @case ('validando') {
+                <div class="progreso" role="progressbar" [attr.aria-label]="t('aceptacionOferta.validando.progreso')">
+                  <div class="progreso__barra"></div>
+                </div>
+              }
+              @case ('conservada') {
+                <ul class="linea" [attr.aria-label]="t('aceptacionOferta.conservada.lineaEtiqueta')">
+                  <li class="linea__paso">
+                    <svg lucideCircleCheck class="linea__icono linea__icono--listo" [size]="18" aria-hidden="true"></svg>
+                    <span class="linea__nombre">{{ t('aceptacionOferta.conservada.linea.registrada') }}</span>
+                    <span class="linea__detalle">{{ actual.aceptadaEn | formatoFechaHora }}</span>
+                  </li>
+                  @if (actual.procesamiento.intentos > 0) {
+                    <li class="linea__paso">
+                      <svg lucideTriangleAlert class="linea__icono linea__icono--alerta" [size]="18" aria-hidden="true"></svg>
+                      <span class="linea__nombre">{{ t('aceptacionOferta.conservada.linea.fallas') }}</span>
+                      <span class="linea__detalle">
+                        {{
+                          t('aceptacionOferta.conservada.linea.fallasDetalle', {
+                            intentos: actual.procesamiento.intentos,
+                            hora: actual.procesamiento.ultimaFallaEn | formatoFechaHora: 'hora'
+                          })
+                        }}
+                      </span>
+                    </li>
+                  }
+                  <li class="linea__paso">
+                    <svg lucideClock class="linea__icono linea__icono--enCurso" [size]="18" aria-hidden="true"></svg>
+                    <span class="linea__nombre">{{ t('aceptacionOferta.conservada.linea.proximo') }}</span>
+                    <span class="linea__detalle">
+                      @if (actual.procesamiento.proximoIntentoEn) {
+                        {{ t('aceptacionOferta.conservada.linea.proximoDetalle', { hora: actual.procesamiento.proximoIntentoEn | formatoFechaHora: 'hora' }) }}
+                      } @else {
+                        {{ t('aceptacionOferta.conservada.linea.enCurso') }}
+                      }
+                    </span>
+                  </li>
+                </ul>
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('aceptacionOferta.conservada.avisoTitulo') }}</p>
+                    <p>{{ t('aceptacionOferta.conservada.avisoTexto') }}</p>
+                  </div>
+                </div>
+              }
+              @case ('ajustada') {
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('aceptacionOferta.ajustada.avisoTitulo') }}</p>
+                    <p>{{ t('aceptacionOferta.ajustada.avisoTexto', { oferta: actual.ofertaId }) }}</p>
+                  </div>
+                </div>
+              }
+              @case ('rechazada') {
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('aceptacionOferta.rechazada.avisoTitulo') }}</p>
+                    <p>{{ t('aceptacionOferta.rechazada.avisoTexto', { numero: actual.aceptacionId }) }}</p>
+                  </div>
+                </div>
+              }
+              @case ('revision') {
+                <div class="aviso aviso--informacion">
+                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                  <div>
+                    <p class="aviso__titulo">{{ t('aceptacionOferta.revision.avisoTitulo') }}</p>
+                    <p>
+                      {{
+                        t('aceptacionOferta.revision.avisoTexto', {
+                          oferta: actual.ofertaId,
+                          prima: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP')
+                        })
+                      }}
+                    </p>
+                  </div>
+                </div>
+              }
+            }
+
+            @if (vista() !== 'validando') {
+              <div class="acciones acciones--centradas">
+                @if (vista() === 'revision') {
+                  <button type="button" class="boton boton--secundario" (click)="actualizarEstado()">
+                    {{ t('aceptacionOferta.acciones.verEstado') }}
+                  </button>
+                }
+                @if (vista() === 'emision') {
+                  <a class="boton boton--secundario" [routerLink]="[acciones.pago, actual.aceptacionId]">
+                    {{ t('aceptacionOferta.acciones.verPago') }}
+                  </a>
+                }
+                @if (vista() === 'ajustada' && actual.revision?.ofertaAjustada; as nueva) {
+                  <a class="boton boton--secundario" [routerLink]="acciones.salir">
+                    {{ t('aceptacionOferta.acciones.continuarCredito') }}
+                  </a>
+                  <a class="boton boton--primario" [routerLink]="[acciones.oferta, nueva.ofertaId]">
+                    <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                    {{ t('aceptacionOferta.acciones.verNuevaOferta') }}
+                  </a>
+                } @else {
+                  <a class="boton boton--primario" [routerLink]="acciones.salir">
+                    <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                    {{ t('aceptacionOferta.acciones.continuarCredito') }}
+                  </a>
+                }
+              </div>
+            }
+          }
+        }
+
+        @case ('vencida') {
+          <div class="resultado" role="alert">
+            <span class="resultado__icono resultado__icono--vencida" aria-hidden="true">
+              <svg lucideClock [size]="28"></svg>
+            </span>
+            <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.vencida.titulo') }}</h1>
+            <p class="resultado__texto">
+              @if (venceEn()) {
+                {{ t('aceptacionOferta.vencida.texto', { oferta: ofertaId(), fecha: venceEn() | formatoFechaHora }) }}
+              } @else {
+                {{ t('aceptacionOferta.vencida.textoSinFecha', { oferta: ofertaId() }) }}
+              }
+            </p>
+          </div>
+
+          <dl class="datos">
+            <div>
+              <dt>{{ t('aceptacionOferta.datos.ofertaAnterior') }}</dt>
+              <dd>{{ t('aceptacionOferta.datos.ofertaAnteriorValor', { prima: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP') }) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('aceptacionOferta.datos.estado') }}</dt>
+              <dd><app-insignia-estado tono="neutro">{{ t('aceptacionOferta.insignia.vencida') }}</app-insignia-estado></dd>
+            </div>
+            @if (venceEn()) {
+              <div>
+                <dt>{{ t('aceptacionOferta.datos.vencio') }}</dt>
+                <dd>{{ venceEn() | formatoFechaHora }}</dd>
+              </div>
+            }
+          </dl>
+
+          @if (errorRenovacion(); as motivoRenovacion) {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('aceptacionOferta.errorRenovacion.' + motivoRenovacion + '.titulo') }}</p>
+                <p>{{ t('aceptacionOferta.errorRenovacion.' + motivoRenovacion + '.texto') }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="acciones acciones--centradas">
+            <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('aceptacionOferta.acciones.noGracias') }}</a>
+            @if (oferta()?.puedeRenovar && errorRenovacion() !== 'noRenovable') {
+              <button type="button" class="boton boton--primario" [disabled]="renovando()" (click)="renovar()">
+                @if (renovando()) {
+                  {{ t('aceptacionOferta.acciones.generandoOferta') }}
+                } @else {
+                  <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+                  {{ t('aceptacionOferta.acciones.nuevaOferta') }}
+                }
+              </button>
+            } @else if (oferta()?.renovadaPor; as renovada) {
+              <a class="boton boton--primario" [routerLink]="[acciones.oferta, renovada]">
+                <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                {{ t('aceptacionOferta.acciones.verOfertaRenovada') }}
+              </a>
+            } @else {
+              <a class="boton boton--primario" [routerLink]="acciones.nuevaOferta">
+                <svg lucideRefreshCw [size]="18" aria-hidden="true"></svg>
+                {{ t('aceptacionOferta.acciones.nuevaOferta') }}
+              </a>
+            }
+          </div>
+        }
+
+        @case ('reemplazada') {
+          <div class="resultado" role="status">
+            <span class="resultado__icono resultado__icono--ajustada" aria-hidden="true">
+              <svg lucideRefreshCw [size]="28"></svg>
+            </span>
+            <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.reemplazada.titulo') }}</h1>
+            <p class="resultado__texto">{{ t('aceptacionOferta.reemplazada.texto', { oferta: ofertaId() }) }}</p>
+          </div>
+
+          <dl class="datos">
+            <div>
+              <dt>{{ t('aceptacionOferta.datos.ofertaAnterior') }}</dt>
+              <dd>{{ t('aceptacionOferta.datos.ofertaAnteriorValor', { prima: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP') }) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('aceptacionOferta.datos.estado') }}</dt>
+              <dd><app-insignia-estado tono="advertencia">{{ t('aceptacionOferta.insignia.reemplazada') }}</app-insignia-estado></dd>
+            </div>
+            @if (ofertaNueva(); as nueva) {
+              <div>
+                <dt>{{ t('aceptacionOferta.datos.nuevaPrima') }}</dt>
+                <dd>
+                  {{
+                    t('aceptacionOferta.datos.nuevaPrimaValor', {
+                      nueva: nueva.primaMensual | formatoMoneda: nueva.moneda,
+                      anterior: oferta()?.primaMensual ?? 0 | formatoMoneda: (oferta()?.moneda ?? 'COP')
+                    })
+                  }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ t('aceptacionOferta.datos.vigenciaNueva') }}</dt>
+                <dd>{{ t('aceptacionOferta.datos.vigenciaNuevaValor', { fecha: nueva.venceEn | formatoFechaHora }) }}</dd>
+              </div>
+            }
+          </dl>
+
+          <div class="acciones acciones--centradas">
+            <a class="boton boton--secundario" [routerLink]="acciones.salir">{{ t('aceptacionOferta.acciones.noGracias') }}</a>
+            @if (oferta()?.reemplazadaPor; as nuevaId) {
+              <a class="boton boton--primario" [routerLink]="[acciones.oferta, nuevaId]">
+                <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+                {{ t('aceptacionOferta.acciones.verOfertaActualizada') }}
+              </a>
+            } @else {
+              <a class="boton boton--primario" [routerLink]="acciones.nuevaOferta">{{ t('aceptacionOferta.acciones.volverCotizar') }}</a>
+            }
+          </div>
+        }
+
+        @case ('error') {
+          <div class="resultado" role="alert">
+            <span class="resultado__icono resultado__icono--error" aria-hidden="true">
+              <svg lucideCircleAlert [size]="28"></svg>
+            </span>
+            <h1 id="titulo-aceptacion" class="flujo__titulo">{{ t('aceptacionOferta.error.' + motivoError() + '.titulo') }}</h1>
+            <p class="resultado__texto">{{ t('aceptacionOferta.error.' + motivoError() + '.texto') }}</p>
+          </div>
+
+          <div class="acciones acciones--centradas">
+            @switch (motivoError()) {
+              @case ('noDisponible') {
+                <button type="button" class="boton boton--primario" (click)="reanudar()">{{ t('aceptacionOferta.acciones.reintentar') }}</button>
+              }
+              @case ('generico') {
+                <a class="boton boton--primario" [routerLink]="acciones.salir">{{ t('aceptacionOferta.acciones.continuarCredito') }}</a>
+              }
+              @default {
+                <a class="boton boton--primario" [routerLink]="acciones.nuevaOferta">{{ t('aceptacionOferta.acciones.volverCotizar') }}</a>
+              }
+            }
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>

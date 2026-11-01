@@ -1,0 +1,87 @@
+// A7 mínima · Mis siniestros: encabezado con «Radicar un siniestro», filtros y la tabla.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-16);
+}
+
+.encabezado__texto {
+  flex: 1;
+  min-width: 16rem;
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.encabezado__descripcion {
+  margin: var(--espacio-4) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-12);
+
+  .campo {
+    flex: 0 1 16rem;
+  }
+}
+
+.filtros__conteo {
+  margin: var(--espacio-24) 0 0 auto;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-texto-secundario);
+}
+
+.tarjeta {
+  box-shadow: none;
+}
+
+.seccion__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.estado-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+
+  p {
+    margin: 0;
+  }
+}
+
+.mas {
+  display: flex;
+  justify-content: center;
+}
