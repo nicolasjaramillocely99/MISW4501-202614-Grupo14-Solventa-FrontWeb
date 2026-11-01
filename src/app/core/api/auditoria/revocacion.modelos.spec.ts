@@ -8,6 +8,7 @@ import {
 import {
   CodigoErrorRevocacion,
   ErrorRevocacion,
+  EstadoRevocacionDto,
   aSolicitudRevocacionDto,
   mapearEstadoRevocacion,
   mapearResultadoReintento,
@@ -39,10 +40,48 @@ describe('modelos de la revocación (HU-W4.2-02)', () => {
           ocurridoEn: '2026-10-20T15:00:00Z',
           entidadCodigo: null,
           tipoActor: null,
+          canal: 'embedded',
           motivo: null,
           referencia: null,
         },
       ]);
+    });
+
+    it('mapea la vigencia, la finalidad y el canal de otorgamiento del contrato 0.6.0 (HU-W4.2-01)', () => {
+      const estado = mapearEstadoRevocacion(ESTADO_ACTIVO_DTO);
+
+      expect(estado).toMatchObject({
+        otorgadoEn: '2026-10-20T15:00:00Z',
+        venceEn: '2027-10-20T15:00:00Z',
+        finalizadoEn: null,
+        finalidad: 'risk_profiling_mortgage_life_offer',
+        canalOtorgamiento: 'embedded',
+        versionTerminos: 'v1',
+      });
+      expect(mapearEstadoRevocacion(ESTADO_PARCIAL_DTO).finalizadoEn).toBe('2026-10-25T16:00:00.123456Z');
+      expect(mapearEstadoRevocacion(ESTADO_PARCIAL_DTO).historial[2].canal).toBe('compliance_portal');
+    });
+
+    it('tolera un estado sin los campos de 0.6.0: quedan en null', () => {
+      const anterior: EstadoRevocacionDto = structuredClone(ESTADO_ACTIVO_DTO);
+      delete anterior.granted_at;
+      delete anterior.expires_at;
+      delete anterior.ended_at;
+      delete anterior.purpose;
+      delete anterior.grant_channel;
+      delete anterior.terms_version;
+      delete anterior.history[0].channel;
+      const estado = mapearEstadoRevocacion(anterior);
+
+      expect(estado).toMatchObject({
+        otorgadoEn: null,
+        venceEn: null,
+        finalizadoEn: null,
+        finalidad: null,
+        canalOtorgamiento: null,
+        versionTerminos: null,
+      });
+      expect(estado.historial[0].canal).toBeNull();
     });
 
     it('mapea la revocación parcial con la entidad que no confirmó y la hora en que se agotó el plazo', () => {

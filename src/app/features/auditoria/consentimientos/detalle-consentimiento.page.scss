@@ -19,17 +19,19 @@
   }
 }
 
+// Frame 44:5400: el título (con el id completo, cns- + 32 hex) tiene la fila entera; los botones van en la del resumen.
 .encabezado {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espacio-16);
+  flex-direction: column;
+  gap: var(--espacio-8);
 }
 
-.encabezado__texto {
-  flex: 1 1 360px;
-  min-width: 0;
+.encabezado__detalle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
 }
 
 .encabezado__fila {
@@ -54,7 +56,9 @@
 }
 
 .encabezado__resumen {
-  margin: var(--espacio-4) 0 0;
+  flex: 1 1 360px;
+  min-width: 0;
+  margin: 0;
   max-width: 90ch;
   color: var(--color-texto-secundario);
 }

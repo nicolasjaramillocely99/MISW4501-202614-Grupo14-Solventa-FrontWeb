@@ -13,14 +13,28 @@ const ALCANCE: EstadoRevocacionDto['scope'] = [
 
 const ENTIDADES = [{ code: 'aliado-banco-1', name: 'Banco Aliado' }];
 
-const OTORGADO = { status: 'granted', occurred_at: '2026-10-20T15:00:00Z', entity_code: null, actor_type: null, reason: null, reference: null };
+const OTORGADO = {
+  status: 'granted',
+  occurred_at: '2026-10-20T15:00:00Z',
+  entity_code: null,
+  actor_type: null,
+  channel: 'embedded',
+  reason: null,
+  reference: null,
+};
 
-/** Ejemplo del contrato: consentimiento activo (abre el modal). */
+/** Ejemplo del contrato: consentimiento activo (abre el modal), con los campos de 0.6.0 (HU-W4.2-01). */
 export const ESTADO_ACTIVO_DTO: EstadoRevocacionDto = {
   consent_id: CONSENTIMIENTO_ID,
   status: 'active',
   revocable: true,
   holder: TITULAR,
+  granted_at: '2026-10-20T15:00:00Z',
+  expires_at: '2027-10-20T15:00:00Z',
+  ended_at: null,
+  purpose: 'risk_profiling_mortgage_life_offer',
+  grant_channel: 'embedded',
+  terms_version: 'v1',
   scope: ALCANCE,
   entities: ENTIDADES,
   revocation: null,
@@ -32,6 +46,7 @@ export const ESTADO_EN_CURSO_DTO: EstadoRevocacionDto = {
   ...ESTADO_ACTIVO_DTO,
   status: 'revoked',
   revocable: false,
+  ended_at: '2026-10-25T16:00:00.123456Z',
   revocation: {
     receipt_number: 'REV-2026-0089',
     requested_at: '2026-10-25T16:00:00.123456Z',
@@ -47,8 +62,8 @@ export const ESTADO_EN_CURSO_DTO: EstadoRevocacionDto = {
   },
   history: [
     OTORGADO,
-    { status: 'revocation_requested', occurred_at: '2026-10-25T16:00:00.123456Z', entity_code: null, actor_type: 'operations', reason: 'customer_request', reference: 'TCK-2026-0412' },
-    { status: 'revoked', occurred_at: '2026-10-25T16:00:00.123456Z', entity_code: null, actor_type: 'operations', reason: null, reference: null },
+    { status: 'revocation_requested', occurred_at: '2026-10-25T16:00:00.123456Z', entity_code: null, actor_type: 'operations', channel: 'compliance_portal', reason: 'customer_request', reference: 'TCK-2026-0412' },
+    { status: 'revoked', occurred_at: '2026-10-25T16:00:00.123456Z', entity_code: null, actor_type: 'operations', channel: 'compliance_portal', reason: null, reference: null },
   ],
 };
 
@@ -108,5 +123,6 @@ export const ESTADO_VENCIDO_DTO: EstadoRevocacionDto = {
   ...ESTADO_ACTIVO_DTO,
   status: 'expired',
   revocable: false,
-  history: [OTORGADO, { status: 'expired', occurred_at: '2027-10-20T15:00:00Z', entity_code: null, actor_type: null, reason: null, reference: null }],
+  ended_at: '2027-10-20T15:00:00Z',
+  history: [OTORGADO, { status: 'expired', occurred_at: '2027-10-20T15:00:00Z', entity_code: null, actor_type: null, channel: null, reason: null, reference: null }],
 };

@@ -1,5 +1,5 @@
 <div class="pagina" *transloco="let t; prefix: 'auditoria.consentimientos'">
-  <a class="volver" routerLink="/auditoria/consentimientos">
+  <a class="volver" routerLink="/auditoria/consentimientos" [queryParams]="volverA()">
     <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.volver') }}
   </a>
 
@@ -26,39 +26,36 @@
     }
     @case ('listo') {
       @if (estado(); as e) {
+        <!-- Como el frame 44:5400: el título con su insignia ocupa todo el ancho y los botones van en la fila del resumen. -->
         <header class="encabezado">
-          <div class="encabezado__texto">
-            <div class="encabezado__fila">
-              <h1 #titulo class="pagina__titulo" tabindex="-1">{{ t('detalle.titulo', { id: e.consentimientoId }) }}</h1>
-              @if (etiqueta(); as etiqueta) {
-                <app-insignia-estado [tono]="etiqueta.tono">{{ t('estados.' + etiqueta.clave) }}</app-insignia-estado>
+          <div class="encabezado__fila">
+            <h1 #titulo class="pagina__titulo" tabindex="-1">{{ t('detalle.titulo', { id: e.consentimientoId }) }}</h1>
+            @if (etiqueta(); as etiqueta) {
+              <app-insignia-estado [tono]="etiqueta.tono">{{ t('estados.' + etiqueta.clave) }}</app-insignia-estado>
+            }
+          </div>
+          <div class="encabezado__detalle">
+            <!-- Una sola línea: los bloques dejarían espacios dobles en el texto que se lee. -->
+            <p class="encabezado__resumen">{{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}{{ !otorgado() ? '' : e.canalOtorgamiento && entidadOtorgamiento() ? ' · ' + t('detalle.otorgadoCanal', { fecha: (otorgado() | formatoFechaHora: 'fechaHora'), canal: (e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamiento'), entidad: entidadOtorgamiento() }) : ' · ' + t('detalle.otorgado', { fecha: (otorgado() | formatoFechaHora: 'fechaHora') }) }}{{ e.venceEn ? ' · ' + t('detalle.vence', { fecha: fecha(e.venceEn) }) : '' }}</p>
+            <div class="acciones">
+              @if (e.revocable) {
+                <button type="button" class="boton-peligro" (click)="abrirConfirmacion()">
+                  <svg lucideBan [size]="20" aria-hidden="true"></svg>{{ t('detalle.revocar') }}
+                </button>
+              }
+              @if (e.estado === 'partially_revoked' && sinConfirmar().length > 0) {
+                <button type="button" class="boton boton--primario" [disabled]="reintentando()" (click)="reintentar()">
+                  <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
+                  @if (reintentando()) {
+                    {{ t('detalle.reintentando') }}
+                  } @else if (sinConfirmar().length === 1) {
+                    {{ t('detalle.reintentarEn', { entidad: sinConfirmar()[0].nombre }) }}
+                  } @else {
+                    {{ t('detalle.reintentarEnVarias', { cantidad: sinConfirmar().length }) }}
+                  }
+                </button>
               }
             </div>
-            <p class="encabezado__resumen">
-              {{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}
-              @if (otorgado(); as fecha) {
-                · {{ t('detalle.otorgado', { fecha: fecha | formatoFechaHora: 'fechaHora' }) }}
-              }
-            </p>
-          </div>
-          <div class="acciones">
-            @if (e.revocable) {
-              <button type="button" class="boton-peligro" (click)="abrirConfirmacion()">
-                <svg lucideBan [size]="20" aria-hidden="true"></svg>{{ t('detalle.revocar') }}
-              </button>
-            }
-            @if (e.estado === 'partially_revoked' && sinConfirmar().length > 0) {
-              <button type="button" class="boton boton--primario" [disabled]="reintentando()" (click)="reintentar()">
-                <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
-                @if (reintentando()) {
-                  {{ t('detalle.reintentando') }}
-                } @else if (sinConfirmar().length === 1) {
-                  {{ t('detalle.reintentarEn', { entidad: sinConfirmar()[0].nombre }) }}
-                } @else {
-                  {{ t('detalle.reintentarEnVarias', { cantidad: sinConfirmar().length }) }}
-                }
-              </button>
-            }
           </div>
         </header>
 
@@ -121,7 +118,7 @@
 
         <div class="cuerpo">
           <div class="cuerpo__principal">
-            <!-- Provisional (HU-W4.2-02 F2): finalidad, vigencia, canal y contacto llegan con HU-W4.2-01. -->
+            <!-- CA-4 de HU-W4.2-01. El contacto, el hash de la evidencia y «Descargar evidencia» no se pintan: audit no tiene esos datos. -->
             <section class="tarjeta" aria-labelledby="titulo-datos">
               <h2 id="titulo-datos" class="seccion__titulo">{{ t('detalle.datos.titulo') }}</h2>
               <dl class="datos">
@@ -129,6 +126,37 @@
                   <dt>{{ t('detalle.datos.cliente') }}</dt>
                   <dd>{{ e.titular.nombreCompleto }} · {{ e.titular.documentoEnmascarado }}</dd>
                 </div>
+                @if (e.canalOtorgamiento) {
+                  <div>
+                    <dt>{{ t('detalle.datos.canal') }}</dt>
+                    <dd>
+                      {{
+                        t('detalle.datos.canalValor', {
+                          canal: e.canalOtorgamiento | traducirCodigo: 'auditoria.consentimientos.canalesOtorgamientoEtiqueta',
+                          entidad: entidadOtorgamiento() ?? '',
+                        })
+                      }}
+                    </dd>
+                  </div>
+                }
+                @if (e.versionTerminos) {
+                  <div>
+                    <dt>{{ t('detalle.datos.evidencia') }}</dt>
+                    <dd>{{ t('detalle.datos.evidenciaValor', { version: e.versionTerminos }) }}</dd>
+                  </div>
+                }
+                @if (e.finalidad) {
+                  <div>
+                    <dt>{{ t('detalle.datos.finalidad') }}</dt>
+                    <dd>{{ e.finalidad | traducirCodigo: 'auditoria.consentimientos.finalidades' }}</dd>
+                  </div>
+                }
+                @if (otorgado() && e.venceEn) {
+                  <div>
+                    <dt>{{ t('detalle.datos.vigencia') }}</dt>
+                    <dd>{{ t('detalle.datos.vigenciaValor', { desde: fecha(otorgado()), hasta: fecha(e.venceEn) }) }}</dd>
+                  </div>
+                }
                 <div>
                   <dt>{{ t('detalle.datos.alcance') }}</dt>
                   <dd>

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { REGISTRO_DECISION_DTO } from '@testing/decision-pruebas';
+import { PAGINA_DTO } from '@testing/listado-consentimientos-pruebas';
 import { ESTADO_ACTIVO_DTO } from '@testing/revocacion-pruebas';
 import {
   crearProveedorIdentidadFalso,
@@ -13,6 +14,7 @@ import { of } from 'rxjs';
 
 import { AuditoriaApiService } from '@core/api/auditoria/auditoria-api.service';
 import { mapearRegistroDecision } from '@core/api/auditoria/decision.modelos';
+import { mapearPaginaConsentimientos } from '@core/api/auditoria/listado-consentimientos.modelos';
 import { mapearEstadoRevocacion } from '@core/api/auditoria/revocacion.modelos';
 
 import { routes } from '../../app.routes';
@@ -82,7 +84,7 @@ describe('rutas de auditoría (HU-W4.1-01)', () => {
   });
 });
 
-describe('rutas de auditoría · consentimientos (HU-W4.2-02)', () => {
+describe('rutas de auditoría · consentimientos (HU-W4.2-01 y HU-W4.2-02)', () => {
   let harness: RouterTestingHarness;
   const consentimiento = mapearEstadoRevocacion(ESTADO_ACTIVO_DTO);
 
@@ -98,7 +100,13 @@ describe('rutas de auditoría · consentimientos (HU-W4.2-02)', () => {
       providers: [
         provideRouter(routes),
         ...proveerSesionPrueba(crearProveedorIdentidadFalso()),
-        { provide: AuditoriaApiService, useValue: { consultarEstadoRevocacion: () => of(consentimiento) } },
+        {
+          provide: AuditoriaApiService,
+          useValue: {
+            consultarEstadoRevocacion: () => of(consentimiento),
+            listarConsentimientos: () => of(mapearPaginaConsentimientos(PAGINA_DTO)),
+          },
+        },
       ],
     });
     harness = await RouterTestingHarness.create();
@@ -114,14 +122,14 @@ describe('rutas de auditoría · consentimientos (HU-W4.2-02)', () => {
     expect(url()).toBe('/acceso/iniciar-sesion?returnUrl=%2Fauditoria%2Fconsentimientos');
   });
 
-  it('el analista de operaciones entra a la búsqueda dentro del shell del portal', async () => {
+  it('el analista de operaciones entra al listado dentro del shell del portal (HU-W4.2-01)', async () => {
     await iniciarSesionComo('operaciones');
 
     await harness.navigateByUrl('/auditoria/consentimientos');
 
     expect(url()).toBe('/auditoria/consentimientos');
     expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
-    expect(harness.routeNativeElement?.querySelector('app-busqueda-consentimiento-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-listado-consentimientos-page')).not.toBeNull();
   });
 
   it('un identificador abre el detalle de ese consentimiento', async () => {
@@ -133,7 +141,7 @@ describe('rutas de auditoría · consentimientos (HU-W4.2-02)', () => {
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain(consentimiento.consentimientoId);
   });
 
-  it('el asesor, el asegurado y el socio no entran a la búsqueda ni al detalle (CA-6)', async () => {
+  it('el asesor, el asegurado y el socio no entran al listado ni al detalle (CA-6)', async () => {
     for (const rol of ['asegurado', 'asesor', 'socio'] as const) {
       await iniciarSesionComo(rol);
 

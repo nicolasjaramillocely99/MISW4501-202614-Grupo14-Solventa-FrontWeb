@@ -1,0 +1,71 @@
+<div class="filtros" role="search" *transloco="let t; prefix: 'auditoria.consentimientos.listado'" [attr.aria-label]="t('filtros.titulo')">
+  <div class="campo filtros__estado">
+    <label class="campo__etiqueta" for="filtro-estado">{{ t('filtros.estado') }}</label>
+    <select id="filtro-estado" class="campo__control" (change)="cambiarEstado($event)">
+      <option value="" [selected]="!criterios().estado">{{ t('filtros.todos') }}</option>
+      @for (estado of estados; track estado) {
+        <option [value]="estado" [selected]="criterios().estado === estado">{{ t('estados.' + estado) }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="campo filtros__fecha">
+    <label class="campo__etiqueta" for="filtro-desde">{{ t('filtros.desde') }}</label>
+    <input
+      id="filtro-desde"
+      class="campo__control"
+      type="date"
+      [value]="desde()"
+      [attr.max]="hasta() || null"
+      aria-describedby="filtro-desde-ayuda"
+      (change)="cambiarFecha('desde', $event)"
+    />
+    <p id="filtro-desde-ayuda" class="campo__ayuda">{{ t('filtros.ayudaFecha') }}</p>
+  </div>
+
+  <div class="campo filtros__fecha">
+    <label class="campo__etiqueta" for="filtro-hasta">{{ t('filtros.hasta') }}</label>
+    <input
+      id="filtro-hasta"
+      class="campo__control"
+      type="date"
+      [value]="hasta()"
+      [attr.min]="desde() || null"
+      [attr.aria-invalid]="rangoInvalido() ? 'true' : null"
+      [attr.aria-describedby]="rangoInvalido() ? 'filtro-hasta-error' : 'filtro-hasta-ayuda'"
+      (change)="cambiarFecha('hasta', $event)"
+    />
+    @if (rangoInvalido()) {
+      <p id="filtro-hasta-error" class="campo__error" role="alert">{{ t('filtros.rangoInvalido') }}</p>
+    } @else {
+      <p id="filtro-hasta-ayuda" class="campo__ayuda">{{ t('filtros.ayudaFecha') }}</p>
+    }
+  </div>
+
+  <div class="campo filtros__entidad">
+    <label class="campo__etiqueta" for="filtro-entidad">{{ t('filtros.entidad') }}</label>
+    <select id="filtro-entidad" class="campo__control" (change)="cambiarEntidad($event)">
+      <option value="" [selected]="!criterios().entidad">{{ t('filtros.todas') }}</option>
+      @for (entidad of entidades(); track entidad.codigo) {
+        <option [value]="entidad.codigo" [selected]="criterios().entidad === entidad.codigo">{{ entidad.nombre }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="campo filtros__cliente">
+    <label class="campo__etiqueta" for="filtro-cliente">{{ t('filtros.cliente') }}</label>
+    <input
+      id="filtro-cliente"
+      class="campo__control"
+      type="search"
+      autocomplete="off"
+      [maxLength]="longitudMaxima"
+      [value]="cliente()"
+      [placeholder]="t('filtros.clienteEjemplo')"
+      aria-describedby="filtro-cliente-ayuda"
+      (input)="escribirCliente($event)"
+      (keydown.enter)="$event.preventDefault(); buscarCliente()"
+    />
+    <p id="filtro-cliente-ayuda" class="campo__ayuda">{{ t('filtros.clienteAyuda') }}</p>
+  </div>
+</div>

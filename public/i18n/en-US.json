@@ -2474,35 +2474,80 @@
       }
     },
     "consentimientos": {
-      "busqueda": {
+      "listado": {
         "titulo": "Open Finance consents",
-        "descripcion": "Check the status of an Open Finance consent and, when it applies, revoke it. For now the search is by identifier.",
-        "tarjeta": "Search for a consent",
-        "campo": "Consent identifier",
-        "ejemplo": "cns-0123456789abcdef",
-        "ayuda": "Enter the consent identifier (e.g. cns-…).",
-        "buscar": "Search",
-        "buscando": "Searching…",
-        "errores": {
-          "requerido": "Enter the consent identifier.",
-          "invalido": "The identifier only accepts letters, numbers, hyphens and underscores (up to 64 characters)."
-        },
-        "sinResultados": {
-          "titulo": "We couldn't find a consent with the identifier {{ id }}",
-          "texto": "Check the identifier and try again. For security, no internal system information is shown.",
-          "limpiar": "Clear search"
-        },
+        "descripcion": "Every consent granted by the customers. Filter by status and grant date; a revocation from this portal takes effect in less than 5 minutes and only the Compliance officer role can run it.",
+        "cargando": "Loading consents…",
+        "rango": "Fix the date range to see the consents.",
         "error": {
-          "titulo": "We couldn't look up the consent",
-          "texto": "The audit service did not respond. Try again in a few minutes.",
+          "titulo": "We could not load the consents",
+          "texto": "The audit service did not respond. Try again.",
           "reintentar": "Try again"
         },
-        "incluye": {
-          "titulo": "What the detail shows",
-          "estado": "Consent status and authorized scope",
-          "entidades": "Financial entities and the progress of the revocation notice",
-          "revocacion": "Revocation from the portal, with reason and reference",
-          "historial": "Status history with the time of each change"
+        "indicadores": {
+          "titulo": "Consent indicators",
+          "activos": "Active",
+          "activosDetalle": "Current today",
+          "revocados": "Revoked (30 days)",
+          "revocadosDetalle": "{{ app }} from the app · {{ portal }} from the portal",
+          "vencidos": "Expired",
+          "vencidosDetalle": "Not renewed",
+          "fueraDePlazo": "Revocations out of deadline",
+          "fueraDePlazoDetalle": "Target: 100 % within ≤ 5 min"
+        },
+        "filtros": {
+          "titulo": "Filter consents",
+          "estado": "Status",
+          "todos": "All",
+          "desde": "Granted from",
+          "hasta": "To",
+          "ayudaFecha": "MM/DD/YYYY",
+          "rangoInvalido": "«To» cannot be before «Granted from».",
+          "entidad": "Entity",
+          "todas": "All",
+          "cliente": "Search customer",
+          "clienteEjemplo": "Document or name",
+          "clienteAyuda": "Full document, name or identifier"
+        },
+        "estados": {
+          "active": "Active",
+          "revoked": "Revoked",
+          "partially_revoked": "Partial revocation",
+          "expired": "Expired"
+        },
+        "tabla": {
+          "titulo": "Open Finance consents",
+          "cliente": "Customer",
+          "otorgado": "Granted",
+          "vence": "Expires",
+          "estado": "Status",
+          "alcance": "Scope",
+          "acciones": "Actions",
+          "revocadoEl": "Revoked {{ fecha }}",
+          "ver": "View",
+          "verDetalle": "View consent {{ id }}"
+        },
+        "vacio": {
+          "titulo": "No consents for the applied filter",
+          "inicio": "There are no consents",
+          "entidad": " of {{ entidad }}",
+          "estado": " with status {{ estado }}",
+          "entre": ", granted between {{ desde }} and {{ hasta }}",
+          "desde": ", granted since {{ desde }}",
+          "hasta": ", granted until {{ hasta }}",
+          "cliente": ", for the searched customer",
+          "fin": ".",
+          "fueraDeRango": "This page has no consents anymore",
+          "limpiar": "Clear filters"
+        },
+        "pie": {
+          "rango": "{{ primero }} to {{ ultimo }} of {{ total }} records",
+          "sinRegistros": "0 records",
+          "pagina": "page {{ pagina }} of {{ total }}",
+          "conserva": "the filter is kept while browsing",
+          "navegacion": "List pages",
+          "anterior": "Previous",
+          "siguiente": "Next"
         }
       },
       "detalle": {
@@ -2553,7 +2598,14 @@
         "datos": {
           "titulo": "Customer and consent details",
           "cliente": "Customer",
-          "alcance": "Scope"
+          "alcance": "Scope",
+          "canal": "Grant channel",
+          "canalValor": "{{ canal }} · {{ entidad }}",
+          "evidencia": "Evidence",
+          "evidenciaValor": "Immutable record · terms {{ version }}",
+          "finalidad": "Purpose",
+          "vigencia": "Validity",
+          "vigenciaValor": "{{ desde }} → {{ hasta }}"
         },
         "alcance": {
           "titulo": "Detailed scope"
@@ -2580,7 +2632,9 @@
         "reglas": {
           "titulo": "Revocation from the portal",
           "texto": "Only the operations analyst can revoke. The request is sent to every authorized entity and must complete within 5 minutes; if one doesn't process it, you will see an alert and can retry. A consent that is already revoked or expired can't be revoked."
-        }
+        },
+        "otorgadoCanal": "granted on {{ fecha }} in the {{ canal }} ({{ entidad }})",
+        "vence": "expires on {{ fecha }}"
       },
       "estados": {
         "activo": "Active",
@@ -2609,7 +2663,8 @@
         },
         "plazoHasta": "Deadline {{ hora }}",
         "confirmoEl": "Confirmed on {{ fecha }}",
-        "tiempoAgotado": "Time ran out at {{ hora }}"
+        "tiempoAgotado": "Time ran out at {{ hora }}",
+        "datosAutorizados": "Authorized data"
       },
       "historial": {
         "titulo": "Status history",
@@ -2623,7 +2678,11 @@
           "revocation_not_confirmed": "The entity did not confirm in time",
           "revocation_retry_requested": "Notice retry requested",
           "expired": "Expired"
-        }
+        },
+        "canal": "channel {{ canal }}",
+        "canalOtorgamiento": "channel {{ entidad }} ({{ canal }})",
+        "actualVigente": "In force · no revocations",
+        "actualDesde": "Since {{ fecha }}"
       },
       "actores": {
         "operations": "Operations analyst",
@@ -2702,6 +2761,15 @@
             }
           }
         }
+      },
+      "finalidades": {
+        "risk_profiling_mortgage_life_offer": "Risk profile and mortgage life insurance offer"
+      },
+      "canalesOtorgamiento": {
+        "embedded": "embedded journey"
+      },
+      "canalesOtorgamientoEtiqueta": {
+        "embedded": "Embedded"
       }
     }
   }

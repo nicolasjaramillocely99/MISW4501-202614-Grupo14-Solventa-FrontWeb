@@ -11,6 +11,7 @@
             <th scope="col">{{ t('confirmacion') }}</th>
           } @else {
             <th scope="col">{{ t('estadoEnEntidad') }}</th>
+            <th scope="col">{{ t('datosAutorizados') }}</th>
           }
         </tr>
       </thead>
@@ -43,6 +44,13 @@
               <th scope="row">{{ entidad.nombre }}</th>
               <td>
                 <app-insignia-estado [tono]="consentimiento().tono">{{ t('estadoConsentimiento.' + consentimiento().clave) }}</app-insignia-estado>
+              </td>
+              <td>
+                @for (categoria of categorias(); track categoria; let ultima = $last) {
+                  {{ categoria | traducirCodigo: 'auditoria.consentimientos.categorias' }}@if (!ultima) {
+                    ·
+                  }
+                }
               </td>
             </tr>
           }

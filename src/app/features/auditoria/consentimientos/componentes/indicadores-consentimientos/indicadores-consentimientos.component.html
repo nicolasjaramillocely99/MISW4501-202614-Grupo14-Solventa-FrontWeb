@@ -1,0 +1,35 @@
+<section
+  class="indicadores"
+  *transloco="let t; prefix: 'auditoria.consentimientos.listado.indicadores'"
+  [attr.aria-label]="t('titulo')"
+>
+  <div class="indicador">
+    <p class="indicador__etiqueta">{{ t('activos') }}</p>
+    <p class="indicador__valor indicador__valor--exito">{{ indicadores().activos | formatoNumero: 0 }}</p>
+    <p class="indicador__detalle">{{ t('activosDetalle') }}</p>
+  </div>
+  <div class="indicador">
+    <p class="indicador__etiqueta">{{ t('revocados') }}</p>
+    <p class="indicador__valor">{{ indicadores().revocados30Dias.total | formatoNumero: 0 }}</p>
+    <p class="indicador__detalle">
+      {{
+        t('revocadosDetalle', {
+          app: (indicadores().revocados30Dias.desdeApp | formatoNumero: 0),
+          portal: (indicadores().revocados30Dias.desdePortal | formatoNumero: 0),
+        })
+      }}
+    </p>
+  </div>
+  <div class="indicador">
+    <p class="indicador__etiqueta">{{ t('vencidos') }}</p>
+    <p class="indicador__valor">{{ indicadores().vencidos | formatoNumero: 0 }}</p>
+    <p class="indicador__detalle">{{ t('vencidosDetalle') }}</p>
+  </div>
+  <div class="indicador">
+    <p class="indicador__etiqueta">{{ t('fueraDePlazo') }}</p>
+    <p class="indicador__valor" [class.indicador__valor--exito]="indicadores().fueraDePlazo === 0">
+      {{ indicadores().fueraDePlazo | formatoNumero: 0 }}
+    </p>
+    <p class="indicador__detalle">{{ t('fueraDePlazoDetalle') }}</p>
+  </div>
+</section>

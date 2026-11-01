@@ -1,0 +1,42 @@
+<div class="pagina" *transloco="let t; prefix: 'auditoria.consentimientos.listado'">
+  <header class="pagina__encabezado">
+    <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+    <p class="pagina__descripcion">{{ t('descripcion') }}</p>
+  </header>
+
+  @if (pagina(); as datos) {
+    <app-indicadores-consentimientos [indicadores]="datos.indicadores" />
+  }
+
+  <app-filtros-consentimientos [criterios]="criterios()" [entidades]="pagina()?.entidades ?? []" (cambio)="cambiarCriterios($event)" />
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('error.titulo') }}</p>
+          <p>{{ t('error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @case ('rangoInvalido') {
+      <p class="estado" role="status">{{ t('rango') }}</p>
+    }
+    @default {
+      @if (pagina(); as datos) {
+        <app-tabla-consentimientos
+          [pagina]="datos"
+          [filtro]="descripcion()"
+          (anterior)="irA(datos.pagina - 1)"
+          (siguiente)="irA(datos.pagina + 1)"
+          (limpiar)="limpiar()"
+        />
+      }
+    }
+  }
+</div>

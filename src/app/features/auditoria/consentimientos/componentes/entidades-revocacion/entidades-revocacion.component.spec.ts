@@ -24,12 +24,19 @@ const fila = (nombre: string) => screen.getByRole('row', { name: new RegExp(nomb
 const hora = (iso: string) => new Intl.DateTimeFormat('es-CO', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso));
 
 describe('EntidadesRevocacionComponent (HU-W4.2-02)', () => {
-  it('sin revocación muestra solo el estado del consentimiento en cada entidad', async () => {
+  it('sin revocación muestra el estado del consentimiento y los datos autorizados en cada entidad (HU-W4.2-01)', async () => {
     await renderizar(ESTADO_ACTIVO_DTO);
 
     const tabla = screen.getByRole('table', { name: 'Entidades financieras autorizadas' });
-    expect(within(tabla).getAllByRole('columnheader').map((c) => c.textContent?.trim())).toEqual(['Entidad', 'Estado en la entidad']);
+    expect(within(tabla).getAllByRole('columnheader').map((c) => c.textContent?.trim())).toEqual([
+      'Entidad',
+      'Estado en la entidad',
+      'Datos autorizados',
+    ]);
     expect(within(fila('Banco Aliado')).getByText('Activo')).toBeTruthy();
+    expect(fila('Banco Aliado').textContent?.replace(/\s+/g, ' ')).toContain(
+      'productos de crédito · saldos · comportamiento de pago · registros públicos · verificación de identidad',
+    );
     expect(screen.queryByText(/NIT/)).toBeNull();
   });
 

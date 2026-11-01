@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LucideArrowLeft, LucideBan, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideRefreshCw } from '@lucide/angular';
 
 import { ErrorRevocacion, SolicitudRevocacion } from '@core/api/auditoria/revocacion.modelos';
@@ -23,8 +23,8 @@ import {
   solicitadaPor,
 } from './modelos/presentacion-revocacion';
 import { TraducirCodigoPipe } from './pipes/traducir-codigo.pipe';
-import { EstadoConsultadoService } from './servicios/estado-consultado.service';
 import { SeguimientoRevocacionService } from './servicios/seguimiento-revocacion.service';
+import { UltimoListadoService } from './servicios/ultimo-listado.service';
 
 /** Fase de la carga: consultando, con el estado, sin ese consentimiento o con una falla del servicio. */
 export type FaseDetalle = 'cargando' | 'listo' | 'noEncontrado' | 'error';
@@ -35,7 +35,8 @@ type AvisoCarrera = 'consent_already_revoked' | 'consent_not_active';
 /**
  * O15 / O15b / O15c · Detalle del consentimiento y revocación desde el portal de cumplimiento (HU-W4.2-02). Se arma solo
  * con `GET …/revocation` (F2): titular con documento enmascarado, alcance, entidades, la revocación con el avance del aviso
- * a cada entidad y el historial. «Revocar consentimiento» solo aparece con `revocable = true` (CA-1) y abre el modal; la
+ * a cada entidad y el historial. Desde HU-W4.2-01 (CA-4) muestra además el canal y la fecha de otorgamiento, la finalidad,
+ * la vigencia y la evidencia, y «Volver» regresa al listado con el último filtro. «Revocar consentimiento» solo aparece con `revocable = true` (CA-1) y abre el modal; la
  * confirmación se pinta únicamente con la respuesta del servidor, que ya dejó el registro inmutable (CA-5). Mientras el
  * aviso está en curso se sondea cada 5 s (CA-2); con una revocación parcial una alerta nombra las entidades que no
  * confirmaron y ofrece reintentar solo con ellas (CA-3). Revocado o vencido no ofrece ninguna acción (CA-4).
@@ -67,12 +68,15 @@ type AvisoCarrera = 'consent_already_revoked' | 'consent_not_active';
 })
 export class DetalleConsentimientoPage implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
-  private readonly consultado = inject(EstadoConsultadoService);
   private readonly sesion = inject(SesionService);
   private readonly seguimiento = inject(SeguimientoRevocacionService);
   private readonly destruccion = inject(DestroyRef);
   private readonly modal = viewChild.required(ConfirmarRevocacionComponent);
   private readonly titulo = viewChild<ElementRef<HTMLElement>>('titulo');
+  private readonly transloco = inject(TranslocoService);
+
+  /** Los parámetros del último listado, para que «Volver» conserve el filtro y la página (HU-W4.2-01). */
+  protected readonly volverA = inject(UltimoListadoService).parametros;
 
   protected readonly id = signal('');
   protected readonly fase = signal<FaseDetalle>('cargando');
@@ -111,8 +115,10 @@ export class DetalleConsentimientoPage implements OnInit {
   });
   protected readonly otorgado = computed(() => {
     const estado = this.estado();
-    return estado ? otorgadoEn(estado) : null;
+    return estado ? (estado.otorgadoEn ?? otorgadoEn(estado)) : null;
   });
+  /** La entidad por la que se otorgó (hoy, el aliado). */
+  protected readonly entidadOtorgamiento = computed(() => this.estado()?.entidades[0]?.nombre ?? null);
   protected readonly solicitante = computed(() => {
     const revocacion = this.estado()?.revocacion;
     return revocacion ? solicitadaPor(revocacion, this.sesion.usuario()?.id ?? null) : null;
@@ -120,14 +126,24 @@ export class DetalleConsentimientoPage implements OnInit {
   /** El nombre de la sesión solo se muestra si el `sub` de la revocación es el de quien mira (F4). */
   protected readonly nombreSesion = computed(() => this.sesion.usuario()?.nombre ?? '');
 
+  /** «20/10/2026»: la fecha sin la hora, con día y mes de dos cifras en el orden del idioma. */
+  protected fecha(iso: string | null): string {
+    if (!iso) {
+      return '';
+    }
+    const valor = new Date(iso);
+    if (Number.isNaN(valor.getTime())) {
+      return '';
+    }
+    return new Intl.DateTimeFormat(this.transloco.getActiveLang(), { day: '2-digit', month: '2-digit', year: 'numeric' })
+      .formatToParts(valor)
+      .map((parte) => (parte.type === 'day' || parte.type === 'month' ? parte.value.padStart(2, '0') : parte.value))
+      .join('');
+  }
+
   ngOnInit(): void {
     this.id.set(this.ruta.snapshot.paramMap.get('id') ?? '');
-    const guardado = this.consultado.de(this.id());
-    this.seguimiento.iniciar(this.id(), guardado ?? undefined);
-    if (guardado) {
-      this.fase.set('listo');
-      return;
-    }
+    this.seguimiento.iniciar(this.id());
     this.cargar();
   }
 

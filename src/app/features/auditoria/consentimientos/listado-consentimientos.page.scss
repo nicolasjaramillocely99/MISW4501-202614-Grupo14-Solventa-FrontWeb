@@ -1,0 +1,36 @@
+// O14 / O14b · Consentimientos Open Finance: indicadores, filtros y tabla paginada.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__descripcion {
+  margin: 0;
+  max-width: 90ch;
+  color: var(--color-texto-secundario);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.aviso .boton {
+  margin-top: var(--espacio-8);
+}

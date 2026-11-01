@@ -4,8 +4,9 @@ import { CodigoFuente, FuenteConsentimiento, VigenciaFuente } from './consentimi
 
 /**
  * Modelos de la revocación de un consentimiento desde el portal de cumplimiento (HU-W4.2-02), tipados según
- * `services/audit/api/openapi.yaml` 0.5.0 del backend y su contrato para el front (`HU-W4.2-02-api.md`). El
- * cliente traduce el JSON del contrato (snake_case) a estos tipos (camelCase).
+ * `services/audit/api/openapi.yaml` 0.6.0 del backend y sus contratos para el front (`HU-W4.2-02-api.md` y, para la
+ * vigencia, la finalidad y los canales del detalle, `HU-W4.2-01-api.md`). El cliente traduce el JSON del contrato
+ * (snake_case) a estos tipos (camelCase).
  */
 
 /** Estado del consentimiento en el contrato. Solo `active` es revocable. */
@@ -69,17 +70,30 @@ export interface EntradaHistorial {
   /** Solo en las entradas de una entidad. */
   entidadCodigo: string | null;
   tipoActor: string | null;
+  /** Canal del otorgamiento (`embedded`) o de la revocación (`mobile_app`, `compliance_portal`); `null` si no aplica. */
+  canal: string | null;
   motivo: string | null;
   referencia: string | null;
 }
 
-/** Lo que el portal necesita para el modal, la alerta de revocación parcial y el reintento. */
+/** Lo que el portal necesita para el detalle (HU-W4.2-01), el modal, la alerta de revocación parcial y el reintento. */
 export interface EstadoRevocacion {
   consentimientoId: string;
   estado: EstadoConsentimiento;
   /** `true` solo con `active`. */
   revocable: boolean;
   titular: { nombreCompleto: string; documentoEnmascarado: string };
+  /** Cuándo lo otorgó el cliente (HU-W4.2-01); `null` si el backend no lo trae. */
+  otorgadoEn: string | null;
+  /** Fin de su vigencia: 12 meses después del otorgamiento (HU-W4.2-01). */
+  venceEn: string | null;
+  /** Cuándo dejó de estar vigente (revocado o vencido); `null` mientras lo esté. */
+  finalizadoEn: string | null;
+  /** Código de la finalidad, p. ej. `risk_profiling_mortgage_life_offer`; la pantalla la traduce. */
+  finalidad: string | null;
+  /** Canal por el que se otorgó, p. ej. `embedded`. */
+  canalOtorgamiento: string | null;
+  versionTerminos: string | null;
   alcance: FuenteConsentimiento[];
   entidades: EntidadConsentimiento[];
   /** `null` si no se ha revocado. */
@@ -133,6 +147,8 @@ interface EntradaHistorialDto {
   occurred_at: string;
   entity_code: string | null;
   actor_type: string | null;
+  /** Desde la versión 0.6.0 (HU-W4.2-01). */
+  channel?: string | null;
   reason: string | null;
   reference: string | null;
 }
@@ -143,6 +159,13 @@ export interface EstadoRevocacionDto {
   status: EstadoConsentimiento;
   revocable: boolean;
   holder: { full_name: string; document_masked: string };
+  /** Desde la versión 0.6.0 (HU-W4.2-01): solo agrega campos, por eso son opcionales para el cliente. */
+  granted_at?: string;
+  expires_at?: string;
+  ended_at?: string | null;
+  purpose?: string;
+  grant_channel?: string;
+  terms_version?: string;
   scope: FuenteDto[];
   entities: { code: string; name: string }[];
   revocation: RevocacionDto | null;
@@ -181,6 +204,12 @@ export function mapearEstadoRevocacion(dto: EstadoRevocacionDto): EstadoRevocaci
     estado: dto.status,
     revocable: dto.revocable,
     titular: { nombreCompleto: dto.holder.full_name, documentoEnmascarado: dto.holder.document_masked },
+    otorgadoEn: dto.granted_at ?? null,
+    venceEn: dto.expires_at ?? null,
+    finalizadoEn: dto.ended_at ?? null,
+    finalidad: dto.purpose ?? null,
+    canalOtorgamiento: dto.grant_channel ?? null,
+    versionTerminos: dto.terms_version ?? null,
     alcance: dto.scope.map((f) => ({ codigo: f.code, categoriasDatos: f.data_categories, vigencia: f.validity })),
     entidades: dto.entities.map((e) => ({ codigo: e.code, nombre: e.name })),
     revocacion: dto.revocation ? mapearRevocacion(dto.revocation) : null,
@@ -189,6 +218,7 @@ export function mapearEstadoRevocacion(dto: EstadoRevocacionDto): EstadoRevocaci
       ocurridoEn: h.occurred_at,
       entidadCodigo: h.entity_code ?? null,
       tipoActor: h.actor_type ?? null,
+      canal: h.channel ?? null,
       motivo: h.reason ?? null,
       referencia: h.reference ?? null,
     })),

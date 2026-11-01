@@ -1,0 +1,76 @@
+<section class="tarjeta tabla-contenedor" *transloco="let t; prefix: 'auditoria.consentimientos.listado'" aria-labelledby="titulo-tabla">
+  <h2 id="titulo-tabla" class="visualmente-oculto">{{ t('tabla.titulo') }}</h2>
+  <div class="tabla-desplazable">
+    <table class="tabla">
+      <caption class="visualmente-oculto">{{ t('tabla.titulo') }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ t('tabla.cliente') }}</th>
+          <th scope="col">{{ t('tabla.otorgado') }}</th>
+          <th scope="col">{{ t('tabla.vence') }}</th>
+          <th scope="col">{{ t('tabla.estado') }}</th>
+          <th scope="col">{{ t('tabla.alcance') }}</th>
+          <th scope="col"><span class="visualmente-oculto">{{ t('tabla.acciones') }}</span></th>
+        </tr>
+      </thead>
+      @if (pagina().items.length > 0) {
+        <tbody>
+          @for (fila of pagina().items; track fila.consentimientoId) {
+            <tr>
+              <td>
+                <span class="tabla__nombre">{{ fila.titular.nombreCompleto }}</span>
+                <span class="tabla__secundario">{{ fila.titular.documentoEnmascarado }} · <span class="tabla__id">{{ fila.consentimientoId }}</span></span>
+              </td>
+              <td class="tabla__fecha">{{ fila.otorgadoEn | formatoFechaHora: 'fechaHora' }}</td>
+              <td class="tabla__fecha">{{ fecha(fila.venceEn) }}</td>
+              <td>
+                <app-insignia-estado [tono]="tono(fila)">
+                  @if (fila.estado === 'revoked' && fila.revocacion) {
+                    {{ t('tabla.revocadoEl', { fecha: diaMes(fila.revocacion.efectivaEn) }) }}
+                  } @else {
+                    {{ t('estados.' + fila.estado) }}
+                  }
+                </app-insignia-estado>
+              </td>
+              <td class="tabla__alcance">{{ alcance(fila) }}</td>
+              <td>
+                <a
+                  class="tabla__ver"
+                  [routerLink]="['/auditoria/consentimientos', fila.consentimientoId]"
+                  [attr.aria-label]="t('tabla.verDetalle', { id: fila.consentimientoId })"
+                  >{{ t('tabla.ver') }}</a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      }
+    </table>
+  </div>
+
+  @if (pagina().items.length === 0) {
+    <div class="vacio" role="status">
+      <span class="vacio__icono" aria-hidden="true"><svg lucideSearch [size]="28"></svg></span>
+      @if (pagina().totalRegistros === 0) {
+        <h3 class="vacio__titulo">{{ t('vacio.titulo') }}</h3>
+        <p class="vacio__texto">{{ t('vacio.inicio') }}{{ filtro().entidad ? t('vacio.entidad', { entidad: filtro().entidad }) : '' }}{{ filtro().estado ? t('vacio.estado', { estado: t('estados.' + filtro().estado) }) : '' }}{{ filtro().desde && filtro().hasta ? t('vacio.entre', { desde: filtro().desde, hasta: filtro().hasta }) : filtro().desde ? t('vacio.desde', { desde: filtro().desde }) : filtro().hasta ? t('vacio.hasta', { hasta: filtro().hasta }) : '' }}{{ filtro().cliente ? t('vacio.cliente') : '' }}{{ t('vacio.fin') }}</p>
+      } @else {
+        <h3 class="vacio__titulo">{{ t('vacio.fueraDeRango') }}</h3>
+      }
+      <button type="button" class="boton boton--secundario" (click)="limpiar.emit()">{{ t('vacio.limpiar') }}</button>
+    </div>
+  }
+
+  <div class="pie">
+    <!-- Una sola línea: los bloques dejarían espacios dobles en el texto que se lee. -->
+    <p class="pie__conteo" aria-live="polite">{{ pagina().totalRegistros === 0 ? t('pie.sinRegistros') : t('pie.rango', { primero: (rango().primero | formatoNumero: 0), ultimo: (rango().ultimo | formatoNumero: 0), total: (pagina().totalRegistros | formatoNumero: 0) }) }} · {{ t('pie.pagina', { pagina: (pagina().pagina | formatoNumero: 0), total: (pagina().totalPaginas | formatoNumero: 0) }) }} · {{ t('pie.conserva') }}</p>
+    <nav class="pie__navegacion" [attr.aria-label]="t('pie.navegacion')">
+      <button type="button" class="boton boton--terciario" [disabled]="!hayAnterior()" (click)="anterior.emit()">
+        <svg lucideChevronLeft [size]="18" aria-hidden="true"></svg>{{ t('pie.anterior') }}
+      </button>
+      <button type="button" class="boton boton--terciario" [disabled]="!haySiguiente()" (click)="siguiente.emit()">
+        {{ t('pie.siguiente') }}<svg lucideChevronRight [size]="18" aria-hidden="true"></svg>
+      </button>
+    </nav>
+  </div>
+</section>

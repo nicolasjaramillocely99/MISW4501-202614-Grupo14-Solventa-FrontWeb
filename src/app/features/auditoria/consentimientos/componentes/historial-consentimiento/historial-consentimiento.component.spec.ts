@@ -13,6 +13,16 @@ async function renderizar(dto: EstadoRevocacionDto) {
   });
 }
 
+describe('HistorialConsentimientoComponent · canales (HU-W4.2-01)', () => {
+  it('la entrada «Otorgado» muestra el canal con su entidad y la revocación su canal', async () => {
+    await renderizar(ESTADO_REVOCADO_DTO);
+
+    const pasos = screen.getAllByRole('listitem');
+    expect(pasos[0].textContent).toContain('canal Banco Aliado (flujo embebido)');
+    expect(pasos[1].textContent).toContain('canal Portal de cumplimiento');
+  });
+});
+
 describe('HistorialConsentimientoComponent (HU-W4.2-02 · CA-5)', () => {
   it('lista una entrada por cambio, en orden, con ícono y texto', async () => {
     await renderizar(ESTADO_REVOCADO_DTO);
@@ -23,9 +33,41 @@ describe('HistorialConsentimientoComponent (HU-W4.2-02 · CA-5)', () => {
       'Revocación solicitada',
       'Consentimiento revocado en Solventa',
       'Revocación confirmada por la entidad',
+      'Revocado',
     ]);
     expect(entradas.at(-1)?.getAttribute('aria-current')).toBe('step');
     expect(entradas[0].getAttribute('aria-current')).toBeNull();
+  });
+
+  it('cada hecho ya ocurrido lleva el chulo y solo el estado de hoy va numerado (frame 44:5400)', async () => {
+    await renderizar(ESTADO_REVOCADO_DTO);
+
+    const entradas = within(screen.getByRole('list')).getAllByRole('listitem');
+    for (const hecho of entradas.slice(0, -1)) {
+      expect(hecho.querySelector('.paso__marca svg')).not.toBeNull();
+      expect(hecho.getAttribute('aria-current')).toBeNull();
+    }
+    const actual = entradas.at(-1)!;
+    expect(actual.querySelector('.paso__marca')?.textContent?.trim()).toBe('5');
+    expect(actual.querySelector('.paso__marca svg')).toBeNull();
+    expect(actual.textContent).toMatch(/Desde el 25\/10\/2026/);
+  });
+
+  it('el estado de hoy de un consentimiento activo dice que está vigente y sin revocaciones', async () => {
+    await renderizar(ESTADO_ACTIVO_DTO);
+
+    const actual = within(screen.getByRole('list')).getAllByRole('listitem').at(-1)!;
+    expect(actual.querySelector('.paso__titulo')?.textContent?.trim()).toBe('Activo');
+    expect(actual.textContent).toContain('Vigente · sin revocaciones');
+    expect(actual.querySelector('.paso__marca')?.textContent?.trim()).toBe('2');
+  });
+
+  it('el estado de hoy de una revocación parcial lleva la misma etiqueta que la insignia', async () => {
+    await renderizar(ESTADO_PARCIAL_DTO);
+
+    const actual = within(screen.getByRole('list')).getAllByRole('listitem').at(-1)!;
+    expect(actual.querySelector('.paso__titulo')?.textContent?.trim()).toBe('Revocación parcial');
+    expect(actual.getAttribute('aria-current')).toBe('step');
   });
 
   it('muestra la entidad por nombre, el actor, el motivo y la referencia cuando existen', async () => {
@@ -61,10 +103,10 @@ describe('HistorialConsentimientoComponent (HU-W4.2-02 · CA-5)', () => {
     expect(entrada.textContent).toMatch(/25\/10\/2026/);
   });
 
-  it('sin revocaciones solo trae el otorgamiento', async () => {
+  it('sin revocaciones trae el otorgamiento y el estado de hoy', async () => {
     await renderizar(ESTADO_ACTIVO_DTO);
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
     expect(screen.getByText('Otorgado')).toBeTruthy();
   });
 
