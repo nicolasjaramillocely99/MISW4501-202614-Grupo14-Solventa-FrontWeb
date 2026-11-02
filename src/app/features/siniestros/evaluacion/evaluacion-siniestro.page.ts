@@ -96,6 +96,16 @@ export class EvaluacionSiniestroPage implements OnInit {
     const e = this.evaluacion();
     return !!e && (e.polizaNoDisponible || !e.cobertura);
   });
+  /** Sin núcleo o sin póliza no se puede decidir: el rechazo también lee al titular en el núcleo. */
+  protected readonly sinDecision = computed(() => {
+    const e = this.evaluacion();
+    return !!e && (e.polizaNoDisponible || !e.poliza);
+  });
+  /** La póliza se conoce y no cubre el incidente: solo se puede rechazar (CA-3). */
+  protected readonly soloRechazo = computed(() => {
+    const e = this.evaluacion();
+    return !!e && !e.polizaNoDisponible && !!e.poliza && !e.cobertura;
+  });
 
   protected readonly historial = computed<EventoHistorial[]>(() => {
     const e = this.evaluacion();

@@ -5,7 +5,13 @@
     <legend class="opciones__leyenda">{{ t('leyenda') }}</legend>
     @for (o of opciones; track o) {
       <label class="opcion" [class.opcion--elegida]="opcion() === o">
-        <input class="opcion__radio" type="radio" formControlName="opcion" [value]="o" />
+        <input
+          class="opcion__radio"
+          type="radio"
+          formControlName="opcion"
+          [value]="o"
+          [attr.disabled]="o === 'aprobar' && soloRechazo() ? '' : null"
+        />
         <span class="opcion__icono" aria-hidden="true">
           @if (o === 'aprobar') {
             <svg lucideCircleCheck [size]="20"></svg>

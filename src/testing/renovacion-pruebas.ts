@@ -44,7 +44,9 @@ export const POLIZA_FUERA_DE_VENTANA_DTO: PolizaListadaDto = {
   can_renew: false,
 };
 
-export const LISTA_POLIZAS_DTO: ListaPolizasDto = { items: [POLIZA_LISTADA_DTO, POLIZA_FUERA_DE_VENTANA_DTO] };
+export const LISTA_POLIZAS_DTO = {
+  items: [POLIZA_LISTADA_DTO, POLIZA_FUERA_DE_VENTANA_DTO],
+} satisfies ListaPolizasDto;
 
 /** Respuesta de `GET /v1/policies/{id}/renewal`: las condiciones vigentes y las recotizadas (mockup A4). */
 export const CONDICIONES_RENOVACION_DTO: CondicionesRenovacionDto = {

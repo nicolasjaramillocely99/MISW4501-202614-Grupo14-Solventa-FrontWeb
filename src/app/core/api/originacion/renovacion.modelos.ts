@@ -142,8 +142,21 @@ export interface PolizaListadaDto extends PolizaDto {
   renewal: ResumenRenovacionDto | null;
 }
 
+/**
+ * Un ítem de `GET /v1/policies`. Desde la billetera (HU-M1.2-01) la lista trae también las pólizas del núcleo, que
+ * originación no renueva: llegan sin ventana de renovación y sin prima.
+ */
+export type ElementoListaPolizasDto =
+  | PolizaListadaDto
+  | (Omit<PolizaListadaDto, 'renewal_window' | 'premium'> & { renewal_window: null; premium: number | null });
+
 export interface ListaPolizasDto {
-  items: PolizaListadaDto[];
+  items: ElementoListaPolizasDto[];
+}
+
+/** La póliza tiene ventana de renovación: es de las que emite y renueva originación (HU-W1.5-02). */
+export function tieneVentana(dto: ElementoListaPolizasDto): dto is PolizaListadaDto {
+  return dto.renewal_window !== null;
 }
 
 export interface CondicionesPolizaDto {
