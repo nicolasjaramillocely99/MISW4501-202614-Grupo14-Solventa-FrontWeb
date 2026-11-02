@@ -204,7 +204,8 @@
                 <app-decision-siniestro
                   [cobertura]="e.cobertura"
                   [montoSugerido]="e.siniestro.montoEstimado"
-                  [deshabilitado]="sinTerminos()"
+                  [deshabilitado]="sinDecision()"
+                  [soloRechazo]="soloRechazo()"
                   [enviando]="enviando()"
                   [erroresServidor]="erroresServidor()"
                   (aprobar)="aprobar($event)"

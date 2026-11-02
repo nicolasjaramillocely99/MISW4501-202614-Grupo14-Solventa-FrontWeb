@@ -67,6 +67,7 @@ import {
   ResultadoRenovacion,
   mapearCondicionesRenovacion,
   mapearPolizaListada,
+  tieneVentana,
   mapearRenovacion,
   traducirErrorRenovacion,
 } from './renovacion.modelos';
@@ -307,7 +308,8 @@ export class OriginacionApiService {
    */
   listarPolizas(): Observable<PolizaListada[]> {
     return this.http.get<ListaPolizasDto>(`${this.base}/v1/policies`).pipe(
-      map((lista) => lista.items.map(mapearPolizaListada)),
+      // La pantalla A1 es la de renovación: las pólizas del núcleo (sin ventana, HU-M1.2-01) se ven en la billetera móvil.
+      map((lista) => lista.items.filter(tieneVentana).map(mapearPolizaListada)),
       catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
     );
   }

@@ -41,6 +41,11 @@ export const SINIESTROS_ROUTES: Routes = [
     canActivate: [rolGuard('operaciones')],
     component: EvaluacionSiniestroPage,
   },
+  // Entradas del menú cuya historia todavía no existe: la revisión del asesor (HU-W2.1-03) y las asistencias de
+  // operaciones (HU-W2.3-03). Llevan al inicio del rol, como las demás rutas pendientes; sin esto `:id` las captura y
+  // el guard del asegurado muestra «acceso no autorizado».
+  { path: 'revision', redirectTo: '/inicio', pathMatch: 'prefix' },
+  { path: 'asistencias', redirectTo: '/inicio', pathMatch: 'prefix' },
   {
     path: '',
     canActivateChild: [rolGuard('asegurado')],
