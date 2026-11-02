@@ -141,11 +141,19 @@ describe('EvaluacionSiniestroPage (O6 y O6b · HU-W2.2-03)', () => {
     expect((screen.getByRole('button', { name: 'Aprobar y pagar' }) as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it('un caso que la póliza no cubre no se puede aprobar', async () => {
-    await renderizar({ ...EVALUACION_DTO, coverage: null });
+  it('un caso que la póliza no cubre no se puede aprobar, pero sí rechazar (CA-3)', async () => {
+    const { usuario } = await renderizar({ ...EVALUACION_DTO, coverage: null });
 
     expect(screen.getByText(/no se puede aprobar el pago/)).toBeTruthy();
     expect(screen.getByText('La póliza no cubre este incidente')).toBeTruthy();
+    expect((screen.getByRole('radio', { name: /Aprobar/ }) as HTMLInputElement).disabled).toBe(true);
+    expect((screen.getByRole('radio', { name: /Rechazar/ }) as HTMLInputElement).checked).toBe(true);
+
+    leerCon(evaluacionCon(RECHAZO_DTO));
+    await usuario.type(screen.getByLabelText('Motivo del rechazo'), 'La póliza no cubre el incidente.');
+    await usuario.click(screen.getByRole('button', { name: 'Rechazar' }));
+
+    expect(api.rechazar).toHaveBeenCalledWith(ID_EVALUADO, 'La póliza no cubre el incidente.');
   });
 
   it('sigue el pago en curso hasta que queda pagado (CA-2)', async () => {

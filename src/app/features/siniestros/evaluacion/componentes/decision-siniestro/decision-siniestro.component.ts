@@ -39,6 +39,11 @@ export class DecisionSiniestroComponent {
   /** Monto estimado por el asegurado, en pesos, para precargar el costo bruto. */
   readonly montoSugerido = input<number | null>(null);
   readonly deshabilitado = input(false);
+  /**
+   * La póliza se conoce pero no cubre el incidente: no hay pago que aprobar, y rechazar con motivo es justo lo que
+   * corresponde (CA-3). Deja «Rechazar» elegido y «Aprobar» deshabilitado.
+   */
+  readonly soloRechazo = input(false);
   readonly enviando = input(false);
   readonly erroresServidor = input<ErroresServidorDecision>({});
 
@@ -94,6 +99,11 @@ export class DecisionSiniestroComponent {
         this.formulario.enable({ emitEvent: false });
       }
     });
+    effect(() => {
+      if (this.soloRechazo()) {
+        this.formulario.controls.opcion.setValue('rechazar');
+      }
+    });
   }
 
   /** Clave del error que se muestra en el campo, o `null`. El del servidor gana mientras no se edite el campo. */
@@ -137,6 +147,9 @@ export class DecisionSiniestroComponent {
       return;
     }
     if (this.opcion() === 'aprobar') {
+      if (this.soloRechazo()) {
+        return;
+      }
       const bruto = this.formulario.controls.bruto.value;
       if (this.errorDe('bruto') === null && bruto !== null) {
         this.aprobar.emit(bruto);

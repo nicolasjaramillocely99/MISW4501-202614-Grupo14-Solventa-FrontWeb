@@ -116,6 +116,17 @@ describe('rutas de la prioridad del siniestro (HU-W2.2-01, S12)', () => {
     expect(url()).toBe('/acceso/no-autorizado');
   });
 
+  it.each([
+    ['asesor', '/siniestros/revision'],
+    ['operaciones', '/siniestros/asistencias'],
+  ] as const)('el menú de %s lleva %s, que aún no existe, al inicio y no a «acceso no autorizado»', async (rol, ruta) => {
+    await iniciarSesionComo(rol);
+
+    await harness.navigateByUrl(ruta);
+
+    expect(url()).toBe('/inicio');
+  });
+
   it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {
     await harness.navigateByUrl('/siniestros/cola');
 

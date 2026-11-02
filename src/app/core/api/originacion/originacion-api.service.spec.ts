@@ -391,6 +391,23 @@ describe('OriginacionApiService', () => {
       expect(recibido).toEqual(LISTA_POLIZAS_DTO.items.map(mapearPolizaListada));
     });
 
+    it('deja fuera las pólizas del núcleo, que no se renuevan aquí (vienen sin ventana ni prima, HU-M1.2-01)', () => {
+      let recibido: unknown;
+      servicio.listarPolizas().subscribe((r) => (recibido = r));
+
+      const delNucleo = {
+        ...LISTA_POLIZAS_DTO.items[0],
+        policy_id: 'AU-2026-000001',
+        premium: null,
+        renewal_window: null,
+        can_renew: false,
+        renewal: null,
+      };
+      http.expectOne(`${BASE}/v1/policies`).flush({ items: [delNucleo, ...LISTA_POLIZAS_DTO.items], partial: false });
+
+      expect(recibido).toEqual(LISTA_POLIZAS_DTO.items.map(mapearPolizaListada));
+    });
+
     it('consulta las condiciones de renovación codificando la póliza', () => {
       let recibido: unknown;
       servicio.consultarCondicionesRenovacion('pol/1').subscribe((r) => (recibido = r));
