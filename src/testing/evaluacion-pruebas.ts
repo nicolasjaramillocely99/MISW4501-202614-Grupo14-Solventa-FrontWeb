@@ -45,6 +45,8 @@ const CUENTA = { bank_code: '1007', bank_name: 'Banco Aliado', account_type: 'sa
 export const EVALUACION_DTO: EvaluacionDto = {
   claim: {
     ...SINIESTRO_RADICADO_DTO,
+    // Desde HU-W2.1-03 operaciones solo decide lo que el asesor aprobó.
+    status: 'in_evaluation',
     filing_number: 'SIN-2026-01655',
     policy: { policy_id: 'HG-2025-880231', line: 'home', product: 'Hogar', insured_object: 'Carrera 15 # 93-40' },
     incident_type: 'water_damage',

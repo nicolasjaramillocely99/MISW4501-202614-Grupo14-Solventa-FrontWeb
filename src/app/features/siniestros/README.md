@@ -26,6 +26,7 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
+| — (sin mockup) | Radicaciones por revisar | `/siniestros/revision` | Asesor comercial | HU-W2.1-03 | S3 |
 | [S8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=30-2987) | Revisión de radicación de siniestro | `/siniestros/revision/:id` | Asesor comercial | HU-W2.1-03 | S3 |
 
 ### `triage/` — F2.2 · Priorización automática (triage) y cola de trabajo
@@ -157,6 +158,26 @@ ruta `/siniestros/:id/evaluar`, rol operaciones. Contrato: `docs/contratos/HU-W2
   (`POST …/payout-retry`); con la cuenta vacía reintenta al mismo destino. La clave no cambia: nunca se paga dos veces.
 - **CA-5 y CA-6:** la decisión muestra su analista, fecha y monto o motivo; solo operaciones entra (las rutas y el backend lo exigen).
 - **Pendiente de otras historias:** el bloque «Resultado de la intervención del prestador» (HU-W2.3-02) y el bruto que recomienda.
+- **Desde HU-W2.1-03** operaciones solo decide casos `in_evaluation`: una radicación `active` espera la revisión del asesor.
+
+**Revisión de la radicación por el asesor (HU-W2.1-03)** — `revision/radicaciones-revision.page.ts` (bandeja, `/siniestros/revision`)
+y `revision/revision-radicacion.page.ts` (S8, `/siniestros/revision/:id`), rol asesor. Contrato: `docs/contratos/HU-W2.1-03-api.md`
+del backend (`openapi.yaml` v0.10.0).
+
+- **Bandeja (sin mockup):** `GET /v1/claims/reviews`, las radicaciones `active` de la más antigua a la más nueva, con la tabla de
+  «Casos en evaluación»: radicado, producto, canal, monto estimado, fecha, tiempo en espera y «Revisar». Es el destino del ítem
+  «Siniestros» del menú del asesor.
+- **CA-1:** `GET /v1/claims/{id}/review`: la lectura de la evaluación sin prioridad, más el `checklist` de soportes del tipo de
+  siniestro, los siniestros previos de la póliza y las revisiones anteriores. `componentes/soportes-revision/` pinta una fila por
+  soporte: adjunto → «Válido» o «Ilegible» (con nota corta); requerido sin adjuntar → «Falta» fijo; opcional sin adjuntar →
+  «Solicitar al cliente». En una radicación del móvil, la evidencia es la fila «Fotos del vehículo».
+- **CA-2:** «Aprobar y enviar a evaluación» (`POST …/review-approval`, sin cuerpo) solo se habilita si todo lo adjunto es válido y no
+  falta nada; el caso pasa a «En evaluación» y el triage lo prioriza.
+- **CA-3:** «Devolución al cliente»: motivo de la lista, datos a corregir (opcionales) y mensaje para el cliente (hasta 1000
+  caracteres). `POST …/review-return` envía solo los soportes que no sirven (ilegibles con su nota y opcionales pedidos); lo demás lo
+  completa el backend. El caso queda `returned` («Devuelto al cliente»), que A9 (HU-W2.1-04) consume.
+- **Solo lectura:** una radicación que ya no está `active` (otro asesor se adelantó, `409 claim_not_reviewable`) se muestra con el
+  veredicto registrado y quién la revisó.
 
 ## Cómo trabajar una historia de este dominio
 

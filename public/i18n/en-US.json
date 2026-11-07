@@ -1628,7 +1628,8 @@
       "approved": "Approved · payout in progress",
       "paid": "Paid",
       "rejected": "Rejected",
-      "payment_exception": "Payment exception"
+      "payment_exception": "Payment exception",
+      "returned": "Returned to customer"
     },
     "catalogo": {
       "ramos": {
@@ -1669,7 +1670,8 @@
         "fotosCristales": "Photos of the glass",
         "documentoSoporte": "Supporting document",
         "fotosDano": "Photos of the damage",
-        "cotizacionReparacion": "Repair invoice or quote"
+        "cotizacionReparacion": "Repair invoice or quote",
+        "fotoPlaca": "License plate photo"
       }
     },
     "radicacion": {
@@ -2348,6 +2350,161 @@
           "boton": "Retry payout",
           "enviando": "Retrying…"
         }
+      }
+    },
+    "radicacionesRevision": {
+      "titulo": "Filings to review",
+      "descripcion": "Filed claims waiting for your review before they enter evaluation, oldest first.",
+      "actualizar": "Refresh",
+      "cargando": "Loading filings…",
+      "cargarMas": "Load more",
+      "reintentar": "Try again",
+      "vacio": "There are no filings waiting for review.",
+      "leyenda": "Filings waiting for review",
+      "error": {
+        "titulo": "We could not load the filings",
+        "texto": "Try again in a few seconds."
+      },
+      "columnas": {
+        "radicado": "Filing",
+        "producto": "Product",
+        "canal": "Channel",
+        "montoEstimado": "Estimated amount",
+        "radicadoEl": "Filed on",
+        "espera": "Waiting",
+        "acciones": "Actions"
+      },
+      "canales": {
+        "web": "Web portal",
+        "mobile": "Mobile app"
+      },
+      "revisar": "Review",
+      "revisarEtiqueta": "Review filing {{radicado}}"
+    },
+    "revision": {
+      "volver": "Claims",
+      "cargando": "Loading the filing…",
+      "reintentar": "Try again",
+      "enviando": "Sending…",
+      "noEncontrado": {
+        "titulo": "We could not find the filing",
+        "texto": "Check the link or go back to the list of filings."
+      },
+      "error": {
+        "titulo": "We could not load the filing",
+        "texto": "Try again in a few seconds."
+      },
+      "titulo": "Filing {{radicado}}",
+      "pendiente": "Pending review",
+      "radicadoPor": "Filed by {{asegurado}} on {{fecha}} from {{canal}}",
+      "aseguradoDesconocido": "the insured",
+      "canales": {
+        "web": "the web portal",
+        "mobile": "the mobile app"
+      },
+      "acciones": {
+        "devolver": "Return to customer",
+        "aprobar": "Approve and send to evaluation",
+        "aprobarDeshabilitado": "To approve, every support must be valid and none may be missing. If one is illegible or missing, return the filing to the customer."
+      },
+      "exito": {
+        "approved": "Filing {{radicado}} is now \"In evaluation\" and entered the triage queue.",
+        "returned": "Filing {{radicado}} is now \"Returned to customer\". The insured can correct it without filing again."
+      },
+      "yaRevisada": {
+        "approved": "This filing was already approved by {{asesor}} on {{fecha}}.",
+        "returned": "This filing was returned to the customer by {{asesor}} on {{fecha}}.",
+        "otroEstado": "This filing is no longer pending review: it is \"{{estado}}\"."
+      },
+      "errores": {
+        "claim_not_reviewable": "Another advisor already reviewed this filing. This is how it ended up.",
+        "supports_incomplete": "A required support is missing: return the filing to the customer.",
+        "reason_code_invalid": "Choose a reason from the list.",
+        "note_too_long": "The note of a support is too long (300 characters at most).",
+        "support_not_applicable": "One of the supports does not belong to this claim type. Reload the filing.",
+        "verdict_not_applicable": "The verdict of a support does not match what was attached. Reload the filing.",
+        "invalid_request": "We could not record the review. Reload the filing and try again.",
+        "claim_not_found": "The filing no longer exists.",
+        "claims_unavailable": "We could not record the review. Try again in a few seconds.",
+        "message_required": "Write the message for the customer.",
+        "message_too_long": "The message for the customer is too long.",
+        "nothing_requested": "Mark a support as illegible or missing, or a fact to correct.",
+        "unauthorized": "Your session expired.",
+        "forbidden": "You are not allowed to review filings."
+      },
+      "datos": {
+        "titulo": "Reported facts",
+        "fechaHecho": "Date and time of the incident",
+        "lugar": "Place",
+        "montoEstimado": "Estimated amount",
+        "descripcion": "Description"
+      },
+      "soportes": {
+        "titulo": "Attached supports",
+        "adjuntos": "{{n}} file(s) attached",
+        "noAdjuntoRequerido": "Not attached · required for this claim type",
+        "noAdjuntoOpcional": "Not attached · optional",
+        "verEtiqueta": "View a file of {{soporte}}",
+        "veredictoDe": "Verdict on {{soporte}}",
+        "nota": "Note on {{soporte}}",
+        "notaAyuda": "What is wrong? For example: blurry, the number cannot be read",
+        "solicitar": "Ask the customer for it"
+      },
+      "veredictos": {
+        "valid": "Valid",
+        "illegible": "Illegible",
+        "missing": "Missing",
+        "opcional": "Optional"
+      },
+      "devolucion": {
+        "titulo": "Return to customer",
+        "descripcion": "If you return the filing, record the reason and the message for the customer. The claim becomes \"Returned to customer\" and the person can correct the supports marked illegible or missing without filing from scratch.",
+        "motivo": "Reason",
+        "elegirMotivo": "Choose a reason",
+        "datos": "Facts to correct (optional)",
+        "mensaje": "Message for the customer",
+        "mensajeAyuda": "The insured reads it. 1000 characters at most.",
+        "pedido": "{{soportes}} support(s) and {{datos}} fact(s) to correct will be requested.",
+        "enviar": "Return filing",
+        "errores": {
+          "motivo": "Choose the reason of the return.",
+          "mensaje": {
+            "required": "Write the message for the customer.",
+            "too_long": "The message cannot exceed 1000 characters."
+          },
+          "pedido": "To return, mark at least one support as illegible or missing, or a fact to correct."
+        }
+      },
+      "motivos": {
+        "illegible_or_incomplete_supports": "Illegible or incomplete supports",
+        "inconsistent_facts": "Inconsistent facts of the incident",
+        "missing_information": "Missing information",
+        "other": "Other"
+      },
+      "datosCorregibles": {
+        "occurred_at": "Date and time of the incident",
+        "place": "Place",
+        "description": "Description",
+        "estimated_amount": "Estimated amount"
+      },
+      "poliza": {
+        "titulo": "Policy",
+        "estado": "Policy and status",
+        "cobertura": "Applicable coverage",
+        "deducible": "Deductible",
+        "deducibleValor": "{{pct}} %",
+        "previos": "Previous claims",
+        "sinPrevios": "None",
+        "previo": "{{estado}} ({{tipo}}, {{fecha}})"
+      },
+      "alAprobar": {
+        "titulo": "When approved",
+        "texto": "The claim becomes \"In evaluation\" and enters the triage queue with its priority calculated automatically from its severity and estimated amount."
+      },
+      "revisiones": {
+        "titulo": "Previous reviews",
+        "approved": "Approved by {{asesor}}",
+        "returned": "Returned by {{asesor}}"
       }
     }
   },

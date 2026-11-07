@@ -7,6 +7,7 @@ import { TonoInsignia } from '@shared/ui/insignia-estado/insignia-estado.compone
  */
 const TONO_ESTADO: Readonly<Record<EstadoSiniestro, TonoInsignia>> = {
   active: 'informacion',
+  returned: 'advertencia',
   in_evaluation: 'informacion',
   approved: 'advertencia',
   paid: 'exito',

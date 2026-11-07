@@ -43,6 +43,8 @@ describe('rutas de la prioridad del siniestro (HU-W2.2-01, S12)', () => {
             consultarSiniestro: () => NEVER,
             listarSiniestros: () => NEVER,
             consultarOpcionesRadicacion: () => NEVER,
+            listarRevisiones: () => NEVER,
+            consultarRevision: () => NEVER,
           },
         },
       ],
@@ -116,15 +118,32 @@ describe('rutas de la prioridad del siniestro (HU-W2.2-01, S12)', () => {
     expect(url()).toBe('/acceso/no-autorizado');
   });
 
-  it.each([
-    ['asesor', '/siniestros/revision'],
-    ['operaciones', '/siniestros/asistencias'],
-  ] as const)('el menú de %s lleva %s, que aún no existe, al inicio y no a «acceso no autorizado»', async (rol, ruta) => {
-    await iniciarSesionComo(rol);
+  it('el menú de operaciones lleva /siniestros/asistencias, que aún no existe, al inicio y no a «acceso no autorizado»', async () => {
+    await iniciarSesionComo('operaciones');
 
-    await harness.navigateByUrl(ruta);
+    await harness.navigateByUrl('/siniestros/asistencias');
 
     expect(url()).toBe('/inicio');
+  });
+
+  it('el menú del asesor lleva a las radicaciones por revisar (HU-W2.1-03) y el detalle es S8', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/siniestros/revision');
+    expect(url()).toBe('/siniestros/revision');
+
+    await harness.navigateByUrl(`/siniestros/revision/${ID}`);
+    expect(url()).toBe(`/siniestros/revision/${ID}`);
+  });
+
+  it.each(['asegurado', 'operaciones', 'socio'] as const)('el rol %s no entra a la revisión del asesor', async (rol) => {
+    await iniciarSesionComo(rol);
+
+    await harness.navigateByUrl('/siniestros/revision');
+    expect(url()).toBe('/acceso/no-autorizado');
+
+    await harness.navigateByUrl(`/siniestros/revision/${ID}`);
+    expect(url()).toBe('/acceso/no-autorizado');
   });
 
   it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {

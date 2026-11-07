@@ -30,6 +30,22 @@ import {
   mapearPaginaSiniestros,
   traducirErrorSiniestro,
 } from './siniestro.modelos';
+import {
+  PaginaCola as PaginaRevisiones,
+  PaginaColaDto as PaginaRevisionesDto,
+  mapearPaginaCola as mapearPaginaRevisiones,
+} from './evaluacion.modelos';
+import {
+  RadicacionEnRevision,
+  RadicacionEnRevisionDto,
+  ResultadoRevision,
+  ResultadoRevisionDto,
+  SolicitudDevolucion,
+  aDevolucionDto,
+  mapearRadicacionEnRevision,
+  mapearResultadoRevision,
+  traducirErrorRevision,
+} from './revision.modelos';
 import { calcularSha256 } from './sha256';
 import {
   PaginaTriageDto,
@@ -243,6 +259,49 @@ export class SiniestrosApiService {
    */
   reintentarPago(id: string, destino?: DestinoPago): Observable<Decision> {
     return this.decidir(id, 'payout-retry', destino ? { destination: aDestinoDto(destino) } : {});
+  }
+
+  /**
+   * Radicaciones que esperan la revisión del asesor (`GET /v1/claims/reviews`, HU-W2.1-03), de la más antigua a la más
+   * nueva. Aún no tienen prioridad. Falla con `ErrorRevision`.
+   */
+  listarRevisiones(tokenPagina?: string): Observable<PaginaRevisiones> {
+    const params = tokenPagina ? new HttpParams().set('page_token', tokenPagina) : new HttpParams();
+    return this.http.get<PaginaRevisionesDto>(`${this.base}/v1/claims/reviews`, { params }).pipe(
+      map(mapearPaginaRevisiones),
+      catchError((error: unknown) => throwError(() => traducirErrorRevision(error))),
+    );
+  }
+
+  /** Todo lo que el asesor revisa (`GET /v1/claims/{claim_id}/review`, S8). Falla con `ErrorRevision`. */
+  consultarRevision(id: string): Observable<RadicacionEnRevision> {
+    return this.http.get<RadicacionEnRevisionDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/review`).pipe(
+      map(mapearRadicacionEnRevision),
+      catchError((error: unknown) => throwError(() => traducirErrorRevision(error))),
+    );
+  }
+
+  /**
+   * Aprueba la radicación: todos los soportes adjuntos son válidos y el caso pasa a evaluación
+   * (`POST /v1/claims/{claim_id}/review-approval`). Falla con `ErrorRevision`.
+   */
+  aprobarRadicacion(id: string): Observable<ResultadoRevision> {
+    return this.revisar(id, 'review-approval', {});
+  }
+
+  /**
+   * Devuelve la radicación al asegurado con el motivo, el mensaje y el veredicto de los soportes que no sirven
+   * (`POST /v1/claims/{claim_id}/review-return`). Falla con `ErrorRevision`.
+   */
+  devolverRadicacion(id: string, solicitud: SolicitudDevolucion): Observable<ResultadoRevision> {
+    return this.revisar(id, 'review-return', aDevolucionDto(solicitud));
+  }
+
+  private revisar(id: string, accion: string, cuerpo: object): Observable<ResultadoRevision> {
+    return this.http.post<ResultadoRevisionDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/${accion}`, cuerpo).pipe(
+      map(mapearResultadoRevision),
+      catchError((error: unknown) => throwError(() => traducirErrorRevision(error))),
+    );
   }
 
   private decidir(id: string, accion: string, cuerpo: object): Observable<Decision> {

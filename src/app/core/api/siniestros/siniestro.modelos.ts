@@ -9,10 +9,12 @@ import { RamoPoliza } from './radicacion.modelos';
  */
 
 /**
- * Estado del caso: `active` al radicar («Radicado»), `in_evaluation`, y los de la decisión de operaciones
- * (HU-W2.2-03): `approved` (pago en curso), `paid`, `rejected` y `payment_exception`.
+ * Estado del caso: `active` al radicar («Radicado», pendiente de la revisión del asesor), `returned` («Devuelto al
+ * cliente», HU-W2.1-03), `in_evaluation` (aprobado por el asesor) y los de la decisión de operaciones (HU-W2.2-03):
+ * `approved` (pago en curso), `paid`, `rejected` y `payment_exception`.
  */
-export type EstadoSiniestro = 'active' | 'in_evaluation' | 'approved' | 'paid' | 'rejected' | 'payment_exception';
+export type EstadoSiniestro =
+  'active' | 'returned' | 'in_evaluation' | 'approved' | 'paid' | 'rejected' | 'payment_exception';
 
 export type CanalSiniestro = 'web' | 'mobile';
 
