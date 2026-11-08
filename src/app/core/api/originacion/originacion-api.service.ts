@@ -66,6 +66,22 @@ import {
   traducirErrorPorVencer,
 } from './polizas-por-vencer.modelos';
 import {
+  CodigoRenovacionEnviado,
+  CodigoRenovacionEnviadoDto,
+  RecotizacionRenovacion,
+  RecotizacionRenovacionDto,
+  RenovacionAsistida,
+  RenovacionAsistidaDto,
+  ResultadoFormalizacionRenovacion,
+  SolicitudFormalizacionRenovacion,
+  aSolicitudFormalizacionRenovacionDto,
+  aSolicitudRecotizacionDto,
+  mapearCodigoEnviado,
+  mapearRecotizacion,
+  mapearRenovacionAsistida,
+  traducirErrorRenovacionAsistida,
+} from './renovacion-asistida.modelos';
+import {
   CondicionesRenovacion,
   CondicionesRenovacionDto,
   ListaPolizasDto,
@@ -379,6 +395,75 @@ export class OriginacionApiService {
       .pipe(
         map(mapearPaginaPorVencer),
         catchError((error: unknown) => throwError(() => traducirErrorPorVencer(error))),
+      );
+  }
+
+  /**
+   * Dónde está la renovación asistida de una póliza (`GET /v1/policies/{policy_id}/assisted-renewal`, solo `advisor`;
+   * HU-W1.5-03, pantallas S7 y S7b): la póliza, la última recotización, la renovación del periodo con su canal, el
+   * registro del asesor y el cobro con su plazo de reintento. Falla con `ErrorRenovacionAsistida`.
+   */
+  consultarRenovacionAsistida(polizaId: string): Observable<RenovacionAsistida> {
+    return this.http
+      .get<RenovacionAsistidaDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal`)
+      .pipe(
+        map(mapearRenovacionAsistida),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
+      );
+  }
+
+  /**
+   * Recotiza la renovación con el motor de rating (`POST …/assisted-renewal/requotes`, CA-1). Para una póliza de origen
+   * asistido viaja la casilla del asesor (`consent_affirmed`); sin ella responde `validation_failed`. Falla con
+   * `ErrorRenovacionAsistida`: `consent_required`, `consent_unverifiable`, `renewal_not_available`…
+   */
+  recotizarRenovacion(polizaId: string, consentimientoAfirmado: boolean): Observable<RecotizacionRenovacion> {
+    return this.http
+      .post<RecotizacionRenovacionDto>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal/requotes`,
+        aSolicitudRecotizacionDto(consentimientoAfirmado),
+      )
+      .pipe(
+        map(mapearRecotizacion),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
+      );
+  }
+
+  /**
+   * Pide el código de confirmación de la renovación (`POST …/assisted-renewal/consent`): el servicio se lo envía por
+   * correo al titular y responde solo con el correo enmascarado; hasta 3 por recotización. Falla con
+   * `ErrorRenovacionAsistida`.
+   */
+  enviarCodigoRenovacion(polizaId: string, recotizacionId: string): Observable<CodigoRenovacionEnviado> {
+    return this.http
+      .post<CodigoRenovacionEnviadoDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal/consent`, {
+        requote_id: recotizacionId,
+      })
+      .pipe(
+        map(mapearCodigoEnviado),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
+      );
+  }
+
+  /**
+   * Formaliza la renovación en nombre del cliente (`POST …/assisted-renewal/formalization`, CA-2 a CA-4) con la
+   * recotización que aceptó y cómo la aceptó. 201 la primera vez, 200 si el mismo asesor repite. Falla con
+   * `ErrorRenovacionAsistida`: `validation_failed` trae todos los campos a la vez; también `already_formalized`,
+   * `requote_expired`, `payment_method_missing`, `invalid_confirmation_code`…
+   */
+  formalizarRenovacion(polizaId: string, solicitud: SolicitudFormalizacionRenovacion): Observable<ResultadoFormalizacionRenovacion> {
+    return this.http
+      .post<RenovacionAsistidaDto>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal/formalization`,
+        aSolicitudFormalizacionRenovacionDto(solicitud),
+        { observe: 'response' },
+      )
+      .pipe(
+        map((respuesta) => ({
+          renovacion: mapearRenovacionAsistida(respuesta.body as RenovacionAsistidaDto),
+          creada: respuesta.status === 201,
+        })),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
       );
   }
 
