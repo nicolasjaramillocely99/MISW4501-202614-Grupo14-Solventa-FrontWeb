@@ -1684,6 +1684,292 @@
         "siguiente": "Next",
         "pagina": "Page {{pagina}} of {{total}}"
       }
+    },
+    "renovacionAsistida": {
+      "cargando": "Loading the renewal…",
+      "volver": "Renewals",
+      "titulo": {
+        "asistida": "Assisted renewal · {{poliza}}",
+        "formalizada": "Renewal formalized · {{poliza}}",
+        "enCurso": "Renewal in progress · {{poliza}}"
+      },
+      "vence": "Expires on {{fecha}}",
+      "insignias": {
+        "degradado": "Degraded mode",
+        "enCurso": "Renewal in progress",
+        "renovada": "Renewed",
+        "noRenovada": "Not renewed"
+      },
+      "linea": {
+        "life": "Mortgage life"
+      },
+      "subtitulo": {
+        "basico": "{{titular}} · {{documento}} · {{producto}}",
+        "sinRecotizar": "{{titular}} · {{documento}} · {{producto}} · not requoted",
+        "vendidaPorAsesor": "{{titular}} · {{documento}} · {{producto}} · sold by an advisor · not requoted",
+        "recotizada": "{{titular}} · {{documento}} · {{producto}} · Requoted on {{fecha}} with the rating engine",
+        "degradada": "{{titular}} · {{documento}} · {{producto}} · Requoted on {{fecha}} in degraded mode",
+        "formalizada": "{{titular}} · {{documento}} · {{producto}} · renewed on {{fecha}} by {{asesor}}",
+        "delAsegurado": "{{titular}} · {{documento}} · {{producto}} · accepted by the customer in their portal on {{fecha}}"
+      },
+      "acciones": {
+        "recotizar": "Requote",
+        "recotizando": "Requoting…",
+        "formalizar": "Formalize renewal",
+        "formalizando": "Formalizing…",
+        "volverRenovaciones": "Back to renewals",
+        "verEmision": "View issuance in progress",
+        "verCertificado": "View certificate",
+        "reintentar": "Retry"
+      },
+      "prima": {
+        "titulo": "New monthly premium",
+        "desde": "From {{fecha}} · reuses the issuance flow: charge, renewed certificate and notification",
+        "sinRecotizacion": "No valid requote for this period"
+      },
+      "avisos": {
+        "cache": {
+          "titulo": "External sources unavailable",
+          "texto": "Open Finance did not answer. The requote used the customer's last cached profile, from {{fecha}}. Tell them before recording their acceptance."
+        },
+        "base": {
+          "titulo": "External sources unavailable",
+          "texto": "Open Finance did not answer and there is no recent cached profile: the requote used the base actuarial profile. Tell the customer before recording their acceptance."
+        },
+        "sinConsentimiento": {
+          "titulo": "The customer revoked their Open Finance authorization",
+          "texto": "Their data was not consulted and their cached profile was not used. To requote, the customer must authorize the consultation again in the channel where they bought the policy."
+        },
+        "noVerificable": {
+          "titulo": "We could not verify the customer's authorization",
+          "texto": "The consent service did not answer, so no data was consulted. Try again in a few minutes."
+        },
+        "sinMedio": {
+          "titulo": "The policy has no registered payment method",
+          "texto": "The advisor cannot formalize it because the charge needs the customer's card. The customer can renew from their portal, where they register a payment method."
+        },
+        "noDisponible": {
+          "titulo": "This policy cannot be renewed yet",
+          "texto": "It expires on {{vence}} and its renewal window opens on {{abre}}. Come back from that date."
+        },
+        "ventanaCerrada": {
+          "titulo": "The renewal window of this policy is closed",
+          "texto": "The coverage ended on {{vence}} without a renewal."
+        },
+        "noRenovada": {
+          "titulo": "This policy was not renewed",
+          "no_response": "The window closed on {{vence}} without an answer from the customer.",
+          "payment_failed": "The customer accepted the renewal, but the payment did not go through before {{hasta}}."
+        },
+        "pagoFallido": {
+          "titulo": "The renewal payment failed",
+          "texto": "The charge of {{fecha}} was declined. The customer can retry with another payment method from their portal until {{hasta}}; if they do not pay by then, the policy is not renewed."
+        },
+        "delAsegurado": {
+          "titulo": "The customer renewed from their portal",
+          "texto": "The insured made this renewal. It can only be viewed here: no other requote or formalization is possible for this period."
+        },
+        "vendidaPorAsesor": {
+          "titulo": "Policy sold by an advisor",
+          "texto": "Before requoting, confirm with the customer that they authorize the consultation of their financial data. Your name and the time are recorded."
+        },
+        "vencida": {
+          "titulo": "The requote expired",
+          "texto": "More than 24 hours passed since the requote. Requote again before recording the acceptance."
+        },
+        "reemplazada": {
+          "titulo": "There is a newer requote",
+          "texto": "This requote is no longer the last one of the period. Requote again to continue."
+        }
+      },
+      "noEncontrada": {
+        "titulo": "We could not find the policy",
+        "texto": "The policy does not exist or is not renewed from here."
+      },
+      "error": {
+        "titulo": "We could not load the renewal",
+        "texto": "Try again in a few minutes."
+      },
+      "errores": {
+        "invalid_request": "The request is not valid. Reload the page and try again.",
+        "validation_failed": "Check the highlighted fields.",
+        "policy_not_found": "The policy does not exist.",
+        "requote_not_found": "The requote no longer exists: requote again.",
+        "renewal_not_available": "The policy is no longer in its renewal window.",
+        "renewal_closed": "The customer already renewed this period from their portal.",
+        "already_formalized": "Another advisor already formalized this renewal.",
+        "payment_method_missing": "The policy has no registered payment method.",
+        "consent_required": "The customer has no valid Open Finance authorization.",
+        "consent_unverifiable": "We could not verify the customer's authorization; try again in a few minutes.",
+        "requote_expired": "The requote expired: requote again.",
+        "requote_superseded": "There is a newer requote: requote again.",
+        "consent_code_required": "Send the code to the customer first.",
+        "invalid_confirmation_code": "The code is not the one the customer received.",
+        "confirmation_code_expired": "The code expired: send a new one.",
+        "too_many_attempts": "The attempts with this requote are used up: requote again.",
+        "too_many_codes": "The 3 codes of this requote were already sent.",
+        "code_delivery_unavailable": "We could not send the code; try again in a few minutes.",
+        "renewal_unavailable": "We could not complete the action; try again in a few minutes."
+      },
+      "comparativo": {
+        "titulo": "Current and requoted conditions",
+        "condicion": "Condition",
+        "vigente": "Current term",
+        "recotizada": "Requoted",
+        "prima": "Monthly premium",
+        "vigencia": "Term",
+        "rango": "{{desde}} → {{hasta}}",
+        "valorAsegurado": "Insured amount",
+        "descuento": "Good-experience discount",
+        "descuentoAplicado": "{{porcentaje}} · no claims in 12 months",
+        "sinDescuento": "No discount",
+        "sinDato": "No data",
+        "coberturas": "Coverages",
+        "sinCambios": "No changes",
+        "cobertura": {
+          "death": "Death",
+          "total_permanent_disability": "Total and permanent disability"
+        }
+      },
+      "consentimientoAsesor": {
+        "titulo": "Policy sold by an advisor",
+        "texto": "Before requoting, confirm with the customer that they authorize the consultation of their financial data. Your name and the time are recorded.",
+        "casilla": "The customer authorized the consultation of their financial data for this renewal.",
+        "error": "Check the box: without the customer's authorization no data is consulted.",
+        "registrado": "Consent affirmed by {{asesor}} on {{fecha}}."
+      },
+      "trazabilidad": {
+        "titulo": "Requote",
+        "tituloRegistrada": "Requote traceability",
+        "fuentes": {
+          "open_finance": "Open Finance",
+          "open_data": "Open Data",
+          "kyc": "KYC"
+        },
+        "consultado": "Consulted · {{ms}} ms",
+        "falla": {
+          "timeout": "No answer · cut at {{ms}} ms",
+          "error": "Answered with an error",
+          "circuit_open": "Temporarily isolated: not consulted"
+        },
+        "operativo": "Operational",
+        "noDisponible": "Unavailable",
+        "motor": "Rating engine",
+        "motorAplicado": "Version {{version}} · age, risk and term",
+        "motorSinTarifa": "It could not be priced: the current conditions are repeated",
+        "aplicado": "Applied",
+        "sinAplicar": "Not applied",
+        "verFactores": "View the engine factors",
+        "factores": {
+          "base_monthly_rate": "Base monthly rate",
+          "age_factor": "Age factor",
+          "risk_factor": "Risk factor",
+          "term_factor": "Term factor",
+          "rounding_step": "Rounding"
+        },
+        "pendiente": {
+          "detalle": {
+            "sinRecotizar": "Consulted when requoting",
+            "autorizacion": "Waiting for the authorization",
+            "sinAutorizacion": "Not consulted"
+          },
+          "insignia": {
+            "sinRecotizar": "Pending",
+            "autorizacion": "Pending",
+            "sinAutorizacion": "No authorization"
+          }
+        },
+        "nota": {
+          "general": "If Open Finance does not answer, the requote uses the last cached profile (up to 30 days) and says so here.",
+          "cache": "Cached profile from {{fecha}} (within the 30 days).",
+          "base": "There is no recent cached profile: the base actuarial profile was used."
+        }
+      },
+      "emision": {
+        "titulo": "Renewal issuance",
+        "cobro": "Premium charge",
+        "cobroEnCurso": "{{tarjeta}} · started on {{fecha}}",
+        "cobroIniciado": "Started on {{fecha}}",
+        "cobroConfirmado": "Confirmed · {{tarjeta}}",
+        "cobroConfirmadoSinTarjeta": "Confirmed",
+        "cobroFallido": "Declined on {{fecha}} · retry until {{hasta}}",
+        "noRenovada": {
+          "no_response": "The window closed without an answer from the customer",
+          "payment_failed": "The payment did not go through in time"
+        },
+        "certificado": "Renewed certificate",
+        "certificadoEmitido": "New policy {{poliza}}",
+        "certificadoPendiente": "Issued once the payment is confirmed",
+        "notificacion": "Notice to the customer",
+        "notificacionEnviada": "E-mail sent with the certificate",
+        "notificacionPendiente": "E-mail with the renewed certificate",
+        "estados": {
+          "enCurso": "In progress",
+          "confirmado": "Confirmed",
+          "fallo": "Failed",
+          "pendiente": "Pending",
+          "emitido": "Issued",
+          "enviada": "Sent",
+          "noRenovada": "Not renewed"
+        },
+        "notaEnCurso": "Once the payment is confirmed, the new policy and its certificate appear here.",
+        "notaRenovada": "The previous policy is renewed; the new one expires on {{fecha}}.",
+        "notaFallo": "The customer can retry with another payment method from their portal before the deadline.",
+        "notaNoRenovada": "The policy was not renewed for this period."
+      },
+      "aceptacion": {
+        "titulo": "Customer acceptance",
+        "texto": "Record the acceptance the customer gave you before formalizing. It is linked to the renewal with your name, the date and the conditions applied.",
+        "tituloRegistrada": "Acceptance recorded",
+        "textoRegistrada": "The acceptance the customer gave before the renewal was formalized, linked to it with the advisor, the date and the conditions applied.",
+        "medio": "How the customer accepted",
+        "fechaHora": "Date and time",
+        "formatoFecha": "MM/DD/YYYY · HH:MM",
+        "referencia": "Reference",
+        "sinReferencia": "No reference (confirmation code)",
+        "metodos": {
+          "recorded_call": "Recorded call",
+          "remote_signature": "Remote signature",
+          "confirmation_code": "Confirmation code"
+        },
+        "codigo": "6-digit code",
+        "codigoAyuda": "The customer gets it by e-mail and reads it to you.",
+        "enviarCodigo": "Send code",
+        "reenviarCodigo": "Resend code",
+        "codigoEnviado": "Sent to {{correo}} · expires at {{hasta}}. {{restantes}} sends left.",
+        "confirmo": "The customer accepted the requoted conditions and authorized the charge with their registered payment method.",
+        "confirmoConMedio": "The customer accepted the requoted conditions and authorized the charge with their registered payment method ({{medio}}).",
+        "errores": {
+          "fecha": {
+            "required": "Say when the customer accepted.",
+            "invalid_format": "The date is not valid.",
+            "out_of_range": "The date cannot be in the future nor before the requote."
+          },
+          "referencia": {
+            "required": "Enter the reference of the recording or the signature.",
+            "invalid_format": "Up to {{max}} characters: letters, digits and . _ : / # -"
+          },
+          "codigo": {
+            "required": "Enter the code the customer received.",
+            "invalid_format": "The code has 6 digits."
+          },
+          "confirmo": "Confirm that the customer accepted and authorized the charge.",
+          "servicio": {
+            "consent_code_required": "Send the code to the customer first.",
+            "invalid_confirmation_code": "The code is not the one the customer received.",
+            "confirmation_code_expired": "The code expired: send a new one.",
+            "too_many_attempts": "The attempts with this requote are used up: requote again.",
+            "too_many_codes": "The 3 codes of this requote were already sent.",
+            "code_delivery_unavailable": "We could not send the code; try again in a few minutes."
+          }
+        }
+      },
+      "marcas": {
+        "visa": "Visa",
+        "mastercard": "Mastercard",
+        "amex": "American Express",
+        "pse": "PSE"
+      }
     }
   },
   "siniestros": {

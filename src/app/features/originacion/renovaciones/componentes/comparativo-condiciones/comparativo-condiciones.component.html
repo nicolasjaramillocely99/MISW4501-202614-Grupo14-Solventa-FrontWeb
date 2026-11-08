@@ -1,0 +1,81 @@
+<ng-container *transloco="let t; read: 'originacion.renovacionAsistida.comparativo'">
+  <section class="tarjeta comparativo" aria-labelledby="titulo-comparativo">
+    <h2 id="titulo-comparativo" class="comparativo__titulo">{{ t('titulo') }}</h2>
+    <table class="comparativo__tabla">
+      <thead>
+        <tr>
+          <th scope="col">{{ t('condicion') }}</th>
+          <th scope="col">{{ t('vigente') }}</th>
+          <th scope="col" class="comparativo__recotizada">{{ t('recotizada') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">{{ t('prima') }}</th>
+          <td>{{ vigente().prima | formatoMoneda: vigente().moneda }}</td>
+          <td class="comparativo__recotizada">
+            @if (recotizacion(); as r) {
+              {{ r.renovada.prima | formatoMoneda: r.renovada.moneda }} ({{ variacion(r.variacionPrima) }})
+            } @else {
+              <span [attr.aria-label]="t('sinDato')">—</span>
+            }
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t('vigencia') }}</th>
+          <td>{{ t('rango', { desde: dia(vigente().vigenciaDesde), hasta: dia(vigente().vigenciaHasta) }) }}</td>
+          <td>
+            @if (renovada(); as r) {
+              {{ t('rango', { desde: dia(r.vigenciaDesde), hasta: dia(r.vigenciaHasta) }) }}
+            } @else {
+              <span [attr.aria-label]="t('sinDato')">—</span>
+            }
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t('valorAsegurado') }}</th>
+          <td>{{ vigente().valorAsegurado | formatoMoneda: vigente().moneda }}</td>
+          <td>
+            @if (renovada(); as r) {
+              {{ r.valorAsegurado | formatoMoneda: r.moneda }}
+            } @else {
+              <span [attr.aria-label]="t('sinDato')">—</span>
+            }
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t('descuento') }}</th>
+          <td><span [attr.aria-label]="t('sinDescuento')">—</span></td>
+          <td class="comparativo__recotizada">
+            @if (recotizacion(); as r) {
+              @if (r.descuento > 0) {
+                {{ t('descuentoAplicado', { porcentaje: porcentaje(r.descuento) }) }}
+              } @else {
+                {{ t('sinDescuento') }}
+              }
+            } @else {
+              <span [attr.aria-label]="t('sinDato')">—</span>
+            }
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{{ t('coberturas') }}</th>
+          <td>
+            {{ coberturas(vigente()) }}
+          </td>
+          <td>
+            @if (renovada(); as r) {
+              @if (sinCambiosEnCoberturas()) {
+                {{ t('sinCambios') }}
+              } @else {
+                {{ coberturas(r) }}
+              }
+            } @else {
+              <span [attr.aria-label]="t('sinDato')">—</span>
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</ng-container>
