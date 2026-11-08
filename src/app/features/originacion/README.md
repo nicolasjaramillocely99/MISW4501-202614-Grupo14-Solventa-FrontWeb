@@ -182,6 +182,33 @@ rechazado la solicitud se conserva y se reutiliza `FormularioMedioPagoComponent`
   criterios con los mismos componentes de A4.
 - E2E: `e2e/flujos/cotizacion-emision/renovacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 
+**Pólizas próximas a vencer (HU-W1.5-01)** — `renovaciones/polizas-por-vencer.page.ts` (`PolizasPorVencerPage`, S6), ruta
+`/originacion/renovaciones` en `originacion.routes.ts` (bloque `renovaciones` con `rolGuard('asesor')`; el ítem «Renovaciones» del menú
+del asesor ya existía). Contrato: `docs/contratos/HU-W1.5-01-api.md` del backend (`openapi.yaml` v0.14.0). Cliente:
+`core/api/originacion/polizas-por-vencer.modelos.ts` y `OriginacionApiService.listarPolizasPorVencer` (`GET /v1/policies/expiring`).
+
+- **S6:** título «Renovaciones», tarjeta «Vencen en N días» (las pólizas con el periodo abierto que vencen dentro de la ventana de
+  renovación, sin los filtros), filtros «Vencen desde», «Hasta» y «Estado» con etiqueta permanente, conteo «N resultados» y la tabla
+  Póliza · Cliente (nombre y documento) · Producto · Vence · Prima · Estado · acción. Las fechas son días civiles de Colombia, como el
+  filtro del backend.
+- **Filtro en la URL** (`renovaciones/modelos/filtro-por-vencer.ts`): `?desde=&hasta=&estado=&pagina=`. Sin rango, el backend aplica la
+  ventana de renovación desde hoy (`RENEWAL_WINDOW_DAYS` de HU-W1.5-02) y los campos muestran el rango aplicado; cambiar un filtro vuelve
+  a la página 1, paginar lo conserva y recargar lo mantiene. «Hasta» anterior a «Vencen desde» se avisa en el campo y no se consulta.
+- **Estados:** *Por vencer* (sin renovación del periodo) y *Renovación en curso* (renovación aceptada y en cobro); un estado que el cliente
+  no conoce se muestra con una insignia neutra (el contrato es ampliable para HU-W1.6-02).
+- **Acciones (CA-4):** *Renovar* solo cuando el backend dice `can_renew` (dentro de la ventana de renovación) y *Ver* en la renovación en
+  curso; los dos llevan a `/originacion/renovaciones/:id` con el `policy_id`, la renovación asistida de HU-W1.5-03, que agrega su hijo
+  `:id` al mismo bloque de rutas (mientras no exista, el comodín lleva al inicio del rol). Fuera de la ventana la fila dice «Renovable
+  desde el …».
+- **Sin resultados (CA-3):** la tabla conserva los encabezados y muestra «Sin pólizas por vencer en el rango» con el rango y el estado
+  aplicados y «Limpiar filtros», que vuelve al rango por defecto. Error del servicio con «Reintentar»; 401 y 403 los resuelve el interceptor.
+  Paginación «Anterior / Siguiente» de 20 filas, solo con más de una página.
+- **Diferencias con el frame S6, por datos que no existen todavía:** sin la tarjeta y el estado «Cancelada por no pago» (los produce
+  HU-W1.6-02), sin el filtro «Producto» (originación solo emite pólizas de vida: la columna dice «Vida») y el documento sin el tipo
+  (la póliza no lo guarda). Las pólizas del núcleo de pólizas (Autos, Hogar, Viaje) no se listan: originación no las renueva.
+- E2E: `e2e/flujos/originacion/polizas-por-vencer.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado) y
+  el humo `e2e/nube/polizas-por-vencer.spec.ts` (proyecto `nube`).
+
 ## Cómo trabajar una historia de este dominio
 
 1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HU-W1.1-01-<descripcion-en-ingles>`).
