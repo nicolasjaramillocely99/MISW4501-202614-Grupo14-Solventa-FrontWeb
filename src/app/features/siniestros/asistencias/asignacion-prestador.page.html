@@ -1,0 +1,291 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('asignacion.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="pagina__titulo">
+          {{ t('asignacion.noEncontrado.titulo') }}
+        </h1>
+        <p>{{ t('asignacion.noEncontrado.texto') }}</p>
+        <a class="boton boton--secundario" routerLink="/siniestros/evaluacion">{{
+          t('asignacion.noEncontrado.volver')
+        }}</a>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('asignacion.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('asignacion.error.texto') }}</p>
+        </div>
+        <div>
+          <button type="button" class="boton boton--primario" (click)="cargar()">
+            {{ t('asignacion.error.reintentar') }}
+          </button>
+        </div>
+      </section>
+    }
+    @case ('listo') {
+      @if (asignacion(); as a) {
+        <a class="volver" [routerLink]="['/siniestros', a.siniestroId, 'evaluar']">
+          <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg
+          >{{ t('asignacion.volver', { radicado: a.numeroRadicado }) }}
+        </a>
+
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <h1 class="pagina__titulo">
+              {{ t('asignacion.titulo', { radicado: a.numeroRadicado }) }}
+            </h1>
+            @if (a.estado === 'pending_assignment') {
+              <app-insignia-estado tono="advertencia">{{
+                t('asignacion.pendienteAsignacion')
+              }}</app-insignia-estado>
+            }
+            <p class="encabezado__resumen">{{ subtitulo(t, a) }}</p>
+          </div>
+          @if (acciones(); as ac) {
+            <div class="encabezado__acciones">
+              <div class="encabezado__botones">
+                @if (ac.ampliar.visible) {
+                  <button
+                    type="button"
+                    class="boton boton--secundario"
+                    [disabled]="!ac.ampliar.radio || !!accion()"
+                    [attr.aria-describedby]="ac.ampliar.motivo ? 'motivo-ampliar' : null"
+                    (click)="ampliar()"
+                  >
+                    <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
+                    {{
+                      accion() === 'ampliar'
+                        ? t('asignacion.acciones.buscando')
+                        : t('asignacion.acciones.ampliar')
+                    }}
+                  </button>
+                }
+                @if (ac.buscar) {
+                  <button
+                    type="button"
+                    class="boton boton--primario"
+                    [disabled]="!!accion()"
+                    (click)="buscar()"
+                  >
+                    {{
+                      accion() === 'buscar'
+                        ? t('asignacion.acciones.buscando')
+                        : t('asignacion.acciones.buscar')
+                    }}
+                  </button>
+                }
+                @if (ac.reintentar) {
+                  <button
+                    type="button"
+                    class="boton boton--primario"
+                    [disabled]="!!accion()"
+                    (click)="reintentar()"
+                  >
+                    <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg>
+                    {{
+                      accion() === 'reintentar'
+                        ? t('asignacion.acciones.buscando')
+                        : t('asignacion.acciones.reintentar')
+                    }}
+                  </button>
+                }
+                @if (ac.sugerido; as sugerido) {
+                  <button
+                    type="button"
+                    class="boton boton--primario"
+                    [disabled]="!!accion()"
+                    (click)="pedirAsignacion(sugerido)"
+                  >
+                    <svg lucideCheck [size]="20" aria-hidden="true"></svg
+                    >{{ t('asignacion.acciones.asignarSugerido') }}
+                  </button>
+                }
+              </div>
+              @if (ac.ampliar.motivo; as motivo) {
+                <p id="motivo-ampliar" class="encabezado__motivo">
+                  {{ t('asignacion.ampliarDeshabilitado.' + motivo) }}
+                </p>
+              }
+            </div>
+          }
+        </header>
+
+        @if (errorAccion(); as codigo) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('asignacion.errores.' + claveError(codigo)) }}</p>
+          </div>
+        }
+
+        @switch (a.estado) {
+          @case ('not_required') {
+            <div class="aviso aviso--informacion" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('asignacion.sinVisita.titulo') }}</p>
+                <p>{{ t('asignacion.sinVisita.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('not_applicable') {
+            <div class="aviso aviso--informacion" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('asignacion.noAplica.titulo') }}</p>
+                <p>{{ t('asignacion.noAplica.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('pending_assignment') {
+            @let p = pendiente(t, a);
+            <div class="aviso aviso--advertencia" role="status">
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('asignacion.pendiente.titulo') }}</p>
+                <p>{{ t('asignacion.pendiente.texto', p) }}</p>
+                @if (p['minutos']) {
+                  <p>{{ t('asignacion.pendiente.reintento', p) }}</p>
+                }
+              </div>
+            </div>
+          }
+        }
+
+        @if (conMapa()) {
+          <div class="cuerpo">
+            <div class="cuerpo__principal">
+              <section class="tarjeta ubicacion" aria-labelledby="titulo-ubicacion">
+                <h2 id="titulo-ubicacion" class="visualmente-oculto">
+                  {{ t('asignacion.ubicacion.coordenadas') }}
+                </h2>
+                <app-mapa-asignacion
+                  [incidente]="incidenteMapa()"
+                  [radioKm]="radioMapa()"
+                  [marcadores]="marcadores()"
+                  [editable]="ubicando()"
+                  (pinMovido)="pinEdicion.set($event)"
+                />
+                @if (ubicando()) {
+                  <app-ubicacion-incidente
+                    [direccionInicial]="corrigiendo() ? (a.ubicacion?.direccion ?? '') : ''"
+                    [pin]="pinEdicion()"
+                    [guardando]="accion() === 'ubicar'"
+                    [erroresServidor]="erroresUbicacion()"
+                    [cancelable]="corrigiendo()"
+                    (pinEscrito)="pinEdicion.set($event)"
+                    (guardar)="guardarUbicacion($event)"
+                    (cancelar)="cancelarCorreccion()"
+                  />
+                } @else if (a.ubicacion; as u) {
+                  <dl class="ubicacion__datos">
+                    <div>
+                      <dt>{{ t('asignacion.ubicacion.coordenadas') }}</dt>
+                      <dd class="ubicacion__valor">{{ coordenadas(t, u.latitud, u.longitud) }}</dd>
+                      <dd class="ubicacion__nota">
+                        @if (u.fuente === 'app') {
+                          {{ t('asignacion.ubicacion.app', { precision: u.precisionM }) }}
+                        } @else {
+                          {{
+                            t('asignacion.ubicacion.analista', {
+                              nombre: u.registradaPor?.nombre ?? u.registradaPor?.correo,
+                              fecha: (u.registradaEn | formatoFechaHora),
+                            })
+                          }}
+                        }
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>{{ t('asignacion.ubicacion.direccion') }}</dt>
+                      <dd class="ubicacion__valor">{{ u.direccion ?? '—' }}</dd>
+                      @if (acciones()?.corregirUbicacion) {
+                        <dd>
+                          <button
+                            type="button"
+                            class="boton boton--terciario"
+                            [disabled]="!!accion()"
+                            (click)="corregirUbicacion()"
+                          >
+                            {{ t('asignacion.ubicacion.corregir') }}
+                          </button>
+                        </dd>
+                      }
+                    </div>
+                    <div>
+                      <dt>{{ t('asignacion.ubicacion.radio') }}</dt>
+                      <dd class="ubicacion__valor">{{ textoRadio(t) }}</dd>
+                      <dd class="ubicacion__nota">{{ ayudaRadio(t, a) }}</dd>
+                    </div>
+                  </dl>
+                }
+              </section>
+
+              @if (a.asignacion; as asignada) {
+                <app-asignacion-confirmada
+                  [asignacion]="asignada"
+                  [avisoDetenido]="avisoDetenido()"
+                  (actualizar)="cargar()"
+                />
+              }
+            </div>
+
+            <aside class="cuerpo__lateral">
+              <section class="tarjeta lateral" aria-labelledby="titulo-criterio">
+                <h2 id="titulo-criterio" class="lateral__titulo">
+                  {{ t('asignacion.criterio.titulo') }}
+                </h2>
+                <p class="lateral__texto">{{ t('asignacion.criterio.texto') }}</p>
+              </section>
+              @if (busqueda(); as b) {
+                <app-registro-intentos
+                  [busqueda]="b"
+                  [radioMaximoKm]="politica()?.radioMaximoKm ?? null"
+                />
+              }
+              @if (!a.asignacion) {
+                <section class="nota" aria-labelledby="titulo-al-asignar">
+                  <h2 id="titulo-al-asignar" class="lateral__titulo">
+                    {{ t('asignacion.alAsignar.titulo') }}
+                  </h2>
+                  <p class="lateral__texto">{{ t('asignacion.alAsignar.texto') }}</p>
+                </section>
+              }
+            </aside>
+          </div>
+        }
+
+        @if ((a.estado === 'proposed' || a.estado === 'pending_assignment') && busqueda(); as b) {
+          <app-tabla-candidatos
+            [busqueda]="b"
+            [hoy]="hoy"
+            [deshabilitado]="!!accion()"
+            (asignar)="pedirAsignacion($event)"
+          />
+        }
+
+        <div class="pie">
+          @if (a.estado === 'pending_assignment') {
+            <button
+              type="button"
+              class="boton boton--secundario"
+              [disabled]="!!accion()"
+              (click)="cargar()"
+            >
+              {{ t('asignacion.acciones.actualizar') }}
+            </button>
+          }
+          <a class="boton boton--terciario" routerLink="/siniestros/prestadores">{{
+            t('asignacion.acciones.administrar')
+          }}</a>
+        </div>
+      }
+    }
+  }
+
+  <app-confirmar-asignacion [asignando]="accion() === 'asignar'" (confirmar)="asignar($event)" />
+</div>

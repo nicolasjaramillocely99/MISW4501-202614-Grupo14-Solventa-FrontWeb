@@ -72,6 +72,28 @@ import {
   mapearPaginaCola,
   traducirErrorEvaluacion,
 } from './evaluacion.modelos';
+import {
+  AsignacionSiniestro,
+  AsignacionSiniestroDto,
+  FiltroPrestadores,
+  ListaPrestadoresDto,
+  PaginaAsignacionesDto,
+  PoliticaAsignacion,
+  PoliticaAsignacionDto,
+  Prestador,
+  PrestadorDto,
+  ResumenAsignacion,
+  SolicitudDisponibilidad,
+  SolicitudUbicacion,
+  aDisponibilidadDto,
+  aUbicacionDto,
+  mapearAsignacionSiniestro,
+  mapearListaPrestadores,
+  mapearPaginaAsignaciones,
+  mapearPoliticaAsignacion,
+  mapearPrestador,
+  traducirErrorAsignacion,
+} from './asignacion.modelos';
 
 /**
  * Cliente del servicio de siniestros (`claims`) vía API Gateway. Única salida HTTP hacia ese microservicio: ningún
@@ -80,7 +102,8 @@ import {
  * siniestros» (rol `insured`), la prioridad automática del siniestro (HU-W2.2-01: detalle, lote y política; el rol
  * `operations` lee las tres y el `insured` solo la de su caso) y, para `operations`, la evaluación y la decisión
  * (HU-W2.2-03): los casos en evaluación, las excepciones de pago, el detalle de la evaluación, aprobar, rechazar y
- * reintentar el pago. El interceptor adjunta el token.
+ * reintentar el pago, y la asignación del prestador más cercano (HU-W2.3-01): ubicación, búsqueda, asignación, lote,
+ * política y la administración de prestadores (listado y disponibilidad). El interceptor adjunta el token.
  */
 @Injectable({ providedIn: 'root' })
 export class SiniestrosApiService {
@@ -295,6 +318,108 @@ export class SiniestrosApiService {
    */
   devolverRadicacion(id: string, solicitud: SolicitudDevolucion): Observable<ResultadoRevision> {
     return this.revisar(id, 'review-return', aDevolucionDto(solicitud));
+  }
+
+  /**
+   * Asignación del prestador de un caso (`GET /v1/claims/{claim_id}/assignment`, HU-W2.3-01, rol `operations`): estado,
+   * especialidad, ubicación, última búsqueda y asignación. Falla con `ErrorAsignacion`.
+   */
+  consultarAsignacion(id: string): Observable<AsignacionSiniestro> {
+    return this.http.get<AsignacionSiniestroDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/assignment`).pipe(
+      map(mapearAsignacionSiniestro),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  /**
+   * Registra la dirección y las coordenadas del pin cuando el caso no tiene las de la app
+   * (`POST /v1/claims/{claim_id}/incident-location`, CA-1). Devuelve la asignación del caso. Falla con `ErrorAsignacion`.
+   */
+  registrarUbicacionIncidente(id: string, solicitud: SolicitudUbicacion): Observable<AsignacionSiniestro> {
+    return this.escribirAsignacion(id, 'incident-location', aUbicacionDto(solicitud));
+  }
+
+  /**
+   * Busca el prestador más cercano (`POST /v1/claims/{claim_id}/provider-searches`): sin cuerpo empieza en el radio
+   * inicial («Buscar» y «Reintentar búsqueda»); con `desdeRadioKm`, en ese radio («Ampliar radio»). Devuelve la
+   * asignación del caso, `proposed` o `pending_assignment`. Falla con `ErrorAsignacion`.
+   */
+  buscarPrestador(id: string, desdeRadioKm?: number): Observable<AsignacionSiniestro> {
+    return this.escribirAsignacion(id, 'provider-searches', desdeRadioKm === undefined ? null : { from_radius_km: desdeRadioKm });
+  }
+
+  /**
+   * Confirma el prestador (`POST /v1/claims/{claim_id}/assignment`, CA-5) con la búsqueda que el analista tiene en
+   * pantalla. Falla con `ErrorAsignacion` (`provider_unavailable`, `search_outdated`, `assignment_exists`…).
+   */
+  asignarPrestador(id: string, prestadorId: string, secuenciaBusqueda: number): Observable<AsignacionSiniestro> {
+    return this.escribirAsignacion(id, 'assignment', { provider_id: prestadorId, search_seq: secuenciaBusqueda });
+  }
+
+  /**
+   * Estado de la asignación de una página de casos en **una** llamada (`GET /v1/claims/assignments?claim_id=…`): de 1 a
+   * 50 ids sin repetir, en el orden pedido; un id que no existe vuelve con `estado: 'not_found'`. Falla con
+   * `ErrorAsignacion`.
+   */
+  consultarAsignacionesLote(ids: readonly string[]): Observable<ResumenAsignacion[]> {
+    const params = new HttpParams().appendAll({ claim_id: [...ids] });
+    return this.http.get<PaginaAsignacionesDto>(`${this.base}/v1/claims/assignments`, { params }).pipe(
+      map(mapearPaginaAsignaciones),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  /** Política de asignación vigente (`GET /v1/claims/assignment-policy`). Falla con `ErrorAsignacion`. */
+  consultarPoliticaAsignacion(): Observable<PoliticaAsignacion> {
+    return this.http.get<PoliticaAsignacionDto>(`${this.base}/v1/claims/assignment-policy`).pipe(
+      map(mapearPoliticaAsignacion),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  /**
+   * Registro de prestadores por nombre (`GET /v1/claims/providers`, máximo 200). Los filtros vacíos no se envían. Falla
+   * con `ErrorAsignacion`.
+   */
+  listarPrestadores(filtro: FiltroPrestadores = {}): Observable<Prestador[]> {
+    let params = new HttpParams();
+    if (filtro.especialidad) {
+      params = params.set('specialty', filtro.especialidad);
+    }
+    if (filtro.disponibilidad) {
+      params = params.set('availability', filtro.disponibilidad);
+    }
+    return this.http.get<ListaPrestadoresDto>(`${this.base}/v1/claims/providers`, { params }).pipe(
+      map(mapearListaPrestadores),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  /** Un prestador (`GET /v1/claims/providers/{provider_id}`). Falla con `ErrorAsignacion` (`provider_not_found`). */
+  consultarPrestador(id: string): Observable<Prestador> {
+    return this.http.get<PrestadorDto>(`${this.base}/v1/claims/providers/${encodeURIComponent(id)}`).pipe(
+      map(mapearPrestador),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  /**
+   * Cambia la disponibilidad de un prestador (`POST /v1/claims/providers/{provider_id}/availability`): `available` libera
+   * también a uno ocupado en un caso. Falla con `ErrorAsignacion`.
+   */
+  cambiarDisponibilidadPrestador(id: string, solicitud: SolicitudDisponibilidad): Observable<Prestador> {
+    const ruta = `${this.base}/v1/claims/providers/${encodeURIComponent(id)}/availability`;
+    return this.http.post<PrestadorDto>(ruta, aDisponibilidadDto(solicitud)).pipe(
+      map(mapearPrestador),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  private escribirAsignacion(id: string, accion: string, cuerpo: object | null): Observable<AsignacionSiniestro> {
+    return this.http.post<AsignacionSiniestroDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/${accion}`, cuerpo).pipe(
+      map(mapearAsignacionSiniestro),
+      catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
   }
 
   private revisar(id: string, accion: string, cuerpo: object): Observable<ResultadoRevision> {

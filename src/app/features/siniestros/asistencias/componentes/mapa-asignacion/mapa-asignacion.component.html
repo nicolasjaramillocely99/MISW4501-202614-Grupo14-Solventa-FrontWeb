@@ -1,0 +1,17 @@
+<figure class="mapa-asignacion" *transloco="let t; prefix: 'siniestros.mapa'">
+  <div
+    #contenedor
+    class="mapa-asignacion__lienzo"
+    role="region"
+    [attr.aria-label]="t('region')"
+  ></div>
+  <figcaption class="mapa-asignacion__leyenda">
+    @if (fallo()) {
+      {{ t('noDisponible') }}
+    } @else if (editable() && !incidente()) {
+      {{ t('ayudaPin') }}
+    } @else if (radioKm(); as radio) {
+      {{ t('radio', { radio }) }}
+    }
+  </figcaption>
+</figure>

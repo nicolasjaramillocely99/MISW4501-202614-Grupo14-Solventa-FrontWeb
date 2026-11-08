@@ -1,0 +1,32 @@
+// O7b · Registro de intentos: tarjeta lateral con el borde de información, como «Al asignar» de O7.
+.intentos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+  padding: var(--espacio-24);
+  border-left: 4px solid var(--color-azul-700);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-azul-50);
+}
+
+.intentos__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.intentos__origen {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.intentos__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding-left: var(--espacio-16);
+  font-variant-numeric: tabular-nums;
+}
