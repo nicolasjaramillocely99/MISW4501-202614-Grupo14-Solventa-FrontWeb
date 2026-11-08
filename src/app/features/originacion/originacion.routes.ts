@@ -10,6 +10,7 @@ import { FormalizarCompraPage } from './cotizacion-asistida/formalizar-compra.pa
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
 import { MisPolizasPage } from './polizas/mis-polizas.page';
 import { PolizasPorVencerPage } from './renovaciones/polizas-por-vencer.page';
+import { RenovacionAsistidaPage } from './renovaciones/renovacion-asistida.page';
 import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
 
 /**
@@ -19,8 +20,8 @@ import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
  * (HU-W1.1-03, `:id/formalizar`) y la bandeja de decisión humana
  * del asesor (HU-W1.1-02), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04), para el asegurado,
  * sus pólizas (A1) y la renovación en línea (HU-W1.5-02, `polizas/:id/renovar`) y, para el asesor, las pólizas próximas
- * a vencer (HU-W1.5-01, `renovaciones`). La renovación asistida (HU-W1.5-03) agrega su hijo `:id` (el `policy_id`) en
- * el mismo bloque `renovaciones`.
+ * a vencer (HU-W1.5-01, `renovaciones`) y su renovación asistida con recotización (HU-W1.5-03, `renovaciones/:id`, el
+ * `policy_id`).
  */
 export const ORIGINACION_ROUTES: Routes = [
   {
@@ -56,6 +57,9 @@ export const ORIGINACION_ROUTES: Routes = [
   {
     path: 'renovaciones',
     canActivateChild: [rolGuard('asesor')],
-    children: [{ path: '', component: PolizasPorVencerPage }],
+    children: [
+      { path: '', component: PolizasPorVencerPage },
+      { path: ':id', component: RenovacionAsistidaPage },
+    ],
   },
 ];
