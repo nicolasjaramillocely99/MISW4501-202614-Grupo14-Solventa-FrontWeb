@@ -7,6 +7,7 @@ import {
   POLIZA,
   RECOTIZACION_BASE,
   RECOTIZACION_CACHE,
+  deLaPolizaEnCurso,
   delAsegurado,
   error,
   formalizacion,
@@ -19,11 +20,13 @@ import {
   vista,
 } from '../../fixtures/renovaciones';
 import { simularCognito } from '../../fixtures/sesion-por-rol';
+import { PolizasPorVencerPagina } from '../../paginas/polizas-por-vencer.pagina';
 import { RenovacionAsistidaPagina } from '../../paginas/renovacion-asistida.pagina';
 
 /**
  * Renovación asistida con recotización del asesor (HU-W1.5-03, pantallas S7 y S7b). Cognito y el API Gateway se simulan
- * con `page.route`; la sesión es la de un asesor comercial. Cada estado pasa la verificación de accesibilidad (axe).
+ * con `page.route`; la sesión es la de un asesor comercial. Se entra desde el listado de pólizas próximas a vencer
+ * (HU-W1.5-01) con «Renovar» o «Ver», o directo por la URL. Cada estado pasa la verificación de accesibilidad (axe).
  */
 const RUTA = `/originacion/renovaciones/${POLIZA}`;
 const ok = (cuerpo: unknown, estado = 200) => ({ estado, cuerpo });
@@ -33,7 +36,11 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
     await simularCognito(page);
   });
 
-  test('E1 · recotiza, registra la llamada grabada y formaliza hasta la póliza renovada (CA-1 a CA-4)', async ({ page }) => {
+  test('E1 · desde «Renovar» recotiza, registra la llamada grabada y formaliza hasta la póliza renovada (CA-1 a CA-4)', async ({
+    page,
+  }) => {
+    const s6 = new PolizasPorVencerPagina(page);
+    await s6.simularListado();
     const s7 = new RenovacionAsistidaPagina(page);
     const llamadas = await s7.simularGateway({
       vista: [ok(vista()), ok(recotizada()), ok(renovada())],
@@ -42,8 +49,10 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
       emision: ok(EMISION_NUEVA),
     });
 
-    await s7.abrirComo(RUTA);
+    await s7.abrirComo('/originacion/renovaciones');
+    await s6.renovar(POLIZA).click();
 
+    await expect(page).toHaveURL(RUTA);
     await expect(s7.titulo).toHaveText(`Renovación asistida · ${POLIZA}`);
     await expect(s7.subtitulo).toContainText('Carolina Pérez Ruiz · 1.020.345.678 · Vida hipotecario · sin recotizar');
     await expect(page.getByText('Vence el 02/10/2026')).toBeVisible();
@@ -85,6 +94,10 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
     await expect(s7.paso('Notificación al cliente')).toContainText('Enviada');
     await expect(page.getByRole('button', { name: 'Ver certificado' })).toBeVisible();
     await verificarAccesibilidad(page);
+
+    await s7.volverARenovaciones.click();
+    await expect(page).toHaveURL('/originacion/renovaciones');
+    await expect(s6.titulo).toHaveText('Renovaciones');
   });
 
   test('E2 · la aceptación incompleta o inválida no deja formalizar y marca cada campo (CA-2)', async ({ page }) => {
@@ -357,23 +370,37 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
     await verificarAccesibilidad(page);
   });
 
-  test('E10 · «Ver» una renovación con el cobro en curso', async ({ page }) => {
+  test('E10 · «Ver» una renovación con el cobro en curso y «← Renovaciones» conserva el filtro', async ({ page }) => {
+    const s6 = new PolizasPorVencerPagina(page);
+    await s6.simularListado();
     const s7 = new RenovacionAsistidaPagina(page);
-    await s7.simularGateway({ vista: ok(formalizada()) });
-    await s7.abrirComo(RUTA);
+    await s7.simularGateway({ vista: ok(deLaPolizaEnCurso(formalizada())) });
+    await s7.abrirComo('/originacion/renovaciones?estado=renewal_in_progress');
+    await expect(s6.filas).toHaveCount(1);
 
-    await expect(s7.titulo).toHaveText(`Renovación en curso · ${POLIZA}`);
+    await s6.ver('pol-acc-771003').click();
+
+    await expect(page).toHaveURL('/originacion/renovaciones/pol-acc-771003');
+    await expect(s7.titulo).toHaveText('Renovación en curso · pol-acc-771003');
+    await expect(s7.subtitulo).toContainText('Marta Ruiz Ospina · 41.556.902 · Vida hipotecario');
     await expect(page.getByText('Renovación en curso', { exact: true })).toBeVisible();
     await expect(s7.paso('Cobro de la prima')).toContainText('En curso');
     await expect(s7.paso('Certificado renovado')).toContainText('Pendiente');
     await expect(s7.volverARenovaciones).toBeVisible();
     await verificarAccesibilidad(page);
+
+    await page.getByRole('button', { name: 'Renovaciones', exact: true }).click();
+    await expect(page).toHaveURL('/originacion/renovaciones?estado=renewal_in_progress');
+    await expect(s6.estado).toHaveValue('renewal_in_progress');
   });
 
   test('E10 · «Ver» con el pago fallido dice la fecha y hasta cuándo puede reintentar el cliente (01·D-3 a+)', async ({ page }) => {
+    const s6 = new PolizasPorVencerPagina(page);
+    await s6.simularListado();
     const s7 = new RenovacionAsistidaPagina(page);
-    const llamadas = await s7.simularGateway({ vista: ok(pagoFallido()) });
-    await s7.abrirComo(RUTA);
+    const llamadas = await s7.simularGateway({ vista: ok(deLaPolizaEnCurso(pagoFallido())) });
+    await s7.abrirComo('/originacion/renovaciones');
+    await s6.ver('pol-acc-771003').click();
 
     await expect(s7.alerta).toContainText('El pago de la renovación falló');
     await expect(s7.alerta).toContainText(/El cobro del 16\/09\/2026.* fue rechazado/);
@@ -387,10 +414,13 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
     expect(llamadas.vistas).toBe(1);
   });
 
-  test('E10 · la renovación del asegurado se ve en solo lectura con su cobro', async ({ page }) => {
+  test('E10 · «Ver» la renovación del asegurado la muestra en solo lectura con su cobro', async ({ page }) => {
+    const s6 = new PolizasPorVencerPagina(page);
+    await s6.simularListado();
     const s7 = new RenovacionAsistidaPagina(page);
-    await s7.simularGateway({ vista: ok(delAsegurado()) });
-    await s7.abrirComo(RUTA);
+    await s7.simularGateway({ vista: ok(deLaPolizaEnCurso(delAsegurado())) });
+    await s7.abrirComo('/originacion/renovaciones');
+    await s6.ver('pol-acc-771003').click();
 
     await expect(page.getByText('El cliente renovó desde su portal')).toBeVisible();
     await expect(s7.subtitulo).toContainText('aceptada por el cliente en su portal el');

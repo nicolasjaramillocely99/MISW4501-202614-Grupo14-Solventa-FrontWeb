@@ -209,6 +209,22 @@ export function fueraDeVentana(dias = 20) {
   });
 }
 
+/**
+ * La misma vista para otra fila del listado de pólizas por vencer: «Ver» de `pol-acc-771003` (Marta Ruiz Ospina), la
+ * que tiene la renovación en curso.
+ */
+export function deLaPolizaEnCurso<T extends ReturnType<typeof vista>>(dto: T): T {
+  return {
+    ...dto,
+    policy: {
+      ...dto.policy,
+      policy_id: 'pol-acc-771003',
+      holder: { full_name: 'Marta Ruiz Ospina', document_type: null, document_id: '41556902' },
+      coverage_end: '2026-10-05T23:59:00Z',
+    },
+  };
+}
+
 /** Respuesta de `POST …/assisted-renewal/consent`. */
 export const CODIGO_ENVIADO = { requote_id: recotizacion().requote_id, sent_to: 'ca***@example.com', expires_at: '2026-09-16T21:15:00Z' };
 
