@@ -1619,6 +1619,71 @@
         "titulo": "We could not load the renewal",
         "texto": "Try again in a few moments."
       }
+    },
+    "polizasPorVencer": {
+      "titulo": "Renewals",
+      "subtitulo": "Policies about to expire in the selected range. Start the assisted renewal from the list.",
+      "cargando": "Loading the policies about to expire…",
+      "indicador": {
+        "region": "Policies expiring within the renewal window",
+        "titulo": "Expiring in {{dias}} days"
+      },
+      "filtros": {
+        "titulo": "Filter policies about to expire",
+        "desde": "Expiring from",
+        "hasta": "To",
+        "ayudaFecha": "MM/DD/YYYY",
+        "estado": "Status",
+        "todos": "All",
+        "rangoInvalido": "“To” cannot be earlier than “Expiring from”."
+      },
+      "contador": "{{n}} results",
+      "contadorUno": "1 result",
+      "rango": "Fix the date range to see the policies.",
+      "tabla": {
+        "titulo": "Policies about to expire",
+        "poliza": "Policy",
+        "cliente": "Customer",
+        "producto": "Product",
+        "vence": "Expires",
+        "prima": "Premium",
+        "estado": "Status",
+        "acciones": "Actions"
+      },
+      "estados": {
+        "expiring": "Expiring",
+        "renewal_in_progress": "Renewal in progress",
+        "desconocido": "Other status"
+      },
+      "linea": {
+        "life": "Life",
+        "auto": "Auto",
+        "home": "Home",
+        "travel": "Travel"
+      },
+      "acciones": {
+        "renovar": "Renew",
+        "renovarPoliza": "Renew policy {{id}}",
+        "ver": "View",
+        "verRenovacion": "View the renewal of policy {{id}}",
+        "renovableDesde": "Renewable from {{fecha}}"
+      },
+      "vacio": {
+        "titulo": "No policies expiring in the range",
+        "texto": "No policies expire between {{desde}} and {{hasta}} with the status {{estado}}.",
+        "limpiar": "Clear filters"
+      },
+      "error": {
+        "titulo": "We could not load the policies about to expire",
+        "texto": "Try again in a few moments.",
+        "reintentar": "Retry"
+      },
+      "paginacion": {
+        "navegacion": "Policies pagination",
+        "anterior": "Previous",
+        "siguiente": "Next",
+        "pagina": "Page {{pagina}} of {{total}}"
+      }
     }
   },
   "siniestros": {

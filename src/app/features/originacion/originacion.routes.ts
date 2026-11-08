@@ -9,6 +9,7 @@ import { DatosClientePage } from './cotizacion-asistida/datos-cliente.page';
 import { FormalizarCompraPage } from './cotizacion-asistida/formalizar-compra.page';
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
 import { MisPolizasPage } from './polizas/mis-polizas.page';
+import { PolizasPorVencerPage } from './renovaciones/polizas-por-vencer.page';
 import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
 
 /**
@@ -16,8 +17,10 @@ import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
  * sesión; el rol se restringe aquí y la URL nunca lo lleva. Hoy: la cotización asistida del asesor
  * (HU-W1.1-01; `nueva` va antes de `:id` para que no se tome como identificador) y la formalización de la compra
  * (HU-W1.1-03, `:id/formalizar`) y la bandeja de decisión humana
- * del asesor (HU-W1.1-02), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04) y, para el asegurado,
- * sus pólizas (A1) y la renovación en línea (HU-W1.5-02, `polizas/:id/renovar`).
+ * del asesor (HU-W1.1-02), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04), para el asegurado,
+ * sus pólizas (A1) y la renovación en línea (HU-W1.5-02, `polizas/:id/renovar`) y, para el asesor, las pólizas próximas
+ * a vencer (HU-W1.5-01, `renovaciones`). La renovación asistida (HU-W1.5-03) agrega su hijo `:id` (el `policy_id`) en
+ * el mismo bloque `renovaciones`.
  */
 export const ORIGINACION_ROUTES: Routes = [
   {
@@ -49,5 +52,10 @@ export const ORIGINACION_ROUTES: Routes = [
     path: 'emisiones',
     canActivateChild: [rolGuard('operaciones')],
     children: [{ path: '', component: EmisionesPage }],
+  },
+  {
+    path: 'renovaciones',
+    canActivateChild: [rolGuard('asesor')],
+    children: [{ path: '', component: PolizasPorVencerPage }],
   },
 ];

@@ -1,0 +1,169 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.polizasPorVencer'">
+  <header class="pagina__encabezado">
+    <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+    <p class="pagina__descripcion">{{ t('subtitulo') }}</p>
+  </header>
+
+  @if (pagina(); as datos) {
+    <section class="tarjeta indicador" [attr.aria-label]="t('indicador.region')">
+      <p class="indicador__etiqueta">{{ t('indicador.titulo', { dias: (datos.diasVentana | formatoNumero: 0) }) }}</p>
+      <p class="indicador__valor">{{ datos.vencenEnVentana | formatoNumero: 0 }}</p>
+    </section>
+  }
+
+  <div class="filtros" role="search" [attr.aria-label]="t('filtros.titulo')">
+    <div class="campo filtros__fecha">
+      <label class="campo__etiqueta" for="filtro-vencen-desde">{{ t('filtros.desde') }}</label>
+      <input
+        id="filtro-vencen-desde"
+        class="campo__control"
+        type="date"
+        [value]="desde()"
+        [attr.max]="hasta() || null"
+        aria-describedby="filtro-vencen-desde-ayuda"
+        (change)="cambiarFecha('desde', $event)"
+      />
+      <p id="filtro-vencen-desde-ayuda" class="campo__ayuda">{{ t('filtros.ayudaFecha') }}</p>
+    </div>
+
+    <div class="campo filtros__fecha">
+      <label class="campo__etiqueta" for="filtro-vencen-hasta">{{ t('filtros.hasta') }}</label>
+      <input
+        id="filtro-vencen-hasta"
+        class="campo__control"
+        type="date"
+        [value]="hasta()"
+        [attr.min]="desde() || null"
+        [attr.aria-invalid]="fase() === 'rangoInvalido' ? 'true' : null"
+        [attr.aria-describedby]="fase() === 'rangoInvalido' ? 'filtro-vencen-hasta-error' : 'filtro-vencen-hasta-ayuda'"
+        (change)="cambiarFecha('hasta', $event)"
+      />
+      @if (fase() === 'rangoInvalido') {
+        <p id="filtro-vencen-hasta-error" class="campo__error" role="alert">{{ t('filtros.rangoInvalido') }}</p>
+      } @else {
+        <p id="filtro-vencen-hasta-ayuda" class="campo__ayuda">{{ t('filtros.ayudaFecha') }}</p>
+      }
+    </div>
+
+    <div class="campo filtros__estado">
+      <label class="campo__etiqueta" for="filtro-vencen-estado">{{ t('filtros.estado') }}</label>
+      <select id="filtro-vencen-estado" class="campo__control" (change)="cambiarEstado($event)">
+        <option value="" [selected]="!filtro().estado">{{ t('filtros.todos') }}</option>
+        @for (estado of estados; track estado) {
+          <option [value]="estado" [selected]="filtro().estado === estado">{{ t('estados.' + estado) }}</option>
+        }
+      </select>
+    </div>
+
+    @if (pagina(); as datos) {
+      @if (fase() === 'lista' || fase() === 'sinResultados') {
+        <p class="filtros__contador" aria-live="polite">
+          {{ datos.total === 1 ? t('contadorUno') : t('contador', { n: (datos.total | formatoNumero: 0) }) }}
+        </p>
+      }
+    }
+  </div>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('error.titulo') }}</p>
+          <p>{{ t('error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @case ('rangoInvalido') {
+      <p class="estado" role="status">{{ t('rango') }}</p>
+    }
+    @default {
+      @if (pagina(); as datos) {
+        <section class="tarjeta tabla-contenedor" aria-labelledby="titulo-polizas-por-vencer">
+          <h2 id="titulo-polizas-por-vencer" class="visualmente-oculto">{{ t('tabla.titulo') }}</h2>
+          <div class="tabla-desplazable">
+            <table class="tabla">
+              <caption class="visualmente-oculto">{{ t('tabla.titulo') }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('tabla.poliza') }}</th>
+                  <th scope="col">{{ t('tabla.cliente') }}</th>
+                  <th scope="col">{{ t('tabla.producto') }}</th>
+                  <th scope="col">{{ t('tabla.vence') }}</th>
+                  <th scope="col" class="tabla__numero">{{ t('tabla.prima') }}</th>
+                  <th scope="col">{{ t('tabla.estado') }}</th>
+                  <th scope="col"><span class="visualmente-oculto">{{ t('tabla.acciones') }}</span></th>
+                </tr>
+              </thead>
+              @if (datos.items.length > 0) {
+                <tbody>
+                  @for (poliza of datos.items; track poliza.polizaId) {
+                    <tr>
+                      <td class="tabla__poliza">{{ poliza.polizaId }}</td>
+                      <td>
+                        <span class="tabla__nombre">{{ poliza.titular.nombreCompleto }}</span>
+                        <span class="tabla__secundario">{{ documento(poliza) }}</span>
+                      </td>
+                      <td>{{ producto(poliza) }}</td>
+                      <td class="tabla__fecha">{{ dia(poliza.venceEn) }}</td>
+                      <td class="tabla__numero">{{ poliza.prima | formatoMoneda: poliza.moneda }}</td>
+                      <td>
+                        <app-insignia-estado [tono]="tono(poliza)">{{ t('estados.' + poliza.estado) }}</app-insignia-estado>
+                      </td>
+                      <td class="tabla__accion">
+                        @if (poliza.puedeRenovar) {
+                          <a
+                            class="tabla__enlace"
+                            [routerLink]="['/originacion/renovaciones', poliza.polizaId]"
+                            [attr.aria-label]="t('acciones.renovarPoliza', { id: poliza.polizaId })"
+                            >{{ t('acciones.renovar') }}</a
+                          >
+                        } @else if (poliza.estado === 'renewal_in_progress') {
+                          <a
+                            class="tabla__enlace"
+                            [routerLink]="['/originacion/renovaciones', poliza.polizaId]"
+                            [attr.aria-label]="t('acciones.verRenovacion', { id: poliza.polizaId })"
+                            >{{ t('acciones.ver') }}</a
+                          >
+                        } @else if (renovableMasAdelante(poliza)) {
+                          <span class="tabla__renovable">{{ t('acciones.renovableDesde', { fecha: dia(poliza.ventana.abreEn) }) }}</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              }
+            </table>
+          </div>
+
+          @if (datos.items.length === 0) {
+            <div class="vacio" role="status">
+              <span class="vacio__icono" aria-hidden="true"><svg lucideSearch [size]="28"></svg></span>
+              <h3 class="vacio__titulo">{{ t('vacio.titulo') }}</h3>
+              <p class="vacio__texto">{{ t('vacio.texto', { desde: vacio().desde, hasta: vacio().hasta, estado: t(vacio().estado) }) }}</p>
+              <button type="button" class="boton boton--secundario" (click)="limpiar()">{{ t('vacio.limpiar') }}</button>
+            </div>
+          }
+
+          @if (paginas() > 1) {
+            <nav class="pie" [attr.aria-label]="t('paginacion.navegacion')">
+              <p class="pie__pagina">{{ t('paginacion.pagina', { pagina: datos.pagina, total: paginas() }) }}</p>
+              <div class="pie__botones">
+                <button type="button" class="boton boton--terciario" [disabled]="!hayAnterior()" (click)="irA(datos.pagina - 1)">
+                  <svg lucideChevronLeft [size]="18" aria-hidden="true"></svg>{{ t('paginacion.anterior') }}
+                </button>
+                <button type="button" class="boton boton--terciario" [disabled]="!haySiguiente()" (click)="irA(datos.pagina + 1)">
+                  {{ t('paginacion.siguiente') }}<svg lucideChevronRight [size]="18" aria-hidden="true"></svg>
+                </button>
+              </div>
+            </nav>
+          }
+        </section>
+      }
+    }
+  }
+</div>
