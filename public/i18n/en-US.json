@@ -1809,7 +1809,8 @@
         "too_many_attempts": "The attempts with this requote are used up: requote again.",
         "too_many_codes": "The 3 codes of this requote were already sent.",
         "code_delivery_unavailable": "We could not send the code; try again in a few minutes.",
-        "renewal_unavailable": "We could not complete the action; try again in a few minutes."
+        "renewal_unavailable": "We could not complete the action; try again in a few minutes.",
+        "certificado": "We couldn't download the certificate; try again in a few minutes."
       },
       "comparativo": {
         "titulo": "Current and requoted conditions",
@@ -1871,12 +1872,14 @@
           "detalle": {
             "sinRecotizar": "Consulted when requoting",
             "autorizacion": "Waiting for the authorization",
-            "sinAutorizacion": "Not consulted"
+            "sinAutorizacion": "Not consulted",
+            "sinVerificar": "Not queried"
           },
           "insignia": {
             "sinRecotizar": "Pending",
             "autorizacion": "Pending",
-            "sinAutorizacion": "No authorization"
+            "sinAutorizacion": "No authorization",
+            "sinVerificar": "Not verified"
           }
         },
         "nota": {

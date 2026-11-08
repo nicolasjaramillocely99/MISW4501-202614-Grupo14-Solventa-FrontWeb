@@ -75,6 +75,10 @@ describe('TrazabilidadRecotizacionComponent (HU-W1.5-03 · CA-1, CA-5)', () => {
     expect(filas()[0].textContent).toContain('No consultado');
     expect(filas()[0].textContent).toContain('Sin autorización');
 
+    await rerender({ inputs: { recotizacion: null, pendiente: 'sinVerificar' } });
+    expect(filas()[0].textContent).toContain('No consultado');
+    expect(filas()[0].textContent).toContain('Sin verificar');
+
     await rerender({ inputs: { recotizacion: null, pendiente: null } });
     expect(filas()[0].textContent).toContain('Se consulta al recotizar');
   });

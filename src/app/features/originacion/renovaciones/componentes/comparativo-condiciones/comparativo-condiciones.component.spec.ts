@@ -49,7 +49,10 @@ describe('ComparativoCondicionesComponent (HU-W1.5-03 · CA-1)', () => {
     await renderizar(null);
 
     for (const nombre of ['Prima mensual', 'Vigencia', 'Valor asegurado', 'Descuento por buena experiencia', 'Coberturas']) {
-      expect(within(fila(nombre)).getAllByRole('cell')[1].textContent?.trim()).toBe('—');
+      const celda = within(fila(nombre)).getAllByRole('cell')[1];
+      expect(celda.querySelector('[aria-hidden="true"]')?.textContent).toBe('—');
+      // El guion es visual; el lector de pantalla oye «Sin dato».
+      expect(celda.querySelector('.visualmente-oculto')?.textContent?.trim()).toBeTruthy();
     }
   });
 });

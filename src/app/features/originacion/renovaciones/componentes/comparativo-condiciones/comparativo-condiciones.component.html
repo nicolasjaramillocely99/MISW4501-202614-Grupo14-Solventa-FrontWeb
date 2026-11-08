@@ -17,7 +17,7 @@
             @if (recotizacion(); as r) {
               {{ r.renovada.prima | formatoMoneda: r.renovada.moneda }} ({{ variacion(r.variacionPrima) }})
             } @else {
-              <span [attr.aria-label]="t('sinDato')">—</span>
+              <span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('sinDato') }}</span>
             }
           </td>
         </tr>
@@ -28,7 +28,7 @@
             @if (renovada(); as r) {
               {{ t('rango', { desde: dia(r.vigenciaDesde), hasta: dia(r.vigenciaHasta) }) }}
             } @else {
-              <span [attr.aria-label]="t('sinDato')">—</span>
+              <span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('sinDato') }}</span>
             }
           </td>
         </tr>
@@ -39,13 +39,13 @@
             @if (renovada(); as r) {
               {{ r.valorAsegurado | formatoMoneda: r.moneda }}
             } @else {
-              <span [attr.aria-label]="t('sinDato')">—</span>
+              <span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('sinDato') }}</span>
             }
           </td>
         </tr>
         <tr>
           <th scope="row">{{ t('descuento') }}</th>
-          <td><span [attr.aria-label]="t('sinDescuento')">—</span></td>
+          <td><span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('sinDescuento') }}</span></td>
           <td class="comparativo__recotizada">
             @if (recotizacion(); as r) {
               @if (r.descuento > 0) {
@@ -54,7 +54,7 @@
                 {{ t('sinDescuento') }}
               }
             } @else {
-              <span [attr.aria-label]="t('sinDato')">—</span>
+              <span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('sinDato') }}</span>
             }
           </td>
         </tr>
@@ -71,7 +71,7 @@
                 {{ coberturas(r) }}
               }
             } @else {
-              <span [attr.aria-label]="t('sinDato')">—</span>
+              <span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('sinDato') }}</span>
             }
           </td>
         </tr>

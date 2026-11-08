@@ -8,8 +8,11 @@ import { InsigniaEstadoComponent } from '@shared/ui/insignia-estado/insignia-est
 
 import { diaColombia } from '../../modelos/presentacion-renovacion';
 
-/** Por qué todavía no hay recotización: falta la casilla del asesor o el cliente no tiene consentimiento. */
-export type MotivoPendiente = 'autorizacion' | 'sinAutorizacion';
+/**
+ * Por qué todavía no hay recotización: falta la casilla del asesor, el cliente no tiene consentimiento o no se pudo
+ * verificar.
+ */
+export type MotivoPendiente = 'autorizacion' | 'sinAutorizacion' | 'sinVerificar';
 
 /** Fuentes que consulta la recotización, en el orden en que se muestran mientras no hay una. */
 const FUENTES_PENDIENTES: readonly string[] = ['open_finance', 'open_data', 'kyc'];

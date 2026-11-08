@@ -1809,7 +1809,8 @@
         "too_many_attempts": "Se agotaron los intentos con esta recotización: recotiza de nuevo.",
         "too_many_codes": "Ya se enviaron los 3 códigos de esta recotización.",
         "code_delivery_unavailable": "No pudimos enviar el código; intenta de nuevo en unos minutos.",
-        "renewal_unavailable": "No pudimos completar la acción; intenta de nuevo en unos minutos."
+        "renewal_unavailable": "No pudimos completar la acción; intenta de nuevo en unos minutos.",
+        "certificado": "No pudimos descargar el certificado; intenta de nuevo en unos minutos."
       },
       "comparativo": {
         "titulo": "Condiciones vigentes y recotizadas",
@@ -1871,12 +1872,14 @@
           "detalle": {
             "sinRecotizar": "Se consulta al recotizar",
             "autorizacion": "Pendiente de la autorización",
-            "sinAutorizacion": "No consultado"
+            "sinAutorizacion": "No consultado",
+            "sinVerificar": "No consultado"
           },
           "insignia": {
             "sinRecotizar": "Pendiente",
             "autorizacion": "Pendiente",
-            "sinAutorizacion": "Sin autorización"
+            "sinAutorizacion": "Sin autorización",
+            "sinVerificar": "Sin verificar"
           }
         },
         "nota": {
