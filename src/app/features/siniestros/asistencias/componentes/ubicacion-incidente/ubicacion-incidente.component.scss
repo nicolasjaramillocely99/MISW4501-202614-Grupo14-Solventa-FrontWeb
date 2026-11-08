@@ -1,0 +1,36 @@
+// HU-W2.3-01 · Ubicación alternativa del incidente: dirección a lo ancho y latitud y longitud lado a lado.
+.ubicacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.ubicacion__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.ubicacion__texto,
+.ubicacion__ayuda {
+  margin: var(--espacio-4) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.ubicacion__ayuda {
+  font-size: 0.875rem;
+}
+
+.ubicacion__coordenadas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-16);
+}
+
+.ubicacion__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}

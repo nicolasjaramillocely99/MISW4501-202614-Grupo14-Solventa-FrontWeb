@@ -49,6 +49,7 @@
 |---|---|---|---|---|---|
 | [O9](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4301) | Solicitudes de asistencia entrantes | `/siniestros/asistencias` | Analista de operaciones | HU-W2.3-03 | S3 |
 | [O7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=36-3746), [O7b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=1088-9443) | Asignación de prestador más cercano | `/siniestros/:id/asignar-prestador` | Analista de operaciones | HU-W2.3-01 | S3 |
+| — (sin mockup) | Administración de prestadores (mínima) | `/siniestros/prestadores` | Analista de operaciones | HU-W2.3-01 | S3 |
 | [O8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=36-4127) | Seguimiento de la intervención y cierre del caso | `/siniestros/:id/seguimiento` | Analista de operaciones | HU-W2.3-02 | S3 |
 | [O9b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4662) | Detalle de la asistencia con mapa | `/siniestros/asistencias/:id` | Analista de operaciones | HU-W2.3-03 | S3 |
 
@@ -158,6 +159,7 @@ ruta `/siniestros/:id/evaluar`, rol operaciones. Contrato: `docs/contratos/HU-W2
   (`POST …/payout-retry`); con la cuenta vacía reintenta al mismo destino. La clave no cambia: nunca se paga dos veces.
 - **CA-5 y CA-6:** la decisión muestra su analista, fecha y monto o motivo; solo operaciones entra (las rutas y el backend lo exigen).
 - **Pendiente de otras historias:** el bloque «Resultado de la intervención del prestador» (HU-W2.3-02) y el bruto que recomienda.
+- **Desde HU-W2.3-01** el encabezado de O6 tiene «Asignar prestador» (`/siniestros/:id/asignar-prestador`) con el caso en evaluación, aprobado o pagado.
 - **Desde HU-W2.1-03** operaciones solo decide casos `in_evaluation`: una radicación `active` espera la revisión del asesor.
 
 **Revisión de la radicación por el asesor (HU-W2.1-03)** — `revision/radicaciones-revision.page.ts` (bandeja, `/siniestros/revision`)
@@ -178,6 +180,46 @@ del backend (`openapi.yaml` v0.10.0).
   completa el backend. El caso queda `returned` («Devuelto al cliente»), que A9 (HU-W2.1-04) consume.
 - **Solo lectura:** una radicación que ya no está `active` (otro asesor se adelantó, `409 claim_not_reviewable`) se muestra con el
   veredicto registrado y quién la revisó.
+
+**Asignación del prestador más cercano (HU-W2.3-01)** — `asistencias/asignacion-prestador.page.ts` (`AsignacionPrestadorPage`, O7 y
+O7b), ruta `/siniestros/:id/asignar-prestador`, rol operaciones; se entra desde O6. Contrato: `docs/contratos/HU-W2.3-01-api.md` del
+backend (`openapi.yaml` v0.11.0). Cliente: `core/api/siniestros/` (modelos en `asignacion.modelos.ts`). El front **no calcula**
+distancias ni elegibilidad: pinta lo que devuelve el backend con la política `assignment-policy-v1`, que lee de
+`GET /v1/claims/assignment-policy` (radios, especialidad por tipo, frecuencia del reintento). Una sola página con los estados del
+contrato (`ready`, `proposed`, `pending_assignment`, `assigned`, `location_missing`, `not_required`, `not_applicable`).
+
+- **Mapa (decisión F1):** Leaflet 1.9 con teselas de OpenStreetMap, cargado de forma perezosa desde su versión ESM
+  (`asistencias/modelos/mapa.ts`, `CARGAR_LEAFLET`; las pruebas lo sustituyen con `src/testing/leaflet-pruebas.ts`). Muestra el
+  incidente, el círculo del radio y los candidatos con su distancia (sus coordenadas salen de `GET /v1/claims/providers`; si esa
+  lectura falla, el mapa queda solo con el incidente). Los marcadores no son interactivos: la tabla es la alternativa accesible. Los
+  textos de Leaflet (zoom, atribución) están en los diccionarios. **Sin geocodificador:** la dirección no sale a terceros.
+- **CA-1:** con coordenadas de la app, «Capturadas desde la app · precisión 8 m». Sin ellas (`location_missing`),
+  `componentes/ubicacion-incidente/` pide la dirección y el pin: un clic en el mapa lo pone, arrastrarlo lo mueve y los campos de
+  latitud y longitud lo siguen (y lo mueven: alternativa por teclado). `POST …/incident-location`. La ubicación del analista se puede
+  corregir antes de asignar.
+- **CA-2 y CA-3:** «Buscar prestador» (sin cuerpo) y `componentes/tabla-candidatos/`: los de la especialidad, del más cercano al más
+  lejano, con el sugerido resaltado **y** rotulado. «Asignar» solo para los `eligible`: «Disponible mañana» y «Fuera del radio» no se
+  asignan (P8 y P9 del backend; el mockup los muestra habilitados).
+- **CA-4:** «Ampliar radio de búsqueda» envía el radio siguiente de la política (`from_radius_km`); en el máximo se deshabilita con su
+  motivo. `componentes/registro-intentos/` lista cada radio intentado con su hora y sus elegibles.
+- **CA-5:** «Asignar» (el sugerido o cualquier elegible) pide confirmación en un `<dialog>` (`componentes/confirmar-asignacion/`) y
+  envía el `search_seq` que el analista ve. `componentes/asignacion-confirmada/` muestra el prestador, su contacto, la distancia, quién y
+  cuándo asignó, la ubicación compartida y el correo al prestador, que la página vuelve a leer cada 5 s (hasta 12 veces) mientras está
+  pendiente. Los `409` (`provider_unavailable`, `search_outdated`, `assignment_exists`, `claim_not_assignable`) avisan y releen el caso.
+- **CA-6 (O7b):** «Pendiente de asignación» con el motivo, los radios intentados y «la búsqueda se repetirá automáticamente cada 5
+  minutos». La página no sondea (el reintento del backend es cada 5 min): «Actualizar estado» la vuelve a leer y «Reintentar
+  búsqueda» busca desde el radio inicial.
+- **Lo que el contrato no trae se oculta (F5):** la calificación y el número de casos del prestador, la ciudad del subtítulo, el
+  selector de radio del mockup (se reemplaza por el texto y «Ampliar radio») y «el asegurado ve la fecha de la visita» (HU-W2.3-02).
+- **Para HU-W2.3-03 (F8):** si O9b («Detalle de la asistencia con mapa») reutiliza `MapaAsignacionComponent`, se promueve a
+  `shared/ui/`.
+
+**Administración de prestadores (HU-W2.3-01, F2; sin mockup)** — `asistencias/prestadores.page.ts` (`PrestadoresPage`), ruta
+`/siniestros/prestadores`, rol operaciones; se llega desde «Administrar prestadores» de O7. El registro por nombre con filtros de
+especialidad y disponibilidad (en `?especialidad=&disponibilidad=`) y el cambio de disponibilidad
+(`componentes/disponibilidad-prestador/`: «Disponible» o «No disponible» con «Hasta» opcional). «Liberar» marca disponible a un
+prestador ocupado en un caso (D13); lo hará solo HU-W2.3-02 al cerrar la intervención. **Pendiente:** el alta y la edición del perfil
+(la API existe; `grep -rn "HU-W2.3-01 F" src`).
 
 ## Cómo trabajar una historia de este dominio
 

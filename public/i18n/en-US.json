@@ -2350,7 +2350,8 @@
           "boton": "Retry payout",
           "enviando": "Retrying…"
         }
-      }
+      },
+      "asignarPrestador": "Assign provider"
     },
     "radicacionesRevision": {
       "titulo": "Filings to review",
@@ -2505,6 +2506,250 @@
         "titulo": "Previous reviews",
         "approved": "Approved by {{asesor}}",
         "returned": "Returned by {{asesor}}"
+      }
+    },
+    "mapa": {
+      "region": "Map of the incident and the providers",
+      "acercar": "Zoom in",
+      "alejar": "Zoom out",
+      "atribucion": "OpenStreetMap contributors",
+      "incidente": "Incident",
+      "ayudaPin": "Click the map to place the incident",
+      "radio": "Search radius {{radio}} km",
+      "noDisponible": "The map is not available: continue with the table and the coordinates",
+      "hemisferios": {
+        "norte": "N",
+        "sur": "S",
+        "este": "E",
+        "oeste": "W"
+      }
+    },
+    "especialidades": {
+      "vehicle_assessment": "Vehicle assessment",
+      "auto_glass": "Glass",
+      "plumbing": "Plumbing",
+      "damp_proofing": "Damp proofing",
+      "painting": "Painting",
+      "bodywork": "Bodywork"
+    },
+    "asignacion": {
+      "volver": "Claim {{radicado}}",
+      "titulo": "Assign provider · {{radicado}}",
+      "cargando": "Loading the provider assignment…",
+      "subtitulo": {
+        "visita": "On-site assessment required",
+        "app": "coordinates captured by the app when filing",
+        "analista": "location recorded by the analyst",
+        "sinUbicacion": "no incident coordinates",
+        "agotada": "search exhausted at the maximum radius"
+      },
+      "pendienteAsignacion": "Pending assignment",
+      "acciones": {
+        "buscar": "Search provider",
+        "reintentar": "Retry search",
+        "ampliar": "Widen search radius",
+        "asignarSugerido": "Assign suggested provider",
+        "buscando": "Searching…",
+        "actualizar": "Refresh status",
+        "administrar": "Manage providers"
+      },
+      "ampliarDeshabilitado": {
+        "radioMaximo": "The maximum radius was already searched",
+        "sinPolitica": "We could not read the search radii"
+      },
+      "sinVisita": {
+        "titulo": "This claim needs no on-site visit",
+        "texto": "Its claim type does not need a provider at the incident site."
+      },
+      "noAplica": {
+        "titulo": "The claim is not in evaluation",
+        "texto": "A provider is assigned only to claims in evaluation."
+      },
+      "noEncontrado": {
+        "titulo": "We could not find this claim",
+        "texto": "Check the link or go back to the claims in evaluation.",
+        "volver": "Back to claims in evaluation"
+      },
+      "error": {
+        "titulo": "We could not load the assignment",
+        "texto": "The claims service did not respond. Try again in a few seconds.",
+        "reintentar": "Try again"
+      },
+      "ubicacion": {
+        "coordenadas": "Incident coordinates",
+        "app": "Captured by the app · accuracy {{precision}} m",
+        "analista": "Recorded by {{nombre}} · {{fecha}}",
+        "direccion": "Address (alternative when there are no coordinates)",
+        "radio": "Search radius",
+        "radioValor": "{{radio}} km",
+        "radioMaximo": "{{radio}} km (maximum)",
+        "ayudaRadio": "Widen it with «Widen search radius» when no one is available",
+        "ayudaRadioMaximo": "Maximum radius reached · {{intentos}} attempts recorded",
+        "ayudaRadioMaximoUno": "Maximum radius reached · 1 attempt recorded",
+        "corregir": "Correct location",
+        "formulario": {
+          "titulo": "Incident location",
+          "texto": "The claim has no coordinates from the app. Type the address and place the incident on the map, or type the latitude and longitude.",
+          "direccion": "Address",
+          "ayudaDireccion": "Between 5 and 200 characters. It is shared with the provider.",
+          "latitud": "Latitude",
+          "longitud": "Longitude",
+          "ayudaCoordenadas": "In decimal degrees, for example 4.6771 and -74.0483. They fill in when you click the map.",
+          "guardar": "Save location",
+          "guardando": "Saving…",
+          "cancelar": "Cancel",
+          "errores": {
+            "direccion": {
+              "requerido": "Type the incident address.",
+              "longitud": "The address must have between 5 and 200 characters."
+            },
+            "latitud": {
+              "requerido": "Type the latitude or click the map.",
+              "formato": "Type the latitude in decimal degrees.",
+              "rango": "The latitude goes from −90 to 90."
+            },
+            "longitud": {
+              "requerido": "Type the longitude or click the map.",
+              "formato": "Type the longitude in decimal degrees.",
+              "rango": "The longitude goes from −180 to 180."
+            }
+          }
+        }
+      },
+      "candidatos": {
+        "titulo": "Providers with the required specialty ({{especialidad}})",
+        "tituloAgotado": "Providers with the required specialty ({{especialidad}}) · none available within {{radio}} km",
+        "prestador": "Provider",
+        "especialidad": "Specialty",
+        "distancia": "Distance",
+        "disponibilidad": "Availability",
+        "accion": "Action",
+        "km": "{{distancia}} km",
+        "sugerido": "Suggested",
+        "asignar": "Assign",
+        "asignarA": "Assign to {{nombre}}",
+        "vacio": "There are no registered providers with this specialty."
+      },
+      "disponibilidad": {
+        "disponibleHoy": "Available today",
+        "disponibleManana": "Available tomorrow",
+        "enOtroCaso": "Unavailable · on another claim",
+        "noDisponibleHasta": "Unavailable · until {{fecha}}",
+        "noDisponible": "Unavailable",
+        "fueraDelRadio": "Out of radius"
+      },
+      "criterio": {
+        "titulo": "Assignment criteria",
+        "texto": "The system measures the distance between the incident coordinates and each available provider with the required specialty, and suggests the nearest one. If there are no providers within the initial radius, it widens the radius and searches again."
+      },
+      "alAsignar": {
+        "titulo": "On assignment",
+        "texto": "The provider receives the claim by e-mail with the incident coordinates to get there."
+      },
+      "intentos": {
+        "titulo": "Attempt log",
+        "analista": "Search by {{nombre}}",
+        "automatica": "Automatic search",
+        "linea": "{{hora}} · {{radio}} km",
+        "lineaMaximo": "{{hora}} · {{radio}} km (maximum)",
+        "ninguno": "no providers available",
+        "uno": "1 provider available",
+        "varios": "{{cantidad}} providers available"
+      },
+      "pendiente": {
+        "titulo": "No available provider was found",
+        "texto": "The search covered {{radios}} km (maximum configured radius) and no provider with the specialty {{especialidad}} is available. The claim stays Pending assignment: {{motivo}}.",
+        "reintento": "The search repeats automatically every {{minutos}} minutes and you can retry it now. A provider who does not meet the criteria is never assigned."
+      },
+      "motivos": {
+        "no_eligible_provider_within_max_radius": "no eligible provider within the maximum radius"
+      },
+      "confirmacion": {
+        "titulo": "Assign to {{nombre}}?",
+        "texto": "They are {{distancia}} km from the incident. They will receive the incident location by e-mail to get there.",
+        "confirmar": "Confirm assignment",
+        "cancelar": "Cancel",
+        "cerrar": "Close",
+        "asignando": "Assigning…"
+      },
+      "asignado": {
+        "titulo": "Assigned provider",
+        "correo": "E-mail",
+        "telefono": "Phone",
+        "distancia": "Distance",
+        "asignado": "Assigned",
+        "asignadoValor": "{{fecha}} by {{nombre}}",
+        "ubicacion": "Shared location",
+        "avisoPendiente": "Sending the assignment to the provider…",
+        "avisoEnviado": "Notice sent to the provider · {{fecha}}",
+        "avisoDetenido": "The notice has not left yet; the system keeps trying.",
+        "actualizar": "Refresh"
+      },
+      "errores": {
+        "location_from_app": "The claim already has the app coordinates: no other location is recorded.",
+        "assignment_exists": "Another analyst already assigned a provider to this claim.",
+        "claim_not_assignable": "The claim is no longer in evaluation or needs no visit.",
+        "provider_unavailable": "The provider is no longer available. Search again.",
+        "search_outdated": "The search changed in the meantime. Review the updated providers.",
+        "location_missing": "Record the incident location before searching.",
+        "provider_not_eligible": "That provider does not meet the search criteria.",
+        "validation_failed": "Check the marked fields.",
+        "claims_unavailable": "The claims service did not respond. Try again.",
+        "generico": "We could not complete the action. Try again."
+      }
+    },
+    "prestadores": {
+      "titulo": "Providers",
+      "descripcion": "Registry of providers for on-site assessment. Change their availability or release an assigned provider.",
+      "cargando": "Loading providers…",
+      "filtros": {
+        "titulo": "Filters",
+        "especialidad": "Specialty",
+        "disponibilidad": "Availability",
+        "todas": "All",
+        "limpiar": "Clear filters"
+      },
+      "columnas": {
+        "prestador": "Provider",
+        "especialidades": "Specialties",
+        "contacto": "Contact",
+        "disponibilidad": "Availability",
+        "actualizado": "Updated",
+        "accion": "Action"
+      },
+      "disponibilidades": {
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "busy": "Busy on a claim"
+      },
+      "hasta": "until {{fecha}}",
+      "verCaso": "View the assignment",
+      "cargaInicial": "Initial load",
+      "cambiar": "Change availability",
+      "cambiarDe": "Change availability of {{nombre}}",
+      "liberar": "Release",
+      "liberarA": "Release {{nombre}}",
+      "vacio": "There are no registered providers.",
+      "sinResultados": "No provider matches the filters.",
+      "error": {
+        "titulo": "We could not load the providers",
+        "texto": "The claims service did not respond. Try again.",
+        "reintentar": "Try again"
+      },
+      "guardado": "The availability of {{nombre}} was updated.",
+      "dialogo": {
+        "titulo": "Availability of {{nombre}}",
+        "disponible": "Available",
+        "noDisponible": "Unavailable",
+        "hasta": "Until (optional)",
+        "ayudaHasta": "It is informative: the provider does not become available on its own.",
+        "fechaPasada": "The date cannot be before today.",
+        "ocupado": "They are assigned to a claim. Marking them available frees them for other claims.",
+        "guardar": "Save",
+        "guardando": "Saving…",
+        "cancelar": "Cancel",
+        "error": "We could not save the availability. Try again.",
+        "cerrar": "Close"
       }
     }
   },

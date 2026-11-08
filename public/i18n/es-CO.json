@@ -2350,7 +2350,8 @@
           "boton": "Reintentar pago",
           "enviando": "Reintentando…"
         }
-      }
+      },
+      "asignarPrestador": "Asignar prestador"
     },
     "radicacionesRevision": {
       "titulo": "Radicaciones por revisar",
@@ -2505,6 +2506,250 @@
         "titulo": "Revisiones anteriores",
         "approved": "Aprobada por {{asesor}}",
         "returned": "Devuelta por {{asesor}}"
+      }
+    },
+    "mapa": {
+      "region": "Mapa del incidente y de los prestadores",
+      "acercar": "Acercar",
+      "alejar": "Alejar",
+      "atribucion": "colaboradores de OpenStreetMap",
+      "incidente": "Incidente",
+      "ayudaPin": "Haz clic en el mapa para ubicar el incidente",
+      "radio": "Radio de búsqueda {{radio}} km",
+      "noDisponible": "El mapa no está disponible: continúa con la tabla y las coordenadas",
+      "hemisferios": {
+        "norte": "N",
+        "sur": "S",
+        "este": "E",
+        "oeste": "O"
+      }
+    },
+    "especialidades": {
+      "vehicle_assessment": "Peritaje vehicular",
+      "auto_glass": "Vidrios",
+      "plumbing": "Plomería",
+      "damp_proofing": "Humedades",
+      "painting": "Pintura",
+      "bodywork": "Latonería"
+    },
+    "asignacion": {
+      "volver": "Siniestro {{radicado}}",
+      "titulo": "Asignar prestador · {{radicado}}",
+      "cargando": "Cargando la asignación del prestador…",
+      "subtitulo": {
+        "visita": "Evaluación en sitio requerida",
+        "app": "coordenadas capturadas desde la app al radicar",
+        "analista": "ubicación registrada por el analista",
+        "sinUbicacion": "sin coordenadas del incidente",
+        "agotada": "búsqueda agotada en el radio máximo"
+      },
+      "pendienteAsignacion": "Pendiente de asignación",
+      "acciones": {
+        "buscar": "Buscar prestador",
+        "reintentar": "Reintentar búsqueda",
+        "ampliar": "Ampliar radio de búsqueda",
+        "asignarSugerido": "Asignar prestador sugerido",
+        "buscando": "Buscando…",
+        "actualizar": "Actualizar estado",
+        "administrar": "Administrar prestadores"
+      },
+      "ampliarDeshabilitado": {
+        "radioMaximo": "Ya se buscó en el radio máximo",
+        "sinPolitica": "No pudimos leer los radios de búsqueda"
+      },
+      "sinVisita": {
+        "titulo": "Este siniestro no requiere visita en sitio",
+        "texto": "Su tipo de siniestro no necesita un prestador en el lugar del incidente."
+      },
+      "noAplica": {
+        "titulo": "El caso no está en evaluación",
+        "texto": "Solo se asigna un prestador a los casos en evaluación."
+      },
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o vuelve a los casos en evaluación.",
+        "volver": "Volver a casos en evaluación"
+      },
+      "error": {
+        "titulo": "No pudimos cargar la asignación",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "ubicacion": {
+        "coordenadas": "Coordenadas del incidente",
+        "app": "Capturadas desde la app · precisión {{precision}} m",
+        "analista": "Registradas por {{nombre}} · {{fecha}}",
+        "direccion": "Dirección (alternativa si no hay coordenadas)",
+        "radio": "Radio de búsqueda",
+        "radioValor": "{{radio}} km",
+        "radioMaximo": "{{radio}} km (máximo)",
+        "ayudaRadio": "Se amplía con «Ampliar radio de búsqueda» si no hay disponibles",
+        "ayudaRadioMaximo": "Radio máximo alcanzado · {{intentos}} intentos registrados",
+        "ayudaRadioMaximoUno": "Radio máximo alcanzado · 1 intento registrado",
+        "corregir": "Corregir ubicación",
+        "formulario": {
+          "titulo": "Ubicación del incidente",
+          "texto": "El caso no tiene coordenadas de la app. Escribe la dirección y ubica el incidente en el mapa, o escribe la latitud y la longitud.",
+          "direccion": "Dirección",
+          "ayudaDireccion": "Entre 5 y 200 caracteres. Se comparte con el prestador.",
+          "latitud": "Latitud",
+          "longitud": "Longitud",
+          "ayudaCoordenadas": "En grados decimales, por ejemplo 4.6771 y -74.0483. Se llenan al hacer clic en el mapa.",
+          "guardar": "Guardar ubicación",
+          "guardando": "Guardando…",
+          "cancelar": "Cancelar",
+          "errores": {
+            "direccion": {
+              "requerido": "Escribe la dirección del incidente.",
+              "longitud": "La dirección debe tener entre 5 y 200 caracteres."
+            },
+            "latitud": {
+              "requerido": "Escribe la latitud o haz clic en el mapa.",
+              "formato": "Escribe la latitud en grados decimales.",
+              "rango": "La latitud va de −90 a 90."
+            },
+            "longitud": {
+              "requerido": "Escribe la longitud o haz clic en el mapa.",
+              "formato": "Escribe la longitud en grados decimales.",
+              "rango": "La longitud va de −180 a 180."
+            }
+          }
+        }
+      },
+      "candidatos": {
+        "titulo": "Prestadores con la especialidad requerida ({{especialidad}})",
+        "tituloAgotado": "Prestadores con la especialidad requerida ({{especialidad}}) · ninguno disponible dentro de {{radio}} km",
+        "prestador": "Prestador",
+        "especialidad": "Especialidad",
+        "distancia": "Distancia",
+        "disponibilidad": "Disponibilidad",
+        "accion": "Acción",
+        "km": "{{distancia}} km",
+        "sugerido": "Sugerido",
+        "asignar": "Asignar",
+        "asignarA": "Asignar a {{nombre}}",
+        "vacio": "No hay prestadores registrados con esta especialidad."
+      },
+      "disponibilidad": {
+        "disponibleHoy": "Disponible hoy",
+        "disponibleManana": "Disponible mañana",
+        "enOtroCaso": "No disponible · en otro caso",
+        "noDisponibleHasta": "No disponible · hasta {{fecha}}",
+        "noDisponible": "No disponible",
+        "fueraDelRadio": "Fuera del radio"
+      },
+      "criterio": {
+        "titulo": "Criterio de asignación",
+        "texto": "El sistema calcula la distancia entre las coordenadas del incidente y cada prestador disponible con la especialidad requerida, y sugiere el más cercano. Si no hay prestadores en el radio inicial, amplía el radio y repite la búsqueda."
+      },
+      "alAsignar": {
+        "titulo": "Al asignar",
+        "texto": "El prestador recibe el caso por correo con las coordenadas del incidente para desplazarse."
+      },
+      "intentos": {
+        "titulo": "Registro de intentos",
+        "analista": "Búsqueda de {{nombre}}",
+        "automatica": "Búsqueda automática",
+        "linea": "{{hora}} · {{radio}} km",
+        "lineaMaximo": "{{hora}} · {{radio}} km (máximo)",
+        "ninguno": "sin prestadores disponibles",
+        "uno": "1 prestador disponible",
+        "varios": "{{cantidad}} prestadores disponibles"
+      },
+      "pendiente": {
+        "titulo": "No se encontró un prestador disponible",
+        "texto": "Se buscó en {{radios}} km (radio máximo configurado) y ningún prestador con la especialidad {{especialidad}} está disponible. El caso queda Pendiente de asignación: {{motivo}}.",
+        "reintento": "La búsqueda se repetirá automáticamente cada {{minutos}} minutos y puedes reintentarla ahora. No se asigna un prestador que no cumpla los criterios."
+      },
+      "motivos": {
+        "no_eligible_provider_within_max_radius": "ningún prestador elegible dentro del radio máximo"
+      },
+      "confirmacion": {
+        "titulo": "¿Asignar a {{nombre}}?",
+        "texto": "Está a {{distancia}} km del incidente. Recibirá por correo la ubicación del incidente para desplazarse.",
+        "confirmar": "Confirmar asignación",
+        "cancelar": "Cancelar",
+        "cerrar": "Cerrar",
+        "asignando": "Asignando…"
+      },
+      "asignado": {
+        "titulo": "Prestador asignado",
+        "correo": "Correo",
+        "telefono": "Teléfono",
+        "distancia": "Distancia",
+        "asignado": "Asignado",
+        "asignadoValor": "{{fecha}} por {{nombre}}",
+        "ubicacion": "Ubicación compartida",
+        "avisoPendiente": "Enviando la asignación al prestador…",
+        "avisoEnviado": "Aviso enviado al prestador · {{fecha}}",
+        "avisoDetenido": "El aviso aún no sale; el sistema lo sigue intentando.",
+        "actualizar": "Actualizar"
+      },
+      "errores": {
+        "location_from_app": "El caso ya tiene las coordenadas de la app: no se registra otra ubicación.",
+        "assignment_exists": "Otro analista ya asignó un prestador a este caso.",
+        "claim_not_assignable": "El caso ya no está en evaluación o no requiere visita.",
+        "provider_unavailable": "El prestador ya no está disponible. Busca de nuevo.",
+        "search_outdated": "La búsqueda cambió mientras tanto. Revisa los prestadores actualizados.",
+        "location_missing": "Registra la ubicación del incidente antes de buscar.",
+        "provider_not_eligible": "Ese prestador no cumple los criterios de la búsqueda.",
+        "validation_failed": "Revisa los datos marcados.",
+        "claims_unavailable": "El servicio de siniestros no respondió. Intenta de nuevo.",
+        "generico": "No pudimos completar la acción. Intenta de nuevo."
+      }
+    },
+    "prestadores": {
+      "titulo": "Prestadores",
+      "descripcion": "Registro de prestadores para la evaluación en sitio. Cambia la disponibilidad o libera a un prestador asignado.",
+      "cargando": "Cargando prestadores…",
+      "filtros": {
+        "titulo": "Filtros",
+        "especialidad": "Especialidad",
+        "disponibilidad": "Disponibilidad",
+        "todas": "Todas",
+        "limpiar": "Limpiar filtros"
+      },
+      "columnas": {
+        "prestador": "Prestador",
+        "especialidades": "Especialidades",
+        "contacto": "Contacto",
+        "disponibilidad": "Disponibilidad",
+        "actualizado": "Actualizado",
+        "accion": "Acción"
+      },
+      "disponibilidades": {
+        "available": "Disponible",
+        "unavailable": "No disponible",
+        "busy": "Ocupado en un caso"
+      },
+      "hasta": "hasta {{fecha}}",
+      "verCaso": "Ver la asignación",
+      "cargaInicial": "Carga inicial",
+      "cambiar": "Cambiar disponibilidad",
+      "cambiarDe": "Cambiar disponibilidad de {{nombre}}",
+      "liberar": "Liberar",
+      "liberarA": "Liberar a {{nombre}}",
+      "vacio": "No hay prestadores registrados.",
+      "sinResultados": "Ningún prestador coincide con los filtros.",
+      "error": {
+        "titulo": "No pudimos cargar los prestadores",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo.",
+        "reintentar": "Reintentar"
+      },
+      "guardado": "Se actualizó la disponibilidad de {{nombre}}.",
+      "dialogo": {
+        "titulo": "Disponibilidad de {{nombre}}",
+        "disponible": "Disponible",
+        "noDisponible": "No disponible",
+        "hasta": "Hasta (opcional)",
+        "ayudaHasta": "Es informativa: el prestador no vuelve a estar disponible solo.",
+        "fechaPasada": "La fecha no puede ser anterior a hoy.",
+        "ocupado": "Está asignado a un caso. Al marcarlo disponible queda libre para otros casos.",
+        "guardar": "Guardar",
+        "guardando": "Guardando…",
+        "cancelar": "Cancelar",
+        "error": "No pudimos guardar la disponibilidad. Intenta de nuevo.",
+        "cerrar": "Cerrar"
       }
     }
   },

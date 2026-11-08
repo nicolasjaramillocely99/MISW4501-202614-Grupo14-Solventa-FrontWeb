@@ -1,0 +1,84 @@
+<form
+  class="ubicacion"
+  (submit)="enviar($event)"
+  novalidate
+  *transloco="let t; prefix: 'siniestros.asignacion.ubicacion.formulario'"
+>
+  <div class="ubicacion__encabezado">
+    <h2 class="ubicacion__titulo">{{ t('titulo') }}</h2>
+    <p class="ubicacion__texto">{{ t('texto') }}</p>
+  </div>
+
+  @let p = problemas();
+  <div class="campo ubicacion__direccion">
+    <label class="campo__etiqueta" for="ubicacion-direccion">{{ t('direccion') }}</label>
+    <input
+      id="ubicacion-direccion"
+      class="campo__control"
+      type="text"
+      autocomplete="off"
+      [maxLength]="maximo"
+      required
+      [value]="formulario().direccion"
+      [attr.aria-invalid]="p.direccion ? 'true' : null"
+      [attr.aria-describedby]="
+        p.direccion ? 'ubicacion-direccion-error' : 'ubicacion-direccion-ayuda'
+      "
+      (input)="escribir('direccion', $any($event.target).value)"
+      (blur)="tocar('direccion')"
+    />
+    @if (p.direccion; as problema) {
+      <p id="ubicacion-direccion-error" class="campo__error">
+        {{ t('errores.direccion.' + problema) }}
+      </p>
+    } @else {
+      <p id="ubicacion-direccion-ayuda" class="ubicacion__ayuda">{{ t('ayudaDireccion') }}</p>
+    }
+  </div>
+
+  <div class="ubicacion__coordenadas">
+    @for (campo of coordenadas; track campo) {
+      @let problema = p[campo];
+      <div class="campo">
+        <label class="campo__etiqueta" [for]="'ubicacion-' + campo">{{ t(campo) }}</label>
+        <input
+          [id]="'ubicacion-' + campo"
+          class="campo__control"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          required
+          [value]="formulario()[campo]"
+          [attr.aria-invalid]="problema ? 'true' : null"
+          [attr.aria-describedby]="
+            problema ? 'ubicacion-' + campo + '-error' : 'ubicacion-coordenadas-ayuda'
+          "
+          (input)="escribir(campo, $any($event.target).value)"
+          (blur)="tocar(campo)"
+        />
+        @if (problema) {
+          <p [id]="'ubicacion-' + campo + '-error'" class="campo__error">
+            {{ t('errores.' + campo + '.' + problema) }}
+          </p>
+        }
+      </div>
+    }
+  </div>
+  <p id="ubicacion-coordenadas-ayuda" class="ubicacion__ayuda">{{ t('ayudaCoordenadas') }}</p>
+
+  <div class="ubicacion__acciones">
+    @if (cancelable()) {
+      <button
+        type="button"
+        class="boton boton--secundario"
+        [disabled]="guardando()"
+        (click)="cancelar.emit()"
+      >
+        {{ t('cancelar') }}
+      </button>
+    }
+    <button type="submit" class="boton boton--primario" [disabled]="guardando()">
+      {{ guardando() ? t('guardando') : t('guardar') }}
+    </button>
+  </div>
+</form>

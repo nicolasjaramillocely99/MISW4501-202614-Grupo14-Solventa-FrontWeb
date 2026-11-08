@@ -43,6 +43,12 @@
               <svg lucideMail [size]="20" aria-hidden="true"></svg>{{ t('evaluacion.contactar') }}
             </a>
           }
+          <!-- HU-W2.3-01 (F3): entrada a la asignación del prestador; una asignación hecha sigue visible tras decidir. -->
+          @if (e.siniestro.estado === 'in_evaluation' || e.siniestro.estado === 'approved' || e.siniestro.estado === 'paid') {
+            <a class="boton boton--secundario" [routerLink]="['/siniestros', e.siniestro.id, 'asignar-prestador']">
+              <svg lucideMapPin [size]="20" aria-hidden="true"></svg>{{ t('evaluacion.asignarPrestador') }}
+            </a>
+          }
         </header>
 
         @if (errorAccion(); as codigo) {

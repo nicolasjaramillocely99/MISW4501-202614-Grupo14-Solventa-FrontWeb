@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { LucideArrowLeft, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideMail } from '@lucide/angular';
+import { LucideArrowLeft, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideMail, LucideMapPin } from '@lucide/angular';
 import { Observable, finalize } from 'rxjs';
 
 import { CodigoErrorEvaluacion, Decision, DestinoPago, ErrorEvaluacion, Evaluacion } from '@core/api/siniestros/evaluacion.modelos';
@@ -63,6 +63,7 @@ interface EventoHistorial {
     LucideCircleCheck,
     LucideInfo,
     LucideMail,
+    LucideMapPin,
   ],
   templateUrl: './evaluacion-siniestro.page.html',
   styleUrl: './evaluacion-siniestro.page.scss',

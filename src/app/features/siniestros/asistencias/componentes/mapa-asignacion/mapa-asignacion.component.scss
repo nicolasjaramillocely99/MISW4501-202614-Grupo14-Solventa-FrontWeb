@@ -1,0 +1,90 @@
+// Sin encapsulación: Leaflet inserta los marcadores fuera de la plantilla. Todo va bajo `.mapa-asignacion`.
+
+.mapa-asignacion {
+  margin: 0;
+  display: grid;
+  gap: var(--espacio-8);
+}
+
+.mapa-asignacion__lienzo {
+  height: 18rem;
+  border-radius: var(--radio-base);
+  background: var(--color-azul-50);
+  overflow: hidden;
+  // Los controles de Leaflet quedan por debajo de los diálogos y de la barra del portal.
+  z-index: 0;
+  position: relative;
+}
+
+.mapa-asignacion__lienzo:focus-visible {
+  outline: 2px solid var(--color-azul-500);
+  outline-offset: 2px;
+}
+
+.mapa-asignacion__leyenda {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.mapa-asignacion__radio {
+  stroke: var(--color-azul-500);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  fill: var(--color-azul-500);
+  fill-opacity: 0.08;
+}
+
+.mapa-asignacion__marcador {
+  position: relative;
+}
+
+.mapa-asignacion__punto {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radio-completo);
+  border: 3px solid var(--color-azul-700);
+  background: var(--color-fondo-superficie);
+  box-sizing: border-box;
+}
+
+.mapa-asignacion__etiqueta {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 2px var(--espacio-8);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-pequeno);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-primario);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+// Los prestadores llevan la etiqueta debajo del punto: así no tapan la del incidente al alejar el mapa.
+.mapa-asignacion__marcador--candidato .mapa-asignacion__etiqueta,
+.mapa-asignacion__marcador--asignado .mapa-asignacion__etiqueta {
+  top: 22px;
+  bottom: auto;
+}
+
+.mapa-asignacion__marcador--incidente .mapa-asignacion__punto {
+  border-color: var(--color-error-500);
+}
+
+.mapa-asignacion__marcador--incidente .mapa-asignacion__etiqueta {
+  border-color: var(--color-error-500);
+  background: var(--color-error-100);
+  color: var(--color-error-600);
+}
+
+.mapa-asignacion__marcador--asignado .mapa-asignacion__punto {
+  border-color: var(--color-exito-600);
+  background: var(--color-exito-100);
+}
