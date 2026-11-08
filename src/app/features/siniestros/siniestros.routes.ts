@@ -5,6 +5,8 @@ import { rolGuard } from '@core/auth/guards/rol.guard';
 import { CasosEvaluacionPage } from './evaluacion/casos-evaluacion.page';
 import { EvaluacionSiniestroPage } from './evaluacion/evaluacion-siniestro.page';
 import { RadicacionSiniestroPage } from './radicacion/radicacion-siniestro.page';
+import { RadicacionesRevisionPage } from './revision/radicaciones-revision.page';
+import { RevisionRadicacionPage } from './revision/revision-radicacion.page';
 import { DetalleSiniestroPage } from './seguimiento/detalle-siniestro.page';
 import { MisSiniestrosPage } from './seguimiento/mis-siniestros.page';
 import { ColaSiniestrosPage } from './triage/cola-siniestros.page';
@@ -16,9 +18,9 @@ import { PrioridadSiniestroPage } from './triage/prioridad-siniestro.page';
  * A6b es un estado de `radicar`, con `?caso=`), «Mis siniestros» en su versión mínima (A7), la prioridad automática del
  * siniestro (HU-W2.2-01): la cola y la prioridad del analista de operaciones y el detalle mínimo del asegurado (A8), y
  * la evaluación, aprobación y pago (HU-W2.2-03): los casos en evaluación del analista y la evaluación de un caso (O6
- * y O6b).
+ * y O6b), y la revisión del asesor (HU-W2.1-03): las radicaciones por revisar y la revisión de una (S8).
  *
- * El orden importa: los grupos de operaciones (`cola`, `evaluacion` y `:id/evaluar`) van antes del grupo del asegurado
+ * El orden importa: los grupos de operaciones (`cola`, `evaluacion` y `:id/evaluar`) y del asesor (`revision`) van antes del grupo del asegurado
  * y `:id` va después de `radicar` y `mis-siniestros`; si no, `:id` capturaría `cola` y el guard del asegurado
  * rechazaría al analista.
  */
@@ -41,10 +43,17 @@ export const SINIESTROS_ROUTES: Routes = [
     canActivate: [rolGuard('operaciones')],
     component: EvaluacionSiniestroPage,
   },
-  // Entradas del menú cuya historia todavía no existe: la revisión del asesor (HU-W2.1-03) y las asistencias de
-  // operaciones (HU-W2.3-03). Llevan al inicio del rol, como las demás rutas pendientes; sin esto `:id` las captura y
-  // el guard del asegurado muestra «acceso no autorizado».
-  { path: 'revision', redirectTo: '/inicio', pathMatch: 'prefix' },
+  {
+    path: 'revision',
+    canActivateChild: [rolGuard('asesor')],
+    children: [
+      { path: '', component: RadicacionesRevisionPage },
+      { path: ':id', component: RevisionRadicacionPage },
+    ],
+  },
+  // Entrada del menú cuya historia todavía no existe: las asistencias de operaciones (HU-W2.3-03). Lleva al inicio del
+  // rol, como las demás rutas pendientes; sin esto `:id` la captura y el guard del asegurado muestra «acceso no
+  // autorizado».
   { path: 'asistencias', redirectTo: '/inicio', pathMatch: 'prefix' },
   {
     path: '',

@@ -1628,7 +1628,8 @@
       "approved": "Aprobado · pago en curso",
       "paid": "Pagado",
       "rejected": "Rechazado",
-      "payment_exception": "Excepción de pago"
+      "payment_exception": "Excepción de pago",
+      "returned": "Devuelto al cliente"
     },
     "catalogo": {
       "ramos": {
@@ -1669,7 +1670,8 @@
         "fotosCristales": "Fotos de los cristales",
         "documentoSoporte": "Documento de soporte",
         "fotosDano": "Fotos del daño",
-        "cotizacionReparacion": "Factura o cotización de la reparación"
+        "cotizacionReparacion": "Factura o cotización de la reparación",
+        "fotoPlaca": "Fotografía de la placa"
       }
     },
     "radicacion": {
@@ -2348,6 +2350,161 @@
           "boton": "Reintentar pago",
           "enviando": "Reintentando…"
         }
+      }
+    },
+    "radicacionesRevision": {
+      "titulo": "Radicaciones por revisar",
+      "descripcion": "Siniestros radicados que esperan tu revisión antes de entrar a evaluación, del más antiguo al más nuevo.",
+      "actualizar": "Actualizar",
+      "cargando": "Cargando radicaciones…",
+      "cargarMas": "Cargar más",
+      "reintentar": "Reintentar",
+      "vacio": "No hay radicaciones pendientes de revisión.",
+      "leyenda": "Radicaciones pendientes de revisión",
+      "error": {
+        "titulo": "No pudimos cargar las radicaciones",
+        "texto": "Intenta de nuevo en unos segundos."
+      },
+      "columnas": {
+        "radicado": "Radicado",
+        "producto": "Producto",
+        "canal": "Canal",
+        "montoEstimado": "Monto estimado",
+        "radicadoEl": "Radicado el",
+        "espera": "En espera",
+        "acciones": "Acciones"
+      },
+      "canales": {
+        "web": "Portal web",
+        "mobile": "App móvil"
+      },
+      "revisar": "Revisar",
+      "revisarEtiqueta": "Revisar la radicación {{radicado}}"
+    },
+    "revision": {
+      "volver": "Siniestros",
+      "cargando": "Cargando la radicación…",
+      "reintentar": "Reintentar",
+      "enviando": "Enviando…",
+      "noEncontrado": {
+        "titulo": "No encontramos la radicación",
+        "texto": "Revisa el enlace o vuelve a la lista de radicaciones."
+      },
+      "error": {
+        "titulo": "No pudimos cargar la radicación",
+        "texto": "Intenta de nuevo en unos segundos."
+      },
+      "titulo": "Radicación {{radicado}}",
+      "pendiente": "Pendiente de revisión",
+      "radicadoPor": "Radicado por {{asegurado}} el {{fecha}} desde {{canal}}",
+      "aseguradoDesconocido": "el asegurado",
+      "canales": {
+        "web": "el portal web",
+        "mobile": "la app móvil"
+      },
+      "acciones": {
+        "devolver": "Devolver al cliente",
+        "aprobar": "Aprobar y enviar a evaluación",
+        "aprobarDeshabilitado": "Para aprobar, todos los soportes deben estar válidos y no debe faltar ninguno. Si alguno es ilegible o falta, devuelve la radicación al cliente."
+      },
+      "exito": {
+        "approved": "La radicación {{radicado}} pasó a «En evaluación» y entró a la cola de triage.",
+        "returned": "La radicación {{radicado}} quedó «Devuelto al cliente». El asegurado podrá corregirla sin reportar de nuevo."
+      },
+      "yaRevisada": {
+        "approved": "Esta radicación ya fue aprobada por {{asesor}} el {{fecha}}.",
+        "returned": "Esta radicación fue devuelta al cliente por {{asesor}} el {{fecha}}.",
+        "otroEstado": "Esta radicación ya no está pendiente de revisión: está «{{estado}}»."
+      },
+      "errores": {
+        "claim_not_reviewable": "Otro asesor ya revisó esta radicación. Te mostramos cómo quedó.",
+        "supports_incomplete": "Falta un soporte requerido: devuelve la radicación al cliente.",
+        "reason_code_invalid": "Elige un motivo de la lista.",
+        "note_too_long": "La nota de un soporte es demasiado larga (máximo 300 caracteres).",
+        "support_not_applicable": "Uno de los soportes no corresponde a este tipo de siniestro. Recarga la radicación.",
+        "verdict_not_applicable": "El veredicto de un soporte no corresponde a lo adjuntado. Recarga la radicación.",
+        "invalid_request": "No pudimos registrar la revisión. Recarga la radicación e intenta de nuevo.",
+        "claim_not_found": "La radicación ya no existe.",
+        "claims_unavailable": "No pudimos registrar la revisión. Intenta de nuevo en unos segundos.",
+        "message_required": "Escribe el mensaje para el cliente.",
+        "message_too_long": "El mensaje para el cliente es demasiado largo.",
+        "nothing_requested": "Marca un soporte como ilegible o faltante, o un dato a corregir.",
+        "unauthorized": "Tu sesión expiró.",
+        "forbidden": "No tienes permiso para revisar radicaciones."
+      },
+      "datos": {
+        "titulo": "Datos reportados",
+        "fechaHecho": "Fecha y hora del hecho",
+        "lugar": "Lugar",
+        "montoEstimado": "Monto estimado",
+        "descripcion": "Descripción"
+      },
+      "soportes": {
+        "titulo": "Soportes adjuntos",
+        "adjuntos": "{{n}} archivo(s) adjunto(s)",
+        "noAdjuntoRequerido": "No adjunto · requerido para este tipo de siniestro",
+        "noAdjuntoOpcional": "No adjunto · opcional",
+        "verEtiqueta": "Ver un archivo de {{soporte}}",
+        "veredictoDe": "Veredicto de {{soporte}}",
+        "nota": "Nota sobre {{soporte}}",
+        "notaAyuda": "¿Qué tiene? Por ejemplo: borroso, no se lee el número",
+        "solicitar": "Solicitar al cliente"
+      },
+      "veredictos": {
+        "valid": "Válido",
+        "illegible": "Ilegible",
+        "missing": "Falta",
+        "opcional": "Opcional"
+      },
+      "devolucion": {
+        "titulo": "Devolución al cliente",
+        "descripcion": "Si devuelves la radicación, registra el motivo y el mensaje para el cliente. El caso pasa a «Devuelto al cliente» y la persona podrá corregir los soportes marcados como ilegibles o faltantes sin reportar desde cero.",
+        "motivo": "Motivo",
+        "elegirMotivo": "Elige un motivo",
+        "datos": "Datos a corregir (opcional)",
+        "mensaje": "Mensaje para el cliente",
+        "mensajeAyuda": "Lo lee el asegurado. Máximo 1000 caracteres.",
+        "pedido": "Se pedirán {{soportes}} soporte(s) y {{datos}} dato(s) a corregir.",
+        "enviar": "Devolver radicación",
+        "errores": {
+          "motivo": "Elige el motivo de la devolución.",
+          "mensaje": {
+            "required": "Escribe el mensaje para el cliente.",
+            "too_long": "El mensaje no puede pasar de 1000 caracteres."
+          },
+          "pedido": "Para devolver, marca al menos un soporte como ilegible o faltante, o un dato a corregir."
+        }
+      },
+      "motivos": {
+        "illegible_or_incomplete_supports": "Soportes ilegibles o incompletos",
+        "inconsistent_facts": "Datos del hecho inconsistentes",
+        "missing_information": "Información faltante",
+        "other": "Otro"
+      },
+      "datosCorregibles": {
+        "occurred_at": "Fecha y hora del hecho",
+        "place": "Lugar",
+        "description": "Descripción",
+        "estimated_amount": "Monto estimado"
+      },
+      "poliza": {
+        "titulo": "Póliza",
+        "estado": "Póliza y estado",
+        "cobertura": "Cobertura aplicable",
+        "deducible": "Deducible",
+        "deducibleValor": "{{pct}} %",
+        "previos": "Siniestros previos",
+        "sinPrevios": "Ninguno",
+        "previo": "{{estado}} ({{tipo}}, {{fecha}})"
+      },
+      "alAprobar": {
+        "titulo": "Al aprobar",
+        "texto": "El caso pasa a «En evaluación» y entra a la cola de triage con su prioridad calculada automáticamente según severidad y monto estimado."
+      },
+      "revisiones": {
+        "titulo": "Revisiones anteriores",
+        "approved": "Aprobada por {{asesor}}",
+        "returned": "Devuelta por {{asesor}}"
       }
     }
   },

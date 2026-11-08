@@ -1,0 +1,134 @@
+<ul class="soportes" *transloco="let t; prefix: 'siniestros'">
+  @for (item of items(); track item.codigoRequisito) {
+    @let e = entrada(item.codigoRequisito);
+    @let nombreItem = nombre(t, item);
+    <li class="soporte" [attr.data-codigo]="item.codigoRequisito">
+      <span
+        class="soporte__icono"
+        [attr.data-veredicto]="e.veredicto ?? 'opcional'"
+        aria-hidden="true"
+      >
+        @switch (e.veredicto) {
+          @case ('valid') {
+            <svg lucideCircleCheck [size]="20"></svg>
+          }
+          @case (null) {
+            <svg lucideCircle [size]="20"></svg>
+          }
+          @default {
+            <svg lucideCircleAlert [size]="20"></svg>
+          }
+        }
+      </span>
+
+      <div class="soporte__texto">
+        <p class="soporte__nombre">
+          {{ nombreItem }}
+          @if (item.archivos > 0) {
+            ({{ item.archivos }})
+          }
+        </p>
+        <p class="soporte__detalle">
+          @if (item.archivos > 0) {
+            {{ t('revision.soportes.adjuntos', { n: item.archivos }) }}
+            @if (e.veredicto === 'illegible' && e.nota) {
+              · {{ e.nota }}
+            }
+          } @else {
+            {{
+              t(
+                item.requerido
+                  ? 'revision.soportes.noAdjuntoRequerido'
+                  : 'revision.soportes.noAdjuntoOpcional'
+              )
+            }}
+          }
+        </p>
+        @if (archivos()[item.codigoRequisito]; as lista) {
+          <ul class="soporte__archivos">
+            @for (a of lista; track a.clave) {
+              <li>
+                @if (a.url) {
+                  <a
+                    [href]="a.url"
+                    target="_blank"
+                    rel="noopener"
+                    [attr.aria-label]="t('revision.soportes.verEtiqueta', { soporte: nombreItem })"
+                  >
+                    <svg lucideEye [size]="16" aria-hidden="true"></svg>
+                    {{
+                      item.codigoRequisito === 'vehicle_photos' && canal() === 'mobile'
+                        ? (a.nombre | formatoFechaHora)
+                        : a.nombre
+                    }}
+                  </a>
+                } @else {
+                  <span>{{ a.nombre }}</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="soporte__veredicto">
+        @if (e.veredicto) {
+          <app-insignia-estado [tono]="tono[e.veredicto]">{{
+            t('revision.veredictos.' + e.veredicto)
+          }}</app-insignia-estado>
+        } @else {
+          <app-insignia-estado tono="neutro">{{
+            t('revision.veredictos.opcional')
+          }}</app-insignia-estado>
+        }
+      </div>
+
+      @if (editable()) {
+        <div class="soporte__control">
+          @if (item.archivos > 0) {
+            <fieldset class="opciones">
+              <legend class="oculto">
+                {{ t('revision.soportes.veredictoDe', { soporte: nombreItem }) }}
+              </legend>
+              @for (v of ['valid', 'illegible']; track v) {
+                <label class="opciones__opcion">
+                  <input
+                    type="radio"
+                    [name]="'veredicto-' + item.codigoRequisito"
+                    [value]="v"
+                    [checked]="e.veredicto === v"
+                    (change)="marcar(item, $any(v))"
+                  />
+                  {{ t('revision.veredictos.' + v) }}
+                </label>
+              }
+            </fieldset>
+            @if (e.veredicto === 'illegible') {
+              <label class="oculto" [for]="'nota-' + item.codigoRequisito">{{
+                t('revision.soportes.nota', { soporte: nombreItem })
+              }}</label>
+              <input
+                class="campo__control soporte__nota"
+                type="text"
+                [id]="'nota-' + item.codigoRequisito"
+                [value]="e.nota"
+                [attr.maxlength]="maximoNota"
+                [placeholder]="t('revision.soportes.notaAyuda')"
+                (input)="anotar(item, $event)"
+              />
+            }
+          } @else if (!item.requerido) {
+            <label class="opciones__opcion">
+              <input
+                type="checkbox"
+                [checked]="e.veredicto === 'missing'"
+                (change)="solicitar(item, $event)"
+              />
+              {{ t('revision.soportes.solicitar') }}
+            </label>
+          }
+        </div>
+      }
+    </li>
+  }
+</ul>

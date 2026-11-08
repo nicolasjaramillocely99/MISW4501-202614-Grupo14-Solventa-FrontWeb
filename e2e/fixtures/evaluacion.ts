@@ -13,7 +13,8 @@ const COBERTURA = { incident: 'water_damage', insured_value_minor: 32_000_000_00
 const RESUMEN = {
   claim_id: ID_CASO,
   filing_number: 'SIN-2026-01655',
-  status: 'active',
+  // Desde HU-W2.1-03 operaciones solo ve y decide lo que el asesor aprobó.
+  status: 'in_evaluation',
   channel: 'web',
   policy: POLIZA,
   incident_type: 'water_damage',
