@@ -12,6 +12,7 @@ import {
   RENOVACION_ACEPTADA_DTO,
   RENOVACION_RENOVADA_DTO,
 } from '@testing/renovacion-pruebas';
+import { PAGINA_POR_VENCER_DTO } from '@testing/polizas-por-vencer-pruebas';
 import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
 import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
 
@@ -22,6 +23,7 @@ import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-
 import { ErrorFormalizacion, SolicitudFormalizacion } from './formalizacion.modelos';
 import { ErrorOferta, mapearOferta } from './oferta.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
+import { ErrorPorVencer, mapearPaginaPorVencer } from './polizas-por-vencer.modelos';
 import { ErrorRenovacion, mapearCondicionesRenovacion, mapearPolizaListada, mapearRenovacion } from './renovacion.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
 
@@ -465,6 +467,51 @@ describe('OriginacionApiService', () => {
         .flush({ error: 'renewal_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect(codigos).toEqual(['renewal_not_available', 'renewal_unavailable', 'renewal_unavailable', 'renewal_not_found']);
+    });
+  });
+
+  describe('pólizas próximas a vencer del asesor (HU-W1.5-01)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('lista sin rango (el backend aplica la ventana) y devuelve la página traducida', () => {
+      let recibido: unknown;
+      servicio
+        .listarPolizasPorVencer({ desde: null, hasta: null, estado: null, pagina: 1, tamano: 20 })
+        .subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`);
+      expect(peticion.request.method).toBe('GET');
+      expect(peticion.request.params.toString()).toBe('page=1&page_size=20');
+      peticion.flush(PAGINA_POR_VENCER_DTO);
+
+      expect(recibido).toEqual(mapearPaginaPorVencer(PAGINA_POR_VENCER_DTO));
+    });
+
+    it('envía el rango, el estado y la página del filtro', () => {
+      servicio
+        .listarPolizasPorVencer({ desde: '2026-10-01', hasta: '2026-10-31', estado: 'expiring', pagina: 3, tamano: 20 })
+        .subscribe();
+
+      const peticion = http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`);
+      expect(peticion.request.params.toString()).toBe(
+        'page=3&page_size=20&expires_from=2026-10-01&expires_to=2026-10-31&status=expiring',
+      );
+      peticion.flush(PAGINA_POR_VENCER_DTO);
+    });
+
+    it('distingue el rango invertido (out_of_range) y la falta de servicio', () => {
+      const codigos: string[] = [];
+      const alFallar = (e: ErrorPorVencer) => codigos.push(e.codigo);
+      const filtro = { desde: '2026-10-31', hasta: '2026-10-01', estado: null, pagina: 1, tamano: 20 };
+
+      servicio.listarPolizasPorVencer(filtro).subscribe({ error: alFallar });
+      http
+        .expectOne((r) => r.url === `${BASE}/v1/policies/expiring`)
+        .flush({ error: 'out_of_range', message: 'm' }, { status: 400, statusText: 'Bad Request' });
+      servicio.listarPolizasPorVencer(filtro).subscribe({ error: alFallar });
+      http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['out_of_range', 'renewal_unavailable']);
     });
   });
 
