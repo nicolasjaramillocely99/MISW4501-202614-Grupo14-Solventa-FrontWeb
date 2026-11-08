@@ -76,12 +76,6 @@ export function rangoValido(filtro: Pick<CriteriosPorVencer, 'desde' | 'hasta'>)
   return !filtro.desde || !filtro.hasta || filtro.hasta >= filtro.desde;
 }
 
-/** `AAAA-MM-DD` → `DD/MM/AAAA`, sin pasar por zonas horarias (es un día civil). */
-export function diaCorto(dia: string): string {
-  const partes = PATRON_DIA.exec(dia);
-  return partes ? `${partes[3]}/${partes[2]}/${partes[1]}` : dia;
-}
-
 /** Número de páginas de un total (al menos 1). */
 export function totalPaginas(total: number, tamano: number): number {
   return Math.max(1, Math.ceil(total / Math.max(1, tamano)));

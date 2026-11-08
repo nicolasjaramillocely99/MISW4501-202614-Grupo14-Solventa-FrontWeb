@@ -1,7 +1,6 @@
 import {
   SIN_CRITERIOS,
   TAMANO_PAGINA,
-  diaCorto,
   esDiaValido,
   filtroDesdeParametros,
   parametrosDesdeFiltro,
@@ -71,11 +70,6 @@ describe('filtro de las pólizas próximas a vencer (HU-W1.5-01)', () => {
     expect(esDiaValido('2026-02-29')).toBe(false);
     expect(esDiaValido('2026-13-01')).toBe(false);
     expect(esDiaValido('2026-1-1')).toBe(false);
-  });
-
-  it('muestra el día civil como DD/MM/AAAA sin zonas horarias', () => {
-    expect(diaCorto('2026-12-01')).toBe('01/12/2026');
-    expect(diaCorto('otro')).toBe('otro');
   });
 
   it('cuenta las páginas, al menos una', () => {

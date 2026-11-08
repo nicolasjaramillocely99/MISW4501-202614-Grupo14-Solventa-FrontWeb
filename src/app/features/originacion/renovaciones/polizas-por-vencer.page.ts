@@ -21,7 +21,6 @@ import { InsigniaEstadoComponent, TonoInsignia } from '@shared/ui/insignia-estad
 
 import {
   CriteriosPorVencer,
-  diaCorto,
   filtroDesdeParametros,
   parametrosDesdeFiltro,
   rangoValido,
@@ -151,7 +150,15 @@ export class PolizasPorVencerPage implements OnInit {
 
   /** «02/10/2026»: el día civil de Colombia, en el orden del idioma. */
   protected dia(iso: string): string {
-    const valor = new Date(iso);
+    return this.formatoDia(new Date(iso), ZONA_COLOMBIA);
+  }
+
+  /** Un día civil (`AAAA-MM-DD`, como los del rango) con el mismo formato de la tabla, sin correrlo por la zona horaria. */
+  protected diaCivil(dia: string): string {
+    return dia ? this.formatoDia(new Date(`${dia}T00:00:00Z`), 'UTC') : '';
+  }
+
+  private formatoDia(valor: Date, timeZone: string): string {
     if (Number.isNaN(valor.getTime())) {
       return '';
     }
@@ -159,7 +166,7 @@ export class PolizasPorVencerPage implements OnInit {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-      timeZone: ZONA_COLOMBIA,
+      timeZone,
     }).format(valor);
   }
 
@@ -190,8 +197,8 @@ export class PolizasPorVencerPage implements OnInit {
     const datos = this.pagina();
     const estado = this.filtro().estado;
     return {
-      desde: datos ? diaCorto(datos.desde) : '',
-      hasta: datos ? diaCorto(datos.hasta) : '',
+      desde: datos?.desde ?? '',
+      hasta: datos?.hasta ?? '',
       estado: estado ? `estados.${estado}` : 'filtros.todos',
     };
   });

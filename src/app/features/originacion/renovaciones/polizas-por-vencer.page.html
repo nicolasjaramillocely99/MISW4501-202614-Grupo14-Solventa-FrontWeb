@@ -144,7 +144,7 @@
             <div class="vacio" role="status">
               <span class="vacio__icono" aria-hidden="true"><svg lucideSearch [size]="28"></svg></span>
               <h3 class="vacio__titulo">{{ t('vacio.titulo') }}</h3>
-              <p class="vacio__texto">{{ t('vacio.texto', { desde: vacio().desde, hasta: vacio().hasta, estado: t(vacio().estado) }) }}</p>
+              <p class="vacio__texto">{{ t('vacio.texto', { desde: diaCivil(vacio().desde), hasta: diaCivil(vacio().hasta), estado: t(vacio().estado) }) }}</p>
               <button type="button" class="boton boton--secundario" (click)="limpiar()">{{ t('vacio.limpiar') }}</button>
             </div>
           }
