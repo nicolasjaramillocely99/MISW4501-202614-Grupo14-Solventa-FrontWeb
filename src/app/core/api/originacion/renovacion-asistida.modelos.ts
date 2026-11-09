@@ -75,7 +75,12 @@ export interface RecotizacionRenovacion {
   fuentes: FuenteRecotizacion[];
   baseConsentimiento: BaseConsentimiento | null;
   consentimientoAfirmadoEn: string | null;
+  /** Quién afirmó el consentimiento (D-13 c): su nombre o, si la cuenta no lo tiene, su correo; `null` si no hubo casilla. */
+  consentimientoAfirmadoPor: string | null;
 }
+
+/** Lo que el comparativo y «Nueva prima mensual» muestran como renovado: de la recotización o de la renovación aceptada. */
+export type CondicionesRenovadas = Pick<RecotizacionRenovacion, 'renovada' | 'variacionPrima' | 'descuento'>;
 
 /** Titular de la póliza, sin su contacto. */
 export interface TitularRenovacion {
@@ -97,9 +102,14 @@ export interface PolizaRenovacionAsistida {
   renovacionDe: string | null;
 }
 
-/** Renovación del periodo con el canal que la hizo. */
+/** Renovación del periodo con el canal que la hizo y las condiciones que se aceptaron. */
 export interface ResumenRenovacionAsistida extends ResumenRenovacion {
   canal: CanalRenovacion;
+  /** Condiciones aceptadas en cualquiera de los dos canales; `null` en una caducidad, que no aceptó ninguna. */
+  condiciones: CondicionesPoliza | null;
+  variacionPrima: number;
+  descuento: number;
+  recotizada: boolean;
 }
 
 /** Registro del asesor (CA-4): quién, cuándo, con qué recotización y cómo aceptó el cliente. */
@@ -182,6 +192,8 @@ export interface RecotizacionRenovacionDto {
   sources: { source: string; status: EstadoFuente; latency_ms: number }[];
   consent_basis: BaseConsentimiento | null;
   consent_affirmed_at: string | null;
+  consent_affirmed_by_email: string | null;
+  consent_affirmed_by_name: string | null;
 }
 
 export interface RenovacionAsistidaDto {
@@ -201,7 +213,15 @@ export interface RenovacionAsistidaDto {
   current: CondicionesPolizaDto;
   payment_method: MedioDePagoDto | null;
   requote: RecotizacionRenovacionDto | null;
-  renewal: (ResumenRenovacionDto & { channel: CanalRenovacion }) | null;
+  renewal:
+    | (ResumenRenovacionDto & {
+        channel: CanalRenovacion;
+        terms: CondicionesPolizaDto | null;
+        premium_change_rate: number;
+        discount_rate: number;
+        requoted: boolean;
+      })
+    | null;
   formalization: {
     advisor_id: string;
     advisor_email: string;
@@ -251,6 +271,7 @@ export function mapearRecotizacion(dto: RecotizacionRenovacionDto): Recotizacion
     fuentes: dto.sources.map((f) => ({ nombre: f.source, estado: f.status, latenciaMs: f.latency_ms })),
     baseConsentimiento: dto.consent_basis,
     consentimientoAfirmadoEn: dto.consent_affirmed_at,
+    consentimientoAfirmadoPor: dto.consent_affirmed_by_name?.trim() || dto.consent_affirmed_by_email || null,
   };
 }
 
@@ -286,7 +307,16 @@ export function mapearRenovacionAsistida(dto: RenovacionAsistidaDto): Renovacion
     vigente: mapearCondiciones(dto.current),
     medioDePago: dto.payment_method ? mapearMedio(dto.payment_method) : null,
     recotizacion: dto.requote ? mapearRecotizacion(dto.requote) : null,
-    renovacion: dto.renewal ? { ...mapearResumenRenovacion(dto.renewal), canal: dto.renewal.channel } : null,
+    renovacion: dto.renewal
+      ? {
+          ...mapearResumenRenovacion(dto.renewal),
+          canal: dto.renewal.channel,
+          condiciones: dto.renewal.terms ? mapearCondiciones(dto.renewal.terms) : null,
+          variacionPrima: dto.renewal.premium_change_rate,
+          descuento: dto.renewal.discount_rate,
+          recotizada: dto.renewal.requoted,
+        }
+      : null,
     formalizacion: f
       ? {
           asesorId: f.advisor_id,

@@ -55,6 +55,8 @@ export function recotizacion(cambios: Record<string, unknown> = {}) {
     ],
     consent_basis: 'audit_verified',
     consent_affirmed_at: null,
+    consent_affirmed_by_email: null,
+    consent_affirmed_by_name: null,
     ...cambios,
   };
 }
@@ -138,6 +140,11 @@ const RESUMEN = {
   accepted_at: '2026-09-16T21:06:00Z',
   retry_until: '2026-09-19T21:06:00Z',
   closed_at: null,
+  // Las condiciones aceptadas, en cualquiera de los dos canales.
+  terms: recotizacion().renewal,
+  premium_change_rate: 0.0527,
+  discount_rate: 0.08,
+  requoted: true,
 };
 
 /** Registro del asesor; sin `name` en la cuenta la pantalla muestra el correo. */

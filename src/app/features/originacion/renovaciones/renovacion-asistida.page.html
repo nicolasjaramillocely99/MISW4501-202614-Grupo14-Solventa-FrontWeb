@@ -31,8 +31,7 @@
         </button>
 
         <header class="pagina__encabezado">
-          <div>
-            <div class="pagina__fila">
+          <div class="pagina__fila">
               <h1 class="pagina__titulo">{{ t(claveTitulo(), { poliza: d.poliza.polizaId }) }}</h1>
               <app-insignia-estado tono="advertencia">{{ t('vence', { fecha: fechaCorta(d.poliza.vigenciaHasta) }) }}</app-insignia-estado>
               @if (degradada()) {
@@ -49,7 +48,8 @@
               @if (fase() === 'noDisponible' && noDisponible() === 'noRenovada') {
                 <app-insignia-estado tono="error">{{ t('insignias.noRenovada') }}</app-insignia-estado>
               }
-            </div>
+          </div>
+          <div class="pagina__detalle">
             @if (titular(); as s) {
               <p class="pagina__subtitulo">
                 @if (enS7b() && d.formalizacion; as f) {
@@ -65,8 +65,7 @@
                 }
               </p>
             }
-          </div>
-          <div class="acciones">
+            <div class="acciones">
             @if (enS7()) {
               <button
                 type="button"
@@ -114,6 +113,7 @@
                 </button>
               }
             }
+            </div>
           </div>
         </header>
 
@@ -165,8 +165,8 @@
             </div>
           }
           @case ('sinMedioDePago') {
-            <div class="aviso aviso--advertencia" role="status">
-              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
               <div>
                 <p class="aviso__titulo">{{ t('avisos.sinMedio.titulo') }}</p>
                 <p>{{ t('avisos.sinMedio.texto') }}</p>
@@ -252,7 +252,7 @@
         @if (fase() !== 'noDisponible') {
           <div class="pagina__cuerpo">
             <div class="principal">
-              <app-comparativo-condiciones [vigente]="d.vigente" [recotizacion]="recotizacionMostrada()" />
+              <app-comparativo-condiciones [vigente]="d.vigente" [recotizacion]="condicionesMostradas()" />
               @if (enS7()) {
                 <app-aceptacion-cliente
                   [medioDePago]="d.medioDePago"
@@ -277,7 +277,7 @@
             <aside class="lateral">
               <section class="tarjeta prima" aria-labelledby="titulo-prima">
                 <h2 id="titulo-prima" class="prima__titulo">{{ t('prima.titulo') }}</h2>
-                @if (enS7() ? recotizacionVigente() : recotizacionMostrada(); as rq) {
+                @if (enS7() ? recotizacionVigente() : condicionesMostradas(); as rq) {
                   <p class="prima__valor">{{ rq.renovada.prima | formatoMoneda: rq.renovada.moneda }}</p>
                   <p class="prima__detalle">{{ t('prima.desde', { fecha: fechaCorta(rq.renovada.vigenciaDesde) }) }}</p>
                 } @else {
@@ -292,11 +292,12 @@
                     [cobro]="d.cobro"
                     [medioDePago]="d.medioDePago"
                     [emision]="emision()"
-                    [nuevaVigenciaHasta]="recotizacionMostrada()?.renovada.vigenciaHasta ?? null"
+                    [nuevaVigenciaDesde]="condicionesMostradas()?.renovada.vigenciaDesde ?? null"
+                    [nuevaVigenciaHasta]="condicionesMostradas()?.renovada.vigenciaHasta ?? null"
                   />
                 </div>
               }
-              @if (enS7() || recotizacionMostrada()) {
+              @if (conTrazabilidad()) {
                 <app-trazabilidad-recotizacion
                   [recotizacion]="recotizacionMostrada()"
                   [trazabilidad]="enS7b()"

@@ -41,6 +41,12 @@
   }
 }
 
+// La columna recotizada, encabezado y valores, en el azul de marca.
+.comparativo__tabla thead th.comparativo__recotizada,
 .comparativo__recotizada {
-  color: var(--color-azul-700);
+  color: var(--color-azul-500);
+}
+
+td.comparativo__recotizada {
+  font-weight: 500;
 }

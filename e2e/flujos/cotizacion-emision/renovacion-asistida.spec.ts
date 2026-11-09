@@ -88,8 +88,8 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
 
     // El cobro se confirma: la pantalla lo sigue cada 2 s y muestra la póliza nueva con su certificado.
     await expect(page.getByText('Renovada', { exact: true })).toBeVisible({ timeout: 10_000 });
-    await expect(s7.paso('Cobro de la prima')).toContainText('Confirmado · Visa •••• 1111');
-    await expect(s7.paso('Certificado renovado')).toContainText('Póliza nueva pol-ren-118204');
+    await expect(s7.paso('Cobro de la prima')).toContainText(/Confirmado el 16\/09\/2026, \d{2}:\d{2} · Visa •••• 1111/);
+    await expect(s7.paso('Certificado renovado')).toContainText('Póliza nueva pol-ren-118204 · vigente del 02/10/2026 al 02/10/2027');
     await expect(s7.paso('Certificado renovado')).toContainText('Emitido');
     await expect(s7.paso('Notificación al cliente')).toContainText('Enviada');
     await expect(page.getByRole('button', { name: 'Ver certificado' })).toBeVisible();
@@ -150,6 +150,7 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
     await verificarAccesibilidad(page);
 
     await s7.recotizar.click();
+    await expect(page.getByText('Sin perfil reciente en caché')).toBeVisible();
     await expect(page.getByText(/no hay un perfil reciente en caché: la recotización usó el perfil actuarial base/)).toBeVisible();
     await expect(page.getByText('Modo degradado', { exact: true })).toBeVisible();
     await verificarAccesibilidad(page);
@@ -290,7 +291,7 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
   test('E8 · sin consentimiento o sin poder verificarlo no recotiza (D-8)', async ({ page }) => {
     const s7 = new RenovacionAsistidaPagina(page);
     const llamadas = await s7.simularGateway({
-      vista: [ok(vista()), ok(recotizada())],
+      vista: [ok(vista()), ok(vista()), ok(recotizada())],
       recotizar: [ok(error('consent_required'), 422), ok(error('consent_unverifiable'), 503), ok(recotizacion(), 201)],
     });
     await s7.abrirComo(RUTA);
@@ -299,8 +300,11 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
     await expect(s7.alerta).toContainText('El cliente revocó su autorización de Open Finance');
     await expect(s7.fuente('Open Finance')).toContainText('Sin autorización');
     await expect(s7.formalizar).toBeDisabled();
+    await expect(s7.recotizar).toBeDisabled();
     await verificarAccesibilidad(page);
 
+    // Cuando el cliente vuelve a autorizar, el asesor recarga y recotiza.
+    await page.reload();
     await s7.recotizar.click();
     await expect(s7.alerta).toContainText('No pudimos verificar la autorización del cliente');
     await expect(s7.fuente('Open Finance')).toContainText('Sin verificar');
@@ -313,7 +317,12 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
 
   test('E8 · en una póliza vendida por un asesor «Recotizar» espera la casilla de consentimiento (D-13 c)', async ({ page }) => {
     const s7 = new RenovacionAsistidaPagina(page);
-    const afirmada = recotizacion({ consent_basis: 'advisor_affirmed', consent_affirmed_at: '2026-09-16T21:02:00Z' });
+    const afirmada = recotizacion({
+      consent_basis: 'advisor_affirmed',
+      consent_affirmed_at: '2026-09-16T21:02:00Z',
+      consent_affirmed_by_email: 'asesor@example.com',
+      consent_affirmed_by_name: 'Laura Gómez',
+    });
     const llamadas = await s7.simularGateway({
       vista: [ok(vista({ consent_mode: 'advisor_affirmation' })), ok(recotizada(afirmada))],
       recotizar: ok(afirmada, 201),
@@ -424,6 +433,10 @@ test.describe('Renovación asistida del asesor (HU-W1.5-03)', () => {
 
     await expect(page.getByText('El cliente renovó desde su portal')).toBeVisible();
     await expect(s7.subtitulo).toContainText('aceptada por el cliente en su portal el');
+    // La prima y las condiciones que aceptó el asegurado (m-1 de la validación).
+    await expect(s7.comparativo).toContainText(/149\.800\sCOP \(\+5,3\s?%\)/);
+    await expect(s7.prima).toContainText(/149\.800\sCOP/);
+    await expect(page.getByText('Sin recotización vigente para este periodo')).toHaveCount(0);
     await expect(s7.paso('Cobro de la prima')).toContainText('En curso');
     await expect(s7.recotizar).toHaveCount(0);
     await expect(s7.formalizar).toHaveCount(0);

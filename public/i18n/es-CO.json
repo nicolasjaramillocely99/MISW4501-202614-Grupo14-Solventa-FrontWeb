@@ -1733,7 +1733,7 @@
           "texto": "Open Finance no respondió. La recotización usó el último perfil del cliente en caché, del {{fecha}}. Infórmaselo antes de registrar su aceptación."
         },
         "base": {
-          "titulo": "Fuentes externas no disponibles",
+          "titulo": "Sin perfil reciente en caché",
           "texto": "Open Finance no respondió y no hay un perfil reciente en caché: la recotización usó el perfil actuarial base. Infórmaselo antes de registrar su aceptación."
         },
         "sinConsentimiento": {
@@ -1893,8 +1893,8 @@
         "cobro": "Cobro de la prima",
         "cobroEnCurso": "{{tarjeta}} · iniciado el {{fecha}}",
         "cobroIniciado": "Iniciado el {{fecha}}",
-        "cobroConfirmado": "Confirmado · {{tarjeta}}",
-        "cobroConfirmadoSinTarjeta": "Confirmado",
+        "cobroConfirmado": "Confirmado el {{fecha}} · {{tarjeta}}",
+        "cobroConfirmadoSinTarjeta": "Confirmado el {{fecha}}",
         "cobroFallido": "Rechazado el {{fecha}} · reintento hasta el {{hasta}}",
         "noRenovada": {
           "no_response": "La ventana cerró sin respuesta del cliente",
@@ -1902,6 +1902,7 @@
         },
         "certificado": "Certificado renovado",
         "certificadoEmitido": "Póliza nueva {{poliza}}",
+        "certificadoEmitidoVigente": "Póliza nueva {{poliza}} · vigente del {{desde}} al {{hasta}}",
         "certificadoPendiente": "Se emite cuando se confirme el pago",
         "notificacion": "Notificación al cliente",
         "notificacionEnviada": "Correo enviado con el certificado",

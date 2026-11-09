@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 
-import { RecotizacionRenovacion } from '@core/api/originacion/renovacion-asistida.modelos';
+import { CondicionesRenovadas } from '@core/api/originacion/renovacion-asistida.modelos';
 import { CondicionesPoliza } from '@core/api/originacion/renovacion.modelos';
 import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
 
@@ -23,7 +23,8 @@ export class ComparativoCondicionesComponent {
   private readonly transloco = inject(TranslocoService);
 
   readonly vigente = input.required<CondicionesPoliza>();
-  readonly recotizacion = input<RecotizacionRenovacion | null>(null);
+  /** Lo renovado: la recotización o, en S7b, las condiciones que se aceptaron. */
+  readonly recotizacion = input<CondicionesRenovadas | null>(null);
 
   protected readonly renovada = computed(() => this.recotizacion()?.renovada ?? null);
   protected readonly sinCambiosEnCoberturas = computed(() => {

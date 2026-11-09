@@ -55,6 +55,8 @@ export const RECOTIZACION_DTO: RecotizacionRenovacionDto = {
   ],
   consent_basis: 'audit_verified',
   consent_affirmed_at: null,
+  consent_affirmed_by_email: null,
+  consent_affirmed_by_name: null,
 };
 
 /** Open Finance caído: el último perfil en caché (CA-5). */
@@ -88,6 +90,8 @@ export const RECOTIZACION_AFIRMADA_DTO: RecotizacionRenovacionDto = {
   requote_id: 'rq-afirmada',
   consent_basis: 'advisor_affirmed',
   consent_affirmed_at: '2026-09-16T21:02:00Z',
+  consent_affirmed_by_email: 'asesor@example.com',
+  consent_affirmed_by_name: 'Laura Gómez',
 };
 
 /** S7 sin recotizar: la póliza en su ventana, con su tarjeta registrada. */
@@ -163,6 +167,10 @@ const RESUMEN = {
   accepted_at: '2026-09-16T21:06:00Z',
   retry_until: '2026-09-19T21:06:00Z',
   closed_at: null,
+  terms: RECOTIZACION_DTO.renewal,
+  premium_change_rate: RECOTIZACION_DTO.premium_change_rate,
+  discount_rate: RECOTIZACION_DTO.discount_rate,
+  requoted: true,
 };
 
 const FORMALIZACION = {
@@ -223,7 +231,13 @@ export const RENOVACION_DEL_ASEGURADO_DTO: RenovacionAsistidaDto = {
 /** La renovación del periodo terminó como no renovada. */
 export const RENOVACION_NO_RENOVADA_DTO: RenovacionAsistidaDto = {
   ...RENOVACION_SIN_RECOTIZAR_DTO,
-  renewal: { ...RESUMEN, status: 'not_renewed', reason: 'payment_failed', closed_at: '2026-09-19T21:06:00Z', channel: 'insured' },
+  renewal: {
+    ...RESUMEN,
+    status: 'not_renewed',
+    reason: 'payment_failed',
+    closed_at: '2026-09-19T21:06:00Z',
+    channel: 'insured',
+  },
   can_requote: false,
   blocked_reason: 'renewal_not_available',
 };

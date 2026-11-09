@@ -32,7 +32,8 @@ async function renderizar(dto: RenovacionAsistidaDto, emision: EmisionContractua
       cobro: vista.cobro,
       medioDePago: vista.medioDePago,
       emision,
-      nuevaVigenciaHasta: vista.recotizacion?.renovada.vigenciaHasta ?? null,
+      nuevaVigenciaDesde: vista.renovacion?.condiciones?.vigenciaDesde ?? null,
+      nuevaVigenciaHasta: vista.renovacion?.condiciones?.vigenciaHasta ?? null,
     },
   });
 }
@@ -58,8 +59,8 @@ describe('EstadoCobroRenovacionComponent (HU-W1.5-03 · CA-3, 01·D-3 a+)', () =
   it('renovada: el cobro confirmado, el certificado con la póliza nueva y el correo enviado', async () => {
     await renderizar(RENOVACION_RENOVADA_DTO, EMISION);
 
-    expect(fila('Cobro de la prima').textContent).toContain('Confirmado · Visa •••• 1111');
-    expect(fila('Certificado renovado').textContent).toContain('Póliza nueva pol-ren-118204');
+    expect(fila('Cobro de la prima').textContent).toMatch(/Confirmado el 16\/09\/2026, \d{2}:\d{2} · Visa •••• 1111/);
+    expect(fila('Certificado renovado').textContent).toContain('Póliza nueva pol-ren-118204 · vigente del 02/10/2026 al 02/10/2027');
     expect(fila('Certificado renovado').textContent).toContain('Emitido');
     expect(fila('Notificación al cliente').textContent).toContain('Enviada');
     expect(screen.getByText(/la nueva vence el 02\/10\/2027/)).toBeTruthy();

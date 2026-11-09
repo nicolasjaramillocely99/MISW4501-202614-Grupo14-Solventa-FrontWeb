@@ -13,6 +13,7 @@ import {
   CampoRenovacionAsistida,
   CodigoErrorRenovacionAsistida,
   CodigoRenovacionEnviado,
+  CondicionesRenovadas,
   ErrorRenovacionAsistida,
   RecotizacionRenovacion,
   RenovacionAsistida,
@@ -239,6 +240,25 @@ export class RenovacionAsistidaPage implements OnInit {
     }
     return FASES_CON_RECOTIZACION.includes(this.fase()) ? recotizacion : null;
   });
+  /**
+   * Lo renovado que muestran el comparativo y «Nueva prima mensual» en S7b: las condiciones que se aceptaron, de
+   * cualquiera de los dos canales (la renovación del asegurado no tiene recotización del asesor).
+   */
+  protected readonly condicionesAceptadas = computed<CondicionesRenovadas | null>(() => {
+    const r = this.datos()?.renovacion;
+    if (!this.enS7b() || !r?.condiciones) {
+      return null;
+    }
+    return { renovada: r.condiciones, variacionPrima: r.variacionPrima, descuento: r.descuento };
+  });
+  /** Lo que muestra el comparativo: en S7b, lo aceptado; si no, la recotización que se muestra. */
+  protected readonly condicionesMostradas = computed<CondicionesRenovadas | null>(
+    () => this.condicionesAceptadas() ?? this.recotizacionMostrada(),
+  );
+  /** El panel de la recotización: en S7 siempre; en S7b solo si la renovación salió de una recotización del asesor. */
+  protected readonly conTrazabilidad = computed(
+    () => this.enS7() || (this.fase() !== 'soloLecturaAsegurado' && this.recotizacionMostrada() !== null),
+  );
   /** Solo la recotización vigente sostiene la prima nueva y la aceptación. */
   protected readonly recotizacionVigente = computed(() =>
     this.fase() === 'recotizada' || this.fase() === 'sinMedioDePago' ? this.recotizacionMostrada() : null,
@@ -251,6 +271,8 @@ export class RenovacionAsistidaPage implements OnInit {
       !!d &&
       this.enS7() &&
       d.puedeRecotizar &&
+      // Sin consentimiento activo no hay qué reintentar hasta que el cliente autorice de nuevo (se recarga la página).
+      this.fase() !== 'sinConsentimiento' &&
       !this.recotizando() &&
       !this.formalizando() &&
       (!this.conCasilla() || this.consentimientoAfirmado())
@@ -282,10 +304,18 @@ export class RenovacionAsistidaPage implements OnInit {
   protected readonly afirmacion = computed<AfirmacionConsentimiento | null>(() => {
     const d = this.datos();
     const rq = d?.recotizacion;
-    if (!d || !rq || !this.enS7b() || rq.baseConsentimiento !== 'advisor_affirmed' || !rq.consentimientoAfirmadoEn) {
+    if (
+      !d ||
+      !rq ||
+      !this.enS7b() ||
+      rq.baseConsentimiento !== 'advisor_affirmed' ||
+      !rq.consentimientoAfirmadoEn ||
+      !rq.consentimientoAfirmadoPor
+    ) {
       return null;
     }
-    return { asesor: d.formalizacion ? nombreDelAsesor(d.formalizacion) : '', fecha: rq.consentimientoAfirmadoEn };
+    // Quien afirmó, guardado al recotizar: puede no ser el asesor que formalizó (m-2 de la validación).
+    return { asesor: rq.consentimientoAfirmadoPor, fecha: rq.consentimientoAfirmadoEn };
   });
 
   /** Clave del título según la fase. */
@@ -303,7 +333,7 @@ export class RenovacionAsistidaPage implements OnInit {
     if (r?.estado === 'renewed') {
       return 'renovada';
     }
-    return r?.estado === 'accepted' && this.fase() !== 'formalizada' ? 'enCurso' : null;
+    return r?.estado === 'accepted' ? 'enCurso' : null;
   });
 
   /** Aviso de la fase «no disponible»: aún no abre la ventana, ya cerró o la póliza no se renovó. */

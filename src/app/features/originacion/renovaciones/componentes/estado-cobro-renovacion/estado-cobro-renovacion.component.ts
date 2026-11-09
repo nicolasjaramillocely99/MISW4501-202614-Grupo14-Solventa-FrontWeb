@@ -44,8 +44,14 @@ export class EstadoCobroRenovacionComponent {
   readonly medioDePago = input<MedioDePago | null>(null);
   /** Emisión contractual de la póliza nueva, cuando la hay. */
   readonly emision = input<EmisionContractual | null>(null);
-  /** Fin de la vigencia renovada, para la nota de la póliza nueva. */
+  /** La vigencia renovada, para el certificado y la nota de la póliza nueva. */
+  readonly nuevaVigenciaDesde = input<string | null>(null);
   readonly nuevaVigenciaHasta = input<string | null>(null);
+
+  /** Cuándo se confirmó el cobro: al cerrarse la renovación como renovada o, sin ese dato, al activarse la póliza nueva. */
+  protected readonly confirmadoEn = computed(
+    () => this.renovacion().cerradaEn ?? this.emision()?.activadaEn ?? this.renovacion().aceptadaEn,
+  );
 
   protected readonly noRenovada = computed(() => this.renovacion().estado === 'not_renewed');
 

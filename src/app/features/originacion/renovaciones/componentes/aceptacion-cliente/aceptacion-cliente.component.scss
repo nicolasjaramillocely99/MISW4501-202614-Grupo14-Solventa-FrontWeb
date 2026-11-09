@@ -20,9 +20,12 @@
   margin: 0;
 }
 
+// Columnas de al menos 232 px: los controles nativos necesitan ese ancho para que «Código de confirmación» y la hora
+// con «p. m.» se lean completos. A 1440 px el medio y la fecha comparten la primera fila y la referencia (o el código)
+// baja a la segunda; con más espacio caben los tres en una fila.
 .aceptacion__campos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 232px), 1fr));
   gap: var(--espacio-16);
   margin: var(--espacio-16) 0 0;
   padding: 0;

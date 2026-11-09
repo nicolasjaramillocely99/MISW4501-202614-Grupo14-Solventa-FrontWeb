@@ -19,7 +19,11 @@
           <p class="emision__detalle">
             @switch (cobroPaso()) {
               @case ('confirmado') {
-                {{ tarjeta() ? t('cobroConfirmado', { tarjeta: tarjeta() }) : t('cobroConfirmadoSinTarjeta') }}
+                {{
+                  tarjeta()
+                    ? t('cobroConfirmado', { tarjeta: tarjeta(), fecha: confirmadoEn() | formatoFechaHora })
+                    : t('cobroConfirmadoSinTarjeta', { fecha: confirmadoEn() | formatoFechaHora })
+                }}
               }
               @case ('fallo') {
                 {{
@@ -55,7 +59,15 @@
             <p class="emision__nombre">{{ t('certificado') }}</p>
             <p class="emision__detalle">
               @if (certificadoPaso() === 'emitido') {
-                {{ t('certificadoEmitido', { poliza: renovacion().polizaNuevaId }) }}
+                {{
+                  nuevaVigenciaDesde() && nuevaVigenciaHasta()
+                    ? t('certificadoEmitidoVigente', {
+                        poliza: renovacion().polizaNuevaId,
+                        desde: dia(nuevaVigenciaDesde()),
+                        hasta: dia(nuevaVigenciaHasta()),
+                      })
+                    : t('certificadoEmitido', { poliza: renovacion().polizaNuevaId })
+                }}
               } @else {
                 {{ t('certificadoPendiente') }}
               }

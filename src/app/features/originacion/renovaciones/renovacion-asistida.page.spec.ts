@@ -167,6 +167,7 @@ describe('RenovacionAsistidaPage (S7 / S7b · HU-W1.5-03)', () => {
       expect(screen.getByRole('alert').textContent).toContain('El cliente revocó su autorización de Open Finance');
       expect(screen.getAllByText('Sin autorización').length).toBeGreaterThan(0);
       expect(boton('Formalizar renovación').disabled).toBe(true);
+      expect(boton('Recotizar').disabled).toBe(true);
     });
 
     it('si no se puede verificar el consentimiento ofrece «Reintentar» (503 consent_unverifiable)', async () => {
@@ -425,18 +426,28 @@ describe('RenovacionAsistidaPage (S7 / S7b · HU-W1.5-03)', () => {
 
       expect(screen.getByText('El cliente renovó desde su portal')).toBeTruthy();
       expect(screen.getByText(/aceptada por el cliente en su portal el/)).toBeTruthy();
+      expect(screen.getAllByText(/149\.800/).length).toBe(2);
+      expect(screen.queryByText('Sin recotización vigente para este periodo')).toBeNull();
+      expect(screen.queryByRole('heading', { name: 'Recotización' })).toBeNull();
       expect(screen.getByRole('heading', { name: 'Emisión de la renovación' })).toBeTruthy();
       expect(screen.queryByRole('button', { name: 'Recotizar' })).toBeNull();
       expect(screen.queryByRole('button', { name: 'Formalizar renovación' })).toBeNull();
     });
 
-    it('en S7b dice quién afirmó el consentimiento si la recotización usó la casilla', async () => {
+    it('en S7b dice quién afirmó el consentimiento, aunque haya formalizado otro asesor', async () => {
       await renderizar({
         ...RENOVACION_FORMALIZADA_DTO,
-        requote: { ...RECOTIZACION_DTO, consent_basis: 'advisor_affirmed', consent_affirmed_at: '2026-09-16T21:02:00Z' },
+        requote: {
+          ...RECOTIZACION_DTO,
+          consent_basis: 'advisor_affirmed',
+          consent_affirmed_at: '2026-09-16T21:02:00Z',
+          consent_affirmed_by_email: 'andres@example.com',
+          consent_affirmed_by_name: 'Andrés Rojas',
+        },
       });
 
-      expect(screen.getByText(/Consentimiento afirmado por Laura Gómez el/)).toBeTruthy();
+      expect(screen.getByText(/Consentimiento afirmado por Andrés Rojas el/)).toBeTruthy();
+      expect(screen.getByText(/renovada el .* por Laura Gómez/)).toBeTruthy();
     });
   });
 

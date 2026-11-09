@@ -1733,7 +1733,7 @@
           "texto": "Open Finance did not answer. The requote used the customer's last cached profile, from {{fecha}}. Tell them before recording their acceptance."
         },
         "base": {
-          "titulo": "External sources unavailable",
+          "titulo": "No recent cached profile",
           "texto": "Open Finance did not answer and there is no recent cached profile: the requote used the base actuarial profile. Tell the customer before recording their acceptance."
         },
         "sinConsentimiento": {
@@ -1893,8 +1893,8 @@
         "cobro": "Premium charge",
         "cobroEnCurso": "{{tarjeta}} · started on {{fecha}}",
         "cobroIniciado": "Started on {{fecha}}",
-        "cobroConfirmado": "Confirmed · {{tarjeta}}",
-        "cobroConfirmadoSinTarjeta": "Confirmed",
+        "cobroConfirmado": "Confirmed on {{fecha}} · {{tarjeta}}",
+        "cobroConfirmadoSinTarjeta": "Confirmed on {{fecha}}",
         "cobroFallido": "Declined on {{fecha}} · retry until {{hasta}}",
         "noRenovada": {
           "no_response": "The window closed without an answer from the customer",
@@ -1902,6 +1902,7 @@
         },
         "certificado": "Renewed certificate",
         "certificadoEmitido": "New policy {{poliza}}",
+        "certificadoEmitidoVigente": "New policy {{poliza}} · in force from {{desde}} to {{hasta}}",
         "certificadoPendiente": "Issued once the payment is confirmed",
         "notificacion": "Notice to the customer",
         "notificacionEnviada": "E-mail sent with the certificate",
