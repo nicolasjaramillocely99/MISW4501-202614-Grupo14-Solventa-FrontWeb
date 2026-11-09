@@ -1,4 +1,4 @@
-import { DecisionDto, EvaluacionDto, PaginaColaDto } from '@core/api/siniestros/evaluacion.modelos';
+import { DecisionDto, EvaluacionDto, PaginaColaDto, PaginaColaPrioridadDto } from '@core/api/siniestros/evaluacion.modelos';
 
 import { SINIESTRO_RADICADO_DTO } from './siniestros-pruebas';
 
@@ -41,6 +41,28 @@ export const PAGINA_COLA_DTO: PaginaColaDto = {
 };
 
 const CUENTA = { bank_code: '1007', bank_name: 'Banco Aliado', account_type: 'savings', masked_number: '•••• 4512' };
+
+/** La misma cola, ordenada por prioridad (HU-W2.2-02, O5), con el asegurado y los indicadores. */
+export const PAGINA_COLA_PRIORIDAD_DTO: PaginaColaPrioridadDto = {
+  items: PAGINA_COLA_DTO.items.map((item, i) => ({
+    ...item,
+    holder: i === 0 ? { full_name: 'Carolina Pérez Ruiz', document_type: 'CC', document_id: '1020345678' } : null,
+  })),
+  next_page_token: null,
+  summary: {
+    total: 22,
+    matching: 2,
+    levels: [
+      { level: 1, claims: 3 },
+      { level: 2, claims: 7 },
+      { level: 3, claims: 12 },
+    ],
+    unassessed: 0,
+    mean_resolution_days: 4.2,
+    decided_in_window: 18,
+    window_days: 30,
+  },
+};
 
 export const EVALUACION_DTO: EvaluacionDto = {
   claim: {

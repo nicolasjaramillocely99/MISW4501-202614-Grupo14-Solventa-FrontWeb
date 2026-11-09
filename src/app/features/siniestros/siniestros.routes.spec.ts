@@ -38,6 +38,8 @@ describe('rutas de siniestros (HU-W2.1-01)', () => {
             consultarOpcionesRadicacion: () => NEVER,
             listarSiniestros: () => NEVER,
             listarCola: () => NEVER,
+            listarColaPrioridad: () => NEVER,
+            consultarPoliticaTriage: () => NEVER,
             consultarEvaluacion: () => NEVER,
           },
         },
@@ -81,7 +83,7 @@ describe('rutas de siniestros (HU-W2.1-01)', () => {
 
     await harness.navigateByUrl('/siniestros/evaluacion');
     expect(url()).toBe('/siniestros/evaluacion');
-    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Casos en evaluación');
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Cola de siniestros');
 
     await harness.navigateByUrl('/siniestros/caso-1/evaluar');
     expect(url()).toBe('/siniestros/caso-1/evaluar');

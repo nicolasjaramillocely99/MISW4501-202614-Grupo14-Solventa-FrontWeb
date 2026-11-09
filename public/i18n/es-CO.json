@@ -1993,7 +1993,11 @@
           "titulo": "Objetivo de atención por nivel",
           "cargando": "Consultando la política de prioridad…",
           "error": "No pudimos consultar el objetivo de cada nivel.",
-          "reintentar": "Reintentar"
+          "reintentar": "Reintentar",
+          "tiempoMedio": "Tiempo medio de resolución",
+          "sinDecididos": "Sin casos decididos",
+          "dias": "{{dias}} días",
+          "ventana": "Últimos {{dias}} días"
         },
         "busqueda": {
           "titulo": "Buscar siniestros",
@@ -2128,8 +2132,8 @@
       }
     },
     "casosEvaluacion": {
-      "titulo": "Casos en evaluación",
-      "descripcion": "Los siniestros que esperan la decisión de operaciones, con su prioridad calculada automáticamente, del más antiguo al más nuevo. Abre cada uno para evaluarlo.",
+      "titulo": "Cola de siniestros",
+      "descripcion": "Ordenada por prioridad calculada automáticamente (severidad y monto estimado) y, dentro de cada nivel, por tiempo de radicación. La prioridad se recalcula cuando cambia información relevante del caso.",
       "actualizar": "Actualizar",
       "pestanas": {
         "etiqueta": "Casos de la cola",
@@ -2137,7 +2141,7 @@
         "payment-exceptions": "Excepciones de pago"
       },
       "leyenda": {
-        "evaluations": "Siniestros en evaluación",
+        "evaluations": "Siniestros pendientes de decisión, por prioridad",
         "payment-exceptions": "Siniestros aprobados cuyo pago falló"
       },
       "cargando": "Consultando la cola…",
@@ -2157,7 +2161,8 @@
         "montoEstimado": "Monto estimado",
         "estado": "Estado",
         "espera": "Espera",
-        "acciones": "Acciones"
+        "acciones": "Acciones",
+        "asegurado": "Asegurado"
       },
       "triage": "Triage {{nivel}}",
       "sinPrioridad": "Sin calcular",
@@ -2170,7 +2175,21 @@
       "cargarMas": "Cargar más",
       "buscarPorId": "Buscar por id",
       "verPrioridad": "Ver prioridad",
-      "verPrioridadEtiqueta": "Ver la prioridad del siniestro {{radicado}}"
+      "verPrioridadEtiqueta": "Ver la prioridad del siniestro {{radicado}}",
+      "filtros": {
+        "prioridad": "Prioridad",
+        "estado": "Estado",
+        "producto": "Producto",
+        "todas": "Todas",
+        "todos": "Todos",
+        "ramos": {
+          "auto": "Autos",
+          "home": "Hogar"
+        }
+      },
+      "enCola": "{{casos}} casos en cola",
+      "actualizado": "actualizado hace {{segundos}} s",
+      "sinAsegurado": "No disponible"
     },
     "evaluacion": {
       "volver": "Casos en evaluación",

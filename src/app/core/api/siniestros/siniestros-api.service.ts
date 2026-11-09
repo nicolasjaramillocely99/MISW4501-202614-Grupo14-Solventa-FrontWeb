@@ -31,8 +31,12 @@ import {
   traducirErrorSiniestro,
 } from './siniestro.modelos';
 import {
+  FiltroCola,
+  PaginaColaPrioridad,
+  PaginaColaPrioridadDto,
   PaginaCola as PaginaRevisiones,
   PaginaColaDto as PaginaRevisionesDto,
+  mapearPaginaColaPrioridad,
   mapearPaginaCola as mapearPaginaRevisiones,
 } from './evaluacion.modelos';
 import {
@@ -230,6 +234,31 @@ export class SiniestrosApiService {
     const params = tokenPagina ? new HttpParams().set('page_token', tokenPagina) : new HttpParams();
     return this.http.get<PaginaColaDto>(`${this.base}/v1/claims/${lista}`, { params }).pipe(
       map(mapearPaginaCola),
+      catchError((error: unknown) => throwError(() => traducirErrorEvaluacion(error))),
+    );
+  }
+
+  /**
+   * Cola de operaciones ordenada por prioridad (`GET /v1/claims/evaluations`, HU-W2.2-02, O5): Triage 1, 2 y 3, luego lo
+   * que el triage aún no calcula, y en cada nivel el que más espera; con los filtros, el asegurado de cada caso y los
+   * indicadores de toda la cola. Falla con `ErrorEvaluacion`.
+   */
+  listarColaPrioridad(filtro: FiltroCola = {}, tokenPagina?: string): Observable<PaginaColaPrioridad> {
+    let params = new HttpParams();
+    if (filtro.nivel) {
+      params = params.set('level', filtro.nivel);
+    }
+    if (filtro.ramo) {
+      params = params.set('line', filtro.ramo);
+    }
+    if (filtro.estado) {
+      params = params.set('status', filtro.estado);
+    }
+    if (tokenPagina) {
+      params = params.set('page_token', tokenPagina);
+    }
+    return this.http.get<PaginaColaPrioridadDto>(`${this.base}/v1/claims/evaluations`, { params }).pipe(
+      map(mapearPaginaColaPrioridad),
       catchError((error: unknown) => throwError(() => traducirErrorEvaluacion(error))),
     );
   }

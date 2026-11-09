@@ -16,7 +16,19 @@
         @for (fila of politica()?.objetivos ?? []; track fila.nivel) {
           <li class="tarjeta indicador">
             <app-insignia-estado [tono]="insigniaNivel(fila.nivel).tono">{{ t(insigniaNivel(fila.nivel).clave) }}</app-insignia-estado>
+            @if (conteos(); as c) {
+              <span class="indicador__conteo" [attr.data-nivel]="fila.nivel">{{ c[fila.nivel] ?? 0 }}</span>
+            }
             <span class="indicador__objetivo">{{ etiquetaObjetivo(t, fila.objetivo) }}</span>
+          </li>
+        }
+        @if (tiempoMedioDias() !== undefined) {
+          <li class="tarjeta indicador">
+            <span class="indicador__titulo">{{ t('triage.cola.indicadores.tiempoMedio') }}</span>
+            <span class="indicador__conteo">
+              {{ tiempoMedioDias() === null ? t('triage.cola.indicadores.sinDecididos') : t('triage.cola.indicadores.dias', { dias: tiempoMedioDias() }) }}
+            </span>
+            <span class="indicador__objetivo">{{ t('triage.cola.indicadores.ventana', { dias: diasVentana() }) }}</span>
           </li>
         }
       </ul>
