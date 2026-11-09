@@ -162,6 +162,21 @@ ruta `/siniestros/:id/evaluar`, rol operaciones. Contrato: `docs/contratos/HU-W2
 - **Desde HU-W2.3-01** el encabezado de O6 tiene «Asignar prestador» (`/siniestros/:id/asignar-prestador`) con el caso en evaluación, aprobado o pagado.
 - **Desde HU-W2.1-03** operaciones solo decide casos `in_evaluation`: una radicación `active` espera la revisión del asesor.
 
+**Cola de trabajo por prioridad (HU-W2.2-02)** — O5 en `evaluacion/casos-evaluacion.page.ts`, pestaña «En evaluación» de
+`/siniestros/evaluacion`, rol operaciones. Contrato: `docs/contratos/HU-W2.2-02-api.md` del backend (`openapi.yaml` v0.11.0).
+
+- **CA-1 y CA-2:** `SiniestrosApiService.listarColaPrioridad` (`GET /v1/claims/evaluations`) trae la cola ya ordenada:
+  Triage 1, 2 y 3, luego lo que no tiene nivel, y en cada nivel el que más espera. La tabla agrega la columna «Asegurado»
+  (nombre y documento, o «No disponible» si el núcleo no respondió).
+- **Indicadores (O5):** `IndicadoresTriageComponent` recibe ahora `conteos` (toda la cola por nivel) y `tiempoMedioDias`
+  (tarjeta «Tiempo medio de resolución · últimos 30 días»). Las dos entradas son opcionales, así que la cola por id
+  (`/siniestros/cola`) no cambia. Los objetivos siguen saliendo de `GET /v1/claims/triage-policy`.
+- **Filtros:** prioridad, estado y producto, que se envían al backend (`level`, `status`, `line`). Al lado, «N casos en
+  cola · actualizado hace X s» (el reloj avanza cada 5 s).
+- **CA-3 y CA-4:** «Actualizar» trae el orden vigente; con la cola vacía, ceros y «Sin casos decididos». **CA-5:** la ruta
+  es solo de operaciones.
+- El título pasa a «Cola de siniestros», como en el prototipo; «Excepciones de pago» sigue igual.
+
 **Revisión de la radicación por el asesor (HU-W2.1-03)** — `revision/radicaciones-revision.page.ts` (bandeja, `/siniestros/revision`)
 y `revision/revision-radicacion.page.ts` (S8, `/siniestros/revision/:id`), rol asesor. Contrato: `docs/contratos/HU-W2.1-03-api.md`
 del backend (`openapi.yaml` v0.10.0).
