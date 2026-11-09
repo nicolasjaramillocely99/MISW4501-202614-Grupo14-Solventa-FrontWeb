@@ -2348,7 +2348,11 @@
           "titulo": "Attention target by level",
           "cargando": "Loading the priority policy…",
           "error": "We could not load the target of each level.",
-          "reintentar": "Retry"
+          "reintentar": "Retry",
+          "tiempoMedio": "Mean resolution time",
+          "sinDecididos": "No claims decided",
+          "dias": "{{dias}} days",
+          "ventana": "Last {{dias}} days"
         },
         "busqueda": {
           "titulo": "Search claims",
@@ -2483,8 +2487,8 @@
       }
     },
     "casosEvaluacion": {
-      "titulo": "Claims in evaluation",
-      "descripcion": "Claims waiting for the decision of operations, with their automatically calculated priority, oldest first. Open each one to evaluate it.",
+      "titulo": "Claims queue",
+      "descripcion": "Ordered by the priority calculated automatically (severity and estimated amount) and, within each level, by the time of filing. The priority is recalculated when relevant information of the claim changes.",
       "actualizar": "Refresh",
       "pestanas": {
         "etiqueta": "Queue claims",
@@ -2492,7 +2496,7 @@
         "payment-exceptions": "Payment exceptions"
       },
       "leyenda": {
-        "evaluations": "Claims in evaluation",
+        "evaluations": "Claims waiting for a decision, by priority",
         "payment-exceptions": "Approved claims whose payout failed"
       },
       "cargando": "Loading the queue…",
@@ -2512,7 +2516,8 @@
         "montoEstimado": "Estimated amount",
         "estado": "Status",
         "espera": "Waiting",
-        "acciones": "Actions"
+        "acciones": "Actions",
+        "asegurado": "Insured"
       },
       "triage": "Triage {{nivel}}",
       "sinPrioridad": "Not calculated",
@@ -2525,7 +2530,21 @@
       "cargarMas": "Load more",
       "buscarPorId": "Search by id",
       "verPrioridad": "View priority",
-      "verPrioridadEtiqueta": "View the priority of claim {{radicado}}"
+      "verPrioridadEtiqueta": "View the priority of claim {{radicado}}",
+      "filtros": {
+        "prioridad": "Priority",
+        "estado": "Status",
+        "producto": "Product",
+        "todas": "All",
+        "todos": "All",
+        "ramos": {
+          "auto": "Auto",
+          "home": "Home"
+        }
+      },
+      "enCola": "{{casos}} claims in the queue",
+      "actualizado": "updated {{segundos}} s ago",
+      "sinAsegurado": "Not available"
     },
     "evaluacion": {
       "volver": "Claims in evaluation",

@@ -40,6 +40,43 @@ export interface PaginaCola {
   siguienteToken: string | null;
 }
 
+/** El asegurado de una fila de la cola por prioridad (O5), sin sus datos de contacto. */
+export interface AseguradoCola {
+  nombreCompleto: string;
+  tipoDocumento: string;
+  documento: string;
+}
+
+/** Fila de la cola por prioridad (HU-W2.2-02): con el asegurado, o `null` si el núcleo de pólizas no respondió. */
+export interface CasoEnColaPrioridad extends CasoEnCola {
+  asegurado: AseguradoCola | null;
+}
+
+/** Indicadores de O5: toda la cola por nivel (sin filtros), lo que coincide con los filtros y el tiempo medio. */
+export interface ResumenCola {
+  total: number;
+  coinciden: number;
+  porNivel: Record<1 | 2 | 3, number>;
+  sinNivel: number;
+  /** Días, con un decimal; `null` si nadie se decidió en la ventana. */
+  tiempoMedioDias: number | null;
+  decididosEnVentana: number;
+  diasVentana: number;
+}
+
+export interface PaginaColaPrioridad {
+  items: CasoEnColaPrioridad[];
+  siguienteToken: string | null;
+  resumen: ResumenCola;
+}
+
+/** Filtros de la cola por prioridad; sin un filtro, toda la cola. */
+export interface FiltroCola {
+  nivel?: '1' | '2' | '3' | 'none';
+  ramo?: 'auto' | 'home';
+  estado?: 'in_evaluation';
+}
+
 export interface Cobertura {
   incidente: string;
   /** Pesos: el tope del costo aprobado. */
@@ -207,6 +244,20 @@ export interface PaginaColaDto {
   next_page_token: string | null;
 }
 
+export interface PaginaColaPrioridadDto {
+  items: (CasoEnColaDto & { holder: { full_name: string; document_type: string; document_id: string } | null })[];
+  next_page_token: string | null;
+  summary: {
+    total: number;
+    matching: number;
+    levels: { level: 1 | 2 | 3; claims: number }[];
+    unassessed: number;
+    mean_resolution_days: number | null;
+    decided_in_window: number;
+    window_days: number;
+  };
+}
+
 interface CoberturaDto {
   incident: string;
   insured_value_minor: number;
@@ -320,6 +371,31 @@ export function mapearPaginaCola(dto: PaginaColaDto): PaginaCola {
       },
     })),
     siguienteToken: dto.next_page_token,
+  };
+}
+
+export function mapearPaginaColaPrioridad(dto: PaginaColaPrioridadDto): PaginaColaPrioridad {
+  const base = mapearPaginaCola(dto);
+  const s = dto.summary;
+  const porNivel: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
+  for (const l of s.levels) {
+    porNivel[l.level] = l.claims;
+  }
+  return {
+    items: base.items.map((item, i) => {
+      const h = dto.items[i].holder;
+      return { ...item, asegurado: h ? { nombreCompleto: h.full_name, tipoDocumento: h.document_type, documento: h.document_id } : null };
+    }),
+    siguienteToken: base.siguienteToken,
+    resumen: {
+      total: s.total,
+      coinciden: s.matching,
+      porNivel,
+      sinNivel: s.unassessed,
+      tiempoMedioDias: s.mean_resolution_days,
+      decididosEnVentana: s.decided_in_window,
+      diasVentana: s.window_days,
+    },
   };
 }
 
