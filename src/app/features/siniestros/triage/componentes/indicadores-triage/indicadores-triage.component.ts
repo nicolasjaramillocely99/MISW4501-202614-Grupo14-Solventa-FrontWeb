@@ -24,6 +24,14 @@ export type EstadoIndicadores = 'cargando' | 'listo' | 'error';
 export class IndicadoresTriageComponent {
   readonly estado = input.required<EstadoIndicadores>();
   readonly politica = input<PoliticaTriage | null>(null);
+  /** Casos de la cola en cada nivel (HU-W2.2-02); sin él, las tarjetas solo muestran el objetivo. */
+  readonly conteos = input<Readonly<Record<number, number>> | null>(null);
+  /**
+   * Tiempo medio de resolución en días (HU-W2.2-02, O5): `undefined` no muestra la tarjeta y `null` dice que no hay
+   * casos decididos en la ventana, sin inventar un valor.
+   */
+  readonly tiempoMedioDias = input<number | null | undefined>(undefined);
+  readonly diasVentana = input(30);
   readonly reintentar = output<void>();
 
   protected readonly insigniaNivel = insigniaNivel;

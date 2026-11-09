@@ -32,6 +32,33 @@
   gap: var(--espacio-12);
 }
 
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-16);
+  margin: var(--espacio-16) 0;
+}
+
+.filtros .campo {
+  min-width: 11rem;
+}
+
+.filtros__meta {
+  margin: 0 0 0 auto;
+  color: var(--color-texto-secundario);
+}
+
+.tabla__principal,
+.tabla__secundario {
+  display: block;
+}
+
+.tabla__secundario {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
 .tabla__acciones {
   display: flex;
   gap: var(--espacio-16);
