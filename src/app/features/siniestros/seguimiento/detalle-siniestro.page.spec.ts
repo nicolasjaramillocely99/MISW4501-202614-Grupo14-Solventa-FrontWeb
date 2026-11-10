@@ -114,6 +114,21 @@ describe('DetalleSiniestroPage (A8 mínima · HU-W2.2-01, F3)', () => {
     expect(screen.getByRole('listitem', { current: 'step' }).textContent).toContain('Radicado');
   });
 
+  it('un caso devuelto ofrece «Corregir y reenviar» (HU-W2.1-04)', async () => {
+    await renderizar({ caso: of({ ...CASO, estado: 'returned' }) });
+
+    expect(screen.getByText('El asesor devolvió tu radicación')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Corregir y reenviar' }).getAttribute('href')).toBe(
+      `/siniestros/${CASO.id}/corregir`,
+    );
+  });
+
+  it('un caso que no está devuelto no ofrece corregirlo', async () => {
+    await renderizar();
+
+    expect(screen.queryByRole('link', { name: 'Corregir y reenviar' })).toBeNull();
+  });
+
   it('si falla solo la prioridad, el caso se muestra y el bloque ofrece «Reintentar»', async () => {
     await renderizar({ triage: throwError(() => new ErrorSiniestro('claims_unavailable')) });
 

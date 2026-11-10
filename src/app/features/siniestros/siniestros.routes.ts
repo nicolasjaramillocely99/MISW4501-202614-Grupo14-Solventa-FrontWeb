@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { AsignacionPrestadorPage } from './asistencias/asignacion-prestador.page';
+import { CorreccionRadicacionPage } from './correccion/correccion-radicacion.page';
 import { PrestadoresPage } from './asistencias/prestadores.page';
 import { CasosEvaluacionPage } from './evaluacion/casos-evaluacion.page';
 import { EvaluacionSiniestroPage } from './evaluacion/evaluacion-siniestro.page';
@@ -21,7 +22,8 @@ import { PrioridadSiniestroPage } from './triage/prioridad-siniestro.page';
  * siniestro (HU-W2.2-01): la cola y la prioridad del analista de operaciones y el detalle mínimo del asegurado (A8), y
  * la evaluación, aprobación y pago (HU-W2.2-03): los casos en evaluación del analista y la evaluación de un caso (O6
  * y O6b), y la revisión del asesor (HU-W2.1-03): las radicaciones por revisar y la revisión de una (S8), y la asignación
- * del prestador más cercano (HU-W2.3-01): «Asignar prestador» de un caso (O7 y O7b) y la administración de prestadores.
+ * del prestador más cercano (HU-W2.3-01): «Asignar prestador» de un caso (O7 y O7b) y la administración de prestadores,
+ * y la edición de la radicación devuelta del asegurado (HU-W2.1-04, A9, `:id/corregir`).
  *
  * El orden importa: los grupos de operaciones (`cola`, `evaluacion`, `:id/evaluar`, `:id/asignar-prestador` y
  * `prestadores`) y del asesor (`revision`) van antes del grupo del asegurado
@@ -76,6 +78,7 @@ export const SINIESTROS_ROUTES: Routes = [
     children: [
       { path: 'radicar', component: RadicacionSiniestroPage },
       { path: 'mis-siniestros', component: MisSiniestrosPage },
+      { path: ':id/corregir', component: CorreccionRadicacionPage },
       { path: ':id', component: DetalleSiniestroPage },
     ],
   },

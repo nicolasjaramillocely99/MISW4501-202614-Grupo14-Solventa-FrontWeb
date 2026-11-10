@@ -50,6 +50,17 @@ import {
   mapearResultadoRevision,
   traducirErrorRevision,
 } from './revision.modelos';
+import {
+  HistorialSiniestro,
+  HistorialSiniestroDto,
+  ResultadoReenvio,
+  ResultadoReenvioDto,
+  SolicitudReenvio,
+  aReenvioDto,
+  mapearHistorialSiniestro,
+  mapearResultadoReenvio,
+  traducirErrorReenvio,
+} from './reenvio.modelos';
 import { calcularSha256 } from './sha256';
 import {
   PaginaTriageDto,
@@ -347,6 +358,35 @@ export class SiniestrosApiService {
    */
   devolverRadicacion(id: string, solicitud: SolicitudDevolucion): Observable<ResultadoRevision> {
     return this.revisar(id, 'review-return', aDevolucionDto(solicitud));
+  }
+
+  /**
+   * Historial del caso (`GET /v1/claims/{claim_id}/history`): cada cambio de estado, las revisiones del asesor, la
+   * devolución vigente con lo que pidió, los reenvíos y las reglas de cada soporte (HU-W2.1-04, A9). El asegurado solo
+   * lee los suyos. Falla con `ErrorReenvio`.
+   */
+  consultarHistorial(id: string): Observable<HistorialSiniestro> {
+    return this.http.get<HistorialSiniestroDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/history`).pipe(
+      map(mapearHistorialSiniestro),
+      catchError((error: unknown) => throwError(() => traducirErrorReenvio(error))),
+    );
+  }
+
+  /**
+   * Reenvía la radicación devuelta con lo que el asegurado corrigió (`POST /v1/claims/{claim_id}/resubmission`,
+   * HU-W2.1-04): el caso vuelve a revisión con el mismo número. Falla con `ErrorReenvio`; un `422` trae cada campo o
+   * soporte que aún falta.
+   */
+  reenviarRadicacion(id: string, solicitud: SolicitudReenvio): Observable<ResultadoReenvio> {
+    return this.http
+      .post<ResultadoReenvioDto>(
+        `${this.base}/v1/claims/${encodeURIComponent(id)}/resubmission`,
+        aReenvioDto(solicitud),
+      )
+      .pipe(
+        map(mapearResultadoReenvio),
+        catchError((error: unknown) => throwError(() => traducirErrorReenvio(error))),
+      );
   }
 
   /**
