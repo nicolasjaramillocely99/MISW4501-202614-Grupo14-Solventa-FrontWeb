@@ -22,6 +22,12 @@
 | [A7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1297) | Mis siniestros (versión mínima en HU-W2.1-01) | `/siniestros/mis-siniestros` | Asegurado | HU-W2.1-01, HU-W2.1-02 | S2, S3 |
 | [A8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1591) | Detalle y estado del siniestro (mínima en HU-W2.2-01) | `/siniestros/:id` | Asegurado | HU-W2.2-01, HU-W2.1-02, HU-W2.1-04 | S2, S3 |
 
+### `correccion/` — F2.1 · Edición de la radicación devuelta
+
+| Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
+|---|---|---|---|---|---|
+| [A9](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=24-1340) | Edición de la radicación devuelta | `/siniestros/:id/corregir` | Asegurado | HU-W2.1-04 | S3 |
+
 ### `revision/` — F2.1 · Intervención del asesor en la radicación
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
@@ -235,6 +241,33 @@ especialidad y disponibilidad (en `?especialidad=&disponibilidad=`) y el cambio 
 (`componentes/disponibilidad-prestador/`: «Disponible» o «No disponible» con «Hasta» opcional). «Liberar» marca disponible a un
 prestador ocupado en un caso (D13); lo hará solo HU-W2.3-02 al cerrar la intervención. **Pendiente:** el alta y la edición del perfil
 (la API existe; `grep -rn "HU-W2.3-01 F" src`).
+
+**Edición de la radicación devuelta (HU-W2.1-04)** — `correccion/correccion-radicacion.page.ts` (A9), ruta
+`/siniestros/:id/corregir`, rol asegurado (va antes de `:id` en `siniestros.routes.ts`). El detalle (A8) de un caso `returned`
+muestra «Corregir y reenviar». Contrato: `docs/contratos/HU-W2.1-04-api.md` del backend (`openapi.yaml` v0.13.0). Cliente:
+`SiniestrosApiService.consultarHistorial` y `reenviarRadicacion` (`core/api/siniestros/reenvio.modelos.ts`).
+
+- **Qué ve (CA-1):** lee en paralelo el caso (`GET /v1/claims/{id}`) y su historial (`GET /v1/claims/{id}/history`).
+  - `last_return` trae el motivo, el mensaje, el asesor, el veredicto por soporte y los datos a corregir.
+  - `requirements` trae las reglas de cada soporte (mínimo, máximo y formatos), aunque la póliza ya no esté vigente.
+  - Póliza y tipo se muestran, pero no se editan. Los datos que pidió el asesor llevan «Pedido por el asesor».
+- **Soportes (CA-2):** `correccion/modelos/correccion-radicacion.ts` decide la acción de cada fila.
+  - **Reemplazar:** si es ilegible o está lleno.
+  - **Subir:** si no tiene archivos.
+  - **Agregar:** si tiene archivos y espacio.
+  - Los archivos nuevos se suben con el mismo `CargaSoportesService` de la radicación.
+  - Por cada soporte con archivos nuevos se envía el conjunto completo que queda: al agregar, los de antes más los nuevos; al
+    reemplazar, solo los nuevos. Lo que no se toca se conserva.
+  - En un caso del móvil, las fotos de la app cuentan como «Fotos del vehículo», y las que se suben las reemplazan.
+- **Qué falta (CA-3):**
+  - «N pendientes» cuenta los ilegibles sin archivo nuevo, los faltantes (pedidos u obligatorios) y los que quedan bajo el mínimo.
+  - Los datos se validan con las reglas de la radicación, y además la fecha no puede ser posterior a la radicación.
+  - «Reenviar radicación» con algo pendiente muestra la lista y no llama al backend.
+  - El `422` del backend (`not_replaced`, `missing`…) se pinta en su soporte o en su campo.
+- **Reenvío (CA-4 y CA-5):** se envían solo los datos que cambiaron, con `review_seq`.
+  - Al reenviar, el aviso dice que el caso conserva su número y volvió a estado Activo.
+  - `stale_return` (el asesor la revisó otra vez) ofrece recargar.
+  - El historial de la radicación lista la radicación, las revisiones y los reenvíos.
 
 ## Cómo trabajar una historia de este dominio
 

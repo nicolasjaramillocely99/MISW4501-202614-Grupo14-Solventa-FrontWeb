@@ -2484,6 +2484,11 @@
         "titulo": "No pudimos consultar tu siniestro",
         "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
         "reintentar": "Reintentar"
+      },
+      "devuelto": {
+        "titulo": "El asesor devolvió tu radicación",
+        "texto": "Corrige lo que te pidió y reenvíala; conserva su número y lo que ya diligenciaste.",
+        "corregir": "Corregir y reenviar"
       }
     },
     "casosEvaluacion": {
@@ -2880,6 +2885,134 @@
         "titulo": "Revisiones anteriores",
         "approved": "Aprobada por {{asesor}}",
         "returned": "Devuelta por {{asesor}}"
+      }
+    },
+    "correccion": {
+      "volver": "Mis siniestros",
+      "cargando": "Cargando la radicación…",
+      "reintentar": "Reintentar",
+      "recargar": "Recargar la radicación",
+      "verCaso": "Ver el siniestro",
+      "titulo": "Siniestro {{radicado}}",
+      "resumen": "Radicado el {{radicado}} · Devuelto el {{devuelto}} por {{asesor}} (asesor de siniestros)",
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o vuelve a «Mis siniestros»."
+      },
+      "error": {
+        "titulo": "No pudimos cargar la radicación",
+        "texto": "Intenta de nuevo en unos segundos. Lo que ya radicaste está guardado."
+      },
+      "noDevuelto": {
+        "titulo": "Esta radicación no está devuelta",
+        "texto": "Su estado es «{{estado}}». Solo se corrige una radicación que el asesor te devolvió."
+      },
+      "enviado": {
+        "titulo": "Radicación reenviada",
+        "texto": "El siniestro {{radicado}} conserva su número y volvió a estado Activo para que el asesor lo revise de nuevo."
+      },
+      "acciones": {
+        "cancelar": "Cancelar",
+        "reenviar": "Reenviar radicación",
+        "enviando": "Reenviando…"
+      },
+      "motivo": {
+        "titulo": "Motivo de la devolución",
+        "ayuda": "Corrige lo que se pide y reenvía: el caso conserva todo lo que ya diligenciaste y volverá a estado Activo para revisión."
+      },
+      "faltantes": {
+        "titulo": "Antes de reenviar, completa lo que falta:",
+        "general": "Hay un dato que el servidor no aceptó. Revisa la radicación e inténtalo de nuevo."
+      },
+      "errores": {
+        "stale_return": "El asesor volvió a revisar esta radicación. Recárgala para ver lo que pide ahora.",
+        "claim_not_returned": "Esta radicación ya no está devuelta: quizá ya la reenviaste.",
+        "claims_unavailable": "No pudimos reenviar la radicación. Intenta de nuevo en unos segundos; nada se perdió.",
+        "invalid_request": "No pudimos reenviar la radicación con estos datos. Revísalos e inténtalo de nuevo."
+      },
+      "hechos": {
+        "titulo": "Datos del siniestro (conservados)",
+        "poliza": "Póliza afectada",
+        "tipo": "Tipo de siniestro",
+        "ocurridoEn": "Fecha y hora del hecho",
+        "lugar": "Lugar del hecho",
+        "descripcion": "Descripción",
+        "montoEstimado": "Monto estimado (COP)",
+        "pedido": "Pedido por el asesor",
+        "problema": {
+          "requerido": "Este dato es obligatorio.",
+          "formatoInvalido": "El formato no es válido.",
+          "fechaFutura": "La fecha no puede ser futura.",
+          "fechaAntigua": "La fecha es demasiado antigua.",
+          "fechaFueraRango": "La fecha está fuera de la vigencia de la póliza o del plazo permitido.",
+          "fueraVigencia": "La fecha está fuera de la vigencia de la póliza.",
+          "fechaPosteriorRadicacion": "La fecha no puede ser posterior a la radicación.",
+          "lugarLongitud": "El lugar debe tener entre 3 y 160 caracteres.",
+          "descripcionLongitud": "La descripción debe tener entre 10 y 1.000 caracteres.",
+          "montoRango": "El monto debe estar entre 1 y 100.000.000.000 de pesos."
+        }
+      },
+      "soportes": {
+        "titulo": "Soportes por corregir",
+        "pendientes": "{{n}} pendientes",
+        "nuevos": "Archivos nuevos",
+        "seReemplazan": "Al reenviar, los archivos nuevos reemplazan los {{n}} anteriores.",
+        "quitar": "Quitar {{nombre}}",
+        "accion": {
+          "reemplazar": "Reemplazar",
+          "subir": "Subir",
+          "agregar": "Agregar"
+        },
+        "etiqueta": {
+          "reemplazar": "Reemplazar archivos de {{nombre}}",
+          "subir": "Subir archivos de {{nombre}}",
+          "agregar": "Agregar archivos a {{nombre}}"
+        },
+        "estado": {
+          "reemplazar": "Reemplazar",
+          "falta": "Falta",
+          "pocos": "Faltan archivos",
+          "corregido": "Nuevo",
+          "adjunto": "Adjunto",
+          "opcional": "Opcional"
+        },
+        "detalle": {
+          "ilegible": "Devuelto: el archivo no es legible. {{nota}}",
+          "pedido": "Solicitado por el asesor",
+          "aceptado": "Aceptado",
+          "app": "Fotos tomadas en la app",
+          "obligatorio": "Obligatorio",
+          "opcional": "Opcional"
+        },
+        "problema": {
+          "reemplazar": "sube un archivo nuevo que lo reemplace",
+          "falta": "súbelo",
+          "pocos": "faltan archivos para el mínimo",
+          "muchos": "tiene más archivos de los permitidos",
+          "formato": "un archivo no tiene un formato admitido",
+          "noAplica": "no aplica a este tipo de siniestro",
+          "noEncontrado": "un archivo no se pudo usar; súbelo de nuevo"
+        },
+        "archivo": {
+          "subiendo": "Subiendo…",
+          "adjunto": "Listo",
+          "rechazado": "No se pudo subir"
+        }
+      },
+      "historial": {
+        "titulo": "Historial de la radicación",
+        "radicado": "Radicado",
+        "devuelto": "Devuelto por {{quien}}",
+        "aprobado": "Aprobado por {{quien}}",
+        "reenviado": "Reenviado",
+        "pendiente": "Reenvío pendiente",
+        "pendienteAyuda": "Cada edición queda registrada con fecha y autor",
+        "revision": "Revisión del asesor",
+        "revisionAyuda": "Al reenviar vuelve a estado Activo",
+        "canal": {
+          "web": "portal web",
+          "mobile": "app móvil"
+        }
       }
     },
     "mapa": {

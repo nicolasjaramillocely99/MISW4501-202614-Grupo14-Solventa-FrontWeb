@@ -2484,6 +2484,11 @@
         "titulo": "We could not load your claim",
         "texto": "The service did not respond. Try again in a few minutes.",
         "reintentar": "Retry"
+      },
+      "devuelto": {
+        "titulo": "The advisor returned your filing",
+        "texto": "Correct what was asked and send it again; it keeps its number and what you already entered.",
+        "corregir": "Correct and send again"
       }
     },
     "casosEvaluacion": {
@@ -2880,6 +2885,134 @@
         "titulo": "Previous reviews",
         "approved": "Approved by {{asesor}}",
         "returned": "Returned by {{asesor}}"
+      }
+    },
+    "correccion": {
+      "volver": "My claims",
+      "cargando": "Loading the filing…",
+      "reintentar": "Retry",
+      "recargar": "Reload the filing",
+      "verCaso": "View the claim",
+      "titulo": "Claim {{radicado}}",
+      "resumen": "Filed on {{radicado}} · Returned on {{devuelto}} by {{asesor}} (claims advisor)",
+      "noEncontrado": {
+        "titulo": "We couldn't find this claim",
+        "texto": "Check the link or go back to \"My claims\"."
+      },
+      "error": {
+        "titulo": "We couldn't load the filing",
+        "texto": "Try again in a few seconds. What you already filed is saved."
+      },
+      "noDevuelto": {
+        "titulo": "This filing is not returned",
+        "texto": "Its status is \"{{estado}}\". Only a filing the advisor returned to you can be corrected."
+      },
+      "enviado": {
+        "titulo": "Filing sent again",
+        "texto": "Claim {{radicado}} keeps its number and is Active again for the advisor to review it."
+      },
+      "acciones": {
+        "cancelar": "Cancel",
+        "reenviar": "Send filing again",
+        "enviando": "Sending…"
+      },
+      "motivo": {
+        "titulo": "Reason for the return",
+        "ayuda": "Correct what is asked and send it again: the claim keeps everything you already entered and will be Active again for review."
+      },
+      "faltantes": {
+        "titulo": "Before sending it again, complete what is missing:",
+        "general": "The server did not accept a field. Check the filing and try again."
+      },
+      "errores": {
+        "stale_return": "The advisor reviewed this filing again. Reload it to see what is asked now.",
+        "claim_not_returned": "This filing is no longer returned: you may have sent it already.",
+        "claims_unavailable": "We couldn't send the filing. Try again in a few seconds; nothing was lost.",
+        "invalid_request": "We couldn't send the filing with these details. Check them and try again."
+      },
+      "hechos": {
+        "titulo": "Claim details (kept)",
+        "poliza": "Policy",
+        "tipo": "Claim type",
+        "ocurridoEn": "Date and time of the incident",
+        "lugar": "Place of the incident",
+        "descripcion": "Description",
+        "montoEstimado": "Estimated amount (COP)",
+        "pedido": "Requested by the advisor",
+        "problema": {
+          "requerido": "This field is required.",
+          "formatoInvalido": "The format is not valid.",
+          "fechaFutura": "The date cannot be in the future.",
+          "fechaAntigua": "The date is too old.",
+          "fechaFueraRango": "The date is outside the policy validity or the allowed period.",
+          "fueraVigencia": "The date is outside the policy validity.",
+          "fechaPosteriorRadicacion": "The date cannot be after the filing.",
+          "lugarLongitud": "The place must have between 3 and 160 characters.",
+          "descripcionLongitud": "The description must have between 10 and 1,000 characters.",
+          "montoRango": "The amount must be between 1 and 100,000,000,000 pesos."
+        }
+      },
+      "soportes": {
+        "titulo": "Documents to correct",
+        "pendientes": "{{n}} pending",
+        "nuevos": "New files",
+        "seReemplazan": "When you send it, the new files replace the {{n}} previous ones.",
+        "quitar": "Remove {{nombre}}",
+        "accion": {
+          "reemplazar": "Replace",
+          "subir": "Upload",
+          "agregar": "Add"
+        },
+        "etiqueta": {
+          "reemplazar": "Replace files of {{nombre}}",
+          "subir": "Upload files of {{nombre}}",
+          "agregar": "Add files to {{nombre}}"
+        },
+        "estado": {
+          "reemplazar": "Replace",
+          "falta": "Missing",
+          "pocos": "Files missing",
+          "corregido": "New",
+          "adjunto": "Attached",
+          "opcional": "Optional"
+        },
+        "detalle": {
+          "ilegible": "Returned: the file is not legible. {{nota}}",
+          "pedido": "Requested by the advisor",
+          "aceptado": "Accepted",
+          "app": "Photos taken in the app",
+          "obligatorio": "Required",
+          "opcional": "Optional"
+        },
+        "problema": {
+          "reemplazar": "upload a new file to replace it",
+          "falta": "upload it",
+          "pocos": "files are missing to reach the minimum",
+          "muchos": "it has more files than allowed",
+          "formato": "a file is not in an accepted format",
+          "noAplica": "it does not apply to this claim type",
+          "noEncontrado": "a file could not be used; upload it again"
+        },
+        "archivo": {
+          "subiendo": "Uploading…",
+          "adjunto": "Ready",
+          "rechazado": "Could not be uploaded"
+        }
+      },
+      "historial": {
+        "titulo": "Filing history",
+        "radicado": "Filed",
+        "devuelto": "Returned by {{quien}}",
+        "aprobado": "Approved by {{quien}}",
+        "reenviado": "Sent again",
+        "pendiente": "Resubmission pending",
+        "pendienteAyuda": "Every edit is recorded with date and author",
+        "revision": "Advisor review",
+        "revisionAyuda": "Once sent it is Active again",
+        "canal": {
+          "web": "web portal",
+          "mobile": "mobile app"
+        }
       }
     },
     "mapa": {
