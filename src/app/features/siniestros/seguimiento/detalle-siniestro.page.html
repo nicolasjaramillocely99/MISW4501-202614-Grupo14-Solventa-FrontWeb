@@ -35,6 +35,19 @@
           <app-insignia-estado tono="informacion">{{ t('estados.' + caso.estado) }}</app-insignia-estado>
         </header>
 
+        @if (caso.estado === 'returned') {
+          <div class="aviso aviso--advertencia devuelto" role="note">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('detalle.devuelto.titulo') }}</p>
+              <p>{{ t('detalle.devuelto.texto') }}</p>
+              <a class="boton boton--primario" [routerLink]="['/siniestros', caso.id, 'corregir']">{{
+                t('detalle.devuelto.corregir')
+              }}</a>
+            </div>
+          </div>
+        }
+
         <section class="tarjeta etapas" aria-labelledby="titulo-etapas">
           <h2 id="titulo-etapas" class="seccion__titulo">{{ t('confirmacion.etapas.etiqueta') }}</h2>
           <app-indicador-pasos [pasos]="etapas()" etiqueta="siniestros.confirmacion.etapas.etiqueta" />
