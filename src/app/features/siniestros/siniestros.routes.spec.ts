@@ -41,6 +41,8 @@ describe('rutas de siniestros (HU-W2.1-01)', () => {
             listarColaPrioridad: () => NEVER,
             consultarPoliticaTriage: () => NEVER,
             consultarEvaluacion: () => NEVER,
+            consultarSiniestro: () => NEVER,
+            consultarHistorial: () => NEVER,
           },
         },
       ],
@@ -68,6 +70,23 @@ describe('rutas de siniestros (HU-W2.1-01)', () => {
     await harness.navigateByUrl('/siniestros/mis-siniestros');
     expect(url()).toBe('/siniestros/mis-siniestros');
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Mis siniestros');
+  });
+
+  it('el asegurado corrige su radicación devuelta en «:id/corregir», no en el detalle (HU-W2.1-04)', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/siniestros/8f14e45f-ceea-467a-9f3a-5a2d0b1c7e93/corregir');
+
+    expect(url()).toBe('/siniestros/8f14e45f-ceea-467a-9f3a-5a2d0b1c7e93/corregir');
+    expect(harness.routeNativeElement?.querySelector('app-correccion-radicacion-page')).not.toBeNull();
+  });
+
+  it.each(['asesor', 'operaciones'] as const)('el rol %s no corrige una radicación', async (rol) => {
+    await iniciarSesionComo(rol);
+
+    await harness.navigateByUrl('/siniestros/8f14e45f-ceea-467a-9f3a-5a2d0b1c7e93/corregir');
+
+    expect(url()).toBe('/acceso/no-autorizado');
   });
 
   it.each(['asesor', 'operaciones', 'socio'] as const)('el rol %s no entra: va a «acceso no autorizado»', async (rol) => {
