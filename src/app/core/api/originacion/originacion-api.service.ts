@@ -58,6 +58,14 @@ import {
   traducirErrorFormalizacion,
 } from './formalizacion.modelos';
 import {
+  FiltroPorVencer,
+  PaginaPorVencer,
+  PaginaPorVencerDto,
+  aParametrosPorVencer,
+  mapearPaginaPorVencer,
+  traducirErrorPorVencer,
+} from './polizas-por-vencer.modelos';
+import {
   CondicionesRenovacion,
   CondicionesRenovacionDto,
   ListaPolizasDto,
@@ -129,8 +137,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
  * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02), la
- * oferta personalizada (HU-W1.2-03), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04) y las pólizas del
- * asegurado con su renovación en línea (HU-W1.5-02).
+ * oferta personalizada (HU-W1.2-03), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04), las pólizas del
+ * asegurado con su renovación en línea (HU-W1.5-02) y las pólizas próximas a vencer del asesor (HU-W1.5-01).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -356,6 +364,21 @@ export class OriginacionApiService {
       .pipe(
         map(mapearRenovacion),
         catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
+      );
+  }
+
+  /**
+   * Lista al asesor las pólizas próximas a vencer (`GET /v1/policies/expiring`, solo `advisor`; HU-W1.5-01, pantalla
+   * S6) con el rango de vencimiento (días de Colombia; sin él, la ventana de renovación desde hoy), el estado y la página.
+   * Sin pólizas en el rango es una lista vacía, no un error. Falla con `ErrorPorVencer`: `out_of_range` si «Hasta» es
+   * anterior a «Vencen desde».
+   */
+  listarPolizasPorVencer(filtro: FiltroPorVencer): Observable<PaginaPorVencer> {
+    return this.http
+      .get<PaginaPorVencerDto>(`${this.base}/v1/policies/expiring`, { params: aParametrosPorVencer(filtro) })
+      .pipe(
+        map(mapearPaginaPorVencer),
+        catchError((error: unknown) => throwError(() => traducirErrorPorVencer(error))),
       );
   }
 

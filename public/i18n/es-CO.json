@@ -1619,6 +1619,71 @@
         "titulo": "No pudimos cargar la renovación",
         "texto": "Intenta de nuevo en unos momentos."
       }
+    },
+    "polizasPorVencer": {
+      "titulo": "Renovaciones",
+      "subtitulo": "Pólizas próximas a vencer en el rango seleccionado. Inicia la renovación asistida desde la lista.",
+      "cargando": "Cargando las pólizas próximas a vencer…",
+      "indicador": {
+        "region": "Pólizas que vencen en la ventana de renovación",
+        "titulo": "Vencen en {{dias}} días"
+      },
+      "filtros": {
+        "titulo": "Filtrar pólizas próximas a vencer",
+        "desde": "Vencen desde",
+        "hasta": "Hasta",
+        "ayudaFecha": "DD/MM/AAAA",
+        "estado": "Estado",
+        "todos": "Todos",
+        "rangoInvalido": "«Hasta» no puede ser anterior a «Vencen desde»."
+      },
+      "contador": "{{n}} resultados",
+      "contadorUno": "1 resultado",
+      "rango": "Corrige el rango de fechas para ver las pólizas.",
+      "tabla": {
+        "titulo": "Pólizas próximas a vencer",
+        "poliza": "Póliza",
+        "cliente": "Cliente",
+        "producto": "Producto",
+        "vence": "Vence",
+        "prima": "Prima",
+        "estado": "Estado",
+        "acciones": "Acciones"
+      },
+      "estados": {
+        "expiring": "Por vencer",
+        "renewal_in_progress": "Renovación en curso",
+        "desconocido": "Otro estado"
+      },
+      "linea": {
+        "life": "Vida",
+        "auto": "Autos",
+        "home": "Hogar",
+        "travel": "Viaje"
+      },
+      "acciones": {
+        "renovar": "Renovar",
+        "renovarPoliza": "Renovar la póliza {{id}}",
+        "ver": "Ver",
+        "verRenovacion": "Ver la renovación de la póliza {{id}}",
+        "renovableDesde": "Renovable desde el {{fecha}}"
+      },
+      "vacio": {
+        "titulo": "Sin pólizas por vencer en el rango",
+        "texto": "No hay pólizas que venzan entre el {{desde}} y el {{hasta}} con el estado {{estado}}.",
+        "limpiar": "Limpiar filtros"
+      },
+      "error": {
+        "titulo": "No pudimos cargar las pólizas próximas a vencer",
+        "texto": "Intenta de nuevo en unos momentos.",
+        "reintentar": "Reintentar"
+      },
+      "paginacion": {
+        "navegacion": "Paginación de las pólizas",
+        "anterior": "Anterior",
+        "siguiente": "Siguiente",
+        "pagina": "Página {{pagina}} de {{total}}"
+      }
     }
   },
   "siniestros": {
