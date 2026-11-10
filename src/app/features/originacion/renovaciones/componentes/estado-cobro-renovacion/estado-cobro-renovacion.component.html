@@ -1,0 +1,113 @@
+<ng-container *transloco="let t; read: 'originacion.renovacionAsistida.emision'">
+  <section class="tarjeta emision" aria-labelledby="titulo-emision">
+    <h2 id="titulo-emision" class="emision__titulo">{{ t('titulo') }}</h2>
+    <ul class="emision__lista">
+      <li class="emision__fila">
+        @switch (cobroPaso()) {
+          @case ('confirmado') {
+            <svg lucideCircleCheck [size]="20" class="icono icono--exito" aria-hidden="true"></svg>
+          }
+          @case ('fallo') {
+            <svg lucideCircleX [size]="20" class="icono icono--error" aria-hidden="true"></svg>
+          }
+          @default {
+            <svg lucideInfo [size]="20" class="icono" aria-hidden="true"></svg>
+          }
+        }
+        <div class="emision__texto">
+          <p class="emision__nombre">{{ t('cobro') }}</p>
+          <p class="emision__detalle">
+            @switch (cobroPaso()) {
+              @case ('confirmado') {
+                {{
+                  tarjeta()
+                    ? t('cobroConfirmado', { tarjeta: tarjeta(), fecha: confirmadoEn() | formatoFechaHora })
+                    : t('cobroConfirmadoSinTarjeta', { fecha: confirmadoEn() | formatoFechaHora })
+                }}
+              }
+              @case ('fallo') {
+                {{
+                  t('cobroFallido', {
+                    fecha: cobro()?.ultimaFallaEn | formatoFechaHora,
+                    hasta: renovacion().reintentarHasta | formatoFechaHora,
+                  })
+                }}
+              }
+              @case ('noRenovada') {
+                {{ t('noRenovada.' + (renovacion().motivo ?? 'no_response')) }}
+              }
+              @default {
+                @if (tarjeta()) {
+                  {{ t('cobroEnCurso', { tarjeta: tarjeta(), fecha: renovacion().aceptadaEn | formatoFechaHora }) }}
+                } @else {
+                  {{ t('cobroIniciado', { fecha: renovacion().aceptadaEn | formatoFechaHora }) }}
+                }
+              }
+            }
+          </p>
+        </div>
+        <app-insignia-estado [tono]="tono(cobroPaso())">{{ t('estados.' + cobroPaso()) }}</app-insignia-estado>
+      </li>
+      @if (!noRenovada()) {
+        <li class="emision__fila">
+          @if (certificadoPaso() === 'emitido') {
+            <svg lucideCircleCheck [size]="20" class="icono icono--exito" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideInfo [size]="20" class="icono" aria-hidden="true"></svg>
+          }
+          <div class="emision__texto">
+            <p class="emision__nombre">{{ t('certificado') }}</p>
+            <p class="emision__detalle">
+              @if (certificadoPaso() === 'emitido') {
+                {{
+                  nuevaVigenciaDesde() && nuevaVigenciaHasta()
+                    ? t('certificadoEmitidoVigente', {
+                        poliza: renovacion().polizaNuevaId,
+                        desde: dia(nuevaVigenciaDesde()),
+                        hasta: dia(nuevaVigenciaHasta()),
+                      })
+                    : t('certificadoEmitido', { poliza: renovacion().polizaNuevaId })
+                }}
+              } @else {
+                {{ t('certificadoPendiente') }}
+              }
+            </p>
+          </div>
+          <app-insignia-estado [tono]="tono(certificadoPaso())">{{ t('estados.' + certificadoPaso()) }}</app-insignia-estado>
+        </li>
+        <li class="emision__fila">
+          @if (notificacionPaso() === 'enviada') {
+            <svg lucideCircleCheck [size]="20" class="icono icono--exito" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideInfo [size]="20" class="icono" aria-hidden="true"></svg>
+          }
+          <div class="emision__texto">
+            <p class="emision__nombre">{{ t('notificacion') }}</p>
+            <p class="emision__detalle">
+              {{ notificacionPaso() === 'enviada' ? t('notificacionEnviada') : t('notificacionPendiente') }}
+            </p>
+          </div>
+          <app-insignia-estado [tono]="tono(notificacionPaso())">{{ t('estados.' + notificacionPaso()) }}</app-insignia-estado>
+        </li>
+      }
+    </ul>
+    <p class="emision__nota">
+      <svg lucideInfo [size]="16" aria-hidden="true"></svg>
+      @switch (cobroPaso()) {
+        @case ('fallo') {
+          {{ t('notaFallo') }}
+        }
+        @case ('noRenovada') {
+          {{ t('notaNoRenovada') }}
+        }
+        @default {
+          @if (renovacion().estado === 'renewed') {
+            {{ t('notaRenovada', { fecha: dia(nuevaVigenciaHasta()) }) }}
+          } @else {
+            {{ t('notaEnCurso') }}
+          }
+        }
+      }
+    </p>
+  </section>
+</ng-container>

@@ -229,7 +229,7 @@ export function mapearPolizaListada(dto: PolizaListadaDto): PolizaListada {
   };
 }
 
-function mapearCondiciones(dto: CondicionesPolizaDto): CondicionesPoliza {
+export function mapearCondiciones(dto: CondicionesPolizaDto): CondicionesPoliza {
   return {
     prima: dto.premium,
     moneda: dto.currency,
