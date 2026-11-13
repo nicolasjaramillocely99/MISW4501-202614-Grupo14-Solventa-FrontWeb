@@ -2257,7 +2257,7 @@
     },
     "misSiniestros": {
       "titulo": "My claims",
-      "descripcion": "See the claims you've filed from the portal or the app.",
+      "descripcion": "Check the status of each claim at every stage; changes show up within minutes, no calls needed.",
       "radicar": "File a claim",
       "cargando": "Looking up your claims…",
       "cargandoMas": "Loading…",
@@ -2270,7 +2270,9 @@
         "todas": "All",
         "desde": "From",
         "desdeAyuda": "Filed on or after that day",
-        "limpiar": "Clear filters"
+        "limpiar": "Clear filters",
+        "etapa": "Stage",
+        "desdeFutura": "The date cannot be in the future."
       },
       "vacio": {
         "titulo": "You haven't filed any claims yet",
@@ -2278,7 +2280,7 @@
       },
       "sinResultados": {
         "titulo": "No claims match these filters",
-        "texto": "Change the policy or the date, or clear the filters."
+        "texto": "Change the stage, the policy or the date, or clear the filters."
       },
       "error": {
         "titulo": "We couldn't look up your claims",
@@ -2295,8 +2297,23 @@
         "desdeApp": "Filed from the app",
         "verDetalle": "View details",
         "verDetalleDe": "View details of claim {{radicado}}",
-        "acciones": "Actions"
-      }
+        "acciones": "Actions",
+        "ultimoCambio": "Last change",
+        "corregir": "Correct",
+        "corregirDe": "Correct claim {{radicado}}"
+      },
+      "indicadores": {
+        "etiqueta": "Summary of your claims",
+        "enCurso": "In progress",
+        "enCursoDe": "{{n}} · {{etapa}}",
+        "pagados": "Paid this year",
+        "pendiente": "Waiting for you",
+        "corregir": "{{radicado}} · correct documents",
+        "nada": "Nothing pending",
+        "ninguno": "—"
+      },
+      "actualizado": "Updated: {{hora}}",
+      "actualizar": "Refresh"
     },
     "triage": {
       "niveles": {
@@ -2489,6 +2506,78 @@
         "titulo": "The advisor returned your filing",
         "texto": "Correct what was asked and send it again; it keeps its number and what you already entered.",
         "corregir": "Correct and send again"
+      },
+      "resumen": "Filed on {{radicado}} · Last change {{cambio}}",
+      "actualizado": "Updated: {{hora}}",
+      "actualizar": "Refresh",
+      "descargarRadicado": "Download filing receipt",
+      "agregarSoporte": "Add a support",
+      "errorRadicado": "We couldn't download the filing receipt. Try again.",
+      "lineaTiempo": {
+        "titulo": "Timeline",
+        "etapaActual": "Current stage",
+        "canal": {
+          "web": "Web portal",
+          "mobile": "Mobile app"
+        },
+        "soportes": "Documents attached: {{n}}",
+        "radicado": {
+          "titulo": "Filed"
+        },
+        "revision": {
+          "pendiente": "Advisor review: pending",
+          "reenviada": "Advisor review: sent again",
+          "devuelta": "Advisor review: returned",
+          "aprobada": "Advisor review: approved",
+          "por": "{{asesor}}",
+          "espera": "The advisor checks that the filing is complete"
+        },
+        "evaluacion": {
+          "titulo": "In evaluation",
+          "prioridad": "Priority Triage {{nivel}} · Estimated resolution time: {{dias}} business days",
+          "prestador": "Assigned provider: {{nombre}} ({{km}} km)"
+        },
+        "aprobado": {
+          "titulo": "Approved",
+          "monto": "Approved amount: {{monto}}",
+          "enCurso": "The payment is in progress",
+          "excepcion": "The payment had a problem and operations is reviewing it",
+          "pendiente": "You will be notified of the approved amount"
+        },
+        "pagado": {
+          "titulo": "Paid",
+          "hecho": "Paid to your registered payment method",
+          "pendiente": "Payment to your registered payment method"
+        },
+        "rechazado": {
+          "titulo": "Rejected",
+          "motivo": "Reason: {{motivo}}"
+        }
+      },
+      "soportes": {
+        "titulo": "Documents",
+        "ninguno": "This claim has no documents attached.",
+        "app": "The photos of the claim were taken in the mobile app.",
+        "descargar": "Download {{nombre}}",
+        "error": "We couldn't download the file. Try again."
+      },
+      "queSigue": {
+        "titulo": "What's next",
+        "active": "An advisor will check that your filing is complete. If something is missing, it will be returned to you with what to correct.",
+        "returned": "The advisor returned your filing. Correct what was asked and send it again so it can move on.",
+        "in_evaluation": {
+          "base": "Operations is evaluating your claim. We will let you know when there is a decision.",
+          "dias": "Operations is evaluating your claim; the estimated resolution time is {{dias}} business days.",
+          "prestador": "{{nombre}} will attend your claim. With their report, operations will approve or reject it and we will let you know."
+        },
+        "approved": "Your claim was approved. The payment to your registered payment method is in progress.",
+        "payment_exception": "The payment had a problem. Operations is reviewing it and will contact you if a detail is needed.",
+        "paid": "Your claim is paid. Thank you for trusting Solventa.",
+        "rejected": "Your claim was rejected. If you have questions, call the customer line."
+      },
+      "ayuda": {
+        "titulo": "Need help?",
+        "texto": "24/7 customer line: +57 601 745 0000 · Mention the filing number {{radicado}}."
       }
     },
     "casosEvaluacion": {

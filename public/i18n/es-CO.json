@@ -2257,7 +2257,7 @@
     },
     "misSiniestros": {
       "titulo": "Mis siniestros",
-      "descripcion": "Consulta los siniestros que has radicado desde el portal o desde la app.",
+      "descripcion": "Consulta el estado de cada trámite en cada etapa; los cambios se reflejan en pocos minutos, sin llamadas.",
       "radicar": "Radicar un siniestro",
       "cargando": "Consultando tus siniestros…",
       "cargandoMas": "Cargando…",
@@ -2270,7 +2270,9 @@
         "todas": "Todas",
         "desde": "Desde",
         "desdeAyuda": "Radicados desde ese día",
-        "limpiar": "Limpiar filtros"
+        "limpiar": "Limpiar filtros",
+        "etapa": "Etapa",
+        "desdeFutura": "La fecha no puede ser futura."
       },
       "vacio": {
         "titulo": "Aún no has radicado siniestros",
@@ -2278,7 +2280,7 @@
       },
       "sinResultados": {
         "titulo": "No hay siniestros con estos filtros",
-        "texto": "Cambia la póliza o la fecha, o limpia los filtros."
+        "texto": "Cambia la etapa, la póliza o la fecha, o limpia los filtros."
       },
       "error": {
         "titulo": "No pudimos consultar tus siniestros",
@@ -2295,8 +2297,23 @@
         "desdeApp": "Radicado desde la app",
         "verDetalle": "Ver detalle",
         "verDetalleDe": "Ver detalle del siniestro {{radicado}}",
-        "acciones": "Acciones"
-      }
+        "acciones": "Acciones",
+        "ultimoCambio": "Último cambio",
+        "corregir": "Corregir",
+        "corregirDe": "Corregir el siniestro {{radicado}}"
+      },
+      "indicadores": {
+        "etiqueta": "Resumen de tus siniestros",
+        "enCurso": "En curso",
+        "enCursoDe": "{{n}} · {{etapa}}",
+        "pagados": "Pagados este año",
+        "pendiente": "Acción pendiente de tu parte",
+        "corregir": "{{radicado}} · corregir soportes",
+        "nada": "Nada pendiente",
+        "ninguno": "—"
+      },
+      "actualizado": "Actualizado: {{hora}}",
+      "actualizar": "Actualizar"
     },
     "triage": {
       "niveles": {
@@ -2489,6 +2506,78 @@
         "titulo": "El asesor devolvió tu radicación",
         "texto": "Corrige lo que te pidió y reenvíala; conserva su número y lo que ya diligenciaste.",
         "corregir": "Corregir y reenviar"
+      },
+      "resumen": "Radicado el {{radicado}} · Último cambio {{cambio}}",
+      "actualizado": "Actualizado: {{hora}}",
+      "actualizar": "Actualizar",
+      "descargarRadicado": "Descargar radicado",
+      "agregarSoporte": "Agregar soporte",
+      "errorRadicado": "No pudimos descargar el radicado. Inténtalo de nuevo.",
+      "lineaTiempo": {
+        "titulo": "Línea de tiempo",
+        "etapaActual": "Etapa actual",
+        "canal": {
+          "web": "Portal web",
+          "mobile": "App móvil"
+        },
+        "soportes": "Soportes adjuntos: {{n}}",
+        "radicado": {
+          "titulo": "Radicado"
+        },
+        "revision": {
+          "pendiente": "Revisión del asesor: pendiente",
+          "reenviada": "Revisión del asesor: reenviada",
+          "devuelta": "Revisión del asesor: devuelta",
+          "aprobada": "Revisión del asesor: aprobada",
+          "por": "{{asesor}}",
+          "espera": "El asesor revisa que la radicación esté completa"
+        },
+        "evaluacion": {
+          "titulo": "En evaluación",
+          "prioridad": "Prioridad Triage {{nivel}} · Tiempo estimado de resolución: {{dias}} días hábiles",
+          "prestador": "Prestador asignado: {{nombre}} ({{km}} km)"
+        },
+        "aprobado": {
+          "titulo": "Aprobado",
+          "monto": "Monto aprobado: {{monto}}",
+          "enCurso": "El pago está en curso",
+          "excepcion": "El pago tuvo un problema y operaciones lo está revisando",
+          "pendiente": "Recibirás el monto aprobado por notificación"
+        },
+        "pagado": {
+          "titulo": "Pagado",
+          "hecho": "Desembolsado a tu medio de pago registrado",
+          "pendiente": "Desembolso a tu medio de pago registrado"
+        },
+        "rechazado": {
+          "titulo": "Rechazado",
+          "motivo": "Motivo: {{motivo}}"
+        }
+      },
+      "soportes": {
+        "titulo": "Soportes",
+        "ninguno": "Este siniestro no tiene soportes adjuntos.",
+        "app": "Las fotos del siniestro se tomaron en la app móvil.",
+        "descargar": "Descargar {{nombre}}",
+        "error": "No pudimos descargar el archivo. Inténtalo de nuevo."
+      },
+      "queSigue": {
+        "titulo": "Qué sigue",
+        "active": "Un asesor revisará que tu radicación esté completa. Si falta algo, te la devolverá con lo que debes corregir.",
+        "returned": "El asesor te devolvió la radicación. Corrige lo que te pidió y reenvíala para que siga su curso.",
+        "in_evaluation": {
+          "base": "Operaciones está evaluando tu siniestro. Te avisaremos cuando haya una decisión.",
+          "dias": "Operaciones está evaluando tu siniestro; el tiempo estimado de resolución es de {{dias}} días hábiles.",
+          "prestador": "{{nombre}} atenderá tu siniestro. Con su informe, operaciones aprobará o rechazará el caso y te lo notificaremos."
+        },
+        "approved": "Tu siniestro fue aprobado. El pago está en curso a tu medio de pago registrado.",
+        "payment_exception": "El pago tuvo un problema. Operaciones lo está revisando y te contactará si necesita un dato.",
+        "paid": "Tu siniestro está pagado. Gracias por confiar en Solventa.",
+        "rejected": "Tu siniestro fue rechazado. Si tienes dudas, comunícate con la línea de atención."
+      },
+      "ayuda": {
+        "titulo": "¿Necesitas ayuda?",
+        "texto": "Línea de atención 24/7: +57 601 745 0000 · Menciona el radicado {{radicado}}."
       }
     },
     "casosEvaluacion": {

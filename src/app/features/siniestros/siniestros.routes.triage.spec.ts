@@ -41,6 +41,7 @@ describe('rutas de la prioridad del siniestro (HU-W2.2-01, S12)', () => {
             consultarTriageLote: () => NEVER,
             consultarTriage: () => NEVER,
             consultarSiniestro: () => NEVER,
+            consultarHistorial: () => NEVER,
             listarSiniestros: () => NEVER,
             consultarOpcionesRadicacion: () => NEVER,
             listarRevisiones: () => NEVER,

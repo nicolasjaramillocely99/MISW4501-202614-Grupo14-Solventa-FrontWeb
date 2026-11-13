@@ -12,7 +12,9 @@
         <h1 id="titulo-no-encontrado" class="seccion__titulo">{{ t('detalle.noEncontrado.titulo') }}</h1>
         <p>{{ t('detalle.noEncontrado.texto') }}</p>
         <div>
-          <a class="boton boton--secundario" routerLink="/siniestros/mis-siniestros">{{ t('detalle.noEncontrado.volver') }}</a>
+          <a class="boton boton--secundario" routerLink="/siniestros/mis-siniestros">{{
+            t('detalle.noEncontrado.volver')
+          }}</a>
         </div>
       </section>
     }
@@ -24,16 +26,59 @@
           <p>{{ t('detalle.error.texto') }}</p>
         </div>
         <div>
-          <button type="button" class="boton boton--primario" (click)="cargarCaso()">{{ t('detalle.error.reintentar') }}</button>
+          <button type="button" class="boton boton--primario" (click)="cargarCaso()">
+            {{ t('detalle.error.reintentar') }}
+          </button>
         </div>
       </section>
     }
     @default {
       @if (caso(); as caso) {
         <header class="encabezado">
-          <h1 class="pagina__titulo">{{ t('detalle.titulo', { radicado: caso.numeroRadicado }) }}</h1>
-          <app-insignia-estado tono="informacion">{{ t('estados.' + caso.estado) }}</app-insignia-estado>
+          <div class="encabezado__texto">
+            <div class="encabezado__fila">
+              <h1 class="pagina__titulo">{{ t('detalle.titulo', { radicado: caso.numeroRadicado }) }}</h1>
+              <app-insignia-estado [tono]="tonoEstado(caso.estado)">{{
+                t('estados.' + caso.estado)
+              }}</app-insignia-estado>
+            </div>
+            <p class="encabezado__resumen">
+              {{ poliza(t, caso) }} · {{ tipo(t, caso) }} ·
+              {{
+                t('detalle.resumen', {
+                  radicado: (caso.radicadoEn | formatoFechaHora),
+                  cambio: (caso.ultimoCambioEn | formatoFechaHora),
+                })
+              }}
+            </p>
+            @if (leidoEn(); as leido) {
+              <p class="encabezado__actualizado" aria-live="polite">
+                {{ t('detalle.actualizado', { hora: (leido | formatoFechaHora) }) }}
+                <button type="button" class="enlace" (click)="actualizar()">
+                  <svg lucideRefreshCw [size]="16" aria-hidden="true"></svg>{{ t('detalle.actualizar') }}
+                </button>
+              </p>
+            }
+          </div>
+          <div class="encabezado__acciones">
+            <button type="button" class="boton boton--secundario" (click)="descargarRadicado(caso)">
+              <svg lucideDownload [size]="20" aria-hidden="true"></svg>{{ t('detalle.descargarRadicado') }}
+            </button>
+            <!-- Solo un caso devuelto admite soportes nuevos: van con el reenvío de A9 (HU-W2.1-04). -->
+            @if (caso.estado === 'returned') {
+              <a class="boton boton--primario" [routerLink]="['/siniestros', caso.id, 'corregir']">
+                <svg lucideUpload [size]="20" aria-hidden="true"></svg>{{ t('detalle.agregarSoporte') }}
+              </a>
+            }
+          </div>
         </header>
+
+        @if (errorRadicado()) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('detalle.errorRadicado') }}</p>
+          </div>
+        }
 
         @if (caso.estado === 'returned') {
           <div class="aviso aviso--advertencia devuelto" role="note">
@@ -48,76 +93,147 @@
           </div>
         }
 
-        <section class="tarjeta etapas" aria-labelledby="titulo-etapas">
-          <h2 id="titulo-etapas" class="seccion__titulo">{{ t('confirmacion.etapas.etiqueta') }}</h2>
-          <app-indicador-pasos [pasos]="etapas()" etiqueta="siniestros.confirmacion.etapas.etiqueta" />
-
-          <div class="etapas__prioridad" aria-live="polite">
-            @switch (estadoPrioridad()) {
-              @case ('error') {
-                <div class="aviso aviso--advertencia">
-                  <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
-                  <div>
-                    <p class="aviso__titulo">{{ t('detalle.prioridad.error') }}</p>
-                    <button type="button" class="boton boton--secundario" (click)="cargarPrioridad()">
-                      {{ t('detalle.prioridad.reintentar') }}
-                    </button>
-                  </div>
-                </div>
-              }
-              @case ('detenido') {
-                <div class="aviso aviso--advertencia">
-                  <svg lucideInfo [size]="20" aria-hidden="true"></svg>
-                  <div>
-                    <p class="aviso__titulo">{{ t('detalle.prioridad.detenido') }}</p>
-                    <button type="button" class="boton boton--secundario" (click)="cargarPrioridad()">
-                      {{ t('detalle.prioridad.actualizar') }}
-                    </button>
-                  </div>
-                </div>
-              }
-              @default {
-                @if (triage(); as prioridad) {
-                  <app-prioridad-asegurado [triage]="prioridad" />
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            <section class="tarjeta" aria-labelledby="titulo-etapas">
+              <h2 id="titulo-etapas" class="seccion__titulo">{{ t('detalle.lineaTiempo.titulo') }}</h2>
+              <ol class="linea">
+                @for (etapa of etapas(); track etapa.clave; let i = $index) {
+                  <li
+                    class="linea__paso"
+                    [class.linea__paso--hecha]="etapa.estado === 'hecha'"
+                    [class.linea__paso--actual]="etapa.estado === 'actual'"
+                    [attr.aria-current]="etapa.estado === 'actual' ? 'step' : null"
+                    [attr.data-etapa]="etapa.clave"
+                  >
+                    <span class="linea__marca" aria-hidden="true">{{ etapa.estado === 'hecha' ? '✓' : i + 1 }}</span>
+                    <div class="linea__contenido">
+                      <p class="linea__titulo">
+                        {{ texto(t, 'detalle.lineaTiempo', etapa.titulo) }}
+                        @if (etapa.estado === 'actual') {
+                          <app-insignia-estado tono="informacion">{{
+                            t('detalle.lineaTiempo.etapaActual')
+                          }}</app-insignia-estado>
+                        }
+                      </p>
+                      @if (etapa.fecha) {
+                        <p class="linea__fecha">{{ etapa.fecha | formatoFechaHora }}</p>
+                      }
+                      @for (linea of etapa.detalle; track $index) {
+                        <p class="linea__detalle">{{ texto(t, 'detalle.lineaTiempo', linea) }}</p>
+                      }
+                    </div>
+                  </li>
                 }
-              }
-            }
-          </div>
-        </section>
+              </ol>
 
-        <section class="tarjeta" aria-labelledby="titulo-datos">
-          <h2 id="titulo-datos" class="seccion__titulo">{{ t('detalle.datos.titulo') }}</h2>
-          <dl class="datos">
-            <div>
-              <dt>{{ t('detalle.datos.poliza') }}</dt>
-              <dd>{{ poliza(t, caso) }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('detalle.datos.tipo') }}</dt>
-              <dd>{{ tipo(t, caso) }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('detalle.datos.fechaHecho') }}</dt>
-              <dd>{{ caso.ocurridoEn | formatoFechaHora }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('detalle.datos.lugar') }}</dt>
-              <dd>{{ caso.lugar }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('detalle.datos.radicadoEn') }}</dt>
-              <dd>{{ caso.radicadoEn | formatoFechaHora }}</dd>
-            </div>
-            <div>
-              <dt>{{ t('detalle.datos.monto') }}</dt>
-              <dd>{{ montoPesos() === null ? t('detalle.datos.sinMonto') : (montoPesos() | formatoMoneda: 'COP') }}</dd>
-            </div>
-            <div class="datos__ancho">
-              <dt>{{ t('detalle.datos.descripcion') }}</dt>
-              <dd>{{ caso.descripcion }}</dd>
-            </div>
-          </dl>
-        </section>
+              @if (caso.estado === 'in_evaluation') {
+                <div aria-live="polite">
+                  @switch (estadoPrioridad()) {
+                    @case ('error') {
+                      <div class="aviso aviso--advertencia">
+                        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                        <div>
+                          <p class="aviso__titulo">{{ t('detalle.prioridad.error') }}</p>
+                          <button type="button" class="boton boton--secundario" (click)="cargarPrioridad()">
+                            {{ t('detalle.prioridad.reintentar') }}
+                          </button>
+                        </div>
+                      </div>
+                    }
+                    @case ('detenido') {
+                      <div class="aviso aviso--advertencia">
+                        <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+                        <div>
+                          <p class="aviso__titulo">{{ t('detalle.prioridad.detenido') }}</p>
+                          <button type="button" class="boton boton--secundario" (click)="cargarPrioridad()">
+                            {{ t('detalle.prioridad.actualizar') }}
+                          </button>
+                        </div>
+                      </div>
+                    }
+                    @default {
+                      @if (triage()?.estado === 'pending') {
+                        <p class="estado">{{ t('detalle.prioridad.calculando') }}</p>
+                      }
+                    }
+                  }
+                </div>
+              }
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-datos">
+              <h2 id="titulo-datos" class="seccion__titulo">{{ t('detalle.datos.titulo') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('detalle.datos.fechaHecho') }}</dt>
+                  <dd>{{ caso.ocurridoEn | formatoFechaHora }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.datos.lugar') }}</dt>
+                  <dd>{{ caso.lugar }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.datos.descripcion') }}</dt>
+                  <dd>{{ caso.descripcion }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.datos.monto') }}</dt>
+                  <dd>
+                    {{ montoPesos() === null ? t('detalle.datos.sinMonto') : (montoPesos() | formatoMoneda: 'COP') }}
+                  </dd>
+                </div>
+              </dl>
+            </section>
+          </div>
+
+          <aside class="cuerpo__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-soportes">
+              <h2 id="titulo-soportes" class="seccion__titulo">{{ t('detalle.soportes.titulo') }}</h2>
+              @if (soportes().length === 0) {
+                <p class="estado">
+                  {{ caso.canal === 'mobile' ? t('detalle.soportes.app') : t('detalle.soportes.ninguno') }}
+                </p>
+              } @else {
+                <ul class="soportes">
+                  @for (fila of soportes(); track fila.archivo.soporteId) {
+                    <li class="soporte">
+                      <svg class="soporte__icono" lucideFileText [size]="20" aria-hidden="true"></svg>
+                      <div class="soporte__texto">
+                        <p class="soporte__nombre">{{ nombreSoporte(t, fila) }}</p>
+                        <p class="soporte__detalle">{{ fila.archivo.nombreArchivo }} · {{ formatoArchivo(fila.archivo) }}</p>
+                        @if (errorDescarga() === fila.archivo.soporteId) {
+                          <p class="soporte__error" role="alert">{{ t('detalle.soportes.error') }}</p>
+                        }
+                      </div>
+                      <button
+                        type="button"
+                        class="soporte__descargar"
+                        [disabled]="descargando() === fila.archivo.soporteId"
+                        [attr.aria-label]="t('detalle.soportes.descargar', { nombre: fila.archivo.nombreArchivo })"
+                        (click)="descargarSoporte(fila)"
+                      >
+                        <svg lucideDownload [size]="20" aria-hidden="true"></svg>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </section>
+
+            @if (siguiente(); as que) {
+              <section class="tarjeta tarjeta--nota" aria-labelledby="titulo-que-sigue">
+                <h2 id="titulo-que-sigue" class="seccion__titulo">{{ t('detalle.queSigue.titulo') }}</h2>
+                <p>{{ texto(t, 'detalle.queSigue', que) }}</p>
+              </section>
+            }
+
+            <section class="tarjeta" aria-labelledby="titulo-ayuda">
+              <h2 id="titulo-ayuda" class="seccion__titulo">{{ t('detalle.ayuda.titulo') }}</h2>
+              <p class="estado">{{ t('detalle.ayuda.texto', { radicado: caso.numeroRadicado }) }}</p>
+            </section>
+          </aside>
+        </div>
       }
     }
   }

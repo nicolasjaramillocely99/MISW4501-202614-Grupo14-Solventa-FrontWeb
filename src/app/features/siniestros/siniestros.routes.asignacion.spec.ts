@@ -44,6 +44,7 @@ describe('rutas de la asignación del prestador (HU-W2.3-01, S14)', () => {
             consultarPoliticaAsignacion: () => NEVER,
             listarPrestadores: () => NEVER,
             consultarSiniestro: () => NEVER,
+            consultarHistorial: () => NEVER,
             consultarTriage: () => NEVER,
             listarSiniestros: () => NEVER,
             consultarOpcionesRadicacion: () => NEVER,

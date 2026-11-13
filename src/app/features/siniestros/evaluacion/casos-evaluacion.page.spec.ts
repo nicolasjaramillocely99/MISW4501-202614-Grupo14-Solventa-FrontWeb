@@ -135,15 +135,18 @@ describe('CasosEvaluacionPage (O5 · HU-W2.2-02 y HU-W2.2-03)', () => {
   });
 
   it('«actualizado hace …» avanza con el reloj y «Actualizar» trae el orden vigente (CA-3)', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
+    // Solo el reloj de la página es falso: con `shouldAdvanceTime` el tiempo real se colaba entre el arranque del
+    // intervalo y la lectura de la cola, y en un runner lento el segundo tic marcaba 9 s en vez de 10.
+    // `setTimeout` sigue real para que Angular (sin zona) pinte los cambios.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] });
     const usuario = await renderizar();
 
-    await vi.advanceTimersByTimeAsync(INTERVALO_RELOJ_MS * 2);
-    expect(screen.getByText(/actualizado hace 1\d s/)).toBeTruthy();
+    vi.advanceTimersByTime(INTERVALO_RELOJ_MS * 2);
+    expect(await screen.findByText(/actualizado hace 10 s/)).toBeTruthy();
 
     await usuario.click(screen.getByRole('button', { name: 'Actualizar' }));
     expect(api.listarColaPrioridad).toHaveBeenCalledTimes(2);
-    expect(screen.getByText(/actualizado hace 0 s/)).toBeTruthy();
+    expect(await screen.findByText(/actualizado hace 0 s/)).toBeTruthy();
   });
 
   it('cambia a las excepciones de pago, que no llevan indicadores, y vuelve con el teclado', async () => {
