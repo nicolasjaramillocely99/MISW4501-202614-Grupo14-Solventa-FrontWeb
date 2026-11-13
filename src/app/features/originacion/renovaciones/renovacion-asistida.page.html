@@ -1,0 +1,313 @@
+<div class="pagina" *transloco="let t; read: 'originacion.renovacionAsistida'">
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-no-encontrada">
+        <h1 id="titulo-no-encontrada" class="pagina__titulo">{{ t('noEncontrada.titulo') }}</h1>
+        <p>{{ t('noEncontrada.texto') }}</p>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="volver()">{{ t('acciones.volverRenovaciones') }}</button>
+        </div>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('error.texto') }}</p>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('acciones.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @default {
+      @if (datos(); as d) {
+        <button type="button" class="volver" (click)="volver()">
+          <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('volver') }}
+        </button>
+
+        <header class="pagina__encabezado">
+          <div class="pagina__fila">
+              <h1 class="pagina__titulo">{{ t(claveTitulo(), { poliza: d.poliza.polizaId }) }}</h1>
+              <app-insignia-estado tono="advertencia">{{ t('vence', { fecha: fechaCorta(d.poliza.vigenciaHasta) }) }}</app-insignia-estado>
+              @if (degradada()) {
+                <app-insignia-estado tono="advertencia">{{ t('insignias.degradado') }}</app-insignia-estado>
+              }
+              @switch (insigniaRenovacion()) {
+                @case ('enCurso') {
+                  <app-insignia-estado tono="informacion">{{ t('insignias.enCurso') }}</app-insignia-estado>
+                }
+                @case ('renovada') {
+                  <app-insignia-estado tono="exito">{{ t('insignias.renovada') }}</app-insignia-estado>
+                }
+              }
+              @if (fase() === 'noDisponible' && noDisponible() === 'noRenovada') {
+                <app-insignia-estado tono="error">{{ t('insignias.noRenovada') }}</app-insignia-estado>
+              }
+          </div>
+          <div class="pagina__detalle">
+            @if (titular(); as s) {
+              <p class="pagina__subtitulo">
+                @if (enS7b() && d.formalizacion; as f) {
+                  {{ t('subtitulo.formalizada', { titular: s.titular, documento: s.documento, producto: s.producto, fecha: (f.formalizadaEn | formatoFechaHora), asesor: asesor() }) }}
+                } @else if (fase() === 'soloLecturaAsegurado') {
+                  {{ t('subtitulo.delAsegurado', { titular: s.titular, documento: s.documento, producto: s.producto, fecha: (d.renovacion?.aceptadaEn | formatoFechaHora) }) }}
+                } @else if (recotizacionVigente(); as rq) {
+                  {{ t(degradada() ? 'subtitulo.degradada' : 'subtitulo.recotizada', { titular: s.titular, documento: s.documento, producto: s.producto, fecha: (rq.creadaEn | formatoFechaHora) }) }}
+                } @else if (enS7()) {
+                  {{ t(conCasilla() ? 'subtitulo.vendidaPorAsesor' : 'subtitulo.sinRecotizar', { titular: s.titular, documento: s.documento, producto: s.producto }) }}
+                } @else {
+                  {{ t('subtitulo.basico', { titular: s.titular, documento: s.documento, producto: s.producto }) }}
+                }
+              </p>
+            }
+            <div class="acciones">
+            @if (enS7()) {
+              <button
+                type="button"
+                class="boton boton--secundario"
+                [disabled]="!puedeRecotizar()"
+                [attr.aria-busy]="recotizando() ? 'true' : null"
+                (click)="recotizar()"
+              >
+                <svg lucideRefreshCw [size]="16" aria-hidden="true"></svg>
+                @if (recotizando()) {
+                  {{ t('acciones.recotizando') }}
+                } @else if (fase() === 'consentimientoNoVerificable') {
+                  {{ t('acciones.reintentar') }}
+                } @else {
+                  {{ t('acciones.recotizar') }}
+                }
+              </button>
+              <button
+                type="button"
+                class="boton boton--primario"
+                [disabled]="!puedeFormalizar()"
+                [attr.aria-busy]="formalizando() ? 'true' : null"
+                (click)="formalizar()"
+              >
+                <svg lucideArrowRight [size]="16" aria-hidden="true"></svg>
+                {{ formalizando() ? t('acciones.formalizando') : t('acciones.formalizar') }}
+              </button>
+            } @else {
+              <button type="button" class="boton boton--secundario" (click)="volver()">
+                <svg lucideRefreshCw [size]="16" aria-hidden="true"></svg>{{ t('acciones.volverRenovaciones') }}
+              </button>
+              @if (d.renovacion?.estado === 'renewed' && d.renovacion.polizaNuevaId) {
+                <button
+                  type="button"
+                  class="boton boton--primario"
+                  [disabled]="descargando()"
+                  [attr.aria-busy]="descargando() ? 'true' : null"
+                  (click)="verCertificado()"
+                >
+                  <svg lucideArrowRight [size]="16" aria-hidden="true"></svg>{{ t('acciones.verCertificado') }}
+                </button>
+              } @else if (fase() === 'formalizada' && d.renovacion?.estado === 'accepted') {
+                <button type="button" class="boton boton--primario" (click)="verEmision()">
+                  <svg lucideArrowRight [size]="16" aria-hidden="true"></svg>{{ t('acciones.verEmision') }}
+                </button>
+              }
+            }
+            </div>
+          </div>
+        </header>
+
+        @switch (fase()) {
+          @case ('noDisponible') {
+            <div class="aviso aviso--informacion" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                @switch (noDisponible()) {
+                  @case ('noDisponible') {
+                    <p class="aviso__titulo">{{ t('avisos.noDisponible.titulo') }}</p>
+                    <p>{{ t('avisos.noDisponible.texto', { vence: fechaCorta(d.poliza.vigenciaHasta), abre: fechaCorta(d.ventana.abreEn) }) }}</p>
+                  }
+                  @case ('ventanaCerrada') {
+                    <p class="aviso__titulo">{{ t('avisos.ventanaCerrada.titulo') }}</p>
+                    <p>{{ t('avisos.ventanaCerrada.texto', { vence: fechaCorta(d.poliza.vigenciaHasta) }) }}</p>
+                  }
+                  @case ('noRenovada') {
+                    <p class="aviso__titulo">{{ t('avisos.noRenovada.titulo') }}</p>
+                    <p>
+                      {{
+                        t('avisos.noRenovada.' + (d.renovacion?.motivo ?? 'no_response'), {
+                          vence: fechaCorta(d.poliza.vigenciaHasta),
+                          hasta: (d.renovacion?.reintentarHasta | formatoFechaHora),
+                        })
+                      }}
+                    </p>
+                  }
+                }
+              </div>
+            </div>
+          }
+          @case ('sinConsentimiento') {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('avisos.sinConsentimiento.titulo') }}</p>
+                <p>{{ t('avisos.sinConsentimiento.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('consentimientoNoVerificable') {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('avisos.noVerificable.titulo') }}</p>
+                <p>{{ t('avisos.noVerificable.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('sinMedioDePago') {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('avisos.sinMedio.titulo') }}</p>
+                <p>{{ t('avisos.sinMedio.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('recotizacionVencida') {
+            <div class="aviso aviso--advertencia" role="status">
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('avisos.vencida.titulo') }}</p>
+                <p>{{ t('avisos.vencida.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('reemplazada') {
+            <div class="aviso aviso--advertencia" role="status">
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('avisos.reemplazada.titulo') }}</p>
+                <p>{{ t('avisos.reemplazada.texto') }}</p>
+              </div>
+            </div>
+          }
+          @case ('soloLecturaAsegurado') {
+            <div class="aviso aviso--informacion" role="status">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('avisos.delAsegurado.titulo') }}</p>
+                <p>{{ t('avisos.delAsegurado.texto') }}</p>
+              </div>
+            </div>
+          }
+        }
+
+        @if (degradada() && recotizacionVigente(); as rq) {
+          <div class="aviso aviso--advertencia" role="status">
+            <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              @if (rq.aviso === 'last_profile_in_use') {
+                <p class="aviso__titulo">{{ t('avisos.cache.titulo') }}</p>
+                <p>{{ t('avisos.cache.texto', { fecha: fechaCorta(rq.fechaPerfil) }) }}</p>
+              } @else {
+                <p class="aviso__titulo">{{ t('avisos.base.titulo') }}</p>
+                <p>{{ t('avisos.base.texto') }}</p>
+              }
+            </div>
+          </div>
+        }
+
+        @if (cobroFallido()) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('avisos.pagoFallido.titulo') }}</p>
+              <p>
+                {{
+                  t('avisos.pagoFallido.texto', {
+                    fecha: (d.cobro?.ultimaFallaEn | formatoFechaHora),
+                    hasta: (d.renovacion?.reintentarHasta | formatoFechaHora),
+                  })
+                }}
+              </p>
+            </div>
+          </div>
+        }
+
+        @if (error(); as clave) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('errores.' + clave) }}</p>
+          </div>
+        }
+
+        @if (conCasilla()) {
+          <app-consentimiento-asesor
+            [(afirmado)]="consentimientoAfirmado"
+            [conError]="errorCasilla()"
+            [deshabilitado]="recotizando()"
+          />
+        }
+
+        @if (fase() !== 'noDisponible') {
+          <div class="pagina__cuerpo">
+            <div class="principal">
+              <app-comparativo-condiciones [vigente]="d.vigente" [recotizacion]="condicionesMostradas()" />
+              @if (enS7()) {
+                <app-aceptacion-cliente
+                  [medioDePago]="d.medioDePago"
+                  [recotizadaEn]="recotizacionVigente()?.creadaEn ?? null"
+                  [codigoEnviado]="codigoEnviado()"
+                  [envios]="envios()"
+                  [erroresServidor]="erroresServidor()"
+                  [errorCodigo]="errorCodigo()"
+                  [deshabilitado]="!formalizable()"
+                  [trabajando]="formalizando() || enviandoCodigo()"
+                  (solicitud)="solicitud.set($event)"
+                  (enviarCodigo)="enviarCodigo()"
+                />
+              } @else if (d.formalizacion; as f) {
+                <app-aceptacion-cliente [soloLectura]="f" [medioDePago]="d.medioDePago" />
+                @if (afirmacion(); as a) {
+                  <app-consentimiento-asesor [soloLectura]="a" />
+                }
+              }
+            </div>
+
+            <aside class="lateral">
+              <section class="tarjeta prima" aria-labelledby="titulo-prima">
+                <h2 id="titulo-prima" class="prima__titulo">{{ t('prima.titulo') }}</h2>
+                @if (enS7() ? recotizacionVigente() : condicionesMostradas(); as rq) {
+                  <p class="prima__valor">{{ rq.renovada.prima | formatoMoneda: rq.renovada.moneda }}</p>
+                  <p class="prima__detalle">{{ t('prima.desde', { fecha: fechaCorta(rq.renovada.vigenciaDesde) }) }}</p>
+                } @else {
+                  <p class="prima__valor"><span aria-hidden="true">—</span><span class="visualmente-oculto">{{ t('comparativo.sinDato') }}</span></p>
+                  <p class="prima__detalle">{{ t('prima.sinRecotizacion') }}</p>
+                }
+              </section>
+              @if (enS7b() && d.renovacion; as r) {
+                <div #panelEmision class="panel-emision" tabindex="-1">
+                  <app-estado-cobro-renovacion
+                    [renovacion]="r"
+                    [cobro]="d.cobro"
+                    [medioDePago]="d.medioDePago"
+                    [emision]="emision()"
+                    [nuevaVigenciaDesde]="condicionesMostradas()?.renovada.vigenciaDesde ?? null"
+                    [nuevaVigenciaHasta]="condicionesMostradas()?.renovada.vigenciaHasta ?? null"
+                  />
+                </div>
+              }
+              @if (conTrazabilidad()) {
+                <app-trazabilidad-recotizacion
+                  [recotizacion]="recotizacionMostrada()"
+                  [trazabilidad]="enS7b()"
+                  [pendiente]="motivoPendiente()"
+                />
+              }
+            </aside>
+          </div>
+        }
+      }
+    }
+  }
+</div>

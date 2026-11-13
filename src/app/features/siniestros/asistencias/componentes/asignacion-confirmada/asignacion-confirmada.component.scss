@@ -1,0 +1,43 @@
+// HU-W2.3-01 · Prestador asignado: datos en dos columnas que bajan a una en pantallas angostas.
+.asignada {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.asignada__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.asignada__prestador {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-azul-900);
+}
+
+.asignada__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  a {
+    color: var(--color-azul-700);
+  }
+}

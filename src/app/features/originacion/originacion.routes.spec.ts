@@ -12,9 +12,13 @@ import { of, throwError } from 'rxjs';
 
 import { mapearListaEmisiones } from '@core/api/originacion/emision-monitor.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import { mapearPaginaPorVencer } from '@core/api/originacion/polizas-por-vencer.modelos';
+import { mapearRenovacionAsistida } from '@core/api/originacion/renovacion-asistida.modelos';
 import { ErrorRenovacion } from '@core/api/originacion/renovacion.modelos';
 import { mapearSolicitudRevision } from '@core/api/originacion/revision.modelos';
 import { LISTA_EMISIONES_DTO } from '@testing/emision-monitor-pruebas';
+import { PAGINA_POR_VENCER_DTO } from '@testing/polizas-por-vencer-pruebas';
+import { RENOVACION_SIN_RECOTIZAR_DTO } from '@testing/renovacion-asistida-pruebas';
 import { SOLICITUD_PENDIENTE_DTO } from '@testing/revision-pruebas';
 
 import { routes } from '../../app.routes';
@@ -302,6 +306,98 @@ describe('rutas de las pólizas y la renovación en línea (HU-W1.5-02)', () => 
 
         expect(url()).toBe('/acceso/no-autorizado');
       }
+    }
+  });
+});
+
+describe('rutas de las pólizas próximas a vencer (HU-W1.5-01)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            listarPolizasPorVencer: () => of(mapearPaginaPorVencer(PAGINA_POR_VENCER_DTO)),
+            consultarRenovacionAsistida: () => of(mapearRenovacionAsistida(RENOVACION_SIN_RECOTIZAR_DTO)),
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+
+  it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {
+    await harness.navigateByUrl('/originacion/renovaciones');
+
+    expect(url()).toBe('/acceso/iniciar-sesion?returnUrl=%2Foriginacion%2Frenovaciones');
+  });
+
+  it('el asesor entra a «Renovaciones» dentro del shell del portal', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/originacion/renovaciones');
+
+    expect(url()).toBe('/originacion/renovaciones');
+    expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-polizas-por-vencer-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Renovaciones');
+  });
+
+  it('el ítem «Renovaciones» del menú del asesor lleva a esta ruta', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/inicio');
+
+    const enlace = Array.from(harness.routeNativeElement?.querySelectorAll('nav a') ?? []).find((a) =>
+      a.getAttribute('href')?.endsWith('/originacion/renovaciones'),
+    );
+    expect(enlace).toBeDefined();
+  });
+
+  it('asegurado, operaciones y socio reciben «acceso no autorizado» (la URL nunca lleva el rol)', async () => {
+    for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
+      await iniciarSesionComo(rol);
+
+      await harness.navigateByUrl('/originacion/renovaciones');
+
+      expect(url()).toBe('/acceso/no-autorizado');
+    }
+  });
+
+  it('el asesor abre la renovación asistida de una póliza por su id (HU-W1.5-03)', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/originacion/renovaciones/pol-acc-118204');
+
+    expect(url()).toBe('/originacion/renovaciones/pol-acc-118204');
+    expect(harness.routeNativeElement?.querySelector('app-renovacion-asistida-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Renovación asistida · pol-acc-118204');
+  });
+
+  it('la renovación asistida es solo del asesor (HU-W1.5-03)', async () => {
+    for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
+      await iniciarSesionComo(rol);
+
+      await harness.navigateByUrl('/originacion/renovaciones/pol-acc-118204');
+
+      expect(url()).toBe('/acceso/no-autorizado');
     }
   });
 });

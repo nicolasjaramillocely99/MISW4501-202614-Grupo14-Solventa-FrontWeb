@@ -1,0 +1,369 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <a class="volver" routerLink="/siniestros/revision">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('revision.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('revision.cargando') }}</p>
+    }
+    @case ('noEncontrado') {
+      <section class="tarjeta" aria-labelledby="titulo-no-encontrado">
+        <h1 id="titulo-no-encontrado" class="pagina__titulo">
+          {{ t('revision.noEncontrado.titulo') }}
+        </h1>
+        <p>{{ t('revision.noEncontrado.texto') }}</p>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">{{ t('revision.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('revision.error.texto') }}</p>
+        </div>
+        <div class="acciones">
+          <button type="button" class="boton boton--primario" (click)="cargar()">
+            {{ t('revision.reintentar') }}
+          </button>
+        </div>
+      </section>
+    }
+    @case ('listo') {
+      @if (radicacion(); as r) {
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <div class="encabezado__fila">
+              <h1 class="pagina__titulo">
+                {{ t('revision.titulo', { radicado: r.siniestro.numeroRadicado }) }}
+              </h1>
+              <app-insignia-estado [tono]="tonoEstado(r.siniestro.estado)">
+                {{ t(revisable() ? 'revision.pendiente' : 'estados.' + r.siniestro.estado) }}
+              </app-insignia-estado>
+            </div>
+            <p class="encabezado__resumen">
+              {{ resumen(t, r) }} ·
+              {{
+                t('revision.radicadoPor', {
+                  asegurado: r.asegurado?.nombreCompleto ?? t('revision.aseguradoDesconocido'),
+                  fecha: (r.siniestro.radicadoEn | formatoFechaHora),
+                  canal: t('revision.canales.' + r.siniestro.canal),
+                })
+              }}
+            </p>
+          </div>
+          @if (revisable()) {
+            <div class="encabezado__acciones">
+              <button
+                type="button"
+                class="boton boton--secundario"
+                [disabled]="enviando()"
+                (click)="irADevolucion()"
+              >
+                {{ t('revision.acciones.devolver') }}
+              </button>
+              <button
+                type="button"
+                class="boton boton--primario"
+                [disabled]="!aprobable() || enviando()"
+                [attr.aria-describedby]="aprobable() ? null : 'ayuda-aprobar'"
+                (click)="aprobar()"
+              >
+                <svg lucideCheck [size]="20" aria-hidden="true"></svg
+                >{{ t('revision.acciones.aprobar') }}
+              </button>
+            </div>
+          }
+        </header>
+
+        @if (revisable() && !aprobable()) {
+          <p id="ayuda-aprobar" class="estado">{{ t('revision.acciones.aprobarDeshabilitado') }}</p>
+        }
+
+        @if (resultado(); as res) {
+          <div class="aviso aviso--exito" role="status">
+            <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+            <p>
+              {{ t('revision.exito.' + res.revision.resultado, { radicado: res.numeroRadicado }) }}
+            </p>
+          </div>
+        }
+
+        @if (errorAccion(); as codigo) {
+          <div
+            class="aviso"
+            [class.aviso--informacion]="codigo === 'claim_not_reviewable'"
+            [class.aviso--error]="codigo !== 'claim_not_reviewable'"
+            role="alert"
+          >
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('revision.errores.' + codigo) }}</p>
+          </div>
+        }
+
+        @if (!revisable() && !resultado()) {
+          <div class="aviso aviso--informacion" role="status">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <p>
+              @if (ultimaRevision(); as u) {
+                {{
+                  t('revision.yaRevisada.' + u.resultado, {
+                    asesor: u.nombreRevisor,
+                    fecha: (u.revisadaEn | formatoFechaHora),
+                  })
+                }}
+              } @else {
+                {{
+                  t('revision.yaRevisada.otroEstado', {
+                    estado: t('estados.' + r.siniestro.estado),
+                  })
+                }}
+              }
+            </p>
+          </div>
+        }
+
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            <section class="tarjeta" aria-labelledby="titulo-datos">
+              <h2 id="titulo-datos" class="seccion__titulo">{{ t('revision.datos.titulo') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('revision.datos.fechaHecho') }}</dt>
+                  <dd>{{ r.siniestro.ocurridoEn | formatoFechaHora }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('revision.datos.lugar') }}</dt>
+                  <dd>{{ r.siniestro.lugar }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('revision.datos.montoEstimado') }}</dt>
+                  <dd>
+                    {{
+                      r.siniestro.montoEstimado === null
+                        ? t('evaluacion.caso.sinMonto')
+                        : (r.siniestro.montoEstimado | formatoMoneda: 'COP')
+                    }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('revision.datos.descripcion') }}</dt>
+                  <dd>{{ r.siniestro.descripcion }}</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-soportes">
+              <h2 id="titulo-soportes" class="seccion__titulo">
+                {{ t('revision.soportes.titulo') }}
+              </h2>
+              <app-soportes-revision
+                [items]="r.checklist"
+                [soportes]="r.soportes"
+                [evidencia]="r.siniestro.evidencia"
+                [canal]="r.siniestro.canal"
+                [veredictos]="veredictos()"
+                [editable]="revisable()"
+                (cambio)="cambiarVeredicto($event)"
+              />
+            </section>
+
+            @if (revisable()) {
+              <section class="tarjeta" aria-labelledby="titulo-devolucion">
+                <h2 id="titulo-devolucion" class="seccion__titulo">
+                  {{ t('revision.devolucion.titulo') }}
+                </h2>
+                <p class="estado">{{ t('revision.devolucion.descripcion') }}</p>
+
+                <div class="formulario">
+                  <div class="campo">
+                    <label class="campo__etiqueta" for="motivo-devolucion">{{
+                      t('revision.devolucion.motivo')
+                    }}</label>
+                    <select
+                      id="motivo-devolucion"
+                      class="campo__control"
+                      [value]="motivo()"
+                      [attr.aria-invalid]="errores().motivo ? true : null"
+                      [attr.aria-describedby]="errores().motivo ? 'motivo-error' : null"
+                      (change)="elegirMotivo($event)"
+                    >
+                      <option value="">{{ t('revision.devolucion.elegirMotivo') }}</option>
+                      @for (m of motivos; track m) {
+                        <option [value]="m">{{ t('revision.motivos.' + m) }}</option>
+                      }
+                    </select>
+                    @if (errores().motivo) {
+                      <p id="motivo-error" class="campo__error">
+                        {{ t('revision.devolucion.errores.motivo') }}
+                      </p>
+                    }
+                  </div>
+
+                  <fieldset class="campo grupo">
+                    <legend class="campo__etiqueta">{{ t('revision.devolucion.datos') }}</legend>
+                    <div class="grupo__opciones">
+                      @for (d of datosCorregibles; track d) {
+                        <label class="grupo__opcion">
+                          <input
+                            type="checkbox"
+                            [checked]="datos().has(d)"
+                            (change)="alternarDato(d, $event)"
+                          />
+                          {{ t('revision.datosCorregibles.' + d) }}
+                        </label>
+                      }
+                    </div>
+                  </fieldset>
+
+                  <div class="campo campo--ancho">
+                    <label class="campo__etiqueta" for="mensaje-devolucion">{{
+                      t('revision.devolucion.mensaje')
+                    }}</label>
+                    <textarea
+                      id="mensaje-devolucion"
+                      class="campo__control campo__area"
+                      rows="3"
+                      [value]="mensaje()"
+                      [attr.maxlength]="maximoMensaje"
+                      [attr.aria-invalid]="errores().mensaje ? true : null"
+                      [attr.aria-describedby]="
+                        errores().mensaje ? 'mensaje-error' : 'mensaje-ayuda'
+                      "
+                      (input)="escribirMensaje($event)"
+                    ></textarea>
+                    @if (errores().mensaje; as e) {
+                      <p id="mensaje-error" class="campo__error">
+                        {{ t('revision.devolucion.errores.mensaje.' + e) }}
+                      </p>
+                    } @else {
+                      <p id="mensaje-ayuda" class="campo__ayuda">
+                        {{ t('revision.devolucion.mensajeAyuda') }}
+                      </p>
+                    }
+                  </div>
+                </div>
+
+                <p class="resumen-pedido" role="status">
+                  {{
+                    t('revision.devolucion.pedido', {
+                      soportes: pedido().soportes,
+                      datos: pedido().datos,
+                    })
+                  }}
+                </p>
+                @if (errores().pedido) {
+                  <p class="campo__error" role="alert">
+                    {{ t('revision.devolucion.errores.pedido') }}
+                  </p>
+                }
+                <div class="acciones">
+                  <button
+                    type="button"
+                    class="boton boton--secundario"
+                    [disabled]="enviando()"
+                    (click)="devolver()"
+                  >
+                    {{ enviando() ? t('revision.enviando') : t('revision.devolucion.enviar') }}
+                  </button>
+                </div>
+              </section>
+            }
+          </div>
+
+          <aside class="cuerpo__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-poliza">
+              <h2 id="titulo-poliza" class="seccion__titulo">{{ t('revision.poliza.titulo') }}</h2>
+              @if (r.poliza; as p) {
+                <dl class="datos datos--uno">
+                  <div>
+                    <dt>{{ t('revision.poliza.estado') }}</dt>
+                    <dd>{{ p.id }} · {{ t('evaluacion.poliza.estados.' + p.estado) }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('revision.poliza.cobertura') }}</dt>
+                    <dd>
+                      {{
+                        r.cobertura
+                          ? tipo(t, r.cobertura.incidente)
+                          : t('evaluacion.caso.sinCobertura')
+                      }}
+                    </dd>
+                  </div>
+                  @if (r.cobertura; as c) {
+                    <div>
+                      <dt>{{ t('revision.poliza.deducible') }}</dt>
+                      <dd>
+                        {{
+                          t('revision.poliza.deducibleValor', {
+                            pct: c.deduciblePuntosBasicos / 100,
+                          })
+                        }}
+                      </dd>
+                    </div>
+                  }
+                  <div>
+                    <dt>{{ t('revision.poliza.previos') }}</dt>
+                    <dd>
+                      @if (r.siniestrosPrevios.length === 0) {
+                        {{ t('revision.poliza.sinPrevios') }}
+                      } @else {
+                        <ul class="previos">
+                          @for (s of r.siniestrosPrevios; track s.id) {
+                            <li>{{ s.numeroRadicado }} · {{ previo(t, s) }}</li>
+                          }
+                        </ul>
+                      }
+                    </dd>
+                  </div>
+                </dl>
+              } @else {
+                <p class="estado">
+                  {{
+                    t(
+                      r.polizaNoDisponible
+                        ? 'evaluacion.poliza.noDisponible'
+                        : 'evaluacion.poliza.desconocida'
+                    )
+                  }}
+                </p>
+              }
+            </section>
+
+            @if (revisable()) {
+              <section class="tarjeta tarjeta--nota" aria-labelledby="titulo-al-aprobar">
+                <h2 id="titulo-al-aprobar" class="seccion__titulo">
+                  {{ t('revision.alAprobar.titulo') }}
+                </h2>
+                <p>{{ t('revision.alAprobar.texto') }}</p>
+              </section>
+            }
+
+            @if (r.revisiones.length > 0) {
+              <section class="tarjeta" aria-labelledby="titulo-revisiones">
+                <h2 id="titulo-revisiones" class="seccion__titulo">
+                  {{ t('revision.revisiones.titulo') }}
+                </h2>
+                <ol class="historial">
+                  @for (rv of r.revisiones; track rv.secuencia) {
+                    <li>
+                      <span class="historial__titulo">{{
+                        t('revision.revisiones.' + rv.resultado, { asesor: rv.nombreRevisor })
+                      }}</span>
+                      <span class="historial__fecha">{{ rv.revisadaEn | formatoFechaHora }}</span>
+                      @if (rv.mensaje) {
+                        <span class="historial__fecha"
+                          >{{ t('revision.motivos.' + rv.motivo) }} · {{ rv.mensaje }}</span
+                        >
+                      }
+                    </li>
+                  }
+                </ol>
+              </section>
+            }
+          </aside>
+        </div>
+      }
+    }
+  }
+</div>

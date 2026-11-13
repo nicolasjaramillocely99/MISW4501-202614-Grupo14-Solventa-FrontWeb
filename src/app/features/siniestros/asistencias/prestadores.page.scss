@@ -1,0 +1,94 @@
+// HU-W2.3-01 · Prestadores (sin frame en Figma): filtros arriba y la tabla del registro, como las demás tablas del portal.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__descripcion,
+.estado {
+  margin: var(--espacio-4) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.seccion__titulo {
+  margin: 0 0 var(--espacio-16);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-16);
+
+  .campo {
+    flex: 1 1 14rem;
+  }
+}
+
+.tabla-contenedor {
+  overflow-x: auto;
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+    background: var(--color-fondo-pagina);
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--color-borde-base);
+  }
+
+  a {
+    color: var(--color-azul-700);
+  }
+}
+
+.tabla__nombre {
+  display: block;
+  font-weight: 500;
+}
+
+.tabla__secundario {
+  display: block;
+  margin-top: var(--espacio-4);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-texto-secundario);
+}
+
+.tabla__accion {
+  text-align: right;
+  white-space: nowrap;
+}

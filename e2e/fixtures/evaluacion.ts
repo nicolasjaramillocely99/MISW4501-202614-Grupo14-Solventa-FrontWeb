@@ -13,7 +13,8 @@ const COBERTURA = { incident: 'water_damage', insured_value_minor: 32_000_000_00
 const RESUMEN = {
   claim_id: ID_CASO,
   filing_number: 'SIN-2026-01655',
-  status: 'active',
+  // Desde HU-W2.1-03 operaciones solo ve y decide lo que el asesor aprobó.
+  status: 'in_evaluation',
   channel: 'web',
   policy: POLIZA,
   incident_type: 'water_damage',
@@ -33,6 +34,26 @@ export const COLA = [
     triage: { state: 'assessed', level: 1, severity: 'high', amount_band: 'high' },
   },
 ];
+
+/** La cola por prioridad (HU-W2.2-02, O5) como la ordena el backend: Triage 1 primero, con el asegurado. */
+export const COLA_PRIORIDAD = [
+  { ...COLA[1], holder: { full_name: 'Andrea Rojas Mejía', document_type: 'CC', document_id: '52998112' } },
+  { ...COLA[0], holder: { full_name: 'Carolina Pérez Ruiz', document_type: 'CC', document_id: '1020345678' } },
+];
+
+export const RESUMEN_COLA = {
+  total: 22,
+  matching: 2,
+  levels: [
+    { level: 1, claims: 3 },
+    { level: 2, claims: 7 },
+    { level: 3, claims: 12 },
+  ],
+  unassessed: 0,
+  mean_resolution_days: 4.2,
+  decided_in_window: 18,
+  window_days: 30,
+};
 
 export const DETALLE = {
   claim: {

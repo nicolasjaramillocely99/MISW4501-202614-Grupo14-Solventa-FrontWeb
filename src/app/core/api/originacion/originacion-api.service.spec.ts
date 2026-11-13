@@ -12,6 +12,13 @@ import {
   RENOVACION_ACEPTADA_DTO,
   RENOVACION_RENOVADA_DTO,
 } from '@testing/renovacion-pruebas';
+import { PAGINA_POR_VENCER_DTO } from '@testing/polizas-por-vencer-pruebas';
+import {
+  CODIGO_ENVIADO_DTO,
+  RECOTIZACION_DTO,
+  RENOVACION_FORMALIZADA_DTO,
+  RENOVACION_RECOTIZADA_DTO,
+} from '@testing/renovacion-asistida-pruebas';
 import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
 import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
 
@@ -22,7 +29,9 @@ import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-
 import { ErrorFormalizacion, SolicitudFormalizacion } from './formalizacion.modelos';
 import { ErrorOferta, mapearOferta } from './oferta.modelos';
 import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
+import { ErrorPorVencer, mapearPaginaPorVencer } from './polizas-por-vencer.modelos';
 import { ErrorRenovacion, mapearCondicionesRenovacion, mapearPolizaListada, mapearRenovacion } from './renovacion.modelos';
+import { ErrorRenovacionAsistida, mapearRecotizacion, mapearRenovacionAsistida } from './renovacion-asistida.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
 
 const DTO: PerfilRiesgoDto = {
@@ -465,6 +474,153 @@ describe('OriginacionApiService', () => {
         .flush({ error: 'renewal_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect(codigos).toEqual(['renewal_not_available', 'renewal_unavailable', 'renewal_unavailable', 'renewal_not_found']);
+    });
+  });
+
+  describe('pólizas próximas a vencer del asesor (HU-W1.5-01)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('lista sin rango (el backend aplica la ventana) y devuelve la página traducida', () => {
+      let recibido: unknown;
+      servicio
+        .listarPolizasPorVencer({ desde: null, hasta: null, estado: null, pagina: 1, tamano: 20 })
+        .subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`);
+      expect(peticion.request.method).toBe('GET');
+      expect(peticion.request.params.toString()).toBe('page=1&page_size=20');
+      peticion.flush(PAGINA_POR_VENCER_DTO);
+
+      expect(recibido).toEqual(mapearPaginaPorVencer(PAGINA_POR_VENCER_DTO));
+    });
+
+    it('envía el rango, el estado y la página del filtro', () => {
+      servicio
+        .listarPolizasPorVencer({ desde: '2026-10-01', hasta: '2026-10-31', estado: 'expiring', pagina: 3, tamano: 20 })
+        .subscribe();
+
+      const peticion = http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`);
+      expect(peticion.request.params.toString()).toBe(
+        'page=3&page_size=20&expires_from=2026-10-01&expires_to=2026-10-31&status=expiring',
+      );
+      peticion.flush(PAGINA_POR_VENCER_DTO);
+    });
+
+    it('distingue el rango invertido (out_of_range) y la falta de servicio', () => {
+      const codigos: string[] = [];
+      const alFallar = (e: ErrorPorVencer) => codigos.push(e.codigo);
+      const filtro = { desde: '2026-10-31', hasta: '2026-10-01', estado: null, pagina: 1, tamano: 20 };
+
+      servicio.listarPolizasPorVencer(filtro).subscribe({ error: alFallar });
+      http
+        .expectOne((r) => r.url === `${BASE}/v1/policies/expiring`)
+        .flush({ error: 'out_of_range', message: 'm' }, { status: 400, statusText: 'Bad Request' });
+      servicio.listarPolizasPorVencer(filtro).subscribe({ error: alFallar });
+      http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['out_of_range', 'renewal_unavailable']);
+    });
+  });
+
+  describe('renovación asistida del asesor (HU-W1.5-03)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+    const RUTA = `${BASE}/v1/policies/pol-acc-118204/assisted-renewal`;
+
+    it('consulta la renovación asistida de la póliza', () => {
+      let recibido: unknown;
+      servicio.consultarRenovacionAsistida('pol-acc-118204').subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(RUTA);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(RENOVACION_RECOTIZADA_DTO);
+
+      expect(recibido).toEqual(mapearRenovacionAsistida(RENOVACION_RECOTIZADA_DTO));
+    });
+
+    it('recotiza con la casilla del asesor solo cuando la marcó', () => {
+      const recibidas: unknown[] = [];
+      servicio.recotizarRenovacion('pol-acc-118204', true).subscribe((r) => recibidas.push(r));
+      servicio.recotizarRenovacion('pol-acc-118204', false).subscribe((r) => recibidas.push(r));
+
+      const [conCasilla, sinCasilla] = http.match(`${RUTA}/requotes`);
+      expect(conCasilla.request.method).toBe('POST');
+      expect(conCasilla.request.body).toEqual({ consent_affirmed: true });
+      expect(sinCasilla.request.body).toEqual({});
+      conCasilla.flush(RECOTIZACION_DTO, { status: 201, statusText: 'Created' });
+      sinCasilla.flush(RECOTIZACION_DTO, { status: 201, statusText: 'Created' });
+
+      expect(recibidas).toEqual([mapearRecotizacion(RECOTIZACION_DTO), mapearRecotizacion(RECOTIZACION_DTO)]);
+    });
+
+    it('sin la casilla en una póliza de origen asistido llega el campo consentimiento', () => {
+      let error: unknown;
+      servicio.recotizarRenovacion('pol-acc-118204', false).subscribe({ error: (e: unknown) => (error = e) });
+
+      http
+        .expectOne(`${RUTA}/requotes`)
+        .flush(
+          { error: 'validation_failed', message: 'm', fields: [{ field: 'consent_affirmed', code: 'required' }] },
+          { status: 422, statusText: 'Unprocessable Entity' },
+        );
+
+      expect(error).toBeInstanceOf(ErrorRenovacionAsistida);
+      expect((error as ErrorRenovacionAsistida).campos).toEqual([{ campo: 'consentimiento', codigo: 'required' }]);
+    });
+
+    it('envía el código de la recotización y recibe el correo enmascarado', () => {
+      let recibido: unknown;
+      servicio.enviarCodigoRenovacion('pol-acc-118204', 'rq-1').subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${RUTA}/consent`);
+      expect(peticion.request.body).toEqual({ requote_id: 'rq-1' });
+      peticion.flush(CODIGO_ENVIADO_DTO);
+
+      expect(recibido).toEqual({
+        recotizacionId: CODIGO_ENVIADO_DTO.requote_id,
+        enviadoA: 'ca***@example.com',
+        venceEn: '2026-09-16T21:12:00Z',
+      });
+    });
+
+    it('formaliza con la recotización, el medio y el código, y distingue 201 de 200', () => {
+      const resultados: unknown[] = [];
+      const solicitud = {
+        recotizacionId: 'rq-1',
+        metodo: 'confirmation_code' as const,
+        aceptadaEn: '2026-09-16T21:05:00Z',
+        referencia: '',
+        codigo: '482913',
+      };
+      servicio.formalizarRenovacion('pol-acc-118204', solicitud).subscribe((r) => resultados.push(r));
+      servicio.formalizarRenovacion('pol-acc-118204', solicitud).subscribe((r) => resultados.push(r));
+
+      const [primera, segunda] = http.match(`${RUTA}/formalization`);
+      expect(primera.request.body).toEqual({
+        requote_id: 'rq-1',
+        acceptance: { method: 'confirmation_code', accepted_at: '2026-09-16T21:05:00Z' },
+        confirmation_code: '482913',
+      });
+      primera.flush(RENOVACION_FORMALIZADA_DTO, { status: 201, statusText: 'Created' });
+      segunda.flush(RENOVACION_FORMALIZADA_DTO, { status: 200, statusText: 'OK' });
+
+      expect(resultados).toMatchObject([{ creada: true }, { creada: false }]);
+      expect(resultados[0]).toMatchObject({ renovacion: { formalizacion: { asesorNombre: 'Laura Gómez' } } });
+    });
+
+    it('traduce los errores del contrato y, sin cuerpo, por el estado', () => {
+      const codigos: string[] = [];
+      const anotar = { error: (e: ErrorRenovacionAsistida) => codigos.push(e.codigo) };
+      servicio.consultarRenovacionAsistida('pol-acc-118204').subscribe(anotar);
+      servicio.recotizarRenovacion('pol-acc-118204', false).subscribe(anotar);
+      servicio.enviarCodigoRenovacion('pol-acc-118204', 'rq-1').subscribe(anotar);
+      servicio.formalizarRenovacion('pol-acc-118204', { recotizacionId: 'rq-1', metodo: 'recorded_call', aceptadaEn: 'x', referencia: 'R' }).subscribe(anotar);
+
+      http.expectOne(RUTA).flush({ error: 'policy_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+      http.expectOne(`${RUTA}/requotes`).flush({ error: 'consent_required', message: 'm' }, { status: 422, statusText: 'Unprocessable Entity' });
+      http.expectOne(`${RUTA}/consent`).flush(null, { status: 409, statusText: 'Conflict' });
+      http.expectOne(`${RUTA}/formalization`).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['policy_not_found', 'consent_required', 'renewal_not_available', 'renewal_unavailable']);
     });
   });
 

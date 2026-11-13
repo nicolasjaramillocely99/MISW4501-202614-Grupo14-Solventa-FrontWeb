@@ -1,0 +1,24 @@
+@use '../modal';
+
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-16);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.opciones__opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  min-height: 44px;
+  cursor: pointer;
+
+  input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-azul-700);
+  }
+}

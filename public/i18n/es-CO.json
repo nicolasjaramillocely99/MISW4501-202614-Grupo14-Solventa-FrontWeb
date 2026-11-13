@@ -1619,6 +1619,361 @@
         "titulo": "No pudimos cargar la renovación",
         "texto": "Intenta de nuevo en unos momentos."
       }
+    },
+    "polizasPorVencer": {
+      "titulo": "Renovaciones",
+      "subtitulo": "Pólizas próximas a vencer en el rango seleccionado. Inicia la renovación asistida desde la lista.",
+      "cargando": "Cargando las pólizas próximas a vencer…",
+      "indicador": {
+        "region": "Pólizas que vencen en la ventana de renovación",
+        "titulo": "Vencen en {{dias}} días"
+      },
+      "filtros": {
+        "titulo": "Filtrar pólizas próximas a vencer",
+        "desde": "Vencen desde",
+        "hasta": "Hasta",
+        "ayudaFecha": "DD/MM/AAAA",
+        "estado": "Estado",
+        "todos": "Todos",
+        "rangoInvalido": "«Hasta» no puede ser anterior a «Vencen desde»."
+      },
+      "contador": "{{n}} resultados",
+      "contadorUno": "1 resultado",
+      "rango": "Corrige el rango de fechas para ver las pólizas.",
+      "tabla": {
+        "titulo": "Pólizas próximas a vencer",
+        "poliza": "Póliza",
+        "cliente": "Cliente",
+        "producto": "Producto",
+        "vence": "Vence",
+        "prima": "Prima",
+        "estado": "Estado",
+        "acciones": "Acciones"
+      },
+      "estados": {
+        "expiring": "Por vencer",
+        "renewal_in_progress": "Renovación en curso",
+        "desconocido": "Otro estado"
+      },
+      "linea": {
+        "life": "Vida",
+        "auto": "Autos",
+        "home": "Hogar",
+        "travel": "Viaje"
+      },
+      "acciones": {
+        "renovar": "Renovar",
+        "renovarPoliza": "Renovar la póliza {{id}}",
+        "ver": "Ver",
+        "verRenovacion": "Ver la renovación de la póliza {{id}}",
+        "renovableDesde": "Renovable desde el {{fecha}}"
+      },
+      "vacio": {
+        "titulo": "Sin pólizas por vencer en el rango",
+        "texto": "No hay pólizas que venzan entre el {{desde}} y el {{hasta}} con el estado {{estado}}.",
+        "limpiar": "Limpiar filtros"
+      },
+      "error": {
+        "titulo": "No pudimos cargar las pólizas próximas a vencer",
+        "texto": "Intenta de nuevo en unos momentos.",
+        "reintentar": "Reintentar"
+      },
+      "paginacion": {
+        "navegacion": "Paginación de las pólizas",
+        "anterior": "Anterior",
+        "siguiente": "Siguiente",
+        "pagina": "Página {{pagina}} de {{total}}"
+      }
+    },
+    "renovacionAsistida": {
+      "cargando": "Cargando la renovación…",
+      "volver": "Renovaciones",
+      "titulo": {
+        "asistida": "Renovación asistida · {{poliza}}",
+        "formalizada": "Renovación formalizada · {{poliza}}",
+        "enCurso": "Renovación en curso · {{poliza}}"
+      },
+      "vence": "Vence el {{fecha}}",
+      "insignias": {
+        "degradado": "Modo degradado",
+        "enCurso": "Renovación en curso",
+        "renovada": "Renovada",
+        "noRenovada": "No renovada"
+      },
+      "linea": {
+        "life": "Vida hipotecario"
+      },
+      "subtitulo": {
+        "basico": "{{titular}} · {{documento}} · {{producto}}",
+        "sinRecotizar": "{{titular}} · {{documento}} · {{producto}} · sin recotizar",
+        "vendidaPorAsesor": "{{titular}} · {{documento}} · {{producto}} · vendida por un asesor · sin recotizar",
+        "recotizada": "{{titular}} · {{documento}} · {{producto}} · Recotizada el {{fecha}} con el motor de rating",
+        "degradada": "{{titular}} · {{documento}} · {{producto}} · Recotizada el {{fecha}} en modo degradado",
+        "formalizada": "{{titular}} · {{documento}} · {{producto}} · renovada el {{fecha}} por {{asesor}}",
+        "delAsegurado": "{{titular}} · {{documento}} · {{producto}} · aceptada por el cliente en su portal el {{fecha}}"
+      },
+      "acciones": {
+        "recotizar": "Recotizar",
+        "recotizando": "Recotizando…",
+        "formalizar": "Formalizar renovación",
+        "formalizando": "Formalizando…",
+        "volverRenovaciones": "Volver a renovaciones",
+        "verEmision": "Ver emisión en curso",
+        "verCertificado": "Ver certificado",
+        "reintentar": "Reintentar"
+      },
+      "prima": {
+        "titulo": "Nueva prima mensual",
+        "desde": "Desde el {{fecha}} · reutiliza el flujo de emisión: cobro, certificado renovado y notificación",
+        "sinRecotizacion": "Sin recotización vigente para este periodo"
+      },
+      "avisos": {
+        "cache": {
+          "titulo": "Fuentes externas no disponibles",
+          "texto": "Open Finance no respondió. La recotización usó el último perfil del cliente en caché, del {{fecha}}. Infórmaselo antes de registrar su aceptación."
+        },
+        "base": {
+          "titulo": "Sin perfil reciente en caché",
+          "texto": "Open Finance no respondió y no hay un perfil reciente en caché: la recotización usó el perfil actuarial base. Infórmaselo antes de registrar su aceptación."
+        },
+        "sinConsentimiento": {
+          "titulo": "El cliente revocó su autorización de Open Finance",
+          "texto": "No se consultaron sus datos ni se usó su perfil en caché. Para recotizar, el cliente debe autorizar de nuevo la consulta en el canal donde contrató."
+        },
+        "noVerificable": {
+          "titulo": "No pudimos verificar la autorización del cliente",
+          "texto": "El servicio de consentimientos no respondió, así que no se consultó ningún dato. Intenta de nuevo en unos minutos."
+        },
+        "sinMedio": {
+          "titulo": "La póliza no tiene un medio de pago registrado",
+          "texto": "No se puede formalizar con el asesor porque el cobro necesita una tarjeta del cliente. El cliente puede renovar desde su portal, donde registra su medio de pago."
+        },
+        "noDisponible": {
+          "titulo": "Esta póliza todavía no se puede renovar",
+          "texto": "Vence el {{vence}} y su ventana de renovación abre el {{abre}}. Vuelve a partir de esa fecha."
+        },
+        "ventanaCerrada": {
+          "titulo": "La ventana de renovación de esta póliza ya cerró",
+          "texto": "La cobertura terminó el {{vence}} sin una renovación."
+        },
+        "noRenovada": {
+          "titulo": "Esta póliza no se renovó",
+          "no_response": "La ventana cerró el {{vence}} sin respuesta del cliente.",
+          "payment_failed": "El cliente aceptó la renovación, pero el pago no se logró antes del {{hasta}}."
+        },
+        "pagoFallido": {
+          "titulo": "El pago de la renovación falló",
+          "texto": "El cobro del {{fecha}} fue rechazado. El cliente puede reintentar con otro medio de pago desde su portal hasta el {{hasta}}; si no paga antes, la póliza queda como no renovada."
+        },
+        "delAsegurado": {
+          "titulo": "El cliente renovó desde su portal",
+          "texto": "Esta renovación la hizo el asegurado. Aquí solo se consulta: no se puede recotizar ni formalizar otra para este periodo."
+        },
+        "vendidaPorAsesor": {
+          "titulo": "Póliza vendida por un asesor",
+          "texto": "Antes de recotizar, confirma con el cliente que autoriza consultar sus datos financieros. Queda registrado con tu nombre y la hora."
+        },
+        "vencida": {
+          "titulo": "La recotización venció",
+          "texto": "Pasaron más de 24 horas desde que se recotizó. Recotiza de nuevo antes de registrar la aceptación."
+        },
+        "reemplazada": {
+          "titulo": "Hay una recotización más reciente",
+          "texto": "Esta recotización ya no es la última del periodo. Recotiza de nuevo para continuar."
+        }
+      },
+      "noEncontrada": {
+        "titulo": "No encontramos la póliza",
+        "texto": "La póliza no existe o no se renueva desde aquí."
+      },
+      "error": {
+        "titulo": "No pudimos cargar la renovación",
+        "texto": "Intenta de nuevo en unos minutos."
+      },
+      "errores": {
+        "invalid_request": "La solicitud no es válida. Recarga la página e intenta de nuevo.",
+        "validation_failed": "Revisa los campos marcados.",
+        "policy_not_found": "La póliza no existe.",
+        "requote_not_found": "La recotización ya no existe: recotiza de nuevo.",
+        "renewal_not_available": "La póliza ya no está en su ventana de renovación.",
+        "renewal_closed": "El cliente ya renovó este periodo desde su portal.",
+        "already_formalized": "Otro asesor ya formalizó esta renovación.",
+        "payment_method_missing": "La póliza no tiene un medio de pago registrado.",
+        "consent_required": "El cliente no tiene una autorización de Open Finance vigente.",
+        "consent_unverifiable": "No pudimos verificar la autorización del cliente; intenta de nuevo en unos minutos.",
+        "requote_expired": "La recotización venció: recotiza de nuevo.",
+        "requote_superseded": "Hay una recotización más reciente: recotiza de nuevo.",
+        "consent_code_required": "Primero envía el código al cliente.",
+        "invalid_confirmation_code": "El código no es el que recibió el cliente.",
+        "confirmation_code_expired": "El código venció: envía uno nuevo.",
+        "too_many_attempts": "Se agotaron los intentos con esta recotización: recotiza de nuevo.",
+        "too_many_codes": "Ya se enviaron los 3 códigos de esta recotización.",
+        "code_delivery_unavailable": "No pudimos enviar el código; intenta de nuevo en unos minutos.",
+        "renewal_unavailable": "No pudimos completar la acción; intenta de nuevo en unos minutos.",
+        "certificado": "No pudimos descargar el certificado; intenta de nuevo en unos minutos."
+      },
+      "comparativo": {
+        "titulo": "Condiciones vigentes y recotizadas",
+        "condicion": "Condición",
+        "vigente": "Vigencia actual",
+        "recotizada": "Recotizada",
+        "prima": "Prima mensual",
+        "vigencia": "Vigencia",
+        "rango": "{{desde}} → {{hasta}}",
+        "valorAsegurado": "Valor asegurado",
+        "descuento": "Descuento por buena experiencia",
+        "descuentoAplicado": "{{porcentaje}} · sin siniestros en 12 meses",
+        "sinDescuento": "Sin descuento",
+        "sinDato": "Sin dato",
+        "coberturas": "Coberturas",
+        "sinCambios": "Sin cambios",
+        "cobertura": {
+          "death": "Fallecimiento",
+          "total_permanent_disability": "Incapacidad total y permanente"
+        }
+      },
+      "consentimientoAsesor": {
+        "titulo": "Póliza vendida por un asesor",
+        "texto": "Antes de recotizar, confirma con el cliente que autoriza consultar sus datos financieros. Queda registrado con tu nombre y la hora.",
+        "casilla": "El cliente autorizó consultar sus datos financieros para esta renovación.",
+        "error": "Marca la casilla: sin la autorización del cliente no se consulta ningún dato.",
+        "registrado": "Consentimiento afirmado por {{asesor}} el {{fecha}}."
+      },
+      "trazabilidad": {
+        "titulo": "Recotización",
+        "tituloRegistrada": "Trazabilidad de la recotización",
+        "fuentes": {
+          "open_finance": "Open Finance",
+          "open_data": "Open Data",
+          "kyc": "KYC"
+        },
+        "consultado": "Consultado · {{ms}} ms",
+        "falla": {
+          "timeout": "Sin respuesta · corte a los {{ms}} ms",
+          "error": "Respondió con error",
+          "circuit_open": "Aislada temporalmente: no se consultó"
+        },
+        "operativo": "Operativo",
+        "noDisponible": "No disponible",
+        "motor": "Motor de rating",
+        "motorAplicado": "Versión {{version}} · edad, riesgo y plazo",
+        "motorSinTarifa": "No se pudo tarifar: se repiten las condiciones vigentes",
+        "aplicado": "Aplicado",
+        "sinAplicar": "Sin aplicar",
+        "verFactores": "Ver factores del motor",
+        "factores": {
+          "base_monthly_rate": "Tasa mensual base",
+          "age_factor": "Factor de edad",
+          "risk_factor": "Factor de riesgo",
+          "term_factor": "Factor de plazo",
+          "rounding_step": "Redondeo"
+        },
+        "pendiente": {
+          "detalle": {
+            "sinRecotizar": "Se consulta al recotizar",
+            "autorizacion": "Pendiente de la autorización",
+            "sinAutorizacion": "No consultado",
+            "sinVerificar": "No consultado"
+          },
+          "insignia": {
+            "sinRecotizar": "Pendiente",
+            "autorizacion": "Pendiente",
+            "sinAutorizacion": "Sin autorización",
+            "sinVerificar": "Sin verificar"
+          }
+        },
+        "nota": {
+          "general": "Si Open Finance no responde, la recotización usa el último perfil en caché (hasta 30 días) y se indica aquí.",
+          "cache": "Perfil en caché del {{fecha}} (dentro de los 30 días).",
+          "base": "No hay un perfil reciente en caché: se usó el perfil actuarial base."
+        }
+      },
+      "emision": {
+        "titulo": "Emisión de la renovación",
+        "cobro": "Cobro de la prima",
+        "cobroEnCurso": "{{tarjeta}} · iniciado el {{fecha}}",
+        "cobroIniciado": "Iniciado el {{fecha}}",
+        "cobroConfirmado": "Confirmado el {{fecha}} · {{tarjeta}}",
+        "cobroConfirmadoSinTarjeta": "Confirmado el {{fecha}}",
+        "cobroFallido": "Rechazado el {{fecha}} · reintento hasta el {{hasta}}",
+        "noRenovada": {
+          "no_response": "La ventana cerró sin respuesta del cliente",
+          "payment_failed": "El pago no se logró dentro del plazo"
+        },
+        "certificado": "Certificado renovado",
+        "certificadoEmitido": "Póliza nueva {{poliza}}",
+        "certificadoEmitidoVigente": "Póliza nueva {{poliza}} · vigente del {{desde}} al {{hasta}}",
+        "certificadoPendiente": "Se emite cuando se confirme el pago",
+        "notificacion": "Notificación al cliente",
+        "notificacionEnviada": "Correo enviado con el certificado",
+        "notificacionPendiente": "Correo con el certificado renovado",
+        "estados": {
+          "enCurso": "En curso",
+          "confirmado": "Confirmado",
+          "fallo": "Falló",
+          "pendiente": "Pendiente",
+          "emitido": "Emitido",
+          "enviada": "Enviada",
+          "noRenovada": "No renovada"
+        },
+        "notaEnCurso": "Cuando el pago se confirme, aquí aparecen la póliza nueva y su certificado.",
+        "notaRenovada": "La póliza anterior queda renovada; la nueva vence el {{fecha}}.",
+        "notaFallo": "El cliente puede reintentar con otro medio de pago desde su portal antes del plazo.",
+        "notaNoRenovada": "La póliza no se renovó para este periodo."
+      },
+      "aceptacion": {
+        "titulo": "Aceptación del cliente",
+        "texto": "Registra la aceptación que el cliente te dio antes de formalizar. Queda asociada a la renovación junto con tu nombre, la fecha y las condiciones aplicadas.",
+        "tituloRegistrada": "Aceptación registrada",
+        "textoRegistrada": "La aceptación que el cliente dio antes de formalizar, asociada a la renovación con el asesor, la fecha y las condiciones aplicadas.",
+        "medio": "Medio por el que aceptó",
+        "fechaHora": "Fecha y hora",
+        "formatoFecha": "DD/MM/AAAA · HH:MM",
+        "referencia": "Referencia",
+        "sinReferencia": "Sin referencia (código de confirmación)",
+        "metodos": {
+          "recorded_call": "Llamada grabada",
+          "remote_signature": "Firma remota",
+          "confirmation_code": "Código de confirmación"
+        },
+        "codigo": "Código de 6 dígitos",
+        "codigoAyuda": "El cliente lo recibe por correo y te lo dicta.",
+        "enviarCodigo": "Enviar código",
+        "reenviarCodigo": "Reenviar código",
+        "codigoEnviado": "Enviado a {{correo}} · vence a las {{hasta}}. Quedan {{restantes}} envíos.",
+        "confirmo": "El cliente aceptó las condiciones recotizadas y autorizó el cobro con su medio de pago registrado.",
+        "confirmoConMedio": "El cliente aceptó las condiciones recotizadas y autorizó el cobro con su medio de pago registrado ({{medio}}).",
+        "errores": {
+          "fecha": {
+            "required": "Indica cuándo aceptó el cliente.",
+            "invalid_format": "La fecha no es válida.",
+            "out_of_range": "La fecha no puede ser futura ni anterior a la recotización."
+          },
+          "referencia": {
+            "required": "Indica la referencia de la grabación o de la firma.",
+            "invalid_format": "Hasta {{max}} caracteres: letras, números y . _ : / # -"
+          },
+          "codigo": {
+            "required": "Escribe el código que recibió el cliente.",
+            "invalid_format": "El código tiene 6 dígitos."
+          },
+          "confirmo": "Confirma que el cliente aceptó y autorizó el cobro.",
+          "servicio": {
+            "consent_code_required": "Primero envía el código al cliente.",
+            "invalid_confirmation_code": "El código no es el que recibió el cliente.",
+            "confirmation_code_expired": "El código venció: envía uno nuevo.",
+            "too_many_attempts": "Se agotaron los intentos con esta recotización: recotiza de nuevo.",
+            "too_many_codes": "Ya se enviaron los 3 códigos de esta recotización.",
+            "code_delivery_unavailable": "No pudimos enviar el código; intenta de nuevo en unos minutos."
+          }
+        }
+      },
+      "marcas": {
+        "visa": "Visa",
+        "mastercard": "Mastercard",
+        "amex": "American Express",
+        "pse": "PSE"
+      }
     }
   },
   "siniestros": {
@@ -1628,7 +1983,8 @@
       "approved": "Aprobado · pago en curso",
       "paid": "Pagado",
       "rejected": "Rechazado",
-      "payment_exception": "Excepción de pago"
+      "payment_exception": "Excepción de pago",
+      "returned": "Devuelto al cliente"
     },
     "catalogo": {
       "ramos": {
@@ -1669,7 +2025,8 @@
         "fotosCristales": "Fotos de los cristales",
         "documentoSoporte": "Documento de soporte",
         "fotosDano": "Fotos del daño",
-        "cotizacionReparacion": "Factura o cotización de la reparación"
+        "cotizacionReparacion": "Factura o cotización de la reparación",
+        "fotoPlaca": "Fotografía de la placa"
       }
     },
     "radicacion": {
@@ -1900,7 +2257,7 @@
     },
     "misSiniestros": {
       "titulo": "Mis siniestros",
-      "descripcion": "Consulta los siniestros que has radicado desde el portal o desde la app.",
+      "descripcion": "Consulta el estado de cada trámite en cada etapa; los cambios se reflejan en pocos minutos, sin llamadas.",
       "radicar": "Radicar un siniestro",
       "cargando": "Consultando tus siniestros…",
       "cargandoMas": "Cargando…",
@@ -1913,7 +2270,9 @@
         "todas": "Todas",
         "desde": "Desde",
         "desdeAyuda": "Radicados desde ese día",
-        "limpiar": "Limpiar filtros"
+        "limpiar": "Limpiar filtros",
+        "etapa": "Etapa",
+        "desdeFutura": "La fecha no puede ser futura."
       },
       "vacio": {
         "titulo": "Aún no has radicado siniestros",
@@ -1921,7 +2280,7 @@
       },
       "sinResultados": {
         "titulo": "No hay siniestros con estos filtros",
-        "texto": "Cambia la póliza o la fecha, o limpia los filtros."
+        "texto": "Cambia la etapa, la póliza o la fecha, o limpia los filtros."
       },
       "error": {
         "titulo": "No pudimos consultar tus siniestros",
@@ -1938,8 +2297,23 @@
         "desdeApp": "Radicado desde la app",
         "verDetalle": "Ver detalle",
         "verDetalleDe": "Ver detalle del siniestro {{radicado}}",
-        "acciones": "Acciones"
-      }
+        "acciones": "Acciones",
+        "ultimoCambio": "Último cambio",
+        "corregir": "Corregir",
+        "corregirDe": "Corregir el siniestro {{radicado}}"
+      },
+      "indicadores": {
+        "etiqueta": "Resumen de tus siniestros",
+        "enCurso": "En curso",
+        "enCursoDe": "{{n}} · {{etapa}}",
+        "pagados": "Pagados este año",
+        "pendiente": "Acción pendiente de tu parte",
+        "corregir": "{{radicado}} · corregir soportes",
+        "nada": "Nada pendiente",
+        "ninguno": "—"
+      },
+      "actualizado": "Actualizado: {{hora}}",
+      "actualizar": "Actualizar"
     },
     "triage": {
       "niveles": {
@@ -1991,7 +2365,11 @@
           "titulo": "Objetivo de atención por nivel",
           "cargando": "Consultando la política de prioridad…",
           "error": "No pudimos consultar el objetivo de cada nivel.",
-          "reintentar": "Reintentar"
+          "reintentar": "Reintentar",
+          "tiempoMedio": "Tiempo medio de resolución",
+          "sinDecididos": "Sin casos decididos",
+          "dias": "{{dias}} días",
+          "ventana": "Últimos {{dias}} días"
         },
         "busqueda": {
           "titulo": "Buscar siniestros",
@@ -2123,11 +2501,88 @@
         "titulo": "No pudimos consultar tu siniestro",
         "texto": "El servicio no respondió. Intenta de nuevo en unos minutos.",
         "reintentar": "Reintentar"
+      },
+      "devuelto": {
+        "titulo": "El asesor devolvió tu radicación",
+        "texto": "Corrige lo que te pidió y reenvíala; conserva su número y lo que ya diligenciaste.",
+        "corregir": "Corregir y reenviar"
+      },
+      "resumen": "Radicado el {{radicado}} · Último cambio {{cambio}}",
+      "actualizado": "Actualizado: {{hora}}",
+      "actualizar": "Actualizar",
+      "descargarRadicado": "Descargar radicado",
+      "agregarSoporte": "Agregar soporte",
+      "errorRadicado": "No pudimos descargar el radicado. Inténtalo de nuevo.",
+      "lineaTiempo": {
+        "titulo": "Línea de tiempo",
+        "etapaActual": "Etapa actual",
+        "canal": {
+          "web": "Portal web",
+          "mobile": "App móvil"
+        },
+        "soportes": "Soportes adjuntos: {{n}}",
+        "radicado": {
+          "titulo": "Radicado"
+        },
+        "revision": {
+          "pendiente": "Revisión del asesor: pendiente",
+          "reenviada": "Revisión del asesor: reenviada",
+          "devuelta": "Revisión del asesor: devuelta",
+          "aprobada": "Revisión del asesor: aprobada",
+          "por": "{{asesor}}",
+          "espera": "El asesor revisa que la radicación esté completa"
+        },
+        "evaluacion": {
+          "titulo": "En evaluación",
+          "prioridad": "Prioridad Triage {{nivel}} · Tiempo estimado de resolución: {{dias}} días hábiles",
+          "prestador": "Prestador asignado: {{nombre}} ({{km}} km)"
+        },
+        "aprobado": {
+          "titulo": "Aprobado",
+          "monto": "Monto aprobado: {{monto}}",
+          "enCurso": "El pago está en curso",
+          "excepcion": "El pago tuvo un problema y operaciones lo está revisando",
+          "pendiente": "Recibirás el monto aprobado por notificación"
+        },
+        "pagado": {
+          "titulo": "Pagado",
+          "hecho": "Desembolsado a tu medio de pago registrado",
+          "pendiente": "Desembolso a tu medio de pago registrado"
+        },
+        "rechazado": {
+          "titulo": "Rechazado",
+          "motivo": "Motivo: {{motivo}}"
+        }
+      },
+      "soportes": {
+        "titulo": "Soportes",
+        "ninguno": "Este siniestro no tiene soportes adjuntos.",
+        "app": "Las fotos del siniestro se tomaron en la app móvil.",
+        "descargar": "Descargar {{nombre}}",
+        "error": "No pudimos descargar el archivo. Inténtalo de nuevo."
+      },
+      "queSigue": {
+        "titulo": "Qué sigue",
+        "active": "Un asesor revisará que tu radicación esté completa. Si falta algo, te la devolverá con lo que debes corregir.",
+        "returned": "El asesor te devolvió la radicación. Corrige lo que te pidió y reenvíala para que siga su curso.",
+        "in_evaluation": {
+          "base": "Operaciones está evaluando tu siniestro. Te avisaremos cuando haya una decisión.",
+          "dias": "Operaciones está evaluando tu siniestro; el tiempo estimado de resolución es de {{dias}} días hábiles.",
+          "prestador": "{{nombre}} atenderá tu siniestro. Con su informe, operaciones aprobará o rechazará el caso y te lo notificaremos."
+        },
+        "approved": "Tu siniestro fue aprobado. El pago está en curso a tu medio de pago registrado.",
+        "payment_exception": "El pago tuvo un problema. Operaciones lo está revisando y te contactará si necesita un dato.",
+        "paid": "Tu siniestro está pagado. Gracias por confiar en Solventa.",
+        "rejected": "Tu siniestro fue rechazado. Si tienes dudas, comunícate con la línea de atención."
+      },
+      "ayuda": {
+        "titulo": "¿Necesitas ayuda?",
+        "texto": "Línea de atención 24/7: +57 601 745 0000 · Menciona el radicado {{radicado}}."
       }
     },
     "casosEvaluacion": {
-      "titulo": "Casos en evaluación",
-      "descripcion": "Los siniestros que esperan la decisión de operaciones, con su prioridad calculada automáticamente, del más antiguo al más nuevo. Abre cada uno para evaluarlo.",
+      "titulo": "Cola de siniestros",
+      "descripcion": "Ordenada por prioridad calculada automáticamente (severidad y monto estimado) y, dentro de cada nivel, por tiempo de radicación. La prioridad se recalcula cuando cambia información relevante del caso.",
       "actualizar": "Actualizar",
       "pestanas": {
         "etiqueta": "Casos de la cola",
@@ -2135,7 +2590,7 @@
         "payment-exceptions": "Excepciones de pago"
       },
       "leyenda": {
-        "evaluations": "Siniestros en evaluación",
+        "evaluations": "Siniestros pendientes de decisión, por prioridad",
         "payment-exceptions": "Siniestros aprobados cuyo pago falló"
       },
       "cargando": "Consultando la cola…",
@@ -2155,7 +2610,8 @@
         "montoEstimado": "Monto estimado",
         "estado": "Estado",
         "espera": "Espera",
-        "acciones": "Acciones"
+        "acciones": "Acciones",
+        "asegurado": "Asegurado"
       },
       "triage": "Triage {{nivel}}",
       "sinPrioridad": "Sin calcular",
@@ -2168,7 +2624,21 @@
       "cargarMas": "Cargar más",
       "buscarPorId": "Buscar por id",
       "verPrioridad": "Ver prioridad",
-      "verPrioridadEtiqueta": "Ver la prioridad del siniestro {{radicado}}"
+      "verPrioridadEtiqueta": "Ver la prioridad del siniestro {{radicado}}",
+      "filtros": {
+        "prioridad": "Prioridad",
+        "estado": "Estado",
+        "producto": "Producto",
+        "todas": "Todas",
+        "todos": "Todos",
+        "ramos": {
+          "auto": "Autos",
+          "home": "Hogar"
+        }
+      },
+      "enCola": "{{casos}} casos en cola",
+      "actualizado": "actualizado hace {{segundos}} s",
+      "sinAsegurado": "No disponible"
     },
     "evaluacion": {
       "volver": "Casos en evaluación",
@@ -2348,6 +2818,534 @@
           "boton": "Reintentar pago",
           "enviando": "Reintentando…"
         }
+      },
+      "asignarPrestador": "Asignar prestador"
+    },
+    "radicacionesRevision": {
+      "titulo": "Radicaciones por revisar",
+      "descripcion": "Siniestros radicados que esperan tu revisión antes de entrar a evaluación, del más antiguo al más nuevo.",
+      "actualizar": "Actualizar",
+      "cargando": "Cargando radicaciones…",
+      "cargarMas": "Cargar más",
+      "reintentar": "Reintentar",
+      "vacio": "No hay radicaciones pendientes de revisión.",
+      "leyenda": "Radicaciones pendientes de revisión",
+      "error": {
+        "titulo": "No pudimos cargar las radicaciones",
+        "texto": "Intenta de nuevo en unos segundos."
+      },
+      "columnas": {
+        "radicado": "Radicado",
+        "producto": "Producto",
+        "canal": "Canal",
+        "montoEstimado": "Monto estimado",
+        "radicadoEl": "Radicado el",
+        "espera": "En espera",
+        "acciones": "Acciones"
+      },
+      "canales": {
+        "web": "Portal web",
+        "mobile": "App móvil"
+      },
+      "revisar": "Revisar",
+      "revisarEtiqueta": "Revisar la radicación {{radicado}}"
+    },
+    "revision": {
+      "volver": "Siniestros",
+      "cargando": "Cargando la radicación…",
+      "reintentar": "Reintentar",
+      "enviando": "Enviando…",
+      "noEncontrado": {
+        "titulo": "No encontramos la radicación",
+        "texto": "Revisa el enlace o vuelve a la lista de radicaciones."
+      },
+      "error": {
+        "titulo": "No pudimos cargar la radicación",
+        "texto": "Intenta de nuevo en unos segundos."
+      },
+      "titulo": "Radicación {{radicado}}",
+      "pendiente": "Pendiente de revisión",
+      "radicadoPor": "Radicado por {{asegurado}} el {{fecha}} desde {{canal}}",
+      "aseguradoDesconocido": "el asegurado",
+      "canales": {
+        "web": "el portal web",
+        "mobile": "la app móvil"
+      },
+      "acciones": {
+        "devolver": "Devolver al cliente",
+        "aprobar": "Aprobar y enviar a evaluación",
+        "aprobarDeshabilitado": "Para aprobar, todos los soportes deben estar válidos y no debe faltar ninguno. Si alguno es ilegible o falta, devuelve la radicación al cliente."
+      },
+      "exito": {
+        "approved": "La radicación {{radicado}} pasó a «En evaluación» y entró a la cola de triage.",
+        "returned": "La radicación {{radicado}} quedó «Devuelto al cliente». El asegurado podrá corregirla sin reportar de nuevo."
+      },
+      "yaRevisada": {
+        "approved": "Esta radicación ya fue aprobada por {{asesor}} el {{fecha}}.",
+        "returned": "Esta radicación fue devuelta al cliente por {{asesor}} el {{fecha}}.",
+        "otroEstado": "Esta radicación ya no está pendiente de revisión: está «{{estado}}»."
+      },
+      "errores": {
+        "claim_not_reviewable": "Otro asesor ya revisó esta radicación. Te mostramos cómo quedó.",
+        "supports_incomplete": "Falta un soporte requerido: devuelve la radicación al cliente.",
+        "reason_code_invalid": "Elige un motivo de la lista.",
+        "note_too_long": "La nota de un soporte es demasiado larga (máximo 300 caracteres).",
+        "support_not_applicable": "Uno de los soportes no corresponde a este tipo de siniestro. Recarga la radicación.",
+        "verdict_not_applicable": "El veredicto de un soporte no corresponde a lo adjuntado. Recarga la radicación.",
+        "invalid_request": "No pudimos registrar la revisión. Recarga la radicación e intenta de nuevo.",
+        "claim_not_found": "La radicación ya no existe.",
+        "claims_unavailable": "No pudimos registrar la revisión. Intenta de nuevo en unos segundos.",
+        "message_required": "Escribe el mensaje para el cliente.",
+        "message_too_long": "El mensaje para el cliente es demasiado largo.",
+        "nothing_requested": "Marca un soporte como ilegible o faltante, o un dato a corregir.",
+        "unauthorized": "Tu sesión expiró.",
+        "forbidden": "No tienes permiso para revisar radicaciones."
+      },
+      "datos": {
+        "titulo": "Datos reportados",
+        "fechaHecho": "Fecha y hora del hecho",
+        "lugar": "Lugar",
+        "montoEstimado": "Monto estimado",
+        "descripcion": "Descripción"
+      },
+      "soportes": {
+        "titulo": "Soportes adjuntos",
+        "adjuntos": "{{n}} archivo(s) adjunto(s)",
+        "noAdjuntoRequerido": "No adjunto · requerido para este tipo de siniestro",
+        "noAdjuntoOpcional": "No adjunto · opcional",
+        "verEtiqueta": "Ver un archivo de {{soporte}}",
+        "veredictoDe": "Veredicto de {{soporte}}",
+        "nota": "Nota sobre {{soporte}}",
+        "notaAyuda": "¿Qué tiene? Por ejemplo: borroso, no se lee el número",
+        "solicitar": "Solicitar al cliente"
+      },
+      "veredictos": {
+        "valid": "Válido",
+        "illegible": "Ilegible",
+        "missing": "Falta",
+        "opcional": "Opcional"
+      },
+      "devolucion": {
+        "titulo": "Devolución al cliente",
+        "descripcion": "Si devuelves la radicación, registra el motivo y el mensaje para el cliente. El caso pasa a «Devuelto al cliente» y la persona podrá corregir los soportes marcados como ilegibles o faltantes sin reportar desde cero.",
+        "motivo": "Motivo",
+        "elegirMotivo": "Elige un motivo",
+        "datos": "Datos a corregir (opcional)",
+        "mensaje": "Mensaje para el cliente",
+        "mensajeAyuda": "Lo lee el asegurado. Máximo 1000 caracteres.",
+        "pedido": "Se pedirán {{soportes}} soporte(s) y {{datos}} dato(s) a corregir.",
+        "enviar": "Devolver radicación",
+        "errores": {
+          "motivo": "Elige el motivo de la devolución.",
+          "mensaje": {
+            "required": "Escribe el mensaje para el cliente.",
+            "too_long": "El mensaje no puede pasar de 1000 caracteres."
+          },
+          "pedido": "Para devolver, marca al menos un soporte como ilegible o faltante, o un dato a corregir."
+        }
+      },
+      "motivos": {
+        "illegible_or_incomplete_supports": "Soportes ilegibles o incompletos",
+        "inconsistent_facts": "Datos del hecho inconsistentes",
+        "missing_information": "Información faltante",
+        "other": "Otro"
+      },
+      "datosCorregibles": {
+        "occurred_at": "Fecha y hora del hecho",
+        "place": "Lugar",
+        "description": "Descripción",
+        "estimated_amount": "Monto estimado"
+      },
+      "poliza": {
+        "titulo": "Póliza",
+        "estado": "Póliza y estado",
+        "cobertura": "Cobertura aplicable",
+        "deducible": "Deducible",
+        "deducibleValor": "{{pct}} %",
+        "previos": "Siniestros previos",
+        "sinPrevios": "Ninguno",
+        "previo": "{{estado}} ({{tipo}}, {{fecha}})"
+      },
+      "alAprobar": {
+        "titulo": "Al aprobar",
+        "texto": "El caso pasa a «En evaluación» y entra a la cola de triage con su prioridad calculada automáticamente según severidad y monto estimado."
+      },
+      "revisiones": {
+        "titulo": "Revisiones anteriores",
+        "approved": "Aprobada por {{asesor}}",
+        "returned": "Devuelta por {{asesor}}"
+      }
+    },
+    "correccion": {
+      "volver": "Mis siniestros",
+      "cargando": "Cargando la radicación…",
+      "reintentar": "Reintentar",
+      "recargar": "Recargar la radicación",
+      "verCaso": "Ver el siniestro",
+      "titulo": "Siniestro {{radicado}}",
+      "resumen": "Radicado el {{radicado}} · Devuelto el {{devuelto}} por {{asesor}} (asesor de siniestros)",
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o vuelve a «Mis siniestros»."
+      },
+      "error": {
+        "titulo": "No pudimos cargar la radicación",
+        "texto": "Intenta de nuevo en unos segundos. Lo que ya radicaste está guardado."
+      },
+      "noDevuelto": {
+        "titulo": "Esta radicación no está devuelta",
+        "texto": "Su estado es «{{estado}}». Solo se corrige una radicación que el asesor te devolvió."
+      },
+      "enviado": {
+        "titulo": "Radicación reenviada",
+        "texto": "El siniestro {{radicado}} conserva su número y volvió a estado Activo para que el asesor lo revise de nuevo."
+      },
+      "acciones": {
+        "cancelar": "Cancelar",
+        "reenviar": "Reenviar radicación",
+        "enviando": "Reenviando…"
+      },
+      "motivo": {
+        "titulo": "Motivo de la devolución",
+        "ayuda": "Corrige lo que se pide y reenvía: el caso conserva todo lo que ya diligenciaste y volverá a estado Activo para revisión."
+      },
+      "faltantes": {
+        "titulo": "Antes de reenviar, completa lo que falta:",
+        "general": "Hay un dato que el servidor no aceptó. Revisa la radicación e inténtalo de nuevo."
+      },
+      "errores": {
+        "stale_return": "El asesor volvió a revisar esta radicación. Recárgala para ver lo que pide ahora.",
+        "claim_not_returned": "Esta radicación ya no está devuelta: quizá ya la reenviaste.",
+        "claims_unavailable": "No pudimos reenviar la radicación. Intenta de nuevo en unos segundos; nada se perdió.",
+        "invalid_request": "No pudimos reenviar la radicación con estos datos. Revísalos e inténtalo de nuevo."
+      },
+      "hechos": {
+        "titulo": "Datos del siniestro (conservados)",
+        "poliza": "Póliza afectada",
+        "tipo": "Tipo de siniestro",
+        "ocurridoEn": "Fecha y hora del hecho",
+        "lugar": "Lugar del hecho",
+        "descripcion": "Descripción",
+        "montoEstimado": "Monto estimado (COP)",
+        "pedido": "Pedido por el asesor",
+        "problema": {
+          "requerido": "Este dato es obligatorio.",
+          "formatoInvalido": "El formato no es válido.",
+          "fechaFutura": "La fecha no puede ser futura.",
+          "fechaAntigua": "La fecha es demasiado antigua.",
+          "fechaFueraRango": "La fecha está fuera de la vigencia de la póliza o del plazo permitido.",
+          "fueraVigencia": "La fecha está fuera de la vigencia de la póliza.",
+          "fechaPosteriorRadicacion": "La fecha no puede ser posterior a la radicación.",
+          "lugarLongitud": "El lugar debe tener entre 3 y 160 caracteres.",
+          "descripcionLongitud": "La descripción debe tener entre 10 y 1.000 caracteres.",
+          "montoRango": "El monto debe estar entre 1 y 100.000.000.000 de pesos."
+        }
+      },
+      "soportes": {
+        "titulo": "Soportes por corregir",
+        "pendientes": "{{n}} pendientes",
+        "nuevos": "Archivos nuevos",
+        "seReemplazan": "Al reenviar, los archivos nuevos reemplazan los {{n}} anteriores.",
+        "quitar": "Quitar {{nombre}}",
+        "accion": {
+          "reemplazar": "Reemplazar",
+          "subir": "Subir",
+          "agregar": "Agregar"
+        },
+        "etiqueta": {
+          "reemplazar": "Reemplazar archivos de {{nombre}}",
+          "subir": "Subir archivos de {{nombre}}",
+          "agregar": "Agregar archivos a {{nombre}}"
+        },
+        "estado": {
+          "reemplazar": "Reemplazar",
+          "falta": "Falta",
+          "pocos": "Faltan archivos",
+          "corregido": "Nuevo",
+          "adjunto": "Adjunto",
+          "opcional": "Opcional"
+        },
+        "detalle": {
+          "ilegible": "Devuelto: el archivo no es legible. {{nota}}",
+          "pedido": "Solicitado por el asesor",
+          "aceptado": "Aceptado",
+          "app": "Fotos tomadas en la app",
+          "obligatorio": "Obligatorio",
+          "opcional": "Opcional"
+        },
+        "problema": {
+          "reemplazar": "sube un archivo nuevo que lo reemplace",
+          "falta": "súbelo",
+          "pocos": "faltan archivos para el mínimo",
+          "muchos": "tiene más archivos de los permitidos",
+          "formato": "un archivo no tiene un formato admitido",
+          "noAplica": "no aplica a este tipo de siniestro",
+          "noEncontrado": "un archivo no se pudo usar; súbelo de nuevo"
+        },
+        "archivo": {
+          "subiendo": "Subiendo…",
+          "adjunto": "Listo",
+          "rechazado": "No se pudo subir"
+        }
+      },
+      "historial": {
+        "titulo": "Historial de la radicación",
+        "radicado": "Radicado",
+        "devuelto": "Devuelto por {{quien}}",
+        "aprobado": "Aprobado por {{quien}}",
+        "reenviado": "Reenviado",
+        "pendiente": "Reenvío pendiente",
+        "pendienteAyuda": "Cada edición queda registrada con fecha y autor",
+        "revision": "Revisión del asesor",
+        "revisionAyuda": "Al reenviar vuelve a estado Activo",
+        "canal": {
+          "web": "portal web",
+          "mobile": "app móvil"
+        }
+      }
+    },
+    "mapa": {
+      "region": "Mapa del incidente y de los prestadores",
+      "acercar": "Acercar",
+      "alejar": "Alejar",
+      "atribucion": "colaboradores de OpenStreetMap",
+      "incidente": "Incidente",
+      "ayudaPin": "Haz clic en el mapa para ubicar el incidente",
+      "radio": "Radio de búsqueda {{radio}} km",
+      "noDisponible": "El mapa no está disponible: continúa con la tabla y las coordenadas",
+      "hemisferios": {
+        "norte": "N",
+        "sur": "S",
+        "este": "E",
+        "oeste": "O"
+      }
+    },
+    "especialidades": {
+      "vehicle_assessment": "Peritaje vehicular",
+      "auto_glass": "Vidrios",
+      "plumbing": "Plomería",
+      "damp_proofing": "Humedades",
+      "painting": "Pintura",
+      "bodywork": "Latonería"
+    },
+    "asignacion": {
+      "volver": "Siniestro {{radicado}}",
+      "titulo": "Asignar prestador · {{radicado}}",
+      "cargando": "Cargando la asignación del prestador…",
+      "subtitulo": {
+        "visita": "Evaluación en sitio requerida",
+        "app": "coordenadas capturadas desde la app al radicar",
+        "analista": "ubicación registrada por el analista",
+        "sinUbicacion": "sin coordenadas del incidente",
+        "agotada": "búsqueda agotada en el radio máximo"
+      },
+      "pendienteAsignacion": "Pendiente de asignación",
+      "acciones": {
+        "buscar": "Buscar prestador",
+        "reintentar": "Reintentar búsqueda",
+        "ampliar": "Ampliar radio de búsqueda",
+        "asignarSugerido": "Asignar prestador sugerido",
+        "buscando": "Buscando…",
+        "actualizar": "Actualizar estado",
+        "administrar": "Administrar prestadores"
+      },
+      "ampliarDeshabilitado": {
+        "radioMaximo": "Ya se buscó en el radio máximo",
+        "sinPolitica": "No pudimos leer los radios de búsqueda"
+      },
+      "sinVisita": {
+        "titulo": "Este siniestro no requiere visita en sitio",
+        "texto": "Su tipo de siniestro no necesita un prestador en el lugar del incidente."
+      },
+      "noAplica": {
+        "titulo": "El caso no está en evaluación",
+        "texto": "Solo se asigna un prestador a los casos en evaluación."
+      },
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o vuelve a los casos en evaluación.",
+        "volver": "Volver a casos en evaluación"
+      },
+      "error": {
+        "titulo": "No pudimos cargar la asignación",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "ubicacion": {
+        "coordenadas": "Coordenadas del incidente",
+        "app": "Capturadas desde la app · precisión {{precision}} m",
+        "analista": "Registradas por {{nombre}} · {{fecha}}",
+        "direccion": "Dirección (alternativa si no hay coordenadas)",
+        "radio": "Radio de búsqueda",
+        "radioValor": "{{radio}} km",
+        "radioMaximo": "{{radio}} km (máximo)",
+        "ayudaRadio": "Se amplía con «Ampliar radio de búsqueda» si no hay disponibles",
+        "ayudaRadioMaximo": "Radio máximo alcanzado · {{intentos}} intentos registrados",
+        "ayudaRadioMaximoUno": "Radio máximo alcanzado · 1 intento registrado",
+        "corregir": "Corregir ubicación",
+        "formulario": {
+          "titulo": "Ubicación del incidente",
+          "texto": "El caso no tiene coordenadas de la app. Escribe la dirección y ubica el incidente en el mapa, o escribe la latitud y la longitud.",
+          "direccion": "Dirección",
+          "ayudaDireccion": "Entre 5 y 200 caracteres. Se comparte con el prestador.",
+          "latitud": "Latitud",
+          "longitud": "Longitud",
+          "ayudaCoordenadas": "En grados decimales, por ejemplo 4.6771 y -74.0483. Se llenan al hacer clic en el mapa.",
+          "guardar": "Guardar ubicación",
+          "guardando": "Guardando…",
+          "cancelar": "Cancelar",
+          "errores": {
+            "direccion": {
+              "requerido": "Escribe la dirección del incidente.",
+              "longitud": "La dirección debe tener entre 5 y 200 caracteres."
+            },
+            "latitud": {
+              "requerido": "Escribe la latitud o haz clic en el mapa.",
+              "formato": "Escribe la latitud en grados decimales.",
+              "rango": "La latitud va de −90 a 90."
+            },
+            "longitud": {
+              "requerido": "Escribe la longitud o haz clic en el mapa.",
+              "formato": "Escribe la longitud en grados decimales.",
+              "rango": "La longitud va de −180 a 180."
+            }
+          }
+        }
+      },
+      "candidatos": {
+        "titulo": "Prestadores con la especialidad requerida ({{especialidad}})",
+        "tituloAgotado": "Prestadores con la especialidad requerida ({{especialidad}}) · ninguno disponible dentro de {{radio}} km",
+        "prestador": "Prestador",
+        "especialidad": "Especialidad",
+        "distancia": "Distancia",
+        "disponibilidad": "Disponibilidad",
+        "accion": "Acción",
+        "km": "{{distancia}} km",
+        "sugerido": "Sugerido",
+        "asignar": "Asignar",
+        "asignarA": "Asignar a {{nombre}}",
+        "vacio": "No hay prestadores registrados con esta especialidad."
+      },
+      "disponibilidad": {
+        "disponibleHoy": "Disponible hoy",
+        "disponibleManana": "Disponible mañana",
+        "enOtroCaso": "No disponible · en otro caso",
+        "noDisponibleHasta": "No disponible · hasta {{fecha}}",
+        "noDisponible": "No disponible",
+        "fueraDelRadio": "Fuera del radio"
+      },
+      "criterio": {
+        "titulo": "Criterio de asignación",
+        "texto": "El sistema calcula la distancia entre las coordenadas del incidente y cada prestador disponible con la especialidad requerida, y sugiere el más cercano. Si no hay prestadores en el radio inicial, amplía el radio y repite la búsqueda."
+      },
+      "alAsignar": {
+        "titulo": "Al asignar",
+        "texto": "El prestador recibe el caso por correo con las coordenadas del incidente para desplazarse."
+      },
+      "intentos": {
+        "titulo": "Registro de intentos",
+        "analista": "Búsqueda de {{nombre}}",
+        "automatica": "Búsqueda automática",
+        "linea": "{{hora}} · {{radio}} km",
+        "lineaMaximo": "{{hora}} · {{radio}} km (máximo)",
+        "ninguno": "sin prestadores disponibles",
+        "uno": "1 prestador disponible",
+        "varios": "{{cantidad}} prestadores disponibles"
+      },
+      "pendiente": {
+        "titulo": "No se encontró un prestador disponible",
+        "texto": "Se buscó en {{radios}} km (radio máximo configurado) y ningún prestador con la especialidad {{especialidad}} está disponible. El caso queda Pendiente de asignación: {{motivo}}.",
+        "reintento": "La búsqueda se repetirá automáticamente cada {{minutos}} minutos y puedes reintentarla ahora. No se asigna un prestador que no cumpla los criterios."
+      },
+      "motivos": {
+        "no_eligible_provider_within_max_radius": "ningún prestador elegible dentro del radio máximo"
+      },
+      "confirmacion": {
+        "titulo": "¿Asignar a {{nombre}}?",
+        "texto": "Está a {{distancia}} km del incidente. Recibirá por correo la ubicación del incidente para desplazarse.",
+        "confirmar": "Confirmar asignación",
+        "cancelar": "Cancelar",
+        "cerrar": "Cerrar",
+        "asignando": "Asignando…"
+      },
+      "asignado": {
+        "titulo": "Prestador asignado",
+        "correo": "Correo",
+        "telefono": "Teléfono",
+        "distancia": "Distancia",
+        "asignado": "Asignado",
+        "asignadoValor": "{{fecha}} por {{nombre}}",
+        "ubicacion": "Ubicación compartida",
+        "avisoPendiente": "Enviando la asignación al prestador…",
+        "avisoEnviado": "Aviso enviado al prestador · {{fecha}}",
+        "avisoDetenido": "El aviso aún no sale; el sistema lo sigue intentando.",
+        "actualizar": "Actualizar"
+      },
+      "errores": {
+        "location_from_app": "El caso ya tiene las coordenadas de la app: no se registra otra ubicación.",
+        "assignment_exists": "Otro analista ya asignó un prestador a este caso.",
+        "claim_not_assignable": "El caso ya no está en evaluación o no requiere visita.",
+        "provider_unavailable": "El prestador ya no está disponible. Busca de nuevo.",
+        "search_outdated": "La búsqueda cambió mientras tanto. Revisa los prestadores actualizados.",
+        "location_missing": "Registra la ubicación del incidente antes de buscar.",
+        "provider_not_eligible": "Ese prestador no cumple los criterios de la búsqueda.",
+        "validation_failed": "Revisa los datos marcados.",
+        "claims_unavailable": "El servicio de siniestros no respondió. Intenta de nuevo.",
+        "generico": "No pudimos completar la acción. Intenta de nuevo."
+      }
+    },
+    "prestadores": {
+      "titulo": "Prestadores",
+      "descripcion": "Registro de prestadores para la evaluación en sitio. Cambia la disponibilidad o libera a un prestador asignado.",
+      "cargando": "Cargando prestadores…",
+      "filtros": {
+        "titulo": "Filtros",
+        "especialidad": "Especialidad",
+        "disponibilidad": "Disponibilidad",
+        "todas": "Todas",
+        "limpiar": "Limpiar filtros"
+      },
+      "columnas": {
+        "prestador": "Prestador",
+        "especialidades": "Especialidades",
+        "contacto": "Contacto",
+        "disponibilidad": "Disponibilidad",
+        "actualizado": "Actualizado",
+        "accion": "Acción"
+      },
+      "disponibilidades": {
+        "available": "Disponible",
+        "unavailable": "No disponible",
+        "busy": "Ocupado en un caso"
+      },
+      "hasta": "hasta {{fecha}}",
+      "verCaso": "Ver la asignación",
+      "cargaInicial": "Carga inicial",
+      "cambiar": "Cambiar disponibilidad",
+      "cambiarDe": "Cambiar disponibilidad de {{nombre}}",
+      "liberar": "Liberar",
+      "liberarA": "Liberar a {{nombre}}",
+      "vacio": "No hay prestadores registrados.",
+      "sinResultados": "Ningún prestador coincide con los filtros.",
+      "error": {
+        "titulo": "No pudimos cargar los prestadores",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo.",
+        "reintentar": "Reintentar"
+      },
+      "guardado": "Se actualizó la disponibilidad de {{nombre}}.",
+      "dialogo": {
+        "titulo": "Disponibilidad de {{nombre}}",
+        "disponible": "Disponible",
+        "noDisponible": "No disponible",
+        "hasta": "Hasta (opcional)",
+        "ayudaHasta": "Es informativa: el prestador no vuelve a estar disponible solo.",
+        "fechaPasada": "La fecha no puede ser anterior a hoy.",
+        "ocupado": "Está asignado a un caso. Al marcarlo disponible queda libre para otros casos.",
+        "guardar": "Guardar",
+        "guardando": "Guardando…",
+        "cancelar": "Cancelar",
+        "error": "No pudimos guardar la disponibilidad. Intenta de nuevo.",
+        "cerrar": "Cerrar"
       }
     }
   },

@@ -182,6 +182,76 @@ rechazado la solicitud se conserva y se reutiliza `FormularioMedioPagoComponent`
   criterios con los mismos componentes de A4.
 - E2E: `e2e/flujos/cotizacion-emision/renovacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 
+**Pólizas próximas a vencer (HU-W1.5-01)** — `renovaciones/polizas-por-vencer.page.ts` (`PolizasPorVencerPage`, S6), ruta
+`/originacion/renovaciones` en `originacion.routes.ts` (bloque `renovaciones` con `rolGuard('asesor')`; el ítem «Renovaciones» del menú
+del asesor ya existía). Contrato: `docs/contratos/HU-W1.5-01-api.md` del backend (`openapi.yaml` v0.14.0). Cliente:
+`core/api/originacion/polizas-por-vencer.modelos.ts` y `OriginacionApiService.listarPolizasPorVencer` (`GET /v1/policies/expiring`).
+
+- **S6:** título «Renovaciones», tarjeta «Vencen en N días» (las pólizas con el periodo abierto que vencen dentro de la ventana de
+  renovación, sin los filtros), filtros «Vencen desde», «Hasta» y «Estado» con etiqueta permanente, conteo «N resultados» y la tabla
+  Póliza · Cliente (nombre y documento) · Producto · Vence · Prima · Estado · acción. Las fechas son días civiles de Colombia, como el
+  filtro del backend.
+- **Filtro en la URL** (`renovaciones/modelos/filtro-por-vencer.ts`): `?desde=&hasta=&estado=&pagina=`. Sin rango, el backend aplica la
+  ventana de renovación desde hoy (`RENEWAL_WINDOW_DAYS` de HU-W1.5-02) y los campos muestran el rango aplicado; cambiar un filtro vuelve
+  a la página 1, paginar lo conserva y recargar lo mantiene. «Hasta» anterior a «Vencen desde» se avisa en el campo y no se consulta.
+- **Estados:** *Por vencer* (sin renovación del periodo) y *Renovación en curso* (renovación aceptada y en cobro); un estado que el cliente
+  no conoce se muestra con una insignia neutra (el contrato es ampliable para HU-W1.6-02).
+- **Acciones (CA-4):** *Renovar* solo cuando el backend dice `can_renew` (dentro de la ventana de renovación) y *Ver* en la renovación en
+  curso; los dos llevan a `/originacion/renovaciones/:id` con el `policy_id`, la renovación asistida de HU-W1.5-03, que agrega su hijo
+  `:id` al mismo bloque de rutas. Fuera de la ventana la fila dice «Renovable desde el …».
+- **Sin resultados (CA-3):** la tabla conserva los encabezados y muestra «Sin pólizas por vencer en el rango» con el rango y el estado
+  aplicados y «Limpiar filtros», que vuelve al rango por defecto. Error del servicio con «Reintentar»; 401 y 403 los resuelve el interceptor.
+  Paginación «Anterior / Siguiente» de 20 filas, solo con más de una página.
+- **Diferencias con el frame S6, por datos que no existen todavía:** sin la tarjeta y el estado «Cancelada por no pago» (los produce
+  HU-W1.6-02), sin el filtro «Producto» (originación solo emite pólizas de vida: la columna dice «Vida») y el documento sin el tipo
+  (la póliza no lo guarda). Las pólizas del núcleo de pólizas (Autos, Hogar, Viaje) no se listan: originación no las renueva.
+- E2E: `e2e/flujos/originacion/polizas-por-vencer.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado) y
+  el humo `e2e/nube/polizas-por-vencer.spec.ts` (proyecto `nube`).
+
+**Renovación asistida con recotización (HU-W1.5-03)** — `renovaciones/renovacion-asistida.page.ts` (`RenovacionAsistidaPage`, S7 y S7b),
+ruta `/originacion/renovaciones/:id` (el `policy_id`) en el bloque `renovaciones` de `originacion.routes.ts` (`rolGuard('asesor')`). Se
+entra desde S6 por «Renovar» o «Ver». Contrato: `docs/contratos/HU-W1.5-03-api.md` del backend (`openapi.yaml` v0.15.0). Cliente:
+`core/api/originacion/renovacion-asistida.modelos.ts` y los métodos `consultarRenovacionAsistida`, `recotizarRenovacion`,
+`enviarCodigoRenovacion` y `formalizarRenovacion` de `OriginacionApiService`; la póliza nueva usa `consultarEmisionContractual` y
+`descargarDocumentoContractual`. Todo sale del `GET`, así que la pantalla funciona al recargarse.
+
+- **S7 · Renovación asistida:** encabezado con «← Renovaciones», el título con la póliza, «Vence el …», el titular, su documento y el
+  producto; «Recotizar» (se desactiva mientras recotiza, sin doble envío) y «Formalizar renovación». Debajo, el comparativo de la
+  vigencia actual con la recotizada (`componentes/comparativo-condiciones/`: prima con su variación, vigencia, valor asegurado, descuento
+  por buena experiencia y coberturas, «Sin cambios» si coinciden) y la aceptación del cliente (`componentes/aceptacion-cliente/`). A la
+  derecha, «Nueva prima mensual» y el panel «Recotización» (`componentes/trazabilidad-recotizacion/`): cada fuente con su estado y
+  latencia, el motor de rating con su versión y sus factores, y la nota del perfil usado.
+- **Aceptación del cliente (CA-2):** los tres medios de HU-W1.1-03 (llamada grabada, firma remota con su referencia, o código de
+  confirmación que el servicio envía al titular por correo: «Enviar código», hasta tres envíos, y el campo de 6 dígitos), la fecha y hora
+  (ni futura ni anterior a la recotización) y la casilla «El cliente aceptó las condiciones recotizadas y autorizó el cobro con su medio de
+  pago registrado». «Formalizar renovación» solo se habilita con la recotización vigente y la aceptación completa; los errores por campo
+  y los del código se muestran junto al campo. Los campos tienen al menos 232 px para que los controles nativos de medio y de fecha se
+  lean completos: a 1440 px la referencia (o el código) baja a una segunda fila.
+- **Consentimiento (D-8 y D-13 c):** en una póliza del canal embebido, `audit` lo verifica al recotizar: sin consentimiento activo, aviso
+  «El cliente revocó su autorización de Open Finance»; si `audit` no responde, «No pudimos verificar la autorización del cliente» y
+  «Reintentar». En una póliza vendida por un asesor se muestra la casilla «El cliente autorizó consultar sus datos financieros para esta
+  renovación» (`componentes/consentimiento-asesor/`) y «Recotizar» espera a que se marque; viaja como `consent_affirmed: true`.
+- **Modo degradado (CA-5, D-7):** con el último perfil en caché, insignia «Modo degradado», aviso con la fecha del perfil y la fuente
+  «No disponible»; sin un perfil reciente, el aviso del perfil actuarial base.
+- **Otros estados de S7:** sin medio de pago registrado (no se formaliza; el cliente puede renovar desde su portal), recotización vencida
+  (24 horas) o reemplazada por una más reciente, y «no disponible» (antes de la ventana, con la ventana cerrada o no renovada).
+- **S7b · Renovación formalizada (CA-3, CA-4):** «renovada el … por <nombre del asesor>» o, si su cuenta no tiene nombre, su correo;
+  «Aceptación registrada» y «Trazabilidad de la recotización» en solo lectura y el panel «Emisión de la renovación»
+  (`componentes/estado-cobro-renovacion/`: cobro con la fecha de confirmación, certificado con la vigencia de la póliza nueva y
+  notificación). La pantalla sigue la renovación cada 2 s hasta que la póliza queda renovada (con «Ver certificado» de la póliza nueva)
+  o el pago falla. En una póliza vendida por un asesor dice «Consentimiento afirmado por <quien afirmó> el <fecha>», con el nombre (o
+  el correo) que se guardó al recotizar, aunque haya formalizado otro asesor.
+- **«Ver» (01·D-3 a+):** la renovación en curso con el estado del cobro; si el pago falló, la fecha del rechazo y hasta cuándo puede
+  reintentar el cliente con otro medio desde su portal. Si la renovó el asegurado, solo lectura con la prima y las condiciones que aceptó
+  (`renewal.terms` del `GET`) y su cobro, sin el panel de la recotización.
+- **Regreso:** «← Renovaciones» y «Volver a renovaciones» vuelven atrás para conservar el filtro del listado; si se entró directo por la
+  URL, abren `/originacion/renovaciones`.
+- Textos en `originacion.renovacionAsistida.*`; fechas en días civiles de Colombia (`renovaciones/modelos/presentacion-renovacion.ts`).
+- **Diferencias con los frames S7 y S7b, por datos que originación no tiene:** el producto es siempre vida hipotecario (sin placa de
+  autos), el motor muestra su versión `v1` y sus factores (no reglas numeradas) y el valor asegurado no cambia al recotizar.
+- E2E: `e2e/flujos/cotizacion-emision/renovacion-asistida.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada
+  estado; entra desde S6 por «Renovar» y «Ver») y el humo `e2e/nube/renovacion-asistida.spec.ts` (proyecto `nube`).
+
 ## Cómo trabajar una historia de este dominio
 
 1. Crea la rama desde `develop` con el mismo nombre que en el backend, `feature/<ID>-<descripcion-corta-en-ingles>` (p. ej. `feature/HU-W1.1-01-<descripcion-en-ingles>`).

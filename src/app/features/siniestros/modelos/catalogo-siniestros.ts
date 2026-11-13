@@ -28,6 +28,7 @@ const CLAVE_SOPORTE: Readonly<Record<string, string>> = {
   supporting_document: 'documentoSoporte',
   damage_photos: 'fotosDano',
   repair_quote: 'cotizacionReparacion',
+  plate_photo: 'fotoPlaca',
 };
 
 /** `t` de Transloco con el prefijo `siniestros`. */
