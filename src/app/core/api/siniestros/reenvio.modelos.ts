@@ -58,6 +58,27 @@ export interface HistorialSiniestro {
   reenvios: Reenvio[];
   /** Los soportes que el caso puede tener, con sus reglas, en el orden del catálogo. */
   requisitos: RequisitoSoporte[];
+  /** La decisión de operaciones como la lee el asegurado (HU-W2.1-02); `null` hasta que la haya. */
+  decision: DecisionAsegurado | null;
+  /** El prestador asignado (HU-W2.1-02): quién atiende y a qué distancia, nunca su contacto. */
+  prestador: PrestadorAsegurado | null;
+}
+
+export interface DecisionAsegurado {
+  resultado: 'approved' | 'rejected';
+  decididaEn: string;
+  /** Lo que paga la aseguradora, neto del deducible, en centavos; `null` en un rechazo. */
+  montoMinor: number | null;
+  moneda: string | null;
+  estadoPago: 'pending' | 'in_progress' | 'confirmed' | 'failed' | null;
+  pagadoEn: string | null;
+  motivoRechazo: string | null;
+}
+
+export interface PrestadorAsegurado {
+  nombre: string;
+  distanciaKm: number;
+  asignadoEn: string;
 }
 
 /** Lo que envía el asegurado. Un dato ausente se conserva; un grupo es el conjunto completo de archivos que queda. */
@@ -106,6 +127,16 @@ export interface HistorialSiniestroDto {
   last_return: RevisionDto | null;
   resubmissions?: ReenvioDto[];
   requirements?: RequisitoDto[];
+  decision?: {
+    outcome: 'approved' | 'rejected';
+    decided_at: string;
+    amount_minor: number | null;
+    currency: string | null;
+    payout_status: 'pending' | 'in_progress' | 'confirmed' | 'failed' | null;
+    paid_at: string | null;
+    rejection_reason: string | null;
+  } | null;
+  provider?: { name: string; distance_km: number; assigned_at: string } | null;
 }
 
 export interface ResultadoReenvioDto {
@@ -156,6 +187,20 @@ export function mapearHistorialSiniestro(dto: HistorialSiniestroDto): HistorialS
     ultimaDevolucion: dto.last_return ? mapearRevision(dto.last_return) : null,
     reenvios: (dto.resubmissions ?? []).map(mapearReenvio),
     requisitos: (dto.requirements ?? []).map(mapearRequisito),
+    decision: dto.decision
+      ? {
+          resultado: dto.decision.outcome,
+          decididaEn: dto.decision.decided_at,
+          montoMinor: dto.decision.amount_minor,
+          moneda: dto.decision.currency,
+          estadoPago: dto.decision.payout_status,
+          pagadoEn: dto.decision.paid_at,
+          motivoRechazo: dto.decision.rejection_reason,
+        }
+      : null,
+    prestador: dto.provider
+      ? { nombre: dto.provider.name, distanciaKm: dto.provider.distance_km, asignadoEn: dto.provider.assigned_at }
+      : null,
   };
 }
 

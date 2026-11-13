@@ -23,10 +23,13 @@ import {
 import {
   DetalleSiniestro,
   DetalleSiniestroDto,
+  EnlaceSoporte,
+  EnlaceSoporteDto,
   FiltroSiniestros,
   PaginaSiniestros,
   PaginaSiniestrosDto,
   mapearDetalleSiniestro,
+  mapearEnlaceSoporte,
   mapearPaginaSiniestros,
   traducirErrorSiniestro,
 } from './siniestro.modelos';
@@ -194,6 +197,21 @@ export class SiniestrosApiService {
     );
   }
 
+  /**
+   * Enlace firmado de 10 minutos para leer un soporte del caso propio
+   * (`GET /v1/claims/{claim_id}/supports/{support_id}/download`, HU-W2.1-02). Falla con `ErrorSiniestro`.
+   */
+  descargarSoporte(id: string, soporteId: string): Observable<EnlaceSoporte> {
+    return this.http
+      .get<EnlaceSoporteDto>(
+        `${this.base}/v1/claims/${encodeURIComponent(id)}/supports/${encodeURIComponent(soporteId)}/download`,
+      )
+      .pipe(
+        map(mapearEnlaceSoporte),
+        catchError((error: unknown) => throwError(() => traducirErrorSiniestro(error))),
+      );
+  }
+
   /** PDF del radicado (`GET /v1/claims/{claim_id}/filing-receipt`). Falla con `ErrorSiniestro`. */
   descargarRadicado(id: string): Observable<Blob> {
     return this.http
@@ -209,6 +227,9 @@ export class SiniestrosApiService {
     let params = new HttpParams();
     if (filtro.polizaId) {
       params = params.set('policy_id', filtro.polizaId);
+    }
+    if (filtro.estado) {
+      params = params.set('status', filtro.estado);
     }
     if (filtro.desde) {
       params = params.set('from', filtro.desde);

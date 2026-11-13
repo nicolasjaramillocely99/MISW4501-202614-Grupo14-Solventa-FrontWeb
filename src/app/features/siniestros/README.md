@@ -20,7 +20,7 @@
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
 | [A7](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1297) | Mis siniestros (versión mínima en HU-W2.1-01) | `/siniestros/mis-siniestros` | Asegurado | HU-W2.1-01, HU-W2.1-02 | S2, S3 |
-| [A8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1591) | Detalle y estado del siniestro (mínima en HU-W2.2-01) | `/siniestros/:id` | Asegurado | HU-W2.2-01, HU-W2.1-02, HU-W2.1-04 | S2, S3 |
+| [A8](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=25-1591) | Detalle y estado del siniestro (completa en HU-W2.1-02) | `/siniestros/:id` | Asegurado | HU-W2.2-01, HU-W2.1-02, HU-W2.1-04 | S2, S3 |
 
 ### `correccion/` — F2.1 · Edición de la radicación devuelta
 
@@ -241,6 +241,24 @@ especialidad y disponibilidad (en `?especialidad=&disponibilidad=`) y el cambio 
 (`componentes/disponibilidad-prestador/`: «Disponible» o «No disponible» con «Hasta» opcional). «Liberar» marca disponible a un
 prestador ocupado en un caso (D13); lo hará solo HU-W2.3-02 al cerrar la intervención. **Pendiente:** el alta y la edición del perfil
 (la API existe; `grep -rn "HU-W2.3-01 F" src`).
+
+**Consulta de estado del siniestro (HU-W2.1-02)** — `seguimiento/mis-siniestros.page.ts` (A7) y
+`seguimiento/detalle-siniestro.page.ts` (A8), rol asegurado. Contrato: `docs/contratos/HU-W2.1-02-api.md` del backend
+(`openapi.yaml` v0.14.0).
+
+- **A7:**
+  - tarjetas «En curso», «Pagados este año» y «Acción pendiente de tu parte», que salen del `summary` de `GET /v1/claims`
+    y cuentan todos los casos, sin importar los filtros;
+  - filtro de etapa (`status`) y columna «Último cambio» (`last_changed_at`);
+  - un caso devuelto lleva a «Corregir» (A9) y los demás a «Ver detalle».
+- **A8:** línea de tiempo vertical (`seguimiento/modelos/linea-tiempo.ts`, sin Angular). Sale del caso, del historial
+  (cambios, revisiones, reenvíos, `decision` y `provider`) y de la prioridad del asegurado: radicado, revisión del
+  asesor, en evaluación (prioridad y prestador), aprobado (monto neto) y pagado, o rechazado con su motivo.
+  - «Soportes» descarga cada archivo con un enlace firmado de 10 minutos (`descargarSoporte`).
+  - También muestra «Qué sigue», «¿Necesitas ayuda?», «Descargar radicado» y los datos reportados.
+- **CA-2 (umbral ≤ 5 min):** A7 y A8 vuelven a leer cada 60 s mientras la pestaña está visible (`modelos/refresco.ts`),
+  sin mostrar «Cargando»; si una relectura falla, se queda lo que ya se ve. Las dos páginas dicen «Actualizado: …» y
+  tienen «Actualizar». Una prioridad en `pending` conserva su propio sondeo y su tope de 90 s.
 
 **Edición de la radicación devuelta (HU-W2.1-04)** — `correccion/correccion-radicacion.page.ts` (A9), ruta
 `/siniestros/:id/corregir`, rol asegurado (va antes de `:id` en `siniestros.routes.ts`). El detalle (A8) de un caso `returned`
