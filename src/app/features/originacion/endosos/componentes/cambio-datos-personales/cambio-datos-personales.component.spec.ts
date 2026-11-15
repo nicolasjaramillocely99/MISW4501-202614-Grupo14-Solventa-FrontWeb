@@ -15,9 +15,14 @@ describe('CambioDatosPersonalesComponent (HU-W1.4-01 · D-5)', () => {
     expect((screen.getByLabelText('Dirección') as HTMLInputElement).placeholder).toBe('no registrada');
 
     await userEvent.type(screen.getByLabelText('Dirección'), 'Calle 45 # 12-30');
+    await userEvent.type(screen.getByLabelText('Correo de contacto de la póliza'), 'carolina.r@example.com');
     await userEvent.type(screen.getByLabelText('Teléfono'), '3012345678');
 
-    expect(fixture.componentInstance.captura()).toEqual({ direccion: 'Calle 45 # 12-30', correo: '', telefono: '3012345678' });
+    expect(fixture.componentInstance.captura()).toEqual({
+      direccion: 'Calle 45 # 12-30',
+      correo: 'carolina.r@example.com',
+      telefono: '3012345678',
+    });
   });
 
   it('muestra el error de cada campo tocado y el del grupo al intentar radicar', async () => {
