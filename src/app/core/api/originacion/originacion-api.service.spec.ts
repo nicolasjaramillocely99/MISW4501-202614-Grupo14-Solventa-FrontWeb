@@ -38,6 +38,7 @@ import { PerfilRiesgoDto, mapearPerfilRiesgo } from './perfil-riesgo.modelos';
 import { ErrorPorVencer, mapearPaginaPorVencer } from './polizas-por-vencer.modelos';
 import { ErrorRenovacion, mapearCondicionesRenovacion, mapearPolizaListada, mapearRenovacion } from './renovacion.modelos';
 import { ErrorRenovacionAsistida, mapearRecotizacion, mapearRenovacionAsistida } from './renovacion-asistida.modelos';
+import { ErrorResumenSocio } from './resumen-socio.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
 import {
   ErrorSolicitudModificacion,
@@ -615,6 +616,52 @@ describe('OriginacionApiService', () => {
         .flush({ error: 'change_request_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect(codigos).toEqual(['forbidden', 'change_request_not_found']);
+    });
+  });
+
+  describe('resumen del tablero del socio (HU-W3.2-01)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+    const RUTA = `${BASE}/v1/partner-metrics/summary`;
+
+    it('consulta el rango sin enviar el socio y devuelve el resumen traducido', () => {
+      let recibido: unknown;
+      servicio.consultarResumenSocio({ desde: '2026-08-18', hasta: '2026-09-16' }).subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne((r) => r.url === RUTA);
+      expect(peticion.request.method).toBe('GET');
+      expect(peticion.request.params.toString()).toBe('from=2026-08-18&to=2026-09-16');
+      peticion.flush({
+        partner_id: 'socio-001',
+        from: '2026-08-18',
+        to: '2026-09-16',
+        quotes_requested: 12480,
+        policies_issued: 1872,
+        conversion_rate: 15,
+      });
+
+      expect(recibido).toEqual({
+        socioId: 'socio-001',
+        desde: '2026-08-18',
+        hasta: '2026-09-16',
+        cotizaciones: 12480,
+        polizasEmitidas: 1872,
+        tasaConversion: 15,
+      });
+    });
+
+    it('distingue el rango invertido (out_of_range) y la falta de servicio', () => {
+      const codigos: string[] = [];
+      const alFallar = (e: ErrorResumenSocio) => codigos.push(e.codigo);
+      const rango = { desde: '2026-09-16', hasta: '2026-09-15' };
+
+      servicio.consultarResumenSocio(rango).subscribe({ error: alFallar });
+      http
+        .expectOne((r) => r.url === RUTA)
+        .flush({ error: 'out_of_range', message: 'm' }, { status: 400, statusText: 'Bad Request' });
+      servicio.consultarResumenSocio(rango).subscribe({ error: alFallar });
+      http.expectOne((r) => r.url === RUTA).error(new ProgressEvent('error'));
+
+      expect(codigos).toEqual(['out_of_range', 'metrics_unavailable']);
     });
   });
 

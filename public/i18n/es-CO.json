@@ -4364,6 +4364,68 @@
         "enTransicion": "En transición",
         "aplicado": "Aplicado"
       }
+    },
+    "tablero": {
+      "titulo": "Tablero de integración",
+      "subtitulo": "{{socio}} · {{rango}} · los datos corresponden únicamente a tu integración",
+      "cargando": "Consultando el resumen del rango…",
+      "rango": {
+        "grupo": "Rango de fechas",
+        "opciones": {
+          "hoy": "Hoy",
+          "ultimos7": "Últimos 7 días",
+          "ultimos30": "Últimos 30 días",
+          "personalizado": "Personalizado"
+        },
+        "descripcion": {
+          "hoy": "hoy {{dia}}",
+          "ultimos7": "últimos 7 días ({{desde}} a {{hasta}})",
+          "ultimos30": "últimos 30 días ({{desde}} a {{hasta}})",
+          "personalizado": "rango personalizado ({{desde}} a {{hasta}})"
+        },
+        "personalizado": {
+          "titulo": "Rango personalizado",
+          "desde": "Fecha inicial",
+          "hasta": "Fecha final",
+          "aplicar": "Aplicar",
+          "cancelar": "Cancelar",
+          "ayuda": "Incluye la fecha inicial y la fecha final (hora de Colombia).",
+          "problemas": {
+            "incompleto": "Elige la fecha inicial y la fecha final.",
+            "invertido": "La fecha inicial no puede ser posterior a la fecha final.",
+            "muyLargo": "El rango puede cubrir como máximo 366 días."
+          }
+        }
+      },
+      "tarjetas": {
+        "region": "Resumen del rango",
+        "cotizaciones": "Cotizaciones solicitadas",
+        "cotizacionesDetalle": "Solicitudes de tu integración en el rango",
+        "sinCotizaciones": "Sin solicitudes en el rango",
+        "polizas": "Pólizas emitidas",
+        "polizasDetalle": "Emitidas a partir de tus cotizaciones",
+        "sinPolizas": "Sin emisiones en el rango",
+        "conversion": "Tasa de conversión",
+        "porcentaje": "{{valor}} %",
+        "formula": "Pólizas / cotizaciones × 100"
+      },
+      "vacio": {
+        "titulo": "Sin cotizaciones en el rango seleccionado",
+        "texto": "Las métricas muestran 0 sin errores. Amplía el rango de fechas para ver actividad.",
+        "ampliar": {
+          "ultimos7": "Ver últimos 7 días",
+          "ultimos30": "Ver últimos 30 días"
+        }
+      },
+      "error": {
+        "titulo": "No pudimos consultar el resumen",
+        "texto": "El servicio no respondió. Intenta de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "aislamiento": {
+        "titulo": "Aislamiento de datos",
+        "texto": "Este tablero muestra exclusivamente las cotizaciones y pólizas de {{socio}}. Ningún dato de otros socios es visible aquí."
+      }
     }
   }
 }
