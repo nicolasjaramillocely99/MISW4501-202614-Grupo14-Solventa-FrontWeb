@@ -21,6 +21,12 @@ import {
 } from '@testing/renovacion-asistida-pruebas';
 import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
 import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
+import {
+  CONDICIONES_VIGENTES_DTO,
+  PAGINA_SOLICITUDES_DTO,
+  SOLICITUD_BENEFICIARIOS_DTO,
+  SOLICITUD_SUMA_EN_REVISION_DTO,
+} from '@testing/solicitud-modificacion-pruebas';
 
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
 import { ErrorCobro, mapearCobro } from './cobro.modelos';
@@ -33,6 +39,12 @@ import { ErrorPorVencer, mapearPaginaPorVencer } from './polizas-por-vencer.mode
 import { ErrorRenovacion, mapearCondicionesRenovacion, mapearPolizaListada, mapearRenovacion } from './renovacion.modelos';
 import { ErrorRenovacionAsistida, mapearRecotizacion, mapearRenovacionAsistida } from './renovacion-asistida.modelos';
 import { ErrorRevision, mapearListaSolicitudesRevision, mapearSolicitudRevision } from './revision.modelos';
+import {
+  ErrorSolicitudModificacion,
+  mapearCondicionesVigentes,
+  mapearPaginaSolicitudes,
+  mapearSolicitudModificacion,
+} from './solicitud-modificacion.modelos';
 
 const DTO: PerfilRiesgoDto = {
   customer_id: 'cli-1',
@@ -519,6 +531,90 @@ describe('OriginacionApiService', () => {
       http.expectOne((r) => r.url === `${BASE}/v1/policies/expiring`).error(new ProgressEvent('error'));
 
       expect(codigos).toEqual(['out_of_range', 'renewal_unavailable']);
+    });
+  });
+
+  describe('solicitud de modificación del asegurado (HU-W1.4-01)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('consulta las condiciones vigentes de la póliza', () => {
+      let recibido: unknown;
+      servicio.consultarCondicionesVigentes('pol-acc-4f2a').subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${BASE}/v1/policies/pol-acc-4f2a/current-terms`);
+      expect(peticion.request.method).toBe('GET');
+      peticion.flush(CONDICIONES_VIGENTES_DTO);
+
+      expect(recibido).toEqual(mapearCondicionesVigentes(CONDICIONES_VIGENTES_DTO));
+    });
+
+    it('radica con solo el miembro del tipo y devuelve la solicitud', () => {
+      let recibido: unknown;
+      servicio.radicarSolicitudModificacion('pol-acc-4f2a', { tipo: 'insured_amount', valorAsegurado: 80000000 }).subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne(`${BASE}/v1/policies/pol-acc-4f2a/change-requests`);
+      expect(peticion.request.method).toBe('POST');
+      expect(peticion.request.body).toEqual({ change_type: 'insured_amount', channel: 'web', insured_amount: 80000000 });
+      peticion.flush(SOLICITUD_SUMA_EN_REVISION_DTO, { status: 201, statusText: 'Created' });
+
+      expect(recibido).toEqual(mapearSolicitudModificacion(SOLICITUD_SUMA_EN_REVISION_DTO));
+    });
+
+    it('distingue los campos inválidos, la abierta del mismo tipo y la falta de servicio', () => {
+      const errores: ErrorSolicitudModificacion[] = [];
+      const alFallar = (e: ErrorSolicitudModificacion) => errores.push(e);
+      const radicar = () =>
+        servicio.radicarSolicitudModificacion('pol-acc-4f2a', { tipo: 'insured_amount', valorAsegurado: 5 }).subscribe({ error: alFallar });
+
+      radicar();
+      http
+        .expectOne(`${BASE}/v1/policies/pol-acc-4f2a/change-requests`)
+        .flush(
+          { error: 'validation_failed', message: 'm', fields: [{ field: 'insured_amount', code: 'out_of_range' }] },
+          { status: 422, statusText: 'Unprocessable Entity' },
+        );
+      radicar();
+      http
+        .expectOne(`${BASE}/v1/policies/pol-acc-4f2a/change-requests`)
+        .flush({ error: 'change_request_open', message: 'm', request_id: 'SOL-MOD-2026-0041' }, { status: 409, statusText: 'Conflict' });
+      radicar();
+      http.expectOne(`${BASE}/v1/policies/pol-acc-4f2a/change-requests`).error(new ProgressEvent('error'));
+
+      expect(errores.map((e) => e.codigo)).toEqual(['validation_failed', 'change_request_open', 'change_request_unavailable']);
+      expect(errores[0].campos).toEqual([{ campo: 'insured_amount', codigo: 'out_of_range' }]);
+      expect(errores[1].solicitudAbierta).toBe('SOL-MOD-2026-0041');
+    });
+
+    it('lista mis solicitudes con el filtro y la página', () => {
+      let recibido: unknown;
+      servicio
+        .listarMisSolicitudes({ estado: 'rejected', polizaId: 'pol-acc-4f2a', desde: '2026-01-01', pagina: 2, tamano: 20 })
+        .subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne((r) => r.url === `${BASE}/v1/policies/change-requests`);
+      expect(peticion.request.params.toString()).toBe('page=2&page_size=20&status=rejected&policy_id=pol-acc-4f2a&filed_from=2026-01-01');
+      peticion.flush(PAGINA_SOLICITUDES_DTO);
+
+      expect(recibido).toEqual(mapearPaginaSolicitudes(PAGINA_SOLICITUDES_DTO));
+    });
+
+    it('consulta una solicitud y traduce la ajena (403) y la inexistente', () => {
+      let recibido: unknown;
+      const codigos: string[] = [];
+      servicio.consultarSolicitudModificacion('SOL-MOD-2026-0042').subscribe((r) => (recibido = r));
+      http.expectOne(`${BASE}/v1/policies/change-requests/SOL-MOD-2026-0042`).flush(SOLICITUD_BENEFICIARIOS_DTO);
+      expect(recibido).toEqual(mapearSolicitudModificacion(SOLICITUD_BENEFICIARIOS_DTO));
+
+      servicio.consultarSolicitudModificacion('SOL-MOD-2026-0001').subscribe({ error: (e: ErrorSolicitudModificacion) => codigos.push(e.codigo) });
+      http
+        .expectOne(`${BASE}/v1/policies/change-requests/SOL-MOD-2026-0001`)
+        .flush({ error: 'forbidden', message: 'm' }, { status: 403, statusText: 'Forbidden' });
+      servicio.consultarSolicitudModificacion('SOL-MOD-2026-0404').subscribe({ error: (e: ErrorSolicitudModificacion) => codigos.push(e.codigo) });
+      http
+        .expectOne(`${BASE}/v1/policies/change-requests/SOL-MOD-2026-0404`)
+        .flush({ error: 'change_request_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
+
+      expect(codigos).toEqual(['forbidden', 'change_request_not_found']);
     });
   });
 
