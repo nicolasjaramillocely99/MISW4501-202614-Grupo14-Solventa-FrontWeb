@@ -4094,6 +4094,78 @@
         "titulo": "Data isolation",
         "texto": "This dashboard shows only the quotes and policies of {{socio}}. No data of other partners is visible here."
       }
+    },
+    "desempeno": {
+      "titulo": "API technical performance",
+      "subtitulo": "Availability and response times of your integration · {{periodo}}",
+      "actualizado": "updated at {{hora}}",
+      "cargando": "Loading the performance of the API…",
+      "periodos": {
+        "grupo": "Period",
+        "opciones": {
+          "today": "Today",
+          "7d": "Last 7 days",
+          "30d": "Last 30 days"
+        },
+        "descripcion": {
+          "today": "today",
+          "7d": "last 7 days",
+          "30d": "last 30 days"
+        }
+      },
+      "estado": {
+        "region": "Current state of the API",
+        "nombres": {
+          "operational": "Operational",
+          "degraded": "Degraded",
+          "unavailable": "Unavailable",
+          "desconocido": "Unknown state"
+        },
+        "descripciones": {
+          "operational": "Every endpoint of your integration answers normally within the latency budget.",
+          "degraded": "Response times are over the SLO budget. Requests are still answered; if it persists, report it to Solventa.",
+          "unavailable": "Part of the requests are failing and the API cannot serve normally. If it persists, report it to Solventa.",
+          "desconocido": "We could not determine the state of the API."
+        },
+        "incidenteAbierto": "Open incident on {{ruta}} since {{hora}}"
+      },
+      "metricas": {
+        "region": "Metrics of the period",
+        "disponibilidad": "Availability",
+        "porcentaje": "{{valor}} %",
+        "objetivo": "Objective ≥ {{valor}} %",
+        "bajoObjetivo": "below the objective",
+        "p95": "p95 response time",
+        "milisegundos": "{{valor}} ms",
+        "presupuesto": "Budget {{valor}} ms",
+        "sobrePresupuesto": "over the budget",
+        "sinSolicitudes": "No requests in the period"
+      },
+      "incidentes": {
+        "titulo": "Incidents of the period",
+        "sinIncidentes": "The integration operated without interruptions in the period.",
+        "tipos": {
+          "degraded": "Degraded",
+          "unavailable": "Unavailable",
+          "desconocido": "Incident"
+        },
+        "resuelto": "Resolved",
+        "enCurso": "Ongoing",
+        "inicio": "Started {{fecha}}",
+        "duro": "lasted {{duracion}}",
+        "llevaAbierto": "ongoing for {{duracion}}",
+        "duracion": {
+          "minutos": "{{minutos}} min",
+          "horas": "{{horas}} h {{minutos}} min",
+          "dias": "{{dias}} d {{horas}} h"
+        }
+      },
+      "error": {
+        "titulo": "We could not load the performance of the API",
+        "texto": "The metrics service did not answer. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "nota": "The metrics are those of the SLO of the partner API (p95 and availability measured at the API Gateway) and are the same for every partner that uses it. Times in Colombia time."
     }
   }
 }
