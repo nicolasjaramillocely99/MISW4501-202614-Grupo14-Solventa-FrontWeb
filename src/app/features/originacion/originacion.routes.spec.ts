@@ -462,9 +462,18 @@ describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
     expect(harness.routeNativeElement?.querySelector('app-solicitar-modificacion-page')).not.toBeNull();
   });
 
+  it('«solicitudes/:id» abre el detalle de la solicitud (A3b)', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/solicitudes/SOL-MOD-2026-0042');
+
+    expect(url()).toBe('/originacion/solicitudes/SOL-MOD-2026-0042');
+    expect(harness.routeNativeElement?.querySelector('app-solicitud-modificacion-page')).not.toBeNull();
+  });
+
   it('asesor, operaciones y socio reciben «acceso no autorizado» (CA-4)', async () => {
     for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
-      for (const destino of ['/originacion/polizas/pol-1/modificar']) {
+      for (const destino of ['/originacion/polizas/pol-1/modificar', '/originacion/solicitudes/SOL-MOD-2026-0042']) {
         await iniciarSesionComo(rol);
 
         await harness.navigateByUrl(destino);
