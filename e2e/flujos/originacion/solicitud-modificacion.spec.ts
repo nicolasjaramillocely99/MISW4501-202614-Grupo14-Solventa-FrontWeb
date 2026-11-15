@@ -181,7 +181,7 @@ test.describe('Solicitud de modificación del asegurado (HU-W1.4-01)', () => {
       },
     });
     await a11.abrirComo('/originacion/solicitudes');
-    await expect(page.getByText('Aún no tienes solicitudes')).toBeVisible();
+    await expect(page.getByText('Aún no tienes solicitudes de modificación')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Ver mis pólizas' })).toBeVisible();
     await verificarAccesibilidad(page);
 

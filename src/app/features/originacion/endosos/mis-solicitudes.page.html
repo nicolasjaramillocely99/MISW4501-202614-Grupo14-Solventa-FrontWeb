@@ -85,7 +85,7 @@
       <p id="filtro-solicitudes-desde-ayuda" class="campo__ayuda">{{ t('mias.filtros.ayudaFecha') }}</p>
     </div>
     @if (pagina(); as datos) {
-      @if (fase() === 'lista' || fase() === 'sinResultados') {
+      @if (fase() === 'lista' || fase() === 'vacia' || fase() === 'sinResultados') {
         <p class="filtros__contador" aria-live="polite">
           {{ datos.total === 1 ? t('mias.contadorUno') : t('mias.contador', { n: datos.total }) }}
         </p>
@@ -97,22 +97,6 @@
     @case ('cargando') {
       <p class="estado" role="status">{{ t('mias.cargando') }}</p>
     }
-    @case ('error') {
-      <div class="tarjeta vacio" role="alert">
-        <span class="vacio__icono vacio__icono--error" aria-hidden="true"><svg lucideCircleAlert [size]="28"></svg></span>
-        <h2 class="vacio__titulo">{{ t('mias.error.titulo') }}</h2>
-        <p class="vacio__texto">{{ t('mias.error.texto') }}</p>
-        <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('mias.error.reintentar') }}</button>
-      </div>
-    }
-    @case ('vacia') {
-      <div class="tarjeta vacio" role="status">
-        <span class="vacio__icono" aria-hidden="true"><svg lucideInbox [size]="28"></svg></span>
-        <h2 class="vacio__titulo">{{ t('mias.vacio.titulo') }}</h2>
-        <p class="vacio__texto">{{ t('mias.vacio.texto') }}</p>
-        <a class="boton boton--secundario" routerLink="/originacion/polizas">{{ t('mias.vacio.verPolizas') }}</a>
-      </div>
-    }
     @case ('sinResultados') {
       <div class="tarjeta vacio" role="status">
         <span class="vacio__icono" aria-hidden="true"><svg lucideSearch [size]="28"></svg></span>
@@ -121,67 +105,92 @@
         <button type="button" class="boton boton--secundario" (click)="limpiar()">{{ t('mias.sinResultados.limpiar') }}</button>
       </div>
     }
-    @case ('lista') {
-      @if (pagina(); as datos) {
-        <section class="tarjeta tabla-contenedor" aria-labelledby="titulo-mis-solicitudes">
-          <h2 id="titulo-mis-solicitudes" class="visualmente-oculto">{{ t('mias.tabla.titulo') }}</h2>
-          <div class="tabla-desplazable">
-            <table class="tabla">
-              <caption class="visualmente-oculto">{{ t('mias.tabla.titulo') }}</caption>
-              <thead>
-                <tr>
-                  <th scope="col">{{ t('mias.tabla.solicitud') }}</th>
-                  <th scope="col">{{ t('mias.tabla.polizaTipo') }}</th>
-                  <th scope="col">{{ t('mias.tabla.radicada') }}</th>
-                  <th scope="col">{{ t('mias.tabla.estado') }}</th>
-                  <th scope="col">{{ t('mias.tabla.ultimoCambio') }}</th>
-                  <th scope="col"><span class="visualmente-oculto">{{ t('mias.tabla.acciones') }}</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (fila of datos.items; track fila.solicitudId) {
-                  <tr>
-                    <th scope="row" class="tabla__solicitud">{{ fila.solicitudId }}</th>
-                    <td>
-                      <span>{{ t('mias.tabla.productoTipo', { producto: t('linea.life'), tipo: t('tipos.' + fila.tipo) }) }}</span>
-                      <span class="tabla__secundario">{{ fila.polizaId }}</span>
-                    </td>
-                    <td>{{ fechaCorta(fila.radicadaEn) }}</td>
-                    <td><app-estado-solicitud [estado]="fila.estado" /></td>
-                    <td>
-                      {{ fila.cambioEstadoEn | formatoFechaHora }}
-                      @if (fila.estado === 'rechazada' && fila.motivo) {
-                        · {{ fila.motivo }}
-                      }
-                    </td>
-                    <td class="tabla__accion">
-                      <a
-                        class="tabla__enlace"
-                        [routerLink]="['/originacion/solicitudes', fila.solicitudId]"
-                        [attr.aria-label]="t('mias.tabla.verDetalleDe', { id: fila.solicitudId })"
-                        >{{ t('mias.tabla.verDetalle') }}</a
-                      >
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-          @if (datos.totalPaginas > 1) {
-            <nav class="pie" [attr.aria-label]="t('mias.paginacion.navegacion')">
-              <p class="pie__pagina">{{ t('mias.paginacion.pagina', { pagina: datos.pagina, total: datos.totalPaginas }) }}</p>
-              <div class="pie__botones">
-                <button type="button" class="boton boton--terciario" [disabled]="datos.pagina <= 1" (click)="irA(datos.pagina - 1)">
-                  <svg lucideChevronLeft [size]="18" aria-hidden="true"></svg>{{ t('mias.paginacion.anterior') }}
-                </button>
-                <button type="button" class="boton boton--terciario" [disabled]="datos.pagina >= datos.totalPaginas" (click)="irA(datos.pagina + 1)">
-                  {{ t('mias.paginacion.siguiente') }}<svg lucideChevronRight [size]="18" aria-hidden="true"></svg>
-                </button>
-              </div>
-            </nav>
+    @default {
+      <!-- La lista, y también sin solicitudes o con la lista caída: la cabecera de la tabla con el estado debajo (derivaciones `1398:12618` y `1398:12843`). -->
+      <section class="tarjeta tabla-contenedor" aria-labelledby="titulo-mis-solicitudes">
+        <h2 id="titulo-mis-solicitudes" class="visualmente-oculto">{{ t('mias.tabla.titulo') }}</h2>
+        <div class="tabla-desplazable">
+          <table class="tabla">
+            <caption class="visualmente-oculto">{{ t('mias.tabla.titulo') }}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{{ t('mias.tabla.solicitud') }}</th>
+                <th scope="col">{{ t('mias.tabla.polizaTipo') }}</th>
+                <th scope="col">{{ t('mias.tabla.radicada') }}</th>
+                <th scope="col">{{ t('mias.tabla.estado') }}</th>
+                <th scope="col">{{ t('mias.tabla.ultimoCambio') }}</th>
+                <th scope="col"><span class="visualmente-oculto">{{ t('mias.tabla.acciones') }}</span></th>
+              </tr>
+            </thead>
+            @if (fase() === 'lista') {
+              @if (pagina(); as datos) {
+                <tbody>
+                  @for (fila of datos.items; track fila.solicitudId) {
+                    <tr>
+                      <th scope="row" class="tabla__solicitud">{{ fila.solicitudId }}</th>
+                      <td>
+                        <span>{{ t('mias.tabla.productoTipo', { producto: t('linea.life'), tipo: t('tipos.' + fila.tipo) }) }}</span>
+                        <span class="tabla__secundario">{{ fila.polizaId }}</span>
+                      </td>
+                      <td>{{ fechaCorta(fila.radicadaEn) }}</td>
+                      <td><app-estado-solicitud [estado]="fila.estado" /></td>
+                      <td>
+                        {{ fila.cambioEstadoEn | formatoFechaHora }}
+                        @if (fila.estado === 'rechazada' && fila.motivo) {
+                          · {{ fila.motivo }}
+                        }
+                      </td>
+                      <td class="tabla__accion">
+                        <a
+                          class="tabla__enlace"
+                          [routerLink]="['/originacion/solicitudes', fila.solicitudId]"
+                          [attr.aria-label]="t('mias.tabla.verDetalleDe', { id: fila.solicitudId })"
+                          >{{ t('mias.tabla.verDetalle') }}</a
+                        >
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              }
+            }
+          </table>
+        </div>
+        @switch (fase()) {
+          @case ('error') {
+            <div class="vacio vacio--tabla" role="alert">
+              <span class="vacio__icono" aria-hidden="true"><svg lucideCircleAlert [size]="28"></svg></span>
+              <h3 class="vacio__titulo">{{ t('mias.error.titulo') }}</h3>
+              <p class="vacio__texto">{{ t('mias.error.texto') }}</p>
+              <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('mias.error.reintentar') }}</button>
+            </div>
           }
-        </section>
-      }
+          @case ('vacia') {
+            <div class="vacio vacio--tabla" role="status">
+              <span class="vacio__icono" aria-hidden="true"><svg lucideFileText [size]="28"></svg></span>
+              <h3 class="vacio__titulo">{{ t('mias.vacio.titulo') }}</h3>
+              <p class="vacio__texto">{{ t('mias.vacio.texto') }}</p>
+              <a class="boton boton--secundario" routerLink="/originacion/polizas">{{ t('mias.vacio.verPolizas') }}</a>
+            </div>
+          }
+          @default {
+            @if (pagina(); as datos) {
+              @if (datos.totalPaginas > 1) {
+                <nav class="pie" [attr.aria-label]="t('mias.paginacion.navegacion')">
+                  <p class="pie__pagina">{{ t('mias.paginacion.pagina', { pagina: datos.pagina, total: datos.totalPaginas }) }}</p>
+                  <div class="pie__botones">
+                    <button type="button" class="boton boton--terciario" [disabled]="datos.pagina <= 1" (click)="irA(datos.pagina - 1)">
+                      <svg lucideChevronLeft [size]="18" aria-hidden="true"></svg>{{ t('mias.paginacion.anterior') }}
+                    </button>
+                    <button type="button" class="boton boton--terciario" [disabled]="datos.pagina >= datos.totalPaginas" (click)="irA(datos.pagina + 1)">
+                      {{ t('mias.paginacion.siguiente') }}<svg lucideChevronRight [size]="18" aria-hidden="true"></svg>
+                    </button>
+                  </div>
+                </nav>
+              }
+            }
+          }
+        }
+      </section>
     }
   }
 </div>

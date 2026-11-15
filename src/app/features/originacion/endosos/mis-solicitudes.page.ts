@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
-import { LucideChevronLeft, LucideChevronRight, LucideCircleAlert, LucideInbox, LucidePlus, LucideSearch } from '@lucide/angular';
+import { LucideChevronLeft, LucideChevronRight, LucideCircleAlert, LucideFileText, LucidePlus, LucideSearch } from '@lucide/angular';
 import { Observable, Subject, catchError, combineLatest, map, of, startWith, switchMap } from 'rxjs';
 
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
@@ -50,7 +50,7 @@ type Resultado = { tipo: 'pagina'; pagina: PaginaSolicitudes } | { tipo: 'error'
     LucideChevronLeft,
     LucideChevronRight,
     LucideCircleAlert,
-    LucideInbox,
+    LucideFileText,
     LucidePlus,
     LucideSearch,
   ],

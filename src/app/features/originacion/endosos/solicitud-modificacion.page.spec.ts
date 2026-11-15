@@ -15,6 +15,7 @@ import { Observable, of, throwError } from 'rxjs';
 
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 import {
+  BeneficiarioDto,
   CodigoErrorSolicitud,
   ErrorSolicitudModificacion,
   SolicitudModificacion,
@@ -86,6 +87,36 @@ describe('SolicitudModificacionPage (A3b · HU-W1.4-01 · CA-2)', () => {
     expect(screen.getByText('Tu solicitud fue aplicada')).toBeTruthy();
     expect(screen.getByText('Aplicada el')).toBeTruthy();
     expect(screen.getByText('Tu póliza ya tiene las condiciones nuevas')).toBeTruthy();
+  });
+
+  const mateo60: BeneficiarioDto = { full_name: 'Mateo Pérez Gómez', relationship: 'child', document_type: 'TI', document_number: '1140223001', share_percent: 60 };
+  const lucia40: BeneficiarioDto = { full_name: 'Lucía Pérez Gómez', relationship: 'child', document_type: 'TI', document_number: '1142998310', share_percent: 40 };
+  const mateo100: BeneficiarioDto = { ...mateo60, share_percent: 100 };
+  it.each<{ caso: string; dto: SolicitudModificacionDto; condiciones: string }>([
+    {
+      caso: 'beneficiarios, con uno retirado',
+      dto: {
+        ...SOLICITUD_BENEFICIARIOS_DTO,
+        status: 'applied',
+        previous: { ...SOLICITUD_BENEFICIARIOS_DTO.previous, beneficiaries: [mateo60, lucia40] },
+        requested: { beneficiaries: [mateo100] },
+        changes: [
+          { field: 'beneficiaries', previous: mateo60, requested: mateo100 },
+          { field: 'beneficiaries', previous: lucia40, requested: null },
+        ],
+      },
+      condiciones: 'Beneficiarios: Mateo Pérez Gómez 100 % · Lucía Pérez Gómez (retirado).',
+    },
+    {
+      caso: 'valor asegurado',
+      dto: { ...SOLICITUD_SUMA_EN_REVISION_DTO, status: 'applied' },
+      condiciones: 'Valor asegurado: $ 80.000.000 COP.',
+    },
+  ])('aplicada, el aviso enumera las condiciones nuevas: $caso', async ({ dto, condiciones }) => {
+    await renderizar(dto);
+
+    expect(screen.getByText('Tu póliza ya tiene las condiciones nuevas')).toBeTruthy();
+    expect(screen.getByText(condiciones)).toBeTruthy();
   });
 
   it('rechazada con el motivo y «Radicar una nueva»', async () => {
