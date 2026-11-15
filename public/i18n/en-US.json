@@ -2187,11 +2187,11 @@
         },
         "enRevision": {
           "titulo": "Your request is in review",
-          "texto": "An operations analyst is reviewing the change. We will e-mail you when there is a decision."
+          "texto": "An operations analyst is reviewing the change with the business validations. We will e-mail you and you will see the result here."
         },
         "aplicada": {
           "titulo": "Your request was applied",
-          "texto": "Operations applied the endorsement: your policy already has the new terms."
+          "texto": "The change is now part of your policy and shows in the portal and in the app. We sent you the result by e-mail."
         },
         "rechazada": {
           "titulo": "Your request was rejected",
@@ -2285,8 +2285,8 @@
           "productoTipo": "{{producto}} · {{tipo}}"
         },
         "vacio": {
-          "titulo": "You have no requests yet",
-          "texto": "When you request a change to one of your policies you will see it here, with its status.",
+          "titulo": "You have no change requests yet",
+          "texto": "When you request a change to one of your active policies, it will appear here with its status.",
           "verPolizas": "View my policies"
         },
         "sinResultados": {
@@ -2296,7 +2296,7 @@
         },
         "error": {
           "titulo": "We could not load your requests",
-          "texto": "Try again in a few moments.",
+          "texto": "There was a problem querying the service. Your requests are still saved.",
           "reintentar": "Retry"
         },
         "paginacion": {

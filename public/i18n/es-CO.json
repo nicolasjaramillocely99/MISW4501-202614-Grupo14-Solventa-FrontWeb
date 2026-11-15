@@ -2187,11 +2187,11 @@
         },
         "enRevision": {
           "titulo": "Tu solicitud está en revisión",
-          "texto": "Un analista de operaciones está revisando el cambio. Te avisaremos por correo cuando haya una decisión."
+          "texto": "Un analista de operaciones está revisando el cambio con las validaciones de negocio. Te avisaremos por correo y aquí verás el resultado."
         },
         "aplicada": {
           "titulo": "Tu solicitud fue aplicada",
-          "texto": "Operaciones aplicó el endoso: tu póliza ya tiene las condiciones nuevas."
+          "texto": "El cambio ya hace parte de tu póliza y se ve en el portal y en la app. Te enviamos el resultado por correo."
         },
         "rechazada": {
           "titulo": "Tu solicitud fue rechazada",
@@ -2285,8 +2285,8 @@
           "productoTipo": "{{producto}} · {{tipo}}"
         },
         "vacio": {
-          "titulo": "Aún no tienes solicitudes",
-          "texto": "Cuando pidas un cambio de una de tus pólizas lo verás aquí, con su estado.",
+          "titulo": "Aún no tienes solicitudes de modificación",
+          "texto": "Cuando pidas un cambio sobre una de tus pólizas vigentes, aparecerá aquí con su estado.",
           "verPolizas": "Ver mis pólizas"
         },
         "sinResultados": {
@@ -2296,7 +2296,7 @@
         },
         "error": {
           "titulo": "No pudimos cargar tus solicitudes",
-          "texto": "Intenta de nuevo en unos momentos.",
+          "texto": "Hubo un problema al consultar el servicio. Tus solicitudes siguen guardadas.",
           "reintentar": "Reintentar"
         },
         "paginacion": {

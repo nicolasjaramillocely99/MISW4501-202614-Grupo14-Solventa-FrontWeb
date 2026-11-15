@@ -99,9 +99,9 @@ describe('MisSolicitudesPage (A11 · HU-W1.4-01 · CA-2)', () => {
     listar.mockReturnValue(of(VACIA));
     await abrir();
 
-    expect(screen.getByText('Aún no tienes solicitudes')).toBeTruthy();
+    expect(screen.getByText('Aún no tienes solicitudes de modificación')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Ver mis pólizas' }).getAttribute('href')).toBe('/originacion/polizas');
-    expect(screen.queryByRole('table')).toBeNull();
+    expect(filas()).toHaveLength(0);
   });
 
   it('sin resultados para el filtro ofrece limpiarlo', async () => {
