@@ -1,0 +1,177 @@
+<div class="beneficiarios" *transloco="let t; prefix: 'originacion.solicitudes'">
+  <section class="tarjeta" aria-labelledby="titulo-nuevo-beneficiario">
+    <h2 id="titulo-nuevo-beneficiario" class="seccion__titulo">
+      {{ editando() ? t('beneficiarios.editar') : t('beneficiarios.nuevo') }}
+    </h2>
+    <div class="formulario">
+      <div class="campo formulario__ancho">
+        <label class="campo__etiqueta" for="beneficiario-nombre">{{ t('beneficiarios.nombre') }}</label>
+        <input
+          id="beneficiario-nombre"
+          class="campo__control"
+          type="text"
+          autocomplete="off"
+          [value]="formulario().nombreCompleto"
+          [disabled]="deshabilitado()"
+          [attr.aria-invalid]="errorFormulario('nombreCompleto') ? 'true' : null"
+          [attr.aria-describedby]="errorFormulario('nombreCompleto') ? 'beneficiario-nombre-error' : null"
+          (input)="cambiar('nombreCompleto', $event)"
+          (blur)="tocar('nombreCompleto')"
+        />
+        @if (errorFormulario('nombreCompleto'); as error) {
+          <p id="beneficiario-nombre-error" class="campo__error">{{ error }}</p>
+        }
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="beneficiario-parentesco">{{ t('beneficiarios.parentesco') }}</label>
+        <select
+          id="beneficiario-parentesco"
+          class="campo__control"
+          [disabled]="deshabilitado()"
+          [attr.aria-invalid]="errorFormulario('parentesco') ? 'true' : null"
+          [attr.aria-describedby]="errorFormulario('parentesco') ? 'beneficiario-parentesco-error' : null"
+          (change)="cambiar('parentesco', $event)"
+          (blur)="tocar('parentesco')"
+        >
+          <option value="" [selected]="!formulario().parentesco">{{ t('beneficiarios.elegir') }}</option>
+          @for (p of parentescos; track p) {
+            <option [value]="p" [selected]="formulario().parentesco === p">{{ t('parentescos.' + p) }}</option>
+          }
+        </select>
+        @if (errorFormulario('parentesco'); as error) {
+          <p id="beneficiario-parentesco-error" class="campo__error">{{ error }}</p>
+        }
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="beneficiario-tipo-documento">{{ t('beneficiarios.tipoDocumento') }}</label>
+        <select
+          id="beneficiario-tipo-documento"
+          class="campo__control"
+          [disabled]="deshabilitado()"
+          [attr.aria-invalid]="errorFormulario('tipoDocumento') ? 'true' : null"
+          [attr.aria-describedby]="errorFormulario('tipoDocumento') ? 'beneficiario-tipo-documento-error' : null"
+          (change)="cambiar('tipoDocumento', $event)"
+          (blur)="tocar('tipoDocumento')"
+        >
+          <option value="" [selected]="!formulario().tipoDocumento">{{ t('beneficiarios.elegir') }}</option>
+          @for (d of tiposDocumento; track d) {
+            <option [value]="d" [selected]="formulario().tipoDocumento === d">{{ t('tiposDocumento.' + d) }}</option>
+          }
+        </select>
+        @if (errorFormulario('tipoDocumento'); as error) {
+          <p id="beneficiario-tipo-documento-error" class="campo__error">{{ error }}</p>
+        }
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="beneficiario-numero">{{ t('beneficiarios.numeroDocumento') }}</label>
+        <input
+          id="beneficiario-numero"
+          class="campo__control"
+          type="text"
+          autocomplete="off"
+          [value]="formulario().numeroDocumento"
+          [disabled]="deshabilitado()"
+          [attr.aria-invalid]="errorFormulario('numeroDocumento') ? 'true' : null"
+          [attr.aria-describedby]="errorFormulario('numeroDocumento') ? 'beneficiario-numero-error' : null"
+          (input)="cambiar('numeroDocumento', $event)"
+          (blur)="tocar('numeroDocumento')"
+        />
+        @if (errorFormulario('numeroDocumento'); as error) {
+          <p id="beneficiario-numero-error" class="campo__error">{{ error }}</p>
+        }
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="beneficiario-participacion">{{ t('beneficiarios.participacion') }}</label>
+        <input
+          id="beneficiario-participacion"
+          class="campo__control"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          [value]="formulario().participacion"
+          [disabled]="deshabilitado()"
+          [attr.aria-invalid]="errorFormulario('participacion') || (errorLista() && formulario().participacion) ? 'true' : null"
+          [attr.aria-describedby]="errorFormulario('participacion') || errorLista() ? 'beneficiario-participacion-error' : null"
+          (input)="cambiar('participacion', $event)"
+          (blur)="tocar('participacion')"
+        />
+        @if (errorFormulario('participacion') ?? errorLista(); as error) {
+          <p id="beneficiario-participacion-error" class="campo__error" role="alert">{{ error }}</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="tarjeta" aria-labelledby="titulo-beneficiarios-actuales">
+    <div class="encabezado">
+      <h2 id="titulo-beneficiarios-actuales" class="seccion__titulo">{{ t('beneficiarios.actuales') }}</h2>
+      <button type="button" class="boton boton--secundario" [disabled]="deshabilitado()" (click)="agregar()">
+        <svg lucidePlus [size]="16" aria-hidden="true"></svg>{{ t('beneficiarios.agregar') }}
+      </button>
+    </div>
+    <div class="tabla-desplazable">
+      <table class="tabla">
+        <caption class="visualmente-oculto">{{ t('beneficiarios.tabla') }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ t('beneficiarios.nombre') }}</th>
+            <th scope="col">{{ t('beneficiarios.documento') }}</th>
+            <th scope="col">{{ t('beneficiarios.parentesco') }}</th>
+            <th scope="col">{{ t('beneficiarios.participacion') }}</th>
+            <th scope="col"><span class="visualmente-oculto">{{ t('beneficiarios.acciones') }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (oneroso(); as o) {
+            <tr>
+              <th scope="row">{{ nombreOneroso(o) }}</th>
+              <td>—</td>
+              <td>{{ t('beneficiarios.oneroso') }}</td>
+              <td>{{ t('beneficiarios.saldoInsoluto') }}</td>
+              <td class="tabla__accion">
+                <app-insignia-estado tono="neutro">{{ t('beneficiarios.noModificable') }}</app-insignia-estado>
+              </td>
+            </tr>
+          }
+          @for (b of filas(); track $index; let i = $index) {
+            <tr>
+              <th scope="row">
+                {{ b.nombreCompleto }}
+                @if (errorFila(i); as error) {
+                  <span class="campo__error">{{ error }}</span>
+                }
+              </th>
+              <td>{{ b.tipoDocumento }} {{ b.numeroDocumento }}</td>
+              <td>{{ t('parentescos.' + b.parentesco) }}</td>
+              <td>{{ porcentaje(b.participacion) }} %</td>
+              <td class="tabla__accion">
+                <button
+                  type="button"
+                  class="enlace"
+                  [disabled]="deshabilitado()"
+                  [attr.aria-label]="t('beneficiarios.editarFilaDe', { nombre: b.nombreCompleto })"
+                  (click)="editar(i)"
+                >
+                  {{ t('beneficiarios.editarFila') }}
+                </button>
+                <button
+                  type="button"
+                  class="enlace"
+                  [disabled]="deshabilitado()"
+                  [attr.aria-label]="t('beneficiarios.quitarDe', { nombre: b.nombreCompleto })"
+                  (click)="quitar(i)"
+                >
+                  {{ t('beneficiarios.quitar') }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (filas().length === 0) {
+      <p class="texto-suave">{{ t('beneficiarios.sinDesignados') }}</p>
+    }
+    <p class="texto-suave total">{{ t('beneficiarios.total', { total: porcentaje(total()) }) }}</p>
+  </section>
+</div>
