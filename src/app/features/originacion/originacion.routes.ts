@@ -4,6 +4,7 @@ import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { BandejaDecisionPage } from './bandeja-decision/bandeja-decision.page';
 import { BandejaEndososPage } from './endosos/bandeja-endosos.page';
+import { DetalleEndosoPage } from './endosos/detalle-endoso.page';
 import { DetalleSolicitudPage } from './bandeja-decision/detalle-solicitud.page';
 import { EmisionesPage } from './emisiones/emisiones.page';
 import { MisSolicitudesPage } from './endosos/mis-solicitudes.page';
@@ -27,7 +28,7 @@ import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
  * a vencer (HU-W1.5-01, `renovaciones`) y su renovación asistida con recotización (HU-W1.5-03, `renovaciones/:id`, el
  * `policy_id`). Para el asegurado, la solicitud de modificación de una póliza (HU-W1.4-01, `polizas/:id/modificar`), sus
  * solicitudes (`solicitudes`) y el detalle de cada una (`solicitudes/:id`). Para operaciones, la bandeja de endosos
- * (HU-W1.4-02, `endosos`).
+ * (HU-W1.4-02, `endosos`) y el detalle de cada solicitud (`endosos/:id`).
  */
 export const ORIGINACION_ROUTES: Routes = [
   {
@@ -67,7 +68,10 @@ export const ORIGINACION_ROUTES: Routes = [
   {
     path: 'endosos',
     canActivateChild: [rolGuard('operaciones')],
-    children: [{ path: '', component: BandejaEndososPage }],
+    children: [
+      { path: '', component: BandejaEndososPage },
+      { path: ':id', component: DetalleEndosoPage },
+    ],
   },
   {
     path: 'emisiones',

@@ -1,0 +1,57 @@
+// «Validaciones de negocio» (O3, O3b): ícono, título y detalle a la izquierda, resultado a la derecha, separadas por una línea.
+.validaciones {
+  margin: var(--espacio-8) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.validacion {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-12);
+  padding: var(--espacio-12) 0;
+
+  & + & {
+    border-top: 1px solid var(--color-borde-base);
+  }
+
+  app-insignia-estado {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}
+
+.validacion__icono {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.validacion__icono--exito {
+  color: var(--color-exito-600);
+}
+
+.validacion__icono--error {
+  color: var(--color-error-600);
+}
+
+.validacion__icono--advertencia {
+  color: var(--color-advertencia-600);
+}
+
+.validacion__texto {
+  min-width: 0;
+
+  p {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.validacion__titulo {
+  font-weight: 500;
+}
+
+.validacion__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

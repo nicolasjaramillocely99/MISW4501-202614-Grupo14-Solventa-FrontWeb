@@ -1,0 +1,25 @@
+<ul class="validaciones" *transloco="let t; prefix: 'originacion.endosos.detalle.validaciones'">
+  @for (v of validaciones(); track v.codigo) {
+    @let textos = texto(v);
+    <li class="validacion">
+      @switch (v.resultado) {
+        @case ('passed') {
+          <svg lucideCircleCheck [size]="20" class="validacion__icono validacion__icono--exito" aria-hidden="true"></svg>
+        }
+        @case ('failed') {
+          <svg lucideCircleX [size]="20" class="validacion__icono validacion__icono--error" aria-hidden="true"></svg>
+        }
+        @default {
+          <svg lucideCircleAlert [size]="20" class="validacion__icono validacion__icono--advertencia" aria-hidden="true"></svg>
+        }
+      }
+      <div class="validacion__texto">
+        <p class="validacion__titulo">{{ textos.titulo }}</p>
+        @if (textos.detalle) {
+          <p class="validacion__detalle">{{ textos.detalle }}</p>
+        }
+      </div>
+      <app-insignia-estado [tono]="tono[v.resultado]">{{ t('resultado.' + v.resultado) }}</app-insignia-estado>
+    </li>
+  }
+</ul>
