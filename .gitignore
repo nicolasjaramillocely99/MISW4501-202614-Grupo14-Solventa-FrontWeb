@@ -55,3 +55,6 @@ excalidraw.log
 .env
 .env.*
 !.env.example
+
+# Mockups de las historias: se comparten fuera del repositorio
+mockups-*/
