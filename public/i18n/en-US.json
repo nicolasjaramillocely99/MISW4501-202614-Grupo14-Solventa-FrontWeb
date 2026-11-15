@@ -2074,6 +2074,7 @@
         "volver": "My policies",
         "titulo": "Request a change",
         "subtitulo": "{{producto}} · {{poliza}} · Changes apply after the operations review; we will let you know the result.",
+        "subtituloNoVigente": "{{producto}} · {{poliza}} · This policy is no longer in force.",
         "cargando": "Loading the terms of your policy…",
         "cancelar": "Cancel",
         "radicar": "File request",
@@ -2083,8 +2084,8 @@
         "verSolicitud": "View request",
         "corrige": "Fix the marked fields before filing.",
         "noVigente": {
-          "titulo": "This policy is not in force",
-          "texto": "You can only request changes to a policy in force. Policy {{poliza}} ended on {{fecha}}."
+          "titulo": "This policy does not accept changes",
+          "texto": "Its coverage ended on {{fecha}}. You can only request changes to policies in force; if you renewed it, find it in My policies."
         },
         "abiertaTodas": "You already have a request in progress of each type; wait for its result to file another one.",
         "noEncontrada": {

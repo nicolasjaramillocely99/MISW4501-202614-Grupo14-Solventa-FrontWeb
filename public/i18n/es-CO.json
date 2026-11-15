@@ -2074,6 +2074,7 @@
         "volver": "Mis pólizas",
         "titulo": "Solicitar una modificación",
         "subtitulo": "{{producto}} · {{poliza}} · Los cambios se aplican tras la revisión de operaciones; te avisaremos el resultado.",
+        "subtituloNoVigente": "{{producto}} · {{poliza}} · Esta póliza ya no está vigente.",
         "cargando": "Cargando las condiciones de tu póliza…",
         "cancelar": "Cancelar",
         "radicar": "Radicar solicitud",
@@ -2083,8 +2084,8 @@
         "verSolicitud": "Ver solicitud",
         "corrige": "Corrige los datos marcados antes de radicar.",
         "noVigente": {
-          "titulo": "Esta póliza no está vigente",
-          "texto": "Solo puedes pedir cambios sobre una póliza vigente. La póliza {{poliza}} terminó el {{fecha}}."
+          "titulo": "Esta póliza no admite modificaciones",
+          "texto": "Su cobertura terminó el {{fecha}}. Solo puedes solicitar cambios sobre pólizas vigentes; si la renovaste, búscala en Mis pólizas."
         },
         "abiertaTodas": "Ya tienes una solicitud en curso de cada tipo; espera su resultado para radicar otra.",
         "noEncontrada": {

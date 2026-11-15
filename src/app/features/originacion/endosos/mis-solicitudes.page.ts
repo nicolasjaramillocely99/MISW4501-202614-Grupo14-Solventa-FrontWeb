@@ -16,6 +16,7 @@ import {
 import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 
 import { EstadoSolicitudComponent } from './componentes/estado-solicitud/estado-solicitud.component';
+import { fechaCorta } from './modelos/fecha-corta';
 import {
   CriteriosSolicitudes,
   ESTADO_VISIBLE,
@@ -84,13 +85,9 @@ export class MisSolicitudesPage implements OnInit {
       .subscribe((resultado) => this.mostrar(resultado));
   }
 
-  /** «16/09/2026»: la fecha corta del frame, en el orden del idioma y la zona horaria del usuario. */
+  /** «16/09/2026»: la fecha corta del frame. */
   protected fechaCorta(iso: string): string {
-    const fecha = new Date(iso);
-    if (Number.isNaN(fecha.getTime())) {
-      return '';
-    }
-    return new Intl.DateTimeFormat(this.transloco.getActiveLang(), { day: '2-digit', month: '2-digit', year: 'numeric' }).format(fecha);
+    return fechaCorta(iso, this.transloco.getActiveLang());
   }
 
   protected reintentar(): void {

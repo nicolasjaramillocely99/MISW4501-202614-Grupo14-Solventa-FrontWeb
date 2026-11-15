@@ -270,7 +270,7 @@ test.describe('Solicitud de modificación del asegurado (HU-W1.4-01)', () => {
       },
     });
     await a3.abrirModificar();
-    await expect(page.getByText('Esta póliza no está vigente')).toBeVisible();
+    await expect(page.getByText('Esta póliza no admite modificaciones')).toBeVisible();
     await expect(a3.radicar).toBeDisabled();
     await verificarAccesibilidad(page);
 
