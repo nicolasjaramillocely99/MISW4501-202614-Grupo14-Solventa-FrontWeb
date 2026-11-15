@@ -161,7 +161,7 @@ describe('SolicitarModificacionPage (A3 · HU-W1.4-01)', () => {
     api.consultarCondicionesVigentes.mockReturnValue(of(mapearCondicionesVigentes(CONDICIONES_NO_VIGENTE_DTO)));
     await renderizar();
 
-    expect(screen.getByRole('alert').textContent).toContain('Esta póliza no está vigente');
+    expect(screen.getByRole('alert').textContent).toContain('Esta póliza no admite modificaciones');
     expect(screen.queryByRole('group', { name: 'Tipo de cambio' })).toBeNull();
     expect(radicar().disabled).toBe(true);
   });
@@ -174,7 +174,7 @@ describe('SolicitarModificacionPage (A3 · HU-W1.4-01)', () => {
     await userEvent.type(screen.getByLabelText('Nuevo valor asegurado (COP)'), '90000000');
     await userEvent.click(radicar());
 
-    expect(screen.getByRole('alert').textContent).toContain('Esta póliza no está vigente');
+    expect(screen.getByRole('alert').textContent).toContain('Esta póliza no admite modificaciones');
   });
 
   it('la falla del servicio al radicar lo dice; el 403 lo resuelve el interceptor', async () => {

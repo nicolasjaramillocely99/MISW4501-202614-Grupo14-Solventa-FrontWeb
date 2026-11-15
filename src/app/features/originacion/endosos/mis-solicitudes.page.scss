@@ -54,7 +54,8 @@
   color: var(--color-azul-900);
 }
 
-.indicador__valor--aviso {
+// Con la misma especificidad de `.indicador .indicador__valor`, para que «Rechazadas» lleve el color de aviso del frame.
+.indicador .indicador__valor--aviso {
   color: var(--color-advertencia-600);
 }
 
@@ -122,6 +123,7 @@
 
 .tabla__accion {
   text-align: right;
+  white-space: nowrap;
 }
 
 .tabla__enlace {

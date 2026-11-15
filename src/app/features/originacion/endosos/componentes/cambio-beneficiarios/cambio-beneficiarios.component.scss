@@ -1,7 +1,16 @@
+// Las dos tarjetas son celdas de la cuadrícula de A3 (frame `20:529`): «Nuevo beneficiario» en la columna principal y
+// «Beneficiarios actuales» a todo el ancho, bajo las dos columnas. Por eso el componente no dibuja una caja propia.
+:host,
 .beneficiarios {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-24);
+  display: contents;
+}
+
+.beneficiarios__nuevo {
+  grid-column: 1;
+}
+
+.beneficiarios__actuales {
+  grid-column: 1 / -1;
 }
 
 .seccion__titulo {

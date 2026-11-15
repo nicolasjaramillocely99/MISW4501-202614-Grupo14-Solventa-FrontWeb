@@ -6,7 +6,9 @@
     <div>
       <h1 class="pagina__titulo">{{ t('solicitar.titulo') }}</h1>
       @if (condiciones(); as c) {
-        <p class="pagina__subtitulo">{{ t('solicitar.subtitulo', { producto: producto(c.poliza.linea), poliza: c.poliza.polizaId }) }}</p>
+        <p class="pagina__subtitulo">
+          {{ t(fase() === 'noVigente' ? 'solicitar.subtituloNoVigente' : 'solicitar.subtitulo', { producto: producto(c.poliza.linea), poliza: c.poliza.polizaId }) }}
+        </p>
       }
     </div>
     <div class="pagina__acciones">
@@ -47,7 +49,7 @@
           <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
           <div>
             <p class="aviso__titulo">{{ t('solicitar.noVigente.titulo') }}</p>
-            <p>{{ t('solicitar.noVigente.texto', { poliza: c.poliza.polizaId, fecha: (c.poliza.vigenciaHasta | formatoFecha) }) }}</p>
+            <p>{{ t('solicitar.noVigente.texto', { fecha: fechaCorta(c.poliza.vigenciaHasta) }) }}</p>
           </div>
         </div>
       }

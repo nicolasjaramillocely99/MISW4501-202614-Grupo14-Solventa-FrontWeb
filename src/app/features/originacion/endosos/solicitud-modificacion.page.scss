@@ -70,6 +70,11 @@
   color: var(--color-exito-600);
 }
 
+// El indicador ocupa todo el ancho de la tarjeta para que se vean las líneas que unen los pasos (frame `20:866`).
+.resultado__pasos {
+  align-self: stretch;
+}
+
 .resultado__titulo {
   margin: 0;
   font-size: 1.5rem;

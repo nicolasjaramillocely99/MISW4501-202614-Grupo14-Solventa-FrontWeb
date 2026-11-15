@@ -1,0 +1,141 @@
+<div class="pagina" *transloco="let t; prefix: 'socios.tablero'">
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+      <p class="pagina__descripcion">
+        {{ t('subtitulo', { socio: socio(), rango: descripcionRango() }) }}
+      </p>
+    </div>
+
+    <div class="rangos" role="group" [attr.aria-label]="t('rango.grupo')">
+      @for (item of opciones; track item) {
+        <button
+          type="button"
+          class="rangos__opcion"
+          [class.rangos__opcion--activa]="opcion() === item"
+          [attr.aria-pressed]="opcion() === item"
+          [attr.aria-expanded]="item === 'personalizado' ? personalizadoAbierto() : null"
+          [attr.aria-controls]="item === 'personalizado' ? 'rango-personalizado' : null"
+          (click)="elegir(item)"
+        >
+          {{ t('rango.opciones.' + item) }}
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (personalizadoAbierto()) {
+    <form
+      id="rango-personalizado"
+      class="tarjeta personalizado"
+      [attr.aria-label]="t('rango.personalizado.titulo')"
+      novalidate
+      (submit)="aplicar($event)"
+    >
+      <div class="campo">
+        <label class="campo__etiqueta" for="rango-desde">{{ t('rango.personalizado.desde') }}</label>
+        <input
+          id="rango-desde"
+          class="campo__control"
+          type="date"
+          [value]="desde()"
+          [attr.aria-invalid]="problema() === 'incompleto' && !desde() ? 'true' : null"
+          (change)="cambiarFecha('desde', $event)"
+        />
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="rango-hasta">{{ t('rango.personalizado.hasta') }}</label>
+        <input
+          id="rango-hasta"
+          class="campo__control"
+          type="date"
+          [value]="hasta()"
+          [attr.aria-invalid]="problema() ? 'true' : null"
+          [attr.aria-describedby]="problema() ? 'rango-error' : 'rango-ayuda'"
+          (change)="cambiarFecha('hasta', $event)"
+        />
+      </div>
+      <div class="personalizado__acciones">
+        <button type="submit" class="boton boton--primario">{{ t('rango.personalizado.aplicar') }}</button>
+        <button type="button" class="boton boton--terciario" (click)="cancelarPersonalizado()">
+          {{ t('rango.personalizado.cancelar') }}
+        </button>
+      </div>
+      @if (problema(); as motivo) {
+        <p id="rango-error" class="campo__error personalizado__mensaje" role="alert">
+          {{ t('rango.personalizado.problemas.' + motivo) }}
+        </p>
+      } @else {
+        <p id="rango-ayuda" class="campo__ayuda personalizado__mensaje">{{ t('rango.personalizado.ayuda') }}</p>
+      }
+    </form>
+  }
+
+  @switch (fase()) {
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('error.titulo') }}</p>
+          <p>{{ t('error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @default {
+      <section
+        class="indicadores"
+        [attr.aria-label]="t('tarjetas.region')"
+        [attr.aria-busy]="fase() === 'cargando'"
+        aria-live="polite"
+      >
+        @if (fase() === 'cargando') {
+          <p class="estado" role="status">{{ t('cargando') }}</p>
+        } @else if (resumen(); as datos) {
+          <article class="indicador" data-testid="tarjeta-cotizaciones">
+            <h2 class="indicador__etiqueta">{{ t('tarjetas.cotizaciones') }}</h2>
+            <p class="indicador__valor">{{ datos.cotizaciones | formatoNumero: 0 }}</p>
+            <p class="indicador__detalle">
+              {{ datos.cotizaciones === 0 ? t('tarjetas.sinCotizaciones') : t('tarjetas.cotizacionesDetalle') }}
+            </p>
+          </article>
+          <article class="indicador" data-testid="tarjeta-polizas">
+            <h2 class="indicador__etiqueta">{{ t('tarjetas.polizas') }}</h2>
+            <p class="indicador__valor">{{ datos.polizasEmitidas | formatoNumero: 0 }}</p>
+            <p class="indicador__detalle">
+              {{ datos.polizasEmitidas === 0 ? t('tarjetas.sinPolizas') : t('tarjetas.polizasDetalle') }}
+            </p>
+          </article>
+          <article class="indicador" data-testid="tarjeta-conversion">
+            <h2 class="indicador__etiqueta">{{ t('tarjetas.conversion') }}</h2>
+            <p class="indicador__valor" [class.indicador__valor--exito]="datos.tasaConversion > 0">
+              {{ t('tarjetas.porcentaje', { valor: (datos.tasaConversion | formatoNumero: 1) }) }}
+            </p>
+            <p class="indicador__detalle">{{ t('tarjetas.formula') }}</p>
+          </article>
+        }
+      </section>
+
+      @if (sinDatos()) {
+        <section class="tarjeta vacio" [attr.aria-label]="t('vacio.titulo')">
+          <span class="vacio__icono" aria-hidden="true"><svg lucideFileText [size]="28"></svg></span>
+          <h2 class="vacio__titulo">{{ t('vacio.titulo') }}</h2>
+          <p class="vacio__texto">{{ t('vacio.texto') }}</p>
+          @if (masAmplia(); as siguiente) {
+            <button type="button" class="boton boton--secundario" (click)="elegir(siguiente)">
+              {{ t('vacio.ampliar.' + siguiente) }}
+            </button>
+          }
+        </section>
+      }
+    }
+  }
+
+  <aside class="aislamiento" [attr.aria-label]="t('aislamiento.titulo')">
+    <svg lucideShieldCheck [size]="20" aria-hidden="true"></svg>
+    <div>
+      <h2 class="aislamiento__titulo">{{ t('aislamiento.titulo') }}</h2>
+      <p class="aislamiento__texto">{{ t('aislamiento.texto', { socio: socio() }) }}</p>
+    </div>
+  </aside>
+</div>

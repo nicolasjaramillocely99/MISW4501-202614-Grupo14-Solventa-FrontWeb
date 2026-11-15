@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LucideChevronLeft, LucideChevronRight, LucideCircleAlert, LucideInbox, LucidePlus, LucideSearch } from '@lucide/angular';
 import { Observable, Subject, catchError, combineLatest, map, of, startWith, switchMap } from 'rxjs';
 
@@ -14,9 +14,9 @@ import {
   PaginaSolicitudes,
 } from '@core/api/originacion/solicitud-modificacion.modelos';
 import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
-import { FormatoFechaPipe } from '@shared/pipes/formato-fecha.pipe';
 
 import { EstadoSolicitudComponent } from './componentes/estado-solicitud/estado-solicitud.component';
+import { fechaCorta } from './modelos/fecha-corta';
 import {
   CriteriosSolicitudes,
   ESTADO_VISIBLE,
@@ -45,7 +45,6 @@ type Resultado = { tipo: 'pagina'; pagina: PaginaSolicitudes } | { tipo: 'error'
   imports: [
     RouterLink,
     TranslocoDirective,
-    FormatoFechaPipe,
     FormatoFechaHoraPipe,
     EstadoSolicitudComponent,
     LucideChevronLeft,
@@ -64,6 +63,7 @@ export class MisSolicitudesPage implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destruccion = inject(DestroyRef);
+  private readonly transloco = inject(TranslocoService);
   private readonly recargas = new Subject<void>();
 
   protected readonly estados = ESTADOS_FILTRO_SOLICITUD;
@@ -72,6 +72,8 @@ export class MisSolicitudesPage implements OnInit {
   protected readonly filtro = signal<FiltroSolicitudes>(filtroDesdeParametros({}));
   /** La última página recibida: los indicadores siguen a la vista mientras se consulta otra. */
   protected readonly pagina = signal<PaginaSolicitudes | null>(null);
+  /** Con la lista caída, los tres indicadores siguen a la vista con «— · No disponible». */
+  protected readonly indicadoresSinDatos = ['abiertas', 'aplicadas', 'rechazadas'] as const;
 
   ngOnInit(): void {
     combineLatest([this.ruta.queryParams, this.recargas.pipe(startWith(undefined))])
@@ -81,6 +83,11 @@ export class MisSolicitudesPage implements OnInit {
         takeUntilDestroyed(this.destruccion),
       )
       .subscribe((resultado) => this.mostrar(resultado));
+  }
+
+  /** «16/09/2026»: la fecha corta del frame. */
+  protected fechaCorta(iso: string): string {
+    return fechaCorta(iso, this.transloco.getActiveLang());
   }
 
   protected reintentar(): void {

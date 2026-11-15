@@ -59,16 +59,29 @@
   font-weight: 500;
 }
 
+// Fila 1: «Tipo de cambio»; fila 2: la captura, que absorbe el alto que le sobre al lateral para que las dos tarjetas
+// queden juntas; fila 3 (implícita): «Beneficiarios actuales» a todo el ancho (frame `20:529`).
 .contenido {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  grid-template-rows: auto 1fr;
   gap: var(--espacio-24);
   align-items: start;
 }
 
-.contenido__principal,
+// La columna principal no dibuja una caja propia: sus tarjetas son celdas de la cuadrícula.
+.contenido__principal {
+  display: contents;
+
+  > * {
+    grid-column: 1;
+  }
+}
+
 .contenido__lateral {
   display: flex;
+  grid-column: 2;
+  grid-row: 1 / span 2;
   flex-direction: column;
   gap: var(--espacio-24);
 }

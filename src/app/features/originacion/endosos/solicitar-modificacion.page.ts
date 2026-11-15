@@ -13,7 +13,6 @@ import {
   TIPOS_CAMBIO,
   TipoCambio,
 } from '@core/api/originacion/solicitud-modificacion.modelos';
-import { FormatoFechaPipe } from '@shared/pipes/formato-fecha.pipe';
 
 import { AntesDeRadicarComponent } from './componentes/antes-de-radicar/antes-de-radicar.component';
 import { CambioBeneficiariosComponent } from './componentes/cambio-beneficiarios/cambio-beneficiarios.component';
@@ -21,6 +20,7 @@ import { CambioDatosPersonalesComponent } from './componentes/cambio-datos-perso
 import { CambioSumaAseguradaComponent } from './componentes/cambio-suma-asegurada/cambio-suma-asegurada.component';
 import { ResumenCambioComponent } from './componentes/resumen-cambio/resumen-cambio.component';
 import { TipoCambioComponent } from './componentes/tipo-cambio/tipo-cambio.component';
+import { fechaCorta } from './modelos/fecha-corta';
 import {
   BeneficiarioCaptura,
   ContactoCaptura,
@@ -56,7 +56,6 @@ const SIN_CONTACTO: ContactoCaptura = { direccion: '', correo: '', telefono: '' 
   imports: [
     RouterLink,
     TranslocoDirective,
-    FormatoFechaPipe,
     TipoCambioComponent,
     CambioBeneficiariosComponent,
     CambioSumaAseguradaComponent,
@@ -164,6 +163,11 @@ export class SolicitarModificacionPage implements OnInit {
     const clave = `originacion.solicitudes.linea.${linea}`;
     const texto = this.transloco.translate(clave);
     return texto === clave ? linea : texto;
+  }
+
+  /** «30/09/2026»: el fin de la cobertura en el aviso de la póliza no vigente. */
+  protected fechaCorta(iso: string): string {
+    return fechaCorta(iso, this.transloco.getActiveLang());
   }
 
   protected radicar(): void {

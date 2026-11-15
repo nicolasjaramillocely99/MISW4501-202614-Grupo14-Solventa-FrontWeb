@@ -86,6 +86,14 @@ import {
   traducirErrorPorVencer,
 } from './polizas-por-vencer.modelos';
 import {
+  RangoResumen,
+  ResumenSocio,
+  ResumenSocioDto,
+  aParametrosResumen,
+  mapearResumenSocio,
+  traducirErrorResumenSocio,
+} from './resumen-socio.modelos';
+import {
   CodigoRenovacionEnviado,
   CodigoRenovacionEnviadoDto,
   RecotizacionRenovacion,
@@ -432,6 +440,21 @@ export class OriginacionApiService {
       .pipe(
         map(mapearPaginaPorVencer),
         catchError((error: unknown) => throwError(() => traducirErrorPorVencer(error))),
+      );
+  }
+
+  /**
+   * Resumen del tablero del socio comercial (`GET /v1/partner-metrics/summary`, solo `partner`; HU-W3.2-01, pantalla B1):
+   * cotizaciones solicitadas, pólizas emitidas y tasa de conversión en el rango (días de Colombia, los dos incluidos). El
+   * socio no viaja: el backend lo toma del token (CA-4). Un rango sin datos responde ceros, no un error (CA-3). Falla con
+   * `ErrorResumenSocio`: `out_of_range` si la fecha final es anterior a la inicial.
+   */
+  consultarResumenSocio(rango: RangoResumen): Observable<ResumenSocio> {
+    return this.http
+      .get<ResumenSocioDto>(`${this.base}/v1/partner-metrics/summary`, { params: aParametrosResumen(rango) })
+      .pipe(
+        map(mapearResumenSocio),
+        catchError((error: unknown) => throwError(() => traducirErrorResumenSocio(error))),
       );
   }
 

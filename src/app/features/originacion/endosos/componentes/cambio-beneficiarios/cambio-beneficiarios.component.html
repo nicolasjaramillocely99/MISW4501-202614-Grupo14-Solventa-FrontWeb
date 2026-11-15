@@ -1,5 +1,5 @@
 <div class="beneficiarios" *transloco="let t; prefix: 'originacion.solicitudes'">
-  <section class="tarjeta" aria-labelledby="titulo-nuevo-beneficiario">
+  <section class="tarjeta beneficiarios__nuevo" aria-labelledby="titulo-nuevo-beneficiario">
     <h2 id="titulo-nuevo-beneficiario" class="seccion__titulo">
       {{ editando() ? t('beneficiarios.editar') : t('beneficiarios.nuevo') }}
     </h2>
@@ -102,7 +102,7 @@
     </div>
   </section>
 
-  <section class="tarjeta" aria-labelledby="titulo-beneficiarios-actuales">
+  <section class="tarjeta beneficiarios__actuales" aria-labelledby="titulo-beneficiarios-actuales">
     <div class="encabezado">
       <h2 id="titulo-beneficiarios-actuales" class="seccion__titulo">{{ t('beneficiarios.actuales') }}</h2>
       <button type="button" class="boton boton--secundario" [disabled]="deshabilitado()" (click)="agregar()">
@@ -141,7 +141,7 @@
                   <span class="campo__error">{{ error }}</span>
                 }
               </th>
-              <td>{{ b.tipoDocumento }} {{ b.numeroDocumento }}</td>
+              <td>{{ documento(b) }}</td>
               <td>{{ t('parentescos.' + b.parentesco) }}</td>
               <td>{{ porcentaje(b.participacion) }} %</td>
               <td class="tabla__accion">

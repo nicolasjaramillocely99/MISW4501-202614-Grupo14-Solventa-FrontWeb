@@ -2074,6 +2074,7 @@
         "volver": "My policies",
         "titulo": "Request a change",
         "subtitulo": "{{producto}} · {{poliza}} · Changes apply after the operations review; we will let you know the result.",
+        "subtituloNoVigente": "{{producto}} · {{poliza}} · This policy is no longer in force.",
         "cargando": "Loading the terms of your policy…",
         "cancelar": "Cancel",
         "radicar": "File request",
@@ -2083,8 +2084,8 @@
         "verSolicitud": "View request",
         "corrige": "Fix the marked fields before filing.",
         "noVigente": {
-          "titulo": "This policy is not in force",
-          "texto": "You can only request changes to a policy in force. Policy {{poliza}} ended on {{fecha}}."
+          "titulo": "This policy does not accept changes",
+          "texto": "Its coverage ended on {{fecha}}. You can only request changes to policies in force; if you renewed it, find it in My policies."
         },
         "abiertaTodas": "You already have a request in progress of each type; wait for its result to file another one.",
         "noEncontrada": {
@@ -2222,7 +2223,17 @@
           "texto": "The policy keeps its current terms. If operations rejects the change, you will see the reason in this same request and you can file a new one."
         },
         "motivo": "Reason",
-        "exito": "Your policy already has the new terms.",
+        "exito": "Your policy already has the new terms",
+        "condiciones": {
+          "lista": "{{cambios}}.",
+          "beneficiarios": "Beneficiaries: {{lista}}",
+          "beneficiario": "{{nombre}} {{participacion}} %",
+          "retirado": "{{nombre}} (removed)",
+          "valorAsegurado": "Insured amount: {{valor}}",
+          "direccion": "Address: {{valor}}",
+          "telefono": "Phone: {{valor}}",
+          "correo": "Contact e-mail: {{valor}}"
+        },
         "noEncontrada": {
           "titulo": "We could not find this request",
           "texto": "Check the identifier or look for it in «My requests»."
@@ -2244,7 +2255,11 @@
           "aplicadas": "Applied this year",
           "rechazadas": "Rejected",
           "referencia": "{{id}} · {{tipo}}",
-          "ultima": "Last: {{fecha}} · {{tipo}}"
+          "ultima": "Last: {{fecha}} · {{tipo}}",
+          "sinAbiertas": "No requests in progress",
+          "sinAplicadas": "None this year",
+          "sinRechazadas": "None",
+          "noDisponible": "Not available"
         },
         "filtros": {
           "titulo": "Filter requests",
@@ -4722,6 +4737,68 @@
         "sistema": "System",
         "enTransicion": "In transition",
         "aplicado": "Applied"
+      }
+    },
+    "tablero": {
+      "titulo": "Integration dashboard",
+      "subtitulo": "{{socio}} · {{rango}} · the data belongs only to your integration",
+      "cargando": "Loading the summary of the range…",
+      "rango": {
+        "grupo": "Date range",
+        "opciones": {
+          "hoy": "Today",
+          "ultimos7": "Last 7 days",
+          "ultimos30": "Last 30 days",
+          "personalizado": "Custom"
+        },
+        "descripcion": {
+          "hoy": "today {{dia}}",
+          "ultimos7": "last 7 days ({{desde}} to {{hasta}})",
+          "ultimos30": "last 30 days ({{desde}} to {{hasta}})",
+          "personalizado": "custom range ({{desde}} to {{hasta}})"
+        },
+        "personalizado": {
+          "titulo": "Custom range",
+          "desde": "Start date",
+          "hasta": "End date",
+          "aplicar": "Apply",
+          "cancelar": "Cancel",
+          "ayuda": "Includes the start date and the end date (Colombia time).",
+          "problemas": {
+            "incompleto": "Choose the start date and the end date.",
+            "invertido": "The start date cannot be after the end date.",
+            "muyLargo": "The range can cover at most 366 days."
+          }
+        }
+      },
+      "tarjetas": {
+        "region": "Summary of the range",
+        "cotizaciones": "Quotes requested",
+        "cotizacionesDetalle": "Requests of your integration in the range",
+        "sinCotizaciones": "No requests in the range",
+        "polizas": "Policies issued",
+        "polizasDetalle": "Issued from your quotes",
+        "sinPolizas": "No policies issued in the range",
+        "conversion": "Conversion rate",
+        "porcentaje": "{{valor}} %",
+        "formula": "Policies / quotes × 100"
+      },
+      "vacio": {
+        "titulo": "No quotes in the selected range",
+        "texto": "The metrics show 0 without errors. Widen the date range to see activity.",
+        "ampliar": {
+          "ultimos7": "See last 7 days",
+          "ultimos30": "See last 30 days"
+        }
+      },
+      "error": {
+        "titulo": "We could not load the summary",
+        "texto": "The service did not answer. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "aislamiento": {
+        "titulo": "Data isolation",
+        "texto": "This dashboard shows only the quotes and policies of {{socio}}. No data of other partners is visible here."
       }
     }
   }
