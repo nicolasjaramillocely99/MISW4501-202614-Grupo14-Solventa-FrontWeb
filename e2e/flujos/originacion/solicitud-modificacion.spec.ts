@@ -208,6 +208,7 @@ test.describe('Solicitud de modificación del asegurado (HU-W1.4-01)', () => {
         await page.goto(ruta);
         await expect(page).toHaveURL('/acceso/no-autorizado');
       }
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Acceso no autorizado');
       await verificarAccesibilidad(page);
     });
   }
