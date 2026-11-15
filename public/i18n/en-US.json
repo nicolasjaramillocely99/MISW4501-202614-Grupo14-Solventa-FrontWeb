@@ -2434,6 +2434,11 @@
         "volver": "Endorsements",
         "titulo": "Endorsement · {{id}}",
         "subtitulo": "{{tipo}} · {{producto}} {{poliza}} · {{titular}} · filed on {{fecha}} {{canal}}",
+        "tipos": {
+          "beneficiaries": "Change of beneficiaries",
+          "insured_amount": "Change of insured amount",
+          "personal_data": "Change of personal data"
+        },
         "cargando": "Loading the request…",
         "noEncontrada": {
           "titulo": "We could not find the request",
@@ -2616,7 +2621,12 @@
         "primaSinCalcular": "Not priced",
         "address": "Address",
         "email": "Contact e-mail",
-        "phone": "Phone"
+        "phone": "Phone",
+        "noRegistrado": {
+          "address": "Not recorded",
+          "email": "Not recorded",
+          "phone": "Not recorded"
+        }
       },
       "validaciones": {
         "desconocida": "Validation {{codigo}}",
@@ -2657,7 +2667,7 @@
         },
         "personal_data_valid": {
           "titulo": "Contact data with a valid format",
-          "passed": "Valid format",
+          "passed": "10-digit phone · valid e-mail",
           "failed": "Invalid format: {{campos}}",
           "unverifiable": "Not checked"
         },

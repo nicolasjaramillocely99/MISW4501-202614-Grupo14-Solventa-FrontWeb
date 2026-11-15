@@ -86,7 +86,7 @@ describe('DetalleEndosoPage (O3 · O3b · HU-W1.4-02)', () => {
     expect(consultar).toHaveBeenCalledWith('SOL-MOD-2026-0042');
     expect(screen.getByRole('heading', { level: 1, name: 'Endoso · SOL-MOD-2026-0042' })).toBeTruthy();
     expect(insignia()).toBe('En revisión');
-    expect(screen.getByText(/Beneficiarios · Vida hipotecario pol-acc-4f2a · Carolina Pérez Ruiz · radicada el .* desde el portal/)).toBeTruthy();
+    expect(screen.getByText(/Cambio de beneficiarios · Vida hipotecario pol-acc-4f2a · Carolina Pérez Ruiz · radicada el .* desde el portal/)).toBeTruthy();
     expect(filasCambio()).toEqual([
       'Beneficiario 1 | Mateo Pérez Gómez · TI 1.140.223.001 · 100 % | Mateo Pérez Gómez · TI 1.140.223.001 · 60 %',
       'Beneficiario 2 | — | Lucía Pérez Gómez · TI 1.142.998.310 · 40 %',
@@ -114,8 +114,8 @@ describe('DetalleEndosoPage (O3 · O3b · HU-W1.4-02)', () => {
     await abrir('SOL-MOD-2026-0045');
 
     const [valor, prima] = filasCambio();
-    expect(valor).toMatch(/^Valor asegurado \| \$\s250\.000\.000 \| \$\s300\.000\.000$/);
-    expect(prima).toMatch(/^Prima mensual \| \$\s68\.500 \| \$\s82\.200 · recalculada con el motor v1$/);
+    expect(valor).toMatch(/^Valor asegurado \| \$\s250\.000\.000 COP \| \$\s300\.000\.000 COP$/);
+    expect(prima).toMatch(/^Prima mensual \| \$\s68\.500 COP \| \$\s82\.200 COP · recalculada con el motor v1$/);
     expect(validacion('Suma asegurada dentro de los límites del producto').textContent).toMatch(
       /\$\s300\.000\.000 · entre \$\s10\.000\.000 y \$\s2\.000\.000\.000/,
     );
@@ -126,7 +126,7 @@ describe('DetalleEndosoPage (O3 · O3b · HU-W1.4-02)', () => {
     consultar.mockReturnValue(detalle(DETALLE_DATOS_DTO));
     await abrir('SOL-MOD-2026-0046');
 
-    expect(filasCambio()).toEqual(['Dirección | — | Calle 100 # 15-20, Bogotá', 'Teléfono | — | 301 234 5678']);
+    expect(filasCambio()).toEqual(['Dirección | No registrada | Calle 100 # 15-20, Bogotá', 'Teléfono | No registrado | 301 234 5678']);
     expect(validacion('Solicitante = tomador autenticado').textContent).toContain('Carolina Pérez Ruiz · app móvil');
     expect(screen.getByText(/El correo con el que inicia sesión no cambia/)).toBeTruthy();
   });

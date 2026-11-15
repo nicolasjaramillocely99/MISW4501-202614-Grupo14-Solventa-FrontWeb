@@ -56,6 +56,18 @@ export function moneda(f: Formato, valor: number, codigo: string): string {
   return new Intl.NumberFormat(f.idioma, { style: 'currency', currency: codigo || 'COP', maximumFractionDigits: 0 }).format(valor);
 }
 
+/** «$ 250.000.000 COP»: el monto seguido del código de la moneda, como `formatoMoneda` y el panel «Póliza». */
+export function montoConCodigo(f: Formato, valor: number, codigo: string): string {
+  const codigoMoneda = codigo || 'COP';
+  const monto = new Intl.NumberFormat(f.idioma, {
+    style: 'currency',
+    currency: codigoMoneda,
+    currencyDisplay: 'narrowSymbol',
+    maximumFractionDigits: 0,
+  }).format(valor);
+  return `${monto} ${codigoMoneda}`;
+}
+
 function numero(f: Formato, valor: number, decimales = 0): string {
   return new Intl.NumberFormat(f.idioma, { maximumFractionDigits: decimales }).format(valor);
 }
@@ -97,6 +109,20 @@ function textoValor(f: Formato, valor: CambioCampo['anterior'], campo: string, m
   return campo === 'personal_data.phone' && SOLO_DIGITOS.test(valor) ? telefono(valor) : valor;
 }
 
+/**
+ * El valor de una celda de «Cambio solicitado»: el monto lleva el código de la moneda y un dato de contacto que no estaba
+ * registrado se lee «No registrado» o «No registrada», como el frame; un beneficiario nuevo sigue con «—».
+ */
+function textoCelda(f: Formato, valor: CambioCampo['anterior'], campo: string, monedaCodigo: string): string {
+  if (valor === null && campo.startsWith('personal_data.')) {
+    return f.t(`${P}.campos.noRegistrado.${campo.replace('personal_data.', '')}`);
+  }
+  if (typeof valor === 'number' && campo === 'insured_amount') {
+    return montoConCodigo(f, valor, monedaCodigo);
+  }
+  return textoValor(f, valor, campo, monedaCodigo);
+}
+
 /** «301 234 5678»: los diez dígitos de un celular de Colombia. */
 function telefono(digitos: string): string {
   return digitos.length === 10 ? `${digitos.slice(0, 3)} ${digitos.slice(3, 6)} ${digitos.slice(6)}` : digitos;
@@ -119,8 +145,8 @@ export function filasCambio(
       c.campo === 'beneficiaries'
         ? f.t(`${P}.campos.beneficiarioN`, { n: i + 1 })
         : f.t(`${P}.campos.${c.campo.replace('personal_data.', '')}`),
-    anterior: textoValor(f, c.anterior, c.campo, monedaCodigo),
-    nuevo: c.nuevo === null ? f.t(`${P}.campos.retirado`) : textoValor(f, c.nuevo, c.campo, monedaCodigo),
+    anterior: textoCelda(f, c.anterior, c.campo, monedaCodigo),
+    nuevo: c.nuevo === null ? f.t(`${P}.campos.retirado`) : textoCelda(f, c.nuevo, c.campo, monedaCodigo),
     cambia: true,
   }));
   if (tipo === 'beneficiaries') {
@@ -134,11 +160,11 @@ export function filasCambio(
   if (tipo === 'insured_amount' && prima) {
     filas.push({
       campo: f.t(`${P}.campos.prima`),
-      anterior: moneda(f, prima.anterior, prima.moneda),
+      anterior: montoConCodigo(f, prima.anterior, prima.moneda),
       nuevo:
         prima.nueva === null
           ? f.t(`${P}.campos.primaSinCalcular`)
-          : f.t(`${P}.campos.primaNueva`, { valor: moneda(f, prima.nueva, prima.moneda), version: prima.versionMotor ?? 'v1' }),
+          : f.t(`${P}.campos.primaNueva`, { valor: montoConCodigo(f, prima.nueva, prima.moneda), version: prima.versionMotor ?? 'v1' }),
       cambia: prima.nueva !== null,
     });
   }

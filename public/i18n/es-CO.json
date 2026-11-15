@@ -2434,6 +2434,11 @@
         "volver": "Endosos",
         "titulo": "Endoso · {{id}}",
         "subtitulo": "{{tipo}} · {{producto}} {{poliza}} · {{titular}} · radicada el {{fecha}} {{canal}}",
+        "tipos": {
+          "beneficiaries": "Cambio de beneficiarios",
+          "insured_amount": "Cambio de suma asegurada",
+          "personal_data": "Cambio de datos personales"
+        },
         "cargando": "Cargando la solicitud…",
         "noEncontrada": {
           "titulo": "No encontramos la solicitud",
@@ -2616,7 +2621,12 @@
         "primaSinCalcular": "Sin calcular",
         "address": "Dirección",
         "email": "Correo de contacto",
-        "phone": "Teléfono"
+        "phone": "Teléfono",
+        "noRegistrado": {
+          "address": "No registrada",
+          "email": "No registrado",
+          "phone": "No registrado"
+        }
       },
       "validaciones": {
         "desconocida": "Validación {{codigo}}",
@@ -2657,7 +2667,7 @@
         },
         "personal_data_valid": {
           "titulo": "Datos de contacto con formato válido",
-          "passed": "Formato válido",
+          "passed": "Teléfono de 10 dígitos · correo válido",
           "failed": "Formato inválido: {{campos}}",
           "unverifiable": "Sin verificar"
         },
