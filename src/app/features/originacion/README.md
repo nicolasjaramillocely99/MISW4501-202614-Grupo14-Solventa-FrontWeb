@@ -29,15 +29,15 @@
 |---|---|---|---|---|---|
 | [A1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=17-266) | Mis pólizas | `/originacion/polizas` | Asegurado | HU-W1.5-02, HU-W1.6-02 | S2 |
 | [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02 | S3 |
-| [O4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4018) | Historial de endosos de la póliza | `/originacion/polizas/:id/endosos` | Analista de operaciones | HU-W1.4-03 | Could (fuera de alcance) |
+| [O4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4018) | Historial de endosos de la póliza | `/originacion/polizas/:id/endosos` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
 
 ### `endosos/` — F1.4 · Gestión de modificaciones y endosos
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [O2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3012) | Bandeja de endosos | `/originacion/endosos` | Analista de operaciones | HU-W1.4-02 | S3 |
+| [O2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3012) | Bandeja de endosos | `/originacion/endosos` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
 | [A11](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=291-6869) | Mis solicitudes | `/originacion/solicitudes` | Asegurado | HU-W1.4-01 | S3 (implementada) |
-| [O3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3402), [O3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=836-9166) | Detalle del endoso (y validación fallida) | `/originacion/endosos/:id` | Analista de operaciones | HU-W1.4-02 | S3 |
+| [O3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3402), [O3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=836-9166) | Detalle del endoso (y validación fallida) | `/originacion/endosos/:id` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
 | [A3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-529) | Solicitud de modificación (autogestión) | `/originacion/polizas/:id/modificar` | Asegurado | HU-W1.4-01 | S3 (implementada) |
 | [A3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-866) | Solicitud radicada y su estado | `/originacion/solicitudes/:id` | Asegurado | HU-W1.4-01 | S3 (implementada) |
 
@@ -237,6 +237,42 @@ en `originacion.routes.ts` (`rolGuard('asegurado')`; el menú del asegurado ya t
   simulados con `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/solicitud-modificacion.spec.ts`.
 - **Fuera:** revisar y aplicar la solicitud y el correo del resultado (HU-W1.4-02), adjuntar soportes y las pólizas del núcleo
   (Autos, Hogar: originación no puede cambiarlas).
+
+**Endosos del analista de operaciones (HU-W1.4-02)** — `endosos/bandeja-endosos.page.ts` (`BandejaEndososPage`, O2),
+`endosos/detalle-endoso.page.ts` (`DetalleEndosoPage`, O3 y O3b) y `polizas/historial-endosos.page.ts` (`HistorialEndososPage`, O4),
+rutas `/originacion/endosos` y `/originacion/endosos/:id` (bloque `endosos`, `rolGuard('operaciones')`) y
+`/originacion/polizas/:id/endosos` (`canActivate: [rolGuard('operaciones')]`, declarada antes del bloque `polizas` del asegurado para
+que la resuelva primero). En el menú de operaciones, «Endosos» queda activo también en el historial (`tambienEn`). Contrato:
+`docs/contratos/HU-W1.4-02-api.md` del backend (servicio `origination`, `openapi.yaml` v0.17.0).
+
+- Llama a `OriginacionApiService`: `listarSolicitudesEndoso`, `iniciarRevisionEndoso`, `consultarSolicitudEndoso`, `aplicarEndoso`,
+  `rechazarSolicitudEndoso`, `devolverSolicitudEndoso` y `consultarHistorialEndosos`. Los errores llegan como `ErrorEndoso` con el
+  código estable del contrato (`request_already_decided` y `not_returnable` traen el estado que dejó el otro analista;
+  `validation_unverifiable`, las validaciones sin respuesta). Los modelos (`core/api/originacion/endosos.modelos.ts`) reutilizan los
+  tipos de la solicitud de HU-W1.4-01.
+- **O2 · Bandeja:** tres indicadores (pendientes y cuántas llevan más de 24 h; aplicados hoy y su tiempo medio; rechazados o no
+  aplicados en 7 días y el motivo más frecuente), filtros «Tipo de cambio», «Estado» («Pendientes» por defecto) y «Radicada desde» en la
+  URL (`endosos/modelos/filtro-endosos.ts`), conteo, tabla con el titular y su documento, paginación de 20 filas, vacío, sin resultados y
+  error. *Revisar* toma la solicitud radicada (pasa a «En revisión») y abre el detalle; *Continuar* abre una en revisión o una no aplicada
+  sin devolver; *Ver*, lo decidido.
+- **O3 · Detalle:** «Cambio solicitado» con el valor anterior y el nuevo (`endosos/componentes/tabla-cambios`: cada beneficiario y el
+  oneroso «Sin cambio»; el valor asegurado con la prima mensual que recalcula el motor; cada dato de contacto), «Validaciones de negocio»
+  con «Cumple», «No cumple» o «No verificable» (`endosos/componentes/lista-validaciones`), el panel «Póliza» con «Endosos previos»
+  enlazado al historial y el panel «Al aplicar». Los textos del cambio y de las validaciones se arman con funciones puras
+  (`endosos/modelos/formato-endoso.ts`) que también usa el historial. *Aplicar endoso* deja la solicitud aplicada con su número o
+  registra el intento no aplicado; *Rechazar* exige observaciones de 10 a 500 caracteres, visibles para el asegurado. Un `503` avisa qué
+  validación no se pudo verificar y no cambia nada; un `409` avisa que otro analista ya decidió (o que otro endoso de la póliza se aplicó
+  antes) y recarga el detalle.
+- **O3b · No aplicado:** alerta con la validación que no se cumple, panel «Por qué no se aplicó», *Volver a la bandeja* y *Devolver al
+  asegurado* con observaciones obligatorias. Lo decidido (aplicada, rechazada o devuelta) se ve en solo lectura con el autor, la fecha y
+  las observaciones.
+- **O4 · Historial:** «Solo lectura», el conteo, el aviso «Registro inmutable» y la tabla con los endosos aplicados y los intentos no
+  aplicados (fecha y hora, número o «No aplicado», qué cambió con la solicitud de origen y la validación que falló, valor anterior y
+  nuevo, quién y su rol); una póliza sin endosos muestra el historial vacío sin errores.
+- Textos en `originacion.endosos.*`. E2E: `e2e/flujos/originacion/endosos.spec.ts` (API Gateway con estado y Cognito simulados con
+  `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/endosos.spec.ts`.
+- **Fuera:** «Exportar» de la bandeja y del historial (decisión D-11), el cobro de la diferencia de prima de una nueva suma asegurada y
+  la fila «Emisión inicial» del historial (la emisión no es un endoso).
 
 **Renovación asistida con recotización (HU-W1.5-03)** — `renovaciones/renovacion-asistida.page.ts` (`RenovacionAsistidaPage`, S7 y S7b),
 ruta `/originacion/renovaciones/:id` (el `policy_id`) en el bloque `renovaciones` de `originacion.routes.ts` (`rolGuard('asesor')`). Se
