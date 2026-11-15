@@ -2222,7 +2222,17 @@
           "texto": "The policy keeps its current terms. If operations rejects the change, you will see the reason in this same request and you can file a new one."
         },
         "motivo": "Reason",
-        "exito": "Your policy already has the new terms.",
+        "exito": "Your policy already has the new terms",
+        "condiciones": {
+          "lista": "{{cambios}}.",
+          "beneficiarios": "Beneficiaries: {{lista}}",
+          "beneficiario": "{{nombre}} {{participacion}} %",
+          "retirado": "{{nombre}} (removed)",
+          "valorAsegurado": "Insured amount: {{valor}}",
+          "direccion": "Address: {{valor}}",
+          "telefono": "Phone: {{valor}}",
+          "correo": "Contact e-mail: {{valor}}"
+        },
         "noEncontrada": {
           "titulo": "We could not find this request",
           "texto": "Check the identifier or look for it in «My requests»."

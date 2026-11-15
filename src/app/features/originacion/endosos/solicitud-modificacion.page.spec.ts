@@ -85,7 +85,7 @@ describe('SolicitudModificacionPage (A3b · HU-W1.4-01 · CA-2)', () => {
 
     expect(screen.getByText('Tu solicitud fue aplicada')).toBeTruthy();
     expect(screen.getByText('Aplicada el')).toBeTruthy();
-    expect(screen.getByText('Tu póliza ya tiene las condiciones nuevas.')).toBeTruthy();
+    expect(screen.getByText('Tu póliza ya tiene las condiciones nuevas')).toBeTruthy();
   });
 
   it('rechazada con el motivo y «Radicar una nueva»', async () => {

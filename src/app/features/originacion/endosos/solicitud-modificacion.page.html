@@ -56,12 +56,12 @@
         </header>
 
         <section class="tarjeta resultado" aria-labelledby="titulo-resultado">
-          @if (tarjeta(s) === 'confirmacion') {
+          @if (conIcono(s)) {
             <span class="resultado__icono" aria-hidden="true"><svg lucideCircleCheck [size]="28"></svg></span>
           }
           <h2 id="titulo-resultado" class="resultado__titulo">{{ t('detalle.' + tarjeta(s) + '.titulo') }}</h2>
           <p class="resultado__texto">{{ t('detalle.' + tarjeta(s) + '.texto') }}</p>
-          <app-indicador-pasos [pasos]="pasos()" etiqueta="originacion.solicitudes.detalle.pasos.etiqueta" />
+          <app-indicador-pasos class="resultado__pasos" [pasos]="pasos()" etiqueta="originacion.solicitudes.detalle.pasos.etiqueta" />
           <dl class="datos">
             <div>
               <dt>{{ t('detalle.datos.identificador') }}</dt>
@@ -100,7 +100,12 @@
           @case ('aplicada') {
             <div class="aviso aviso--exito" role="status">
               <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
-              <p>{{ t('detalle.exito') }}</p>
+              <div>
+                <p class="aviso__titulo">{{ t('detalle.exito') }}</p>
+                @if (condicionesNuevas(); as condiciones) {
+                  <p>{{ condiciones }}</p>
+                }
+              </div>
             </div>
           }
           @default {

@@ -1,11 +1,16 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { LucideArrowLeft, LucideCircleAlert, LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
 
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
-import { ErrorSolicitudModificacion, SolicitudModificacion } from '@core/api/originacion/solicitud-modificacion.modelos';
+import {
+  Beneficiario,
+  CambioCampo,
+  ErrorSolicitudModificacion,
+  SolicitudModificacion,
+} from '@core/api/originacion/solicitud-modificacion.modelos';
 import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 import { IndicadorPasosComponent } from '@shared/ui/indicador-pasos/indicador-pasos.component';
 
@@ -13,6 +18,19 @@ import { EstadoSolicitudComponent, pasosDeSolicitud } from './componentes/estado
 
 /** Fase de A3b: consultando, con la solicitud, inexistente, falla del servicio u oculta (401/403 del interceptor). */
 export type FaseSolicitud = 'cargando' | 'listo' | 'noEncontrada' | 'error' | 'oculta';
+
+const CONDICIONES = 'originacion.solicitudes.detalle.condiciones';
+
+/** La clave de cada campo de contacto de la diferencia (`changes[]`). */
+const CAMPOS_CONTACTO: Readonly<Record<string, string>> = {
+  'personal_data.address': 'direccion',
+  'personal_data.phone': 'telefono',
+  'personal_data.email': 'correo',
+};
+
+function esBeneficiario(valor: CambioCampo['nuevo']): valor is Beneficiario {
+  return typeof valor === 'object' && valor !== null;
+}
 
 /**
  * A3b · Solicitud radicada (HU-W1.4-01, frame `20:866`, también en revisión, aplicada y rechazada con motivo): el
@@ -45,6 +63,7 @@ export class SolicitudModificacionPage implements OnInit {
   private readonly api = inject(OriginacionApiService);
   private readonly ruta = inject(ActivatedRoute);
   private readonly destruccion = inject(DestroyRef);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly solicitudId = String(this.ruta.snapshot.params['id'] ?? '');
   /** Se llegó aquí al radicar (A3): se muestra la confirmación. */
@@ -56,6 +75,26 @@ export class SolicitudModificacionPage implements OnInit {
   protected readonly abierta = computed(() => {
     const estado = this.solicitud()?.estado;
     return estado === 'radicada' || estado === 'enRevision';
+  });
+  /**
+   * Las condiciones nuevas de una solicitud aplicada, a partir de su diferencia por campo (`changes[]`): «Beneficiarios:
+   * Mateo Pérez Gómez 60 % · Lucía Pérez Gómez 40 %.», «Valor asegurado: $ 80.000.000 COP.» o «Dirección: … · Teléfono: …».
+   */
+  protected readonly condicionesNuevas = computed(() => {
+    const s = this.solicitud();
+    if (s?.estado !== 'aplicada') {
+      return null;
+    }
+    const beneficiarios = s.cambios.filter((c) => c.campo === 'beneficiaries').map((c) => this.beneficiario(c));
+    const partes = beneficiarios.length > 0 ? [this.texto('beneficiarios', { lista: beneficiarios.join(' · ') })] : [];
+    for (const cambio of s.cambios) {
+      if (cambio.campo === 'insured_amount' && typeof cambio.nuevo === 'number') {
+        partes.push(this.texto('valorAsegurado', { valor: this.moneda(cambio.nuevo, s.solicitado.moneda ?? s.anterior.moneda ?? 'COP') }));
+      } else if (CAMPOS_CONTACTO[cambio.campo] && typeof cambio.nuevo === 'string') {
+        partes.push(this.texto(CAMPOS_CONTACTO[cambio.campo], { valor: cambio.nuevo }));
+      }
+    }
+    return partes.length > 0 ? this.texto('lista', { cambios: partes.join(' · ') }) : null;
   });
 
   ngOnInit(): void {
@@ -86,5 +125,33 @@ export class SolicitudModificacionPage implements OnInit {
   /** La clave del título y el texto de la tarjeta: la confirmación al venir de radicar o la del estado. */
   protected tarjeta(solicitud: SolicitudModificacion): string {
     return this.recienRadicada && solicitud.estado === 'radicada' ? 'confirmacion' : solicitud.estado;
+  }
+
+  /** El ícono de la tarjeta acompaña a la radicada, la que está en revisión y la aplicada; la rechazada no lo lleva. */
+  protected conIcono(solicitud: SolicitudModificacion): boolean {
+    return solicitud.estado === 'radicada' || solicitud.estado === 'enRevision' || solicitud.estado === 'aplicada';
+  }
+
+  /** Un beneficiario de la diferencia: con su participación nueva o, si se retira, marcado como retirado. */
+  private beneficiario(cambio: CambioCampo): string {
+    if (esBeneficiario(cambio.nuevo)) {
+      const participacion = new Intl.NumberFormat(this.transloco.getActiveLang(), { maximumFractionDigits: 2 }).format(cambio.nuevo.participacion);
+      return this.texto('beneficiario', { nombre: cambio.nuevo.nombreCompleto, participacion });
+    }
+    return this.texto('retirado', { nombre: esBeneficiario(cambio.anterior) ? cambio.anterior.nombreCompleto : '' });
+  }
+
+  private moneda(valor: number, moneda: string): string {
+    const formato = new Intl.NumberFormat(this.transloco.getActiveLang(), {
+      style: 'currency',
+      currency: moneda,
+      currencyDisplay: 'narrowSymbol',
+      maximumFractionDigits: 0,
+    });
+    return `${formato.format(valor)} ${moneda}`;
+  }
+
+  private texto(clave: string, parametros?: Record<string, unknown>): string {
+    return this.transloco.translate(`${CONDICIONES}.${clave}`, parametros);
   }
 }

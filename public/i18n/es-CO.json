@@ -2222,7 +2222,17 @@
           "texto": "La póliza conserva sus condiciones actuales. Si operaciones rechaza el cambio, verás el motivo en esta misma solicitud y podrás radicar una nueva."
         },
         "motivo": "Motivo",
-        "exito": "Tu póliza ya tiene las condiciones nuevas.",
+        "exito": "Tu póliza ya tiene las condiciones nuevas",
+        "condiciones": {
+          "lista": "{{cambios}}.",
+          "beneficiarios": "Beneficiarios: {{lista}}",
+          "beneficiario": "{{nombre}} {{participacion}} %",
+          "retirado": "{{nombre}} (retirado)",
+          "valorAsegurado": "Valor asegurado: {{valor}}",
+          "direccion": "Dirección: {{valor}}",
+          "telefono": "Teléfono: {{valor}}",
+          "correo": "Correo de contacto: {{valor}}"
+        },
         "noEncontrada": {
           "titulo": "No encontramos esta solicitud",
           "texto": "Revisa el identificador o búscala en «Mis solicitudes»."
