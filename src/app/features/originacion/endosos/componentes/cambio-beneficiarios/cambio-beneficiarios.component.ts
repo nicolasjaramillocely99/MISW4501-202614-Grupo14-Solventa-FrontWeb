@@ -28,6 +28,9 @@ type ControlBeneficiario = keyof Formulario;
 
 const VACIO: Formulario = { nombreCompleto: '', parentesco: '', tipoDocumento: '', numeroDocumento: '', participacion: '' };
 
+/** Un número de documento que se puede mostrar con separadores de miles sin perder cifras. */
+const DOCUMENTO_NUMERICO = /^[1-9]\d{0,14}$/;
+
 function aCaptura(b: Beneficiario): BeneficiarioCaptura {
   return { ...b };
 }
@@ -206,6 +209,14 @@ export class CambioBeneficiariosComponent {
   /** El nombre del beneficiario oneroso: el del aliado, su código o la etiqueta genérica. */
   protected nombreOneroso(oneroso: BeneficiarioOneroso): string {
     return oneroso.nombre ?? oneroso.aliadoId ?? this.transloco.translate('originacion.solicitudes.beneficiarios.entidadGenerica');
+  }
+
+  /** «TI 1.140.223.001»: un documento numérico con separadores de miles del idioma; otro (p. ej. un pasaporte), tal cual. */
+  protected documento(b: BeneficiarioCaptura): string {
+    const numero = DOCUMENTO_NUMERICO.test(b.numeroDocumento)
+      ? new Intl.NumberFormat(this.transloco.getActiveLang(), { useGrouping: true }).format(Number(b.numeroDocumento))
+      : b.numeroDocumento;
+    return `${b.tipoDocumento} ${numero}`.trim();
   }
 
   /** «60» o «33,5» en el formato del idioma. */
