@@ -49,6 +49,8 @@ describe('itemActivo', () => {
     ['/siniestros/evaluacion', 'menu.siniestros'],
     ['/siniestros/cola/8f14e45f', 'menu.siniestros'],
     ['/siniestros/asistencias/12', 'menu.asistencias'],
+    // HU-W1.4-02: el historial de endosos de una póliza (O4) resalta «Endosos».
+    ['/originacion/polizas/pol-acc-4f2a/endosos', 'menu.endosos'],
   ])('%s activa %s', (url, clave) => {
     expect(itemActivo(menu, url)?.clave).toBe(clave);
   });

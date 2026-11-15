@@ -2548,6 +2548,7 @@
         "soloLectura": "Read only",
         "subtitulo": "{{n}} entries in chronological order · applied endorsements and attempts not applied",
         "subtituloUno": "1 entry · applied endorsements and attempts not applied",
+        "subtituloVacio": "0 entries · this policy has no endorsements",
         "poliza": "Policy {{poliza}} · {{titular}}",
         "cargando": "Loading the history…",
         "inmutable": {

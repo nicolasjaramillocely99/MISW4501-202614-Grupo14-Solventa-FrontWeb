@@ -14,6 +14,7 @@ import { DatosClientePage } from './cotizacion-asistida/datos-cliente.page';
 import { FormalizarCompraPage } from './cotizacion-asistida/formalizar-compra.page';
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
 import { MisPolizasPage } from './polizas/mis-polizas.page';
+import { HistorialEndososPage } from './polizas/historial-endosos.page';
 import { PolizasPorVencerPage } from './renovaciones/polizas-por-vencer.page';
 import { RenovacionAsistidaPage } from './renovaciones/renovacion-asistida.page';
 import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
@@ -28,7 +29,8 @@ import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
  * a vencer (HU-W1.5-01, `renovaciones`) y su renovación asistida con recotización (HU-W1.5-03, `renovaciones/:id`, el
  * `policy_id`). Para el asegurado, la solicitud de modificación de una póliza (HU-W1.4-01, `polizas/:id/modificar`), sus
  * solicitudes (`solicitudes`) y el detalle de cada una (`solicitudes/:id`). Para operaciones, la bandeja de endosos
- * (HU-W1.4-02, `endosos`) y el detalle de cada solicitud (`endosos/:id`).
+ * (HU-W1.4-02, `endosos`), el detalle de cada solicitud (`endosos/:id`) y el historial de endosos de una póliza
+ * (`polizas/:id/endosos`, declarado antes del bloque `polizas` del asegurado para que lo resuelva primero).
  */
 export const ORIGINACION_ROUTES: Routes = [
   {
@@ -47,6 +49,11 @@ export const ORIGINACION_ROUTES: Routes = [
       { path: '', component: BandejaDecisionPage },
       { path: ':aceptacionId', component: DetalleSolicitudPage },
     ],
+  },
+  {
+    path: 'polizas/:id/endosos',
+    canActivate: [rolGuard('operaciones')],
+    component: HistorialEndososPage,
   },
   {
     path: 'polizas',

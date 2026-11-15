@@ -2548,6 +2548,7 @@
         "soloLectura": "Solo lectura",
         "subtitulo": "{{n}} entradas en orden cronológico · endosos aplicados e intentos no aplicados",
         "subtituloUno": "1 entrada · endosos aplicados e intentos no aplicados",
+        "subtituloVacio": "0 entradas · esta póliza no tiene endosos",
         "poliza": "Póliza {{poliza}} · {{titular}}",
         "cargando": "Cargando el historial…",
         "inmutable": {
