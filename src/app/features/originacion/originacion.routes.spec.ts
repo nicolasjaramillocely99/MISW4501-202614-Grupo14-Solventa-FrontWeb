@@ -16,10 +16,20 @@ import { mapearPaginaPorVencer } from '@core/api/originacion/polizas-por-vencer.
 import { mapearRenovacionAsistida } from '@core/api/originacion/renovacion-asistida.modelos';
 import { ErrorRenovacion } from '@core/api/originacion/renovacion.modelos';
 import { mapearSolicitudRevision } from '@core/api/originacion/revision.modelos';
+import {
+  mapearCondicionesVigentes,
+  mapearPaginaSolicitudes,
+  mapearSolicitudModificacion,
+} from '@core/api/originacion/solicitud-modificacion.modelos';
 import { LISTA_EMISIONES_DTO } from '@testing/emision-monitor-pruebas';
 import { PAGINA_POR_VENCER_DTO } from '@testing/polizas-por-vencer-pruebas';
 import { RENOVACION_SIN_RECOTIZAR_DTO } from '@testing/renovacion-asistida-pruebas';
 import { SOLICITUD_PENDIENTE_DTO } from '@testing/revision-pruebas';
+import {
+  CONDICIONES_VIGENTES_DTO,
+  PAGINA_SOLICITUDES_DTO,
+  SOLICITUD_BENEFICIARIOS_DTO,
+} from '@testing/solicitud-modificacion-pruebas';
 
 import { routes } from '../../app.routes';
 
@@ -398,6 +408,69 @@ describe('rutas de las pólizas próximas a vencer (HU-W1.5-01)', () => {
       await harness.navigateByUrl('/originacion/renovaciones/pol-acc-118204');
 
       expect(url()).toBe('/acceso/no-autorizado');
+    }
+  });
+});
+
+describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            consultarCondicionesVigentes: () => of(mapearCondicionesVigentes(CONDICIONES_VIGENTES_DTO)),
+            consultarSolicitudModificacion: () => of(mapearSolicitudModificacion(SOLICITUD_BENEFICIARIOS_DTO)),
+            listarMisSolicitudes: () => of(mapearPaginaSolicitudes(PAGINA_SOLICITUDES_DTO)),
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+
+  it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {
+    await harness.navigateByUrl('/originacion/polizas/pol-1/modificar');
+
+    expect(url()).toBe('/acceso/iniciar-sesion?returnUrl=%2Foriginacion%2Fpolizas%2Fpol-1%2Fmodificar');
+  });
+
+  it('«polizas/:id/modificar» abre A3 para el asegurado dentro del shell del portal', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/polizas/pol-1/modificar');
+
+    expect(url()).toBe('/originacion/polizas/pol-1/modificar');
+    expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-solicitar-modificacion-page')).not.toBeNull();
+  });
+
+  it('asesor, operaciones y socio reciben «acceso no autorizado» (CA-4)', async () => {
+    for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
+      for (const destino of ['/originacion/polizas/pol-1/modificar']) {
+        await iniciarSesionComo(rol);
+
+        await harness.navigateByUrl(destino);
+
+        expect(url()).toBe('/acceso/no-autorizado');
+      }
     }
   });
 });
