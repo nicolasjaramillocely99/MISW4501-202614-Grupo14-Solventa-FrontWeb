@@ -53,6 +53,31 @@ describe('MisPolizasPage (A1 · HU-W1.5-02)', () => {
     expect(screen.getByText('Activa', { selector: 'app-insignia-estado' })).toBeTruthy();
   });
 
+  it('ofrece «Solicitar modificación» solo en las pólizas en vigor (HU-W1.4-01)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-16T12:00:00Z'));
+    const finalizada = mapearPolizaListada({
+      ...POLIZA_LISTADA_DTO,
+      policy_id: 'pol-vieja',
+      can_renew: false,
+      coverage_start: '2025-01-01T00:00:00Z',
+      coverage_end: '2026-01-01T00:00:00Z',
+    });
+    const futura = mapearPolizaListada({
+      ...POLIZA_LISTADA_DTO,
+      policy_id: 'pol-futura',
+      can_renew: false,
+      coverage_start: '2026-10-02T23:59:00Z',
+      coverage_end: '2027-10-02T23:59:00Z',
+    });
+    await renderizar(of([...LISTA, finalizada, futura]));
+
+    const modificar = screen.getAllByRole('link', { name: /Solicitar modificación de la póliza/ });
+    expect(modificar.map((a) => a.getAttribute('href'))).toEqual(LISTA.map((p) => `/originacion/polizas/${p.polizaId}/modificar`));
+    expect(screen.queryByRole('link', { name: 'Solicitar modificación de la póliza pol-vieja' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Solicitar modificación de la póliza pol-futura' })).toBeNull();
+  });
+
   it('el filtro por estado deja solo las pólizas de ese estado y actualiza el contador', async () => {
     await renderizar();
 

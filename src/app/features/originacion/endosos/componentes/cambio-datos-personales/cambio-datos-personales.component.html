@@ -1,0 +1,68 @@
+<section class="tarjeta contacto" aria-labelledby="titulo-nuevo-contacto" *transloco="let t; prefix: 'originacion.solicitudes'">
+  <h2 id="titulo-nuevo-contacto" class="contacto__titulo">{{ t('contacto.titulo') }}</h2>
+  <p class="contacto__ayuda">{{ t('contacto.ayuda') }}</p>
+  <div class="campo">
+    <label class="campo__etiqueta" for="contacto-direccion">{{ t('contacto.direccion') }}</label>
+    <input
+      id="contacto-direccion"
+      class="campo__control"
+      type="text"
+      autocomplete="street-address"
+      [value]="captura().direccion"
+      [placeholder]="actual().direccion ?? t('resumen.noRegistrada')"
+      [disabled]="deshabilitado()"
+      [attr.aria-invalid]="claveError('direccion') ? 'true' : null"
+      [attr.aria-describedby]="claveError('direccion') ? 'contacto-direccion-error' : null"
+      (input)="cambiar('direccion', $event)"
+      (blur)="tocar('direccion')"
+    />
+    @if (claveError('direccion'); as clave) {
+      <p id="contacto-direccion-error" class="campo__error">{{ t(clave) }}</p>
+    }
+  </div>
+  <div class="contacto__fila">
+    <div class="campo">
+      <label class="campo__etiqueta" for="contacto-telefono">{{ t('contacto.telefono') }}</label>
+      <input
+        id="contacto-telefono"
+        class="campo__control"
+        type="tel"
+        autocomplete="tel"
+        [value]="captura().telefono"
+        [placeholder]="actual().telefono ?? t('resumen.noRegistrado')"
+        [disabled]="deshabilitado()"
+        [attr.aria-invalid]="claveError('telefono') ? 'true' : null"
+        [attr.aria-describedby]="claveError('telefono') ? 'contacto-telefono-error' : null"
+        (input)="cambiar('telefono', $event)"
+        (blur)="tocar('telefono')"
+      />
+      @if (claveError('telefono'); as clave) {
+        <p id="contacto-telefono-error" class="campo__error">{{ t(clave) }}</p>
+      }
+    </div>
+    <div class="campo">
+      <label class="campo__etiqueta" for="contacto-correo">{{ t('contacto.correo') }}</label>
+      <input
+        id="contacto-correo"
+        class="campo__control"
+        type="email"
+        autocomplete="email"
+        [value]="captura().correo"
+        [placeholder]="actual().correo ?? t('resumen.noRegistrado')"
+        [disabled]="deshabilitado()"
+        [attr.aria-invalid]="claveError('correo') ? 'true' : null"
+        [attr.aria-describedby]="claveError('correo') ? 'contacto-correo-error' : 'contacto-correo-ayuda'"
+        (input)="cambiar('correo', $event)"
+        (blur)="tocar('correo')"
+      />
+      @if (claveError('correo'); as clave) {
+        <p id="contacto-correo-error" class="campo__error">{{ t(clave) }}</p>
+      } @else {
+        <p id="contacto-correo-ayuda" class="contacto__ayuda">{{ t('contacto.correoAyuda') }}</p>
+      }
+    </div>
+  </div>
+  @if (claveError(null); as clave) {
+    <p class="campo__error" role="alert">{{ t(clave) }}</p>
+  }
+</section>

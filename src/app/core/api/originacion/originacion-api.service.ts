@@ -116,6 +116,22 @@ import {
   mapearPerfilRiesgo,
 } from './perfil-riesgo.modelos';
 import {
+  CondicionesVigentes,
+  CondicionesVigentesDto,
+  FiltroSolicitudes,
+  PaginaSolicitudes,
+  PaginaSolicitudesDto,
+  SolicitudModificacion,
+  SolicitudModificacionDto,
+  SolicitudNueva,
+  aParametrosSolicitudes,
+  aSolicitudNuevaDto,
+  mapearCondicionesVigentes,
+  mapearPaginaSolicitudes,
+  mapearSolicitudModificacion,
+  traducirErrorSolicitud,
+} from './solicitud-modificacion.modelos';
+import {
   FiltroBandeja,
   ListaSolicitudesRevision,
   ListaSolicitudesRevisionDto,
@@ -154,7 +170,8 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
  * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02), la
  * oferta personalizada (HU-W1.2-03), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04), las pólizas del
- * asegurado con su renovación en línea (HU-W1.5-02) y las pólizas próximas a vencer del asesor (HU-W1.5-01).
+ * asegurado con su renovación en línea (HU-W1.5-02), las pólizas próximas a vencer del asesor (HU-W1.5-01) y la solicitud
+ * de modificación del asegurado (HU-W1.4-01).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -621,6 +638,65 @@ export class OriginacionApiService {
       .pipe(
         map(mapearReintento),
         catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
+      );
+  }
+
+  /**
+   * Condiciones de la póliza que el asegurado puede cambiar (`GET /v1/policies/{policy_id}/current-terms`, solo el
+   * asegurado dueño; HU-W1.4-01, pantalla A3): valor asegurado, beneficiarios, beneficiario oneroso, contacto, vigencia,
+   * las solicitudes abiertas por tipo y los límites de la captura. Falla con `ErrorSolicitudModificacion`.
+   */
+  consultarCondicionesVigentes(polizaId: string): Observable<CondicionesVigentes> {
+    return this.http
+      .get<CondicionesVigentesDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/current-terms`)
+      .pipe(
+        map(mapearCondicionesVigentes),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * Radica la solicitud de modificación (`POST /v1/policies/{policy_id}/change-requests`, CA-1 y CA-2): 201 con el
+   * identificador `SOL-MOD-<año>-<número>`. Falla con `ErrorSolicitudModificacion`: `validation_failed` con todos los
+   * campos (CA-3), `change_request_open` con la solicitud abierta del mismo tipo, `policy_not_in_force`, `forbidden`…
+   */
+  radicarSolicitudModificacion(polizaId: string, solicitud: SolicitudNueva): Observable<SolicitudModificacion> {
+    return this.http
+      .post<SolicitudModificacionDto>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/change-requests`,
+        aSolicitudNuevaDto(solicitud),
+      )
+      .pipe(
+        map(mapearSolicitudModificacion),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * Las solicitudes del asegurado (`GET /v1/policies/change-requests`, pantalla A11) con el filtro de estado (como lo ve el
+   * asegurado), póliza y día de radicación, la página, los tres indicadores y las pólizas del filtro. Falla con
+   * `ErrorSolicitudModificacion`.
+   */
+  listarMisSolicitudes(filtro: FiltroSolicitudes): Observable<PaginaSolicitudes> {
+    return this.http
+      .get<PaginaSolicitudesDto>(`${this.base}/v1/policies/change-requests`, { params: aParametrosSolicitudes(filtro) })
+      .pipe(
+        map(mapearPaginaSolicitudes),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * Una solicitud del asegurado (`GET /v1/policies/change-requests/{request_id}`, pantalla A3b): la foto del valor
+   * anterior, lo pedido, la diferencia y su estado. Falla con `ErrorSolicitudModificacion`: `change_request_not_found` o
+   * `forbidden` si es de otro asegurado.
+   */
+  consultarSolicitudModificacion(solicitudId: string): Observable<SolicitudModificacion> {
+    return this.http
+      .get<SolicitudModificacionDto>(`${this.base}/v1/policies/change-requests/${encodeURIComponent(solicitudId)}`)
+      .pipe(
+        map(mapearSolicitudModificacion),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
       );
   }
 }

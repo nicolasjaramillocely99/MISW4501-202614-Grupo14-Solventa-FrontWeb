@@ -1,0 +1,119 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.solicitudes'">
+  <a class="pagina__volver" routerLink="/originacion/solicitudes">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('detalle.cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <div class="aviso aviso--advertencia" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('detalle.noEncontrada.titulo') }}</p>
+          <p>{{ t('detalle.noEncontrada.texto') }}</p>
+        </div>
+      </div>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('detalle.error.titulo') }}</p>
+          <p>{{ t('detalle.error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="cargar()">{{ t('detalle.error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @case ('listo') {
+      @if (solicitud(); as s) {
+        <header class="pagina__encabezado">
+          <div>
+            <div class="pagina__titulo-fila">
+              <h1 class="pagina__titulo">{{ t('detalle.titulo', { id: s.solicitudId }) }}</h1>
+              <app-estado-solicitud [estado]="s.estado" />
+            </div>
+            <p class="pagina__subtitulo">
+              {{
+                t('detalle.subtitulo', {
+                  tipo: t('tiposCambio.' + s.tipo),
+                  producto: t('linea.life'),
+                  poliza: s.polizaId,
+                  fecha: (s.radicadaEn | formatoFechaHora),
+                })
+              }}
+            </p>
+          </div>
+          <div class="pagina__acciones">
+            <a class="boton boton--secundario" routerLink="/originacion/solicitudes">{{ t('detalle.verMisSolicitudes') }}</a>
+            @if (s.estado === 'rechazada') {
+              <a class="boton boton--primario" [routerLink]="['/originacion/polizas', s.polizaId, 'modificar']">{{ t('detalle.radicarNueva') }}</a>
+            } @else {
+              <a class="boton boton--primario" routerLink="/originacion/polizas">{{ t('detalle.volverPolizas') }}</a>
+            }
+          </div>
+        </header>
+
+        <section class="tarjeta resultado" aria-labelledby="titulo-resultado">
+          @if (tarjeta(s) === 'confirmacion') {
+            <span class="resultado__icono" aria-hidden="true"><svg lucideCircleCheck [size]="28"></svg></span>
+          }
+          <h2 id="titulo-resultado" class="resultado__titulo">{{ t('detalle.' + tarjeta(s) + '.titulo') }}</h2>
+          <p class="resultado__texto">{{ t('detalle.' + tarjeta(s) + '.texto') }}</p>
+          <app-indicador-pasos [pasos]="pasos()" etiqueta="originacion.solicitudes.detalle.pasos.etiqueta" />
+          <dl class="datos">
+            <div>
+              <dt>{{ t('detalle.datos.identificador') }}</dt>
+              <dd>{{ s.solicitudId }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.tipo') }}</dt>
+              <dd>{{ t('tipos.' + s.tipo) }}</dd>
+            </div>
+            <div>
+              @if (abierta()) {
+                <dt>{{ t('detalle.datos.tiempo') }}</dt>
+                <dd>{{ t('detalle.datos.tiempoValor') }}</dd>
+              } @else {
+                <dt>{{ s.estado === 'aplicada' ? t('detalle.datos.aplicadaEl') : t('detalle.datos.decididaEl') }}</dt>
+                <dd>{{ s.cambioEstadoEn | formatoFechaHora }}</dd>
+              }
+            </div>
+            <div>
+              <dt>{{ t('detalle.datos.radicadaPor') }}</dt>
+              <dd>{{ t('detalle.datos.radicadaPorValor', { quien: s.radicadaPor.nombre ?? s.radicadaPor.correo, canal: t('canal.' + s.canal) }) }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        @switch (s.estado) {
+          @case ('rechazada') {
+            <div class="aviso aviso--error" role="status">
+              <svg lucideCircleX [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('detalle.motivo') }}</p>
+                <p>{{ s.motivo }}</p>
+              </div>
+            </div>
+          }
+          @case ('aplicada') {
+            <div class="aviso aviso--exito" role="status">
+              <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+              <p>{{ t('detalle.exito') }}</p>
+            </div>
+          }
+          @default {
+            <div class="aviso aviso--informacion">
+              <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              <div>
+                <p class="aviso__titulo">{{ t('detalle.mientras.titulo') }}</p>
+                <p>{{ t('detalle.mientras.texto') }}</p>
+              </div>
+            </div>
+          }
+        }
+      }
+    }
+  }
+</div>
