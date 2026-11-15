@@ -42,7 +42,7 @@ type AvisoRadicar = { tipo: 'abierta'; solicitudId: string | null } | { tipo: 'f
 const SIN_CONTACTO: ContactoCaptura = { direccion: '', correo: '', telefono: '' };
 
 /**
- * A3 · Solicitar una modificación (HU-W1.4-01, frame `20:529` y sus derivados): el asegurado elige el tipo de cambio
+ * A3 · Solicitar una modificación (HU-W1.4-01, frame `20:529`, en los tres tipos): el asegurado elige el tipo de cambio
  * (beneficiarios, sumas aseguradas o datos personales), captura lo nuevo y lo radica (CA-1). Las reglas de la captura se
  * revisan en el navegador y «Radicar solicitud» sigue deshabilitado mientras haya errores o se envíe (CA-3); un `422` del
  * servicio se pinta en sus campos. Un tipo con una solicitud abierta queda bloqueado con su enlace (D-6) y una póliza no

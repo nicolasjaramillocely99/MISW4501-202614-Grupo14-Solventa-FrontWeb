@@ -36,9 +36,10 @@
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
 | [O2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3012) | Bandeja de endosos | `/originacion/endosos` | Analista de operaciones | HU-W1.4-02 | S3 |
-| [A11](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=291-6869) | Mis solicitudes | `/originacion/solicitudes` | Asegurado | HU-W1.4-01 | S3 |
+| [A11](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=291-6869) | Mis solicitudes | `/originacion/solicitudes` | Asegurado | HU-W1.4-01 | S3 (implementada) |
 | [O3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3402), [O3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=836-9166) | Detalle del endoso (y validación fallida) | `/originacion/endosos/:id` | Analista de operaciones | HU-W1.4-02 | S3 |
-| [A3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-529), [A3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-866) | Solicitud de modificación (autogestión) | `/originacion/polizas/:id/modificar` | Asegurado | HU-W1.4-01 | S3 |
+| [A3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-529) | Solicitud de modificación (autogestión) | `/originacion/polizas/:id/modificar` | Asegurado | HU-W1.4-01 | S3 (implementada) |
+| [A3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-866) | Solicitud radicada y su estado | `/originacion/solicitudes/:id` | Asegurado | HU-W1.4-01 | S3 (implementada) |
 
 ### `renovaciones/` — F1.5 · Renovación de pólizas
 
@@ -207,6 +208,35 @@ del asesor ya existía). Contrato: `docs/contratos/HU-W1.5-01-api.md` del backen
   (la póliza no lo guarda). Las pólizas del núcleo de pólizas (Autos, Hogar, Viaje) no se listan: originación no las renueva.
 - E2E: `e2e/flujos/originacion/polizas-por-vencer.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado) y
   el humo `e2e/nube/polizas-por-vencer.spec.ts` (proyecto `nube`).
+
+**Solicitud de modificación del asegurado (HU-W1.4-01)** — `endosos/solicitar-modificacion.page.ts` (`SolicitarModificacionPage`,
+A3), `endosos/solicitud-modificacion.page.ts` (`SolicitudModificacionPage`, A3b) y `endosos/mis-solicitudes.page.ts`
+(`MisSolicitudesPage`, A11), rutas `/originacion/polizas/:id/modificar`, `/originacion/solicitudes/:id` y `/originacion/solicitudes`
+en `originacion.routes.ts` (`rolGuard('asegurado')`; el menú del asegurado ya tenía «Mis solicitudes»). Contrato:
+`docs/contratos/HU-W1.4-01-api.md` del backend (servicio `origination`, `openapi.yaml` v0.16.0).
+
+- Llama a `OriginacionApiService`: `consultarCondicionesVigentes`, `radicarSolicitudModificacion`, `listarMisSolicitudes` y
+  `consultarSolicitudModificacion`. Los errores llegan como `ErrorSolicitudModificacion` con el código estable del contrato;
+  `validation_failed` trae **todos** los campos y `change_request_open` la solicitud abierta. Los modelos
+  (`core/api/originacion/solicitud-modificacion.modelos.ts`) proyectan el estado que ve el asegurado: `not_applied` sin motivo es
+  «En revisión» y con motivo «Rechazada» (ajuste A-1); HU-W1.4-02 puede reutilizarlos.
+- **A3:** «Tipo de cambio» (beneficiarios, sumas aseguradas, datos personales) y la captura de cada uno en `endosos/componentes/`
+  (`tipo-cambio`, `cambio-beneficiarios` con el beneficiario oneroso «No modificable», `cambio-suma-asegurada`,
+  `cambio-datos-personales` con el correo de contacto de la póliza), con `resumen-cambio` y `antes-de-radicar` a la derecha. Las
+  reglas de la captura (`endosos/modelos/validaciones-cambio.ts`) son las mismas del servicio y usan sus nombres de campo, así que un
+  `422` se pinta igual que un error propio; «Radicar solicitud» sigue deshabilitado mientras haya errores o se envíe. Un tipo con una
+  solicitud abierta queda bloqueado con «Ver solicitud»; una póliza no vigente no deja radicar. El regreso va a «Mis pólizas»
+  mientras no exista el detalle de la póliza (A2, HU-W1.6-02; decisión D-12).
+- **A3b:** identificador, insignia (`componentes/estado-solicitud`) y pasos Radicada → En revisión → Aplicada o Rechazada, tipo,
+  tiempo estimado o fecha de la decisión y «Radicada por … · portal web». «Tu solicitud quedó radicada» solo al venir de radicar;
+  rechazada muestra el motivo y «Radicar una nueva».
+- **A11:** indicadores (en revisión, aplicadas este año, rechazadas) sin los filtros, filtros Estado, Póliza y Desde en la URL
+  (`endosos/modelos/filtro-solicitudes.ts`), tabla con «Ver detalle», paginación, vacío y error.
+- **A1:** «Solicitar modificación» en cada póliza en vigor de «Mis pólizas».
+- Textos en `originacion.solicitudes.*`. E2E: `e2e/flujos/originacion/solicitud-modificacion.spec.ts` (API Gateway y Cognito
+  simulados con `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/solicitud-modificacion.spec.ts`.
+- **Fuera:** revisar y aplicar la solicitud y el correo del resultado (HU-W1.4-02), adjuntar soportes y las pólizas del núcleo
+  (Autos, Hogar: originación no puede cambiarlas).
 
 **Renovación asistida con recotización (HU-W1.5-03)** — `renovaciones/renovacion-asistida.page.ts` (`RenovacionAsistidaPage`, S7 y S7b),
 ruta `/originacion/renovaciones/:id` (el `policy_id`) en el bloque `renovaciones` de `originacion.routes.ts` (`rolGuard('asesor')`). Se

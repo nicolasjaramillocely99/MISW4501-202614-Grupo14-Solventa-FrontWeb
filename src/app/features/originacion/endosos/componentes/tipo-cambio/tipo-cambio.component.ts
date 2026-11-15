@@ -8,7 +8,7 @@ import { SolicitudAbierta, TIPOS_CAMBIO, TipoCambio } from '@core/api/originacio
 /**
  * «Tipo de cambio» de A3 (HU-W1.4-01, CA-1): beneficiarios, sumas aseguradas o datos personales, como tarjetas de opción
  * única. Un tipo con una solicitud abierta queda deshabilitado con «Ya tienes la solicitud … en curso · Ver solicitud»
- * (decisión D-6 a, frame derivado de A3 «tipo con solicitud abierta»).
+ * (decisión D-6 a).
  */
 @Component({
   selector: 'app-tipo-cambio',

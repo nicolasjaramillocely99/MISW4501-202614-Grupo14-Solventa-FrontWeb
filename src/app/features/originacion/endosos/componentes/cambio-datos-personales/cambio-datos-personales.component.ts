@@ -8,7 +8,7 @@ import { ContactoCaptura, claveMensaje } from '../../modelos/validaciones-cambio
 type ControlContacto = keyof ContactoCaptura;
 
 /**
- * «Nuevos datos de contacto» de A3 (HU-W1.4-01, frame derivado de A3 «Datos personales»): dirección, teléfono y el correo
+ * «Nuevos datos de contacto» de A3 (HU-W1.4-01, tipo «Datos personales»): dirección, teléfono y el correo
  * de contacto de la póliza, que no es el usuario de inicio de sesión (decisión D-5 a). Solo viaja lo que el asegurado
  * escribe; los campos muestran como ayuda el valor actual o «no registrado».
  */

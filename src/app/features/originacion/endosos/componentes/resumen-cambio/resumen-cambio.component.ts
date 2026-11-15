@@ -8,7 +8,7 @@ import { BeneficiarioCaptura, ContactoCaptura, colapsar, leerMonto, normalizarTe
 const PREFIJO = 'originacion.solicitudes.resumen';
 
 /**
- * «Resumen del cambio» de A3 (HU-W1.4-01, frames `20:529` y sus derivados): el valor actual, el valor nuevo que el
+ * «Resumen del cambio» de A3 (HU-W1.4-01, frame `20:529`, en los tres tipos): el valor actual, el valor nuevo que el
  * asegurado está pidiendo (se actualiza mientras escribe) y el efecto del cambio.
  */
 @Component({

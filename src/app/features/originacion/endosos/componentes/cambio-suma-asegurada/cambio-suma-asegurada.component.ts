@@ -7,7 +7,7 @@ import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
 import { claveMensaje } from '../../modelos/validaciones-cambio';
 
 /**
- * «Nueva suma asegurada» de A3 (HU-W1.4-01, frame derivado de A3 «Sumas aseguradas»): el valor asegurado actual, de solo
+ * «Nueva suma asegurada» de A3 (HU-W1.4-01, tipo «Sumas aseguradas»): el valor asegurado actual, de solo
  * lectura, y el nuevo valor en COP con sus límites como ayuda. El texto lo valida la página (`validarValorAsegurado`).
  */
 @Component({

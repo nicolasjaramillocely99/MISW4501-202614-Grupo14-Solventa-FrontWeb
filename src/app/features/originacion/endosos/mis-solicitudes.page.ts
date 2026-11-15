@@ -32,7 +32,7 @@ export type FaseMisSolicitudes = 'cargando' | 'lista' | 'vacia' | 'sinResultados
 type Resultado = { tipo: 'pagina'; pagina: PaginaSolicitudes } | { tipo: 'error'; error: ErrorSolicitudModificacion };
 
 /**
- * A11 · Mis solicitudes (HU-W1.4-01, frame `291:6869` y sus derivados vacío y con error): los tres indicadores (en
+ * A11 · Mis solicitudes (HU-W1.4-01, frame `291:6869`, con sus estados vacío y con error): los tres indicadores (en
  * revisión, aplicadas este año y rechazadas, sin los filtros), los filtros Estado, Póliza y Desde en la URL, el conteo, la
  * tabla (solicitud, póliza y tipo, radicada, estado, último cambio con el motivo y «Ver detalle») y la paginación. El
  * estado es el que ve el asegurado (ajuste A-1). «Nueva solicitud» lleva a «Mis pólizas», donde se elige la póliza (D-12).

@@ -15,7 +15,7 @@ import { EstadoSolicitudComponent, pasosDeSolicitud } from './componentes/estado
 export type FaseSolicitud = 'cargando' | 'listo' | 'noEncontrada' | 'error' | 'oculta';
 
 /**
- * A3b · Solicitud radicada (HU-W1.4-01, frame `20:866` y sus derivados en revisión, aplicada y rechazada con motivo): el
+ * A3b · Solicitud radicada (HU-W1.4-01, frame `20:866`, también en revisión, aplicada y rechazada con motivo): el
  * identificador, el estado con sus pasos (Radicada → En revisión → Aplicada o Rechazada), el tipo, quién la radicó y por
  * qué canal (CA-2). Al venir de radicar muestra «Tu solicitud quedó radicada»; al recargar, el estado tal como está. Una
  * `not_applied` sin motivo se ve en revisión y con motivo, rechazada con el motivo (ajuste A-1). Es una ruta propia
