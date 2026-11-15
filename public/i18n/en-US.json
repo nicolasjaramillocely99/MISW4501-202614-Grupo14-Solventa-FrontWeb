@@ -2291,6 +2291,379 @@
           "siguiente": "Next"
         }
       }
+    },
+    "endosos": {
+      "estados": {
+        "radicada": "Filed",
+        "enRevision": "In review",
+        "aplicada": "Applied",
+        "rechazada": "Rejected",
+        "noAplicado": "Not applied",
+        "desconocido": "Unknown status"
+      },
+      "tipos": {
+        "beneficiaries": "Beneficiaries",
+        "insured_amount": "Insured amounts",
+        "personal_data": "Personal data"
+      },
+      "tiposCambio": {
+        "beneficiaries": "Change of beneficiaries",
+        "insured_amount": "Change of insured amount",
+        "personal_data": "Personal data update"
+      },
+      "canal": {
+        "web": "web portal",
+        "mobile": "mobile app"
+      },
+      "canalDesde": {
+        "web": "from the portal",
+        "mobile": "from the app"
+      },
+      "linea": {
+        "life": "Mortgage life"
+      },
+      "bandeja": {
+        "titulo": "Endorsements",
+        "subtitulo": "Change requests filed by the insured. Review them and apply them with the business validations; the new contractual state will show in every channel.",
+        "indicadores": {
+          "region": "Endorsement indicators",
+          "pendientes": "Pending",
+          "vencidas": "{{n}} waiting more than 24 h",
+          "vencidaUna": "1 waiting more than 24 h",
+          "ningunaVencida": "None waiting more than 24 h",
+          "aplicadosHoy": "Applied today",
+          "tiempoMedio": "Average time {{tiempo}}",
+          "sinAplicaciones": "No endorsements applied today",
+          "rechazados": "Rejected (7 days)",
+          "sinRechazos": "No rejections nor attempts not applied",
+          "horasMinutos": "{{h}} h {{m}} min",
+          "minutos": "{{m}} min"
+        },
+        "motivos": {
+          "analyst_rejection": "Rejected by the analyst",
+          "shares_total_100": "Share validation",
+          "onerous_beneficiary_intact": "Onerous beneficiary",
+          "identity_documents_valid": "Identity documents",
+          "no_open_claim": "Claim in progress",
+          "requester_is_holder": "Requester is not the holder",
+          "insured_amount_within_limits": "Insured amount limits",
+          "personal_data_valid": "Data format",
+          "policy_in_force": "Policy not in force",
+          "previous_values_current": "Previous values changed",
+          "no_renewal_in_progress": "Renewal in progress",
+          "premium_recalculated": "Premium not priced",
+          "otro": "Other reason"
+        },
+        "filtros": {
+          "titulo": "Filter the endorsements",
+          "tipo": "Change type",
+          "todos": "All",
+          "estado": "Status",
+          "desde": "Filed from",
+          "ayudaFecha": "MM/DD/YYYY"
+        },
+        "estadosFiltro": {
+          "pending": "Pending",
+          "filed": "Filed",
+          "in_review": "In review",
+          "applied": "Applied",
+          "rejected": "Rejected",
+          "not_applied": "Not applied",
+          "all": "All"
+        },
+        "contador": "{{n}} requests",
+        "contadorUno": "1 request",
+        "cargando": "Loading the requests…",
+        "tabla": {
+          "titulo": "Change requests",
+          "solicitud": "Request",
+          "asegurado": "Insured",
+          "poliza": "Policy",
+          "tipo": "Change type",
+          "radicada": "Filed",
+          "estado": "Status",
+          "acciones": "Actions"
+        },
+        "acciones": {
+          "revisar": "Review",
+          "continuar": "Continue",
+          "ver": "View",
+          "revisarSolicitud": "Review request {{id}}",
+          "continuarSolicitud": "Continue request {{id}}",
+          "verSolicitud": "View request {{id}}"
+        },
+        "devuelta": "Returned to the insured",
+        "vacio": {
+          "titulo": "No pending requests",
+          "texto": "When an insured files a change request, it will show here for review."
+        },
+        "sinResultados": {
+          "titulo": "No requests match these filters",
+          "texto": "Change the type, the status or the date to see other requests.",
+          "limpiar": "Clear filters"
+        },
+        "error": {
+          "titulo": "We could not load the endorsements",
+          "texto": "Try again in a few minutes.",
+          "reintentar": "Retry"
+        },
+        "errorRevisar": "Request {{id}} could not be taken: another analyst already decided it or the service did not answer. Check the inbox again.",
+        "paginacion": {
+          "navegacion": "Inbox pagination",
+          "pagina": "Page {{pagina}} of {{total}}",
+          "anterior": "Previous",
+          "siguiente": "Next"
+        }
+      },
+      "detalle": {
+        "volver": "Endorsements",
+        "titulo": "Endorsement · {{id}}",
+        "subtitulo": "{{tipo}} · {{producto}} {{poliza}} · {{titular}} · filed on {{fecha}} {{canal}}",
+        "cargando": "Loading the request…",
+        "noEncontrada": {
+          "titulo": "We could not find the request",
+          "texto": "The id may not exist. Go back to the inbox."
+        },
+        "error": {
+          "titulo": "We could not load the request",
+          "texto": "Try again in a few minutes.",
+          "reintentar": "Retry"
+        },
+        "acciones": {
+          "rechazar": "Reject",
+          "aplicar": "Apply endorsement",
+          "procesando": "Processing…",
+          "devolver": "Return to the insured",
+          "volverBandeja": "Back to the inbox",
+          "verHistorial": "View history"
+        },
+        "cambio": {
+          "titulo": "Requested change",
+          "campo": "Field",
+          "anterior": "Previous value",
+          "nuevo": "New value"
+        },
+        "validaciones": {
+          "titulo": "Business validations",
+          "subtitulo": "If any fails, the endorsement is not applied and the reason is recorded.",
+          "sinValidaciones": "The request was rejected before it was applied: no validation ran.",
+          "resultado": {
+            "passed": "Passes",
+            "failed": "Fails",
+            "unverifiable": "Unverifiable"
+          }
+        },
+        "poliza": {
+          "titulo": "Policy",
+          "estado": "Status",
+          "activa": "Active",
+          "noVigente": "Not in force",
+          "valorAsegurado": "Insured amount",
+          "prima": "Monthly premium",
+          "endososPrevios": "Previous endorsements",
+          "ninguno": "None",
+          "ultimo": "{{n}} · last: {{tipo}} ({{fecha}})",
+          "verHistorial": "View the endorsement history of policy {{poliza}}"
+        },
+        "panel": {
+          "alAplicar": {
+            "titulo": "When applied",
+            "beneficiaries": "The new contractual state shows at once in the portal and the app of the insured, without inconsistencies. The endorsement is recorded with your name, the date and the previous and new detail; the insured sees the request as Applied.",
+            "insured_amount": "The policy gets the new insured amount and premium, shown at once in the portal and the app of the insured. The premium difference is not charged in this change.",
+            "personal_data": "The new contact data stay in the policy and show at once in the portal and the app of the insured. The e-mail they sign in with does not change."
+          },
+          "noAplicado": {
+            "titulo": "Why it was not applied",
+            "texto": "The policy keeps its current terms: no channel shows the change. The attempt was recorded in the endorsement history with the failed validation, the date and the analyst. Once returned, the insured sees the request as rejected with your observations and can file a new one."
+          },
+          "devuelto": {
+            "titulo": "Why it was not applied",
+            "texto": "The policy keeps its current terms: no channel shows the change. The attempt is in the history with the failed validation. The insured sees the request as Rejected with these observations."
+          },
+          "aplicado": {
+            "titulo": "Endorsement applied",
+            "texto": "{{endoso}} · applied by {{autor}} (operations) on {{fecha}}. The insured sees the request as Applied and got the result by e-mail."
+          },
+          "rechazado": {
+            "titulo": "Rejected",
+            "texto": "Rejected by {{autor}} (operations) on {{fecha}}. The insured sees the request as Rejected with these observations."
+          }
+        },
+        "alertas": {
+          "noAplicado": {
+            "titulo": "The endorsement was not applied",
+            "texto": "The validation “{{validacion}}” fails. The endorsement was not applied, the policy keeps its current terms and the reason was recorded in the history. Return the request to the insured so they correct it."
+          },
+          "devuelto": {
+            "titulo": "Returned to the insured",
+            "texto": "The endorsement was not applied because the validation “{{validacion}}” fails. {{autor}} returned it to the insured on {{fecha}} with the observations below."
+          },
+          "noVerificable": {
+            "titulo": "The validations could not be verified",
+            "texto": "{{fuentes}} did not answer. Nothing changed: the request stays as it was. Try applying it again in a few minutes."
+          },
+          "decidida": {
+            "titulo": "Another analyst already decided this request",
+            "texto": "It is now “{{estado}}”. The detail shows what was recorded."
+          },
+          "polizaCambio": {
+            "titulo": "The policy changed while you validated",
+            "texto": "Another endorsement of the same policy was applied first. Nothing changed; apply again to validate against the new terms."
+          },
+          "aplicado": {
+            "titulo": "Endorsement applied",
+            "texto": "{{endoso}} was recorded and the insured already sees the changes."
+          },
+          "rechazado": {
+            "titulo": "Request rejected",
+            "texto": "The insured sees your observations in the status of the request."
+          },
+          "devueltoOk": {
+            "titulo": "Request returned",
+            "texto": "The insured sees your observations and can file a new request."
+          },
+          "fallo": {
+            "titulo": "The action could not be completed",
+            "texto": "The service did not answer. Try again in a few minutes."
+          }
+        },
+        "fuentes": {
+          "identity_documents_valid": "The document check",
+          "no_open_claim": "The claims query",
+          "premium_recalculated": "The premium pricing",
+          "otra": "A validation source",
+          "y": "{{a}} and {{b}}"
+        },
+        "observaciones": {
+          "etiqueta": "Observations (required to reject)",
+          "etiquetaDevolver": "Observations (required to return)",
+          "etiquetaRegistradas": "Observations",
+          "ayuda": "Visible to the insured in the status of the request",
+          "error": "Write between 10 and 500 characters: the insured will read them."
+        }
+      },
+      "historial": {
+        "volver": "Back",
+        "titulo": "Endorsement history",
+        "soloLectura": "Read only",
+        "subtitulo": "{{n}} entries in chronological order · applied endorsements and attempts not applied",
+        "subtituloUno": "1 entry · applied endorsements and attempts not applied",
+        "poliza": "Policy {{poliza}} · {{titular}}",
+        "cargando": "Loading the history…",
+        "inmutable": {
+          "titulo": "Immutable record",
+          "texto": "Entries cannot be edited nor deleted. Each one shows what changed, the previous and the new value, who did it and when. A policy without endorsements shows an empty history without errors."
+        },
+        "tabla": {
+          "titulo": "History entries",
+          "fecha": "Date and time",
+          "endoso": "Endorsement",
+          "queCambio": "What changed",
+          "anterior": "Previous value",
+          "nuevo": "New value",
+          "quien": "Who"
+        },
+        "noAplicado": "Not applied",
+        "solicitud": "Request {{id}}",
+        "fallo": "{{validacion}}: fails",
+        "sinCambio": "No change (not applied)",
+        "rol": {
+          "operations": "Operations analyst"
+        },
+        "beneficiarioCorto": "{{nombre}} {{participacion}} %",
+        "prima": "Premium {{valor}}",
+        "vacio": {
+          "titulo": "This policy has no endorsements",
+          "texto": "When a change is applied or attempted, it will show here with its detail."
+        },
+        "noEncontrada": {
+          "titulo": "We could not find the policy",
+          "texto": "The id may not exist."
+        },
+        "error": {
+          "titulo": "We could not load the history",
+          "texto": "Try again in a few minutes.",
+          "reintentar": "Retry"
+        }
+      },
+      "campos": {
+        "beneficiarioN": "Beneficiary {{n}}",
+        "beneficiario": "{{nombre}} · {{documento}} · {{participacion}} %",
+        "retirado": "Removed",
+        "oneroso": "Onerous beneficiary",
+        "onerosoValor": "{{entidad}} · outstanding balance",
+        "sinCambio": "No change",
+        "entidadGenerica": "Lender of the credit",
+        "insured_amount": "Insured amount",
+        "prima": "Monthly premium",
+        "primaNueva": "{{valor}} · repriced with engine {{version}}",
+        "primaSinCalcular": "Not priced",
+        "address": "Address",
+        "email": "Contact e-mail",
+        "phone": "Phone"
+      },
+      "validaciones": {
+        "desconocida": "Validation {{codigo}}",
+        "shares_total_100": {
+          "titulo": "Shares add up to 100 %",
+          "passed": "{{partes}}",
+          "failed": "{{partes}} = {{total}} % · must add up to 100 %",
+          "unverifiable": "{{partes}}"
+        },
+        "onerous_beneficiary_intact": {
+          "titulo": "Onerous beneficiary intact",
+          "passed": "{{entidad}} keeps the outstanding balance",
+          "failed": "{{entidad}} must keep the outstanding balance",
+          "unverifiable": "No information of the onerous beneficiary"
+        },
+        "identity_documents_valid": {
+          "titulo": "Valid identity documents",
+          "passed": "National registry · {{n}} checks",
+          "failed": "National registry · {{documento}} not found",
+          "unverifiable": "National registry did not answer",
+          "sinNuevos": "No new documents to check"
+        },
+        "no_open_claim": {
+          "titulo": "No claim in progress blocking the change",
+          "passed": "None on the policy",
+          "failed": "Claims in progress on the policy: {{n}}",
+          "unverifiable": "Claims did not answer"
+        },
+        "requester_is_holder": {
+          "titulo": "Requester = authenticated holder",
+          "failed": "is not the holder of the policy"
+        },
+        "insured_amount_within_limits": {
+          "titulo": "Insured amount within the product limits",
+          "passed": "{{valor}} · between {{minimo}} and {{maximo}}",
+          "failed": "{{valor}} · outside the range between {{minimo}} and {{maximo}}",
+          "unverifiable": "{{valor}}"
+        },
+        "personal_data_valid": {
+          "titulo": "Contact data with a valid format",
+          "passed": "Valid format",
+          "failed": "Invalid format: {{campos}}",
+          "unverifiable": "Not checked"
+        },
+        "policy_in_force": {
+          "titulo": "Policy in force",
+          "passed": "In force until {{fecha}}",
+          "failed": "The policy ended on {{fecha}}"
+        },
+        "previous_values_current": {
+          "titulo": "The previous values are still current",
+          "passed": "No changes since it was filed",
+          "failed": "Another endorsement changed the values after it was filed"
+        },
+        "no_renewal_in_progress": {
+          "titulo": "No accepted renewal pending",
+          "failed": "An accepted renewal is not active yet"
+        },
+        "premium_recalculated": {
+          "titulo": "Premium repriced with the engine",
+          "unverifiable": "The original offer to price the new amount was not found"
+        }
+      }
     }
   },
   "siniestros": {
