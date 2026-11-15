@@ -9,13 +9,25 @@
     </a>
   </header>
 
-  @if (pagina(); as datos) {
+  @if (fase() === 'error') {
+    <section class="indicadores" [attr.aria-label]="t('mias.indicadores.region')">
+      @for (indicador of indicadoresSinDatos; track indicador) {
+        <div class="tarjeta indicador">
+          <p class="indicador__etiqueta">{{ t('mias.indicadores.' + indicador) }}</p>
+          <p class="indicador__valor" [class.indicador__valor--aviso]="indicador === 'rechazadas'" aria-hidden="true">—</p>
+          <p class="indicador__detalle">{{ t('mias.indicadores.noDisponible') }}</p>
+        </div>
+      }
+    </section>
+  } @else if (pagina(); as datos) {
     <section class="indicadores" [attr.aria-label]="t('mias.indicadores.region')">
       <div class="tarjeta indicador">
         <p class="indicador__etiqueta">{{ t('mias.indicadores.abiertas') }}</p>
         <p class="indicador__valor">{{ datos.indicadores.abiertas.cantidad }}</p>
         @if (datos.indicadores.abiertas.ultima; as u) {
           <p class="indicador__detalle">{{ t('mias.indicadores.referencia', { id: u.solicitudId, tipo: t('tiposCambioMinuscula.' + u.tipo) }) }}</p>
+        } @else if (datos.indicadores.abiertas.cantidad === 0) {
+          <p class="indicador__detalle">{{ t('mias.indicadores.sinAbiertas') }}</p>
         }
       </div>
       <div class="tarjeta indicador">
@@ -23,8 +35,10 @@
         <p class="indicador__valor">{{ datos.indicadores.aplicadasAnio.cantidad }}</p>
         @if (datos.indicadores.aplicadasAnio.ultima; as u) {
           <p class="indicador__detalle">
-            {{ t('mias.indicadores.ultima', { fecha: (u.cambioEstadoEn | formatoFecha), tipo: t('tiposCambioMinuscula.' + u.tipo) }) }}
+            {{ t('mias.indicadores.ultima', { fecha: fechaCorta(u.cambioEstadoEn), tipo: t('tiposCambioMinuscula.' + u.tipo) }) }}
           </p>
+        } @else if (datos.indicadores.aplicadasAnio.cantidad === 0) {
+          <p class="indicador__detalle">{{ t('mias.indicadores.sinAplicadas') }}</p>
         }
       </div>
       <div class="tarjeta indicador">
@@ -32,6 +46,8 @@
         <p class="indicador__valor indicador__valor--aviso">{{ datos.indicadores.rechazadas.cantidad }}</p>
         @if (datos.indicadores.rechazadas.ultima; as u) {
           <p class="indicador__detalle">{{ t('mias.indicadores.referencia', { id: u.solicitudId, tipo: t('tiposCambioMinuscula.' + u.tipo) }) }}</p>
+        } @else if (datos.indicadores.rechazadas.cantidad === 0) {
+          <p class="indicador__detalle">{{ t('mias.indicadores.sinRechazadas') }}</p>
         }
       </div>
     </section>
@@ -130,7 +146,7 @@
                       <span>{{ t('mias.tabla.productoTipo', { producto: t('linea.life'), tipo: t('tipos.' + fila.tipo) }) }}</span>
                       <span class="tabla__secundario">{{ fila.polizaId }}</span>
                     </td>
-                    <td>{{ fila.radicadaEn | formatoFecha }}</td>
+                    <td>{{ fechaCorta(fila.radicadaEn) }}</td>
                     <td><app-estado-solicitud [estado]="fila.estado" /></td>
                     <td>
                       {{ fila.cambioEstadoEn | formatoFechaHora }}

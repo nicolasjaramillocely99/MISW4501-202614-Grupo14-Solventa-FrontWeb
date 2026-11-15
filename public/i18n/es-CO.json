@@ -2254,7 +2254,11 @@
           "aplicadas": "Aplicadas este año",
           "rechazadas": "Rechazadas",
           "referencia": "{{id}} · {{tipo}}",
-          "ultima": "Última: {{fecha}} · {{tipo}}"
+          "ultima": "Última: {{fecha}} · {{tipo}}",
+          "sinAbiertas": "Sin solicitudes en curso",
+          "sinAplicadas": "Ninguna este año",
+          "sinRechazadas": "Ninguna",
+          "noDisponible": "No disponible"
         },
         "filtros": {
           "titulo": "Filtrar solicitudes",
