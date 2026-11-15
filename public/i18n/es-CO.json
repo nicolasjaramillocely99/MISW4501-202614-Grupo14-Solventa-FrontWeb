@@ -4800,6 +4800,78 @@
         "titulo": "Aislamiento de datos",
         "texto": "Este tablero muestra exclusivamente las cotizaciones y pólizas de {{socio}}. Ningún dato de otros socios es visible aquí."
       }
+    },
+    "desempeno": {
+      "titulo": "Desempeño técnico de la API",
+      "subtitulo": "Disponibilidad y tiempos de respuesta de tu integración · {{periodo}}",
+      "actualizado": "actualizado a las {{hora}}",
+      "cargando": "Consultando el desempeño de la API…",
+      "periodos": {
+        "grupo": "Período",
+        "opciones": {
+          "today": "Hoy",
+          "7d": "Últimos 7 días",
+          "30d": "Últimos 30 días"
+        },
+        "descripcion": {
+          "today": "hoy",
+          "7d": "últimos 7 días",
+          "30d": "últimos 30 días"
+        }
+      },
+      "estado": {
+        "region": "Estado actual de la API",
+        "nombres": {
+          "operational": "Operativo",
+          "degraded": "Degradado",
+          "unavailable": "No disponible",
+          "desconocido": "Estado desconocido"
+        },
+        "descripciones": {
+          "operational": "Todos los endpoints de tu integración responden con normalidad dentro del presupuesto de latencia.",
+          "degraded": "Los tiempos de respuesta superan el presupuesto del SLO. Las solicitudes siguen respondiendo; si persiste, repórtalo a Solventa.",
+          "unavailable": "Una parte de las solicitudes está fallando y la API no puede atender con normalidad. Si persiste, repórtalo a Solventa.",
+          "desconocido": "No pudimos determinar el estado de la API."
+        },
+        "incidenteAbierto": "Incidente abierto en {{ruta}} desde el {{hora}}"
+      },
+      "metricas": {
+        "region": "Métricas del período",
+        "disponibilidad": "Disponibilidad",
+        "porcentaje": "{{valor}} %",
+        "objetivo": "Objetivo ≥ {{valor}} %",
+        "bajoObjetivo": "por debajo del objetivo",
+        "p95": "Tiempo de respuesta p95",
+        "milisegundos": "{{valor}} ms",
+        "presupuesto": "Presupuesto {{valor}} ms",
+        "sobrePresupuesto": "sobre el presupuesto",
+        "sinSolicitudes": "Sin solicitudes en el período"
+      },
+      "incidentes": {
+        "titulo": "Incidentes del período",
+        "sinIncidentes": "La integración operó sin interrupciones en el período.",
+        "tipos": {
+          "degraded": "Degradado",
+          "unavailable": "No disponible",
+          "desconocido": "Incidente"
+        },
+        "resuelto": "Resuelto",
+        "enCurso": "En curso",
+        "inicio": "Inicio {{fecha}}",
+        "duro": "duración {{duracion}}",
+        "llevaAbierto": "en curso hace {{duracion}}",
+        "duracion": {
+          "minutos": "{{minutos}} min",
+          "horas": "{{horas}} h {{minutos}} min",
+          "dias": "{{dias}} d {{horas}} h"
+        }
+      },
+      "error": {
+        "titulo": "No pudimos consultar el desempeño de la API",
+        "texto": "El servicio de métricas no respondió. Intenta de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "nota": "Las métricas son las del SLO de la API de socios (p95 y disponibilidad medidos en el API Gateway) y son las mismas para todos los socios que la usan. Horas en hora de Colombia."
     }
   }
 }
