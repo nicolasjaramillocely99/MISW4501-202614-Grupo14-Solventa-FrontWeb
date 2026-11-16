@@ -71,6 +71,20 @@ describe('AceptacionClienteComponent (HU-W1.5-03 · CA-2, D-9)', () => {
     expect(screen.getByText('La fecha no puede ser futura ni anterior a la recotización.')).toBeTruthy();
   });
 
+  it('si la recotización cierra en un minuto posterior al de la hora llenada, la hora pasa a la de la recotización', async () => {
+    const recotizadaEn = new Date(Date.now() + 60_000).toISOString();
+    const { emitidas } = await renderizar({ recotizadaEn });
+    const usuario = userEvent.setup();
+
+    await usuario.type(screen.getByLabelText('Referencia'), 'GRAB-2026-88931');
+    await usuario.click(screen.getByRole('checkbox'));
+
+    expect(emitidas.at(-1)).toMatchObject({ metodo: 'recorded_call' });
+    expect(new Date(emitidas.at(-1)?.aceptadaEn ?? '').getTime()).toBeGreaterThanOrEqual(
+      new Date(recotizadaEn).setSeconds(0, 0),
+    );
+  });
+
   it('con el código de confirmación pide enviarlo y los 6 dígitos, sin referencia', async () => {
     const { emitidas, envios, rerender, on } = await renderizar();
     const usuario = userEvent.setup();
