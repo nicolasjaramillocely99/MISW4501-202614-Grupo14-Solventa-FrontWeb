@@ -8,6 +8,7 @@ import { EmisionesPage } from './emisiones/emisiones.page';
 import { DatosClientePage } from './cotizacion-asistida/datos-cliente.page';
 import { FormalizarCompraPage } from './cotizacion-asistida/formalizar-compra.page';
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
+import { DetallePolizaPage } from './polizas/detalle-poliza.page';
 import { MisPolizasPage } from './polizas/mis-polizas.page';
 import { PolizasPorVencerPage } from './renovaciones/polizas-por-vencer.page';
 import { RenovacionAsistidaPage } from './renovaciones/renovacion-asistida.page';
@@ -47,6 +48,7 @@ export const ORIGINACION_ROUTES: Routes = [
     children: [
       { path: '', component: MisPolizasPage },
       { path: ':id/renovar', component: RenovarPolizaPage },
+      { path: ':id', component: DetallePolizaPage },
     ],
   },
   {

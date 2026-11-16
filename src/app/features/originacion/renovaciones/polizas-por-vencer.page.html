@@ -5,10 +5,17 @@
   </header>
 
   @if (pagina(); as datos) {
-    <section class="tarjeta indicador" [attr.aria-label]="t('indicador.region')">
-      <p class="indicador__etiqueta">{{ t('indicador.titulo', { dias: (datos.diasVentana | formatoNumero: 0) }) }}</p>
-      <p class="indicador__valor">{{ datos.vencenEnVentana | formatoNumero: 0 }}</p>
-    </section>
+    <div class="indicadores">
+      <section class="tarjeta indicador" [attr.aria-label]="t('indicador.region')">
+        <p class="indicador__etiqueta">{{ t('indicador.titulo', { dias: (datos.diasVentana | formatoNumero: 0) }) }}</p>
+        <p class="indicador__valor">{{ datos.vencenEnVentana | formatoNumero: 0 }}</p>
+      </section>
+      <section class="tarjeta indicador" [attr.aria-label]="t('indicador.canceladasRegion')">
+        <p class="indicador__etiqueta">{{ t('indicador.canceladas') }}</p>
+        <p class="indicador__valor indicador__valor--error">{{ datos.canceladasNoPago | formatoNumero: 0 }}</p>
+        <p class="indicador__nota">{{ t('indicador.canceladasNota') }}</p>
+      </section>
+    </div>
   }
 
   <div class="filtros" role="search" [attr.aria-label]="t('filtros.titulo')">
@@ -109,7 +116,14 @@
                         <span class="tabla__secundario">{{ documento(poliza) }}</span>
                       </td>
                       <td>{{ producto(poliza) }}</td>
-                      <td class="tabla__fecha">{{ dia(poliza.venceEn) }}</td>
+                      <td class="tabla__fecha">
+                        @if (poliza.canceladaEn) {
+                          <span aria-hidden="true">—</span>
+                          <span class="visualmente-oculto">{{ t('tabla.canceladaEl', { fecha: dia(poliza.canceladaEn) }) }}</span>
+                        } @else {
+                          {{ dia(poliza.venceEn) }}
+                        }
+                      </td>
                       <td class="tabla__numero">{{ poliza.prima | formatoMoneda: poliza.moneda }}</td>
                       <td>
                         <app-insignia-estado [tono]="tono(poliza)">{{ t('estados.' + poliza.estado) }}</app-insignia-estado>

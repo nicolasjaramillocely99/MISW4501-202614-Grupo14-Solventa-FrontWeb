@@ -259,7 +259,7 @@ describe('PolizasPorVencerPage (S6 · HU-W1.5-01)', () => {
 
   it('una sola póliza dice «1 resultado»; un estado desconocido sale con una insignia neutra', async () => {
     listar.mockReturnValue(
-      of(mapearPaginaPorVencer(paginaPorVencerDto({ items: [{ ...POLIZA_POR_VENCER_DTO, status: 'cancelled_non_payment', can_renew: false }], total: 1 }))),
+      of(mapearPaginaPorVencer(paginaPorVencerDto({ items: [{ ...POLIZA_POR_VENCER_DTO, status: 'suspended', can_renew: false }], total: 1 }))),
     );
 
     await abrir();
@@ -268,6 +268,42 @@ describe('PolizasPorVencerPage (S6 · HU-W1.5-01)', () => {
     expect(filas()[0].textContent).toContain('Otro estado');
     expect(within(filas()[0]).queryByRole('link')).toBeNull();
     expect(filas()[0].textContent).not.toContain('Renovable desde');
+  });
+
+  it('las canceladas por no pago: tarjeta con el contador, fila sin vencimiento ni acción y opción del filtro (HU-W1.6-02)', async () => {
+    listar.mockReturnValue(
+      of(
+        mapearPaginaPorVencer(
+          paginaPorVencerDto({
+            items: [
+              {
+                ...POLIZA_POR_VENCER_DTO,
+                policy_id: 'pol-acc-093377',
+                status: 'cancelled_non_payment',
+                can_renew: false,
+                cancelled_at: '2026-09-12T05:00:00Z',
+              },
+            ],
+            total: 1,
+            cancelled_non_payment_last_30_days: 2,
+          }),
+        ),
+      ),
+    );
+
+    await abrir();
+
+    const tarjeta = screen.getByRole('region', { name: 'Pólizas canceladas por no pago en los últimos 30 días' });
+    expect(tarjeta.textContent).toContain('Canceladas por no pago');
+    expect(tarjeta.textContent).toContain('2');
+    expect(tarjeta.textContent).toContain('Últimos 30 días · sin reembolso');
+    const fila = filas()[0];
+    expect(within(fila).getByText('Cancelada por no pago', { selector: 'app-insignia-estado' })).toBeTruthy();
+    expect(fila.textContent).toContain('Cancelada el 12/09/2026');
+    expect(within(fila).queryByRole('link')).toBeNull();
+    expect(fila.textContent).not.toContain('Renovable desde');
+    const opciones = Array.from((screen.getByLabelText('Estado') as HTMLSelectElement).options).map((o) => o.value);
+    expect(opciones).toContain('cancelled_non_payment');
   });
 
   it('muestra el producto si lo hay, el tipo de documento y un documento no numérico tal cual', async () => {
