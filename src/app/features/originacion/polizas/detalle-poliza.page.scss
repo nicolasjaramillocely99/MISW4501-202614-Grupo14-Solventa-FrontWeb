@@ -173,3 +173,54 @@
 .ayuda {
   border-inline-start: 4px solid var(--color-azul-700);
 }
+
+// HU-W1.4-01: «Beneficiarios» (tabla de solo lectura, como la de A3) y «Mis solicitudes».
+.tabla-desplazable {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--espacio-8) var(--espacio-12);
+    border-block-end: 1px solid var(--color-borde-base);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  tbody th {
+    font-weight: 500;
+  }
+}
+
+.solicitudes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-8);
+    padding-block: var(--espacio-12);
+    border-block-end: 1px solid var(--color-borde-base);
+  }
+
+  &__dato {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-4);
+  }
+}

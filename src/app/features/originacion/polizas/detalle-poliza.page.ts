@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import {
   LucideBan,
   LucideCircleAlert,
@@ -27,6 +27,12 @@ import {
 import { DetallePoliza, ErrorPoliza } from '@core/api/originacion/detalle-poliza.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 import { MesPrima } from '@core/api/originacion/pago-poliza.modelos';
+import {
+  Beneficiario,
+  BeneficiarioOneroso,
+  CondicionesVigentes,
+  FilaSolicitud,
+} from '@core/api/originacion/solicitud-modificacion.modelos';
 import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 import { FormatoFechaPipe } from '@shared/pipes/formato-fecha.pipe';
 import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
@@ -35,9 +41,23 @@ import {
   TonoInsignia,
 } from '@shared/ui/insignia-estado/insignia-estado.component';
 
+import { EstadoSolicitudComponent } from '../endosos/componentes/estado-solicitud/estado-solicitud.component';
+import { fechaCorta } from '../endosos/modelos/fecha-corta';
+import { parametrosDesdeFiltro } from '../endosos/modelos/filtro-solicitudes';
+import {
+  formatoDocumento,
+  formatoParticipacion,
+  nombreDelOneroso,
+} from '../endosos/modelos/formato-beneficiario';
 import { estadoDePoliza, tonoDePoliza } from './modelos/estado-poliza';
 
 type Fase = 'cargando' | 'listo' | 'noEncontrada' | 'error';
+
+/** Lo que carga cada tarjeta de HU-W1.4-01 («Beneficiarios» y «Mis solicitudes»), aparte de la póliza. */
+type FaseTarjeta = 'cargando' | 'listo' | 'error';
+
+/** Las solicitudes más recientes de la póliza que muestra «Mis solicitudes»; «Ver todas» lleva a A11 con el resto. */
+export const SOLICITUDES_EN_DETALLE = 5;
 
 /** Un paso del historial de cobros (A2b): la cancelación o un mes de la prima. */
 export interface PasoHistorial {
@@ -106,9 +126,13 @@ function pasoDe(m: MesPrima): PasoHistorial {
  *
  * Los botones y las tarjetas del prototipo están todos. «Descargar póliza» y las condiciones particulares descargan el
  * documento contractual de HU-W1.3-03. Los que no tienen historia en el sistema aparecen deshabilitados y dicen
- * «Disponible próximamente»: cancelar (HU-W1.6-01), modificar y ver las solicitudes (HU-W1.4-01), las condiciones
- * generales, el certificado de vigencia, «Hablar con un asesor» y «Solicitar nueva cotización». Los beneficiarios no
- * los guarda originación todavía. Ruta: `/originacion/polizas/:id`. Exige la sesión del asegurado.
+ * «Disponible próximamente»: cancelar (HU-W1.6-01), las condiciones generales, el certificado de vigencia, «Hablar con
+ * un asesor» y «Solicitar nueva cotización». Ruta: `/originacion/polizas/:id`. Exige la sesión del asegurado.
+ *
+ * HU-W1.4-01 (ajuste A-10): «Solicitar modificación» y el «Modificar» de «Beneficiarios» llevan a A3
+ * (`/originacion/polizas/:id/modificar`); «Beneficiarios» muestra los vigentes con el oneroso, de las condiciones
+ * vigentes (`current-terms`), y «Mis solicitudes», las más recientes de la póliza con su estado, con «Ver todas» hacia
+ * A11 filtrada por la póliza. Una póliza cancelada no muestra nada de eso ni lo consulta.
  */
 @Component({
   selector: 'app-detalle-poliza-page',
@@ -117,6 +141,7 @@ function pasoDe(m: MesPrima): PasoHistorial {
     TitleCasePipe,
     TranslocoDirective,
     InsigniaEstadoComponent,
+    EstadoSolicitudComponent,
     FormatoFechaPipe,
     FormatoFechaHoraPipe,
     FormatoMonedaPipe,
@@ -139,6 +164,7 @@ export class DetallePolizaPage implements OnInit {
   private readonly api = inject(OriginacionApiService);
   private readonly ruta = inject(ActivatedRoute);
   private readonly destruccion = inject(DestroyRef);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly fase = signal<Fase>('cargando');
   /** El PDF de la póliza se está pidiendo, o no se pudo descargar. */
@@ -158,6 +184,17 @@ export class DetallePolizaPage implements OnInit {
   /** El último mes pagado: «Último pago recibido» de A2b. */
   protected readonly ultimoPago = computed(
     () => this.poliza()?.meses.find((m) => m.estado === 'paid') ?? null,
+  );
+
+  /** «Beneficiarios» (HU-W1.4-01): las condiciones vigentes de la póliza, con el oneroso. */
+  protected readonly faseBeneficiarios = signal<FaseTarjeta>('cargando');
+  protected readonly condiciones = signal<CondicionesVigentes | null>(null);
+  /** «Mis solicitudes» (HU-W1.4-01): las más recientes de la póliza. */
+  protected readonly faseSolicitudes = signal<FaseTarjeta>('cargando');
+  protected readonly solicitudes = signal<FilaSolicitud[]>([]);
+  /** «Ver todas»: A11 filtrada por la póliza, con la misma URL que arma A11. */
+  protected readonly filtroSolicitudes = computed(() =>
+    parametrosDesdeFiltro({ estado: null, polizaId: this.poliza()?.polizaId ?? null, desde: null }),
   );
 
   /** «Descargar póliza»: el documento contractual en PDF (HU-W1.3-03); el JWT lo adjunta el interceptor. */
@@ -188,6 +225,70 @@ export class DetallePolizaPage implements OnInit {
       });
   }
 
+  /** Las condiciones vigentes de la póliza para «Beneficiarios» (HU-W1.4-01). */
+  protected cargarBeneficiarios(): void {
+    const id = this.poliza()?.polizaId;
+    if (!id) {
+      return;
+    }
+    this.faseBeneficiarios.set('cargando');
+    this.api
+      .consultarCondicionesVigentes(id)
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (condiciones) => {
+          this.condiciones.set(condiciones);
+          this.faseBeneficiarios.set('listo');
+        },
+        error: () => this.faseBeneficiarios.set('error'),
+      });
+  }
+
+  /** Las solicitudes más recientes de la póliza para «Mis solicitudes» (HU-W1.4-01). */
+  protected cargarSolicitudes(): void {
+    const id = this.poliza()?.polizaId;
+    if (!id) {
+      return;
+    }
+    this.faseSolicitudes.set('cargando');
+    this.api
+      .listarMisSolicitudes({
+        estado: null,
+        polizaId: id,
+        desde: null,
+        pagina: 1,
+        tamano: SOLICITUDES_EN_DETALLE,
+      })
+      .pipe(takeUntilDestroyed(this.destruccion))
+      .subscribe({
+        next: (pagina) => {
+          this.solicitudes.set(pagina.items);
+          this.faseSolicitudes.set('listo');
+        },
+        error: () => this.faseSolicitudes.set('error'),
+      });
+  }
+
+  protected nombreOneroso(oneroso: BeneficiarioOneroso): string {
+    return nombreDelOneroso(
+      oneroso,
+      this.transloco.translate('originacion.solicitudes.beneficiarios.entidadGenerica'),
+    );
+  }
+
+  protected documento(b: Beneficiario): string {
+    return formatoDocumento(b.tipoDocumento, b.numeroDocumento, this.transloco.getActiveLang());
+  }
+
+  protected participacion(b: Beneficiario): string {
+    return formatoParticipacion(b.participacion, this.transloco.getActiveLang());
+  }
+
+  /** «16/09/2026»: la fecha corta de A11. */
+  protected fechaCorta(iso: string): string {
+    return fechaCorta(iso, this.transloco.getActiveLang());
+  }
+
   /** La clave del título de un paso del historial; un solo intento rechazado va en singular. */
   protected tituloDe(paso: PasoHistorial): string {
     return paso.tipo === 'rechazado' && paso.intentos.length === 1
@@ -209,6 +310,11 @@ export class DetallePolizaPage implements OnInit {
         next: (poliza) => {
           this.poliza.set(poliza);
           this.fase.set('listo');
+          // HU-W1.4-01: una póliza cancelada no muestra beneficiarios ni solicitudes.
+          if (!poliza.cancelacion) {
+            this.cargarBeneficiarios();
+            this.cargarSolicitudes();
+          }
         },
         error: (error: unknown) =>
           this.fase.set(

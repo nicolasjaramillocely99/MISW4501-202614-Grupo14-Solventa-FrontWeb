@@ -2428,12 +2428,16 @@
       "beneficiarios": {
         "titulo": "Beneficiarios",
         "modificar": "Modificar",
-        "sinDatos": "Los beneficiarios de la póliza se verán aquí cuando el sistema los registre."
+        "sinDatos": "Los beneficiarios de la póliza se verán aquí cuando el sistema los registre.",
+        "cargando": "Cargando los beneficiarios…",
+        "error": "No pudimos cargar los beneficiarios de la póliza."
       },
       "solicitudes": {
         "titulo": "Mis solicitudes",
         "verTodas": "Ver todas",
-        "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza."
+        "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza.",
+        "cargando": "Cargando las solicitudes…",
+        "error": "No pudimos cargar las solicitudes de la póliza."
       }
     }
   },

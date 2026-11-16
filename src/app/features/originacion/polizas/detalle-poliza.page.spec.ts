@@ -6,6 +6,14 @@ import {
   DETALLE_CANCELADA_DTO,
   DETALLE_EN_GRACIA_DTO,
 } from '@testing/cancelacion-pruebas';
+import {
+  CONDICIONES_CON_ABIERTA_DTO,
+  PAGINA_SOLICITUDES_DTO,
+  PAGINA_SOLICITUDES_VACIA_DTO,
+  SOLICITUD_BENEFICIARIOS_DTO,
+  SOLICITUD_RECHAZADA_DTO,
+  filaDe,
+} from '@testing/solicitud-modificacion-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, Subject, of, throwError } from 'rxjs';
 
@@ -15,15 +23,32 @@ import {
   mapearDetallePoliza,
 } from '@core/api/originacion/detalle-poliza.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import {
+  CondicionesVigentes,
+  FiltroSolicitudes,
+  PaginaSolicitudes,
+  mapearCondicionesVigentes,
+  mapearPaginaSolicitudes,
+} from '@core/api/originacion/solicitud-modificacion.modelos';
 
 import { DetallePolizaPage, historialDe } from './detalle-poliza.page';
 
 // HU-W1.6-02: A2 · Detalle de la póliza y A2b · Póliza cancelada por no pago.
 
+// HU-W1.4-01 (ajuste A-10): lo que leen «Beneficiarios» y «Mis solicitudes» de A2.
+const CONDICIONES = mapearCondicionesVigentes(CONDICIONES_CON_ABIERTA_DTO);
+const SOLICITUDES = mapearPaginaSolicitudes({
+  ...PAGINA_SOLICITUDES_DTO,
+  items: [filaDe(SOLICITUD_BENEFICIARIOS_DTO), filaDe(SOLICITUD_RECHAZADA_DTO)],
+  total_items: 2,
+});
+
 describe('DetallePolizaPage (A2 y A2b · HU-W1.6-02)', () => {
   const api = {
     consultarPoliza: vi.fn<(id: string) => Observable<DetallePoliza>>(),
     descargarDocumentoContractual: vi.fn<(id: string) => Observable<Blob>>(),
+    consultarCondicionesVigentes: vi.fn<(id: string) => Observable<CondicionesVigentes>>(),
+    listarMisSolicitudes: vi.fn<(filtro: FiltroSolicitudes) => Observable<PaginaSolicitudes>>(),
   };
 
   async function renderizar(respuesta: Observable<DetallePoliza>, id = 'pol-acc-093377') {
@@ -41,7 +66,11 @@ describe('DetallePolizaPage (A2 y A2b · HU-W1.6-02)', () => {
     });
   }
 
-  beforeEach(() => vi.resetAllMocks());
+  beforeEach(() => {
+    vi.resetAllMocks();
+    api.consultarCondicionesVigentes.mockReturnValue(of(CONDICIONES));
+    api.listarMisSolicitudes.mockReturnValue(of(SOLICITUDES));
+  });
 
   it('mientras consulta informa que carga', async () => {
     await renderizar(new Subject<DetallePoliza>());
@@ -124,11 +153,18 @@ describe('DetallePolizaPage (A2 y A2b · HU-W1.6-02)', () => {
   it('A2 tiene todos los botones del prototipo; los que no tienen historia quedan deshabilitados', async () => {
     await renderizar(of(mapearDetallePoliza(DETALLE_AL_DIA_DTO)), 'pol-acc-220331');
 
-    for (const nombre of ['Cancelar póliza', 'Solicitar modificación', 'Modificar', 'Ver todas']) {
-      const boton = screen.getByRole('button', { name: nombre }) as HTMLButtonElement;
-      expect(boton.disabled).toBe(true);
-      expect(boton.getAttribute('aria-describedby')).toBe('proximamente');
+    const cancelar = screen.getByRole('button', { name: 'Cancelar póliza' }) as HTMLButtonElement;
+    expect(cancelar.disabled).toBe(true);
+    expect(cancelar.getAttribute('aria-describedby')).toBe('proximamente');
+    // HU-W1.4-01 (ajuste A-10): la solicitud de modificación y «Mis solicitudes» ya existen.
+    for (const nombre of ['Solicitar modificación', 'Modificar']) {
+      expect(screen.getByRole('link', { name: nombre }).getAttribute('href')).toBe(
+        '/originacion/polizas/pol-acc-220331/modificar',
+      );
     }
+    expect(screen.getByRole('link', { name: 'Ver todas' }).getAttribute('href')).toBe(
+      '/originacion/solicitudes?poliza=pol-acc-220331',
+    );
     expect(screen.getByText('Disponible próximamente.')).toBeTruthy();
     expect(
       (screen.getByRole('button', { name: 'Descargar póliza' }) as HTMLButtonElement).disabled,
@@ -192,6 +228,76 @@ describe('DetallePolizaPage (A2 y A2b · HU-W1.6-02)', () => {
     expect(screen.queryByRole('button', { name: 'Descargar póliza' })).toBeNull();
     expect(screen.queryByRole('region', { name: 'Documentos' })).toBeNull();
     expect(screen.queryByRole('region', { name: 'Beneficiarios' })).toBeNull();
+    // HU-W1.4-01 (ajuste A-10): nada de la solicitud de modificación en una póliza cancelada, ni se consulta.
+    expect(screen.queryByRole('region', { name: 'Mis solicitudes' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Solicitar modificación' })).toBeNull();
+    expect(api.consultarCondicionesVigentes).not.toHaveBeenCalled();
+    expect(api.listarMisSolicitudes).not.toHaveBeenCalled();
+  });
+
+  it('A2 muestra los beneficiarios vigentes con el oneroso y las solicitudes de la póliza (HU-W1.4-01)', async () => {
+    await renderizar(of(mapearDetallePoliza(DETALLE_AL_DIA_DTO)), 'pol-acc-220331');
+
+    expect(api.consultarCondicionesVigentes).toHaveBeenCalledWith('pol-acc-220331');
+    expect(api.listarMisSolicitudes).toHaveBeenCalledWith({
+      estado: null,
+      polizaId: 'pol-acc-220331',
+      desde: null,
+      pagina: 1,
+      tamano: 5,
+    });
+    const beneficiarios = within(screen.getByRole('region', { name: 'Beneficiarios' }));
+    const [, oneroso, designado] = beneficiarios.getAllByRole('row');
+    expect(oneroso.textContent).toContain('Banco Aliado');
+    expect(oneroso.textContent).toContain('Saldo insoluto');
+    expect(designado.textContent).toContain('Mateo Pérez Gómez');
+    expect(designado.textContent).toContain('TI 1.140.223.001');
+    expect(designado.textContent).toContain('Hijo(a)');
+    expect(designado.textContent).toContain('100 %');
+    expect(beneficiarios.queryByText(/se verán aquí/)).toBeNull();
+
+    const solicitudes = within(screen.getByRole('region', { name: 'Mis solicitudes' }));
+    const items = solicitudes.getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+    expect(items[0].textContent).toContain('Beneficiarios');
+    expect(items[0].textContent).toContain('Radicada');
+    expect(items[1].textContent).toContain('Rechazada');
+    expect(
+      solicitudes
+        .getByRole('link', { name: 'Ver detalle de SOL-MOD-2026-0042' })
+        .getAttribute('href'),
+    ).toBe('/originacion/solicitudes/SOL-MOD-2026-0042');
+    expect(solicitudes.queryByText(/Aquí verás/)).toBeNull();
+  });
+
+  it('«Beneficiarios» y «Mis solicitudes» avisan si fallan, dejan reintentar y, vacías, dicen su texto (HU-W1.4-01)', async () => {
+    api.consultarCondicionesVigentes.mockReturnValue(throwError(() => new Error('503')));
+    api.listarMisSolicitudes.mockReturnValue(throwError(() => new Error('503')));
+    await renderizar(of(mapearDetallePoliza(DETALLE_AL_DIA_DTO)), 'pol-acc-220331');
+
+    const beneficiarios = within(screen.getByRole('region', { name: 'Beneficiarios' }));
+    const solicitudes = within(screen.getByRole('region', { name: 'Mis solicitudes' }));
+    expect(beneficiarios.getByRole('alert').textContent).toContain(
+      'No pudimos cargar los beneficiarios',
+    );
+    expect(solicitudes.getByRole('alert').textContent).toContain(
+      'No pudimos cargar las solicitudes',
+    );
+
+    api.consultarCondicionesVigentes.mockReturnValue(
+      of({ ...CONDICIONES, oneroso: null, beneficiarios: [] }),
+    );
+    api.listarMisSolicitudes.mockReturnValue(
+      of(mapearPaginaSolicitudes(PAGINA_SOLICITUDES_VACIA_DTO)),
+    );
+    await userEvent.click(beneficiarios.getByRole('button', { name: 'Reintentar' }));
+    await userEvent.click(solicitudes.getByRole('button', { name: 'Reintentar' }));
+
+    expect(await beneficiarios.findByText(/se verán aquí/)).toBeTruthy();
+    expect(beneficiarios.queryByRole('table')).toBeNull();
+    expect(
+      await solicitudes.findByText('Aquí verás las solicitudes de modificación de esta póliza.'),
+    ).toBeTruthy();
   });
 
   it('una póliza que no existe o no es del asegurado lo dice', async () => {

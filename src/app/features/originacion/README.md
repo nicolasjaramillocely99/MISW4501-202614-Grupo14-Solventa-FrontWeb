@@ -28,7 +28,7 @@
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
 | [A1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=17-266) | Mis pólizas | `/originacion/polizas` | Asegurado | HU-W1.5-02, HU-W1.6-02 | S2 |
-| [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02 | S3 |
+| [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02, HU-W1.4-01 | S3 |
 | [O4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4018) | Historial de endosos de la póliza | `/originacion/polizas/:id/endosos` | Analista de operaciones | HU-W1.4-03 | Could (fuera de alcance) |
 
 ### `endosos/` — F1.4 · Gestión de modificaciones y endosos
@@ -224,14 +224,20 @@ en `originacion.routes.ts` (`rolGuard('asegurado')`; el menú del asegurado ya t
   `cambio-datos-personales` con el correo de contacto de la póliza), con `resumen-cambio` y `antes-de-radicar` a la derecha. Las
   reglas de la captura (`endosos/modelos/validaciones-cambio.ts`) son las mismas del servicio y usan sus nombres de campo, así que un
   `422` se pinta igual que un error propio; «Radicar solicitud» sigue deshabilitado mientras haya errores o se envíe. Un tipo con una
-  solicitud abierta queda bloqueado con «Ver solicitud»; una póliza no vigente no deja radicar. El regreso va a «Mis pólizas»
-  mientras no exista el detalle de la póliza (A2, HU-W1.6-02; decisión D-12).
+  solicitud abierta queda bloqueado con «Ver solicitud»; una póliza no vigente (también la cancelada por no pago de HU-W1.6-02,
+  ajuste A-9) no deja radicar. El regreso va a «Mis pólizas» (decisión D-12).
 - **A3b:** identificador, insignia (`componentes/estado-solicitud`) y pasos Radicada → En revisión → Aplicada o Rechazada, tipo,
   tiempo estimado o fecha de la decisión y «Radicada por … · portal web». «Tu solicitud quedó radicada» solo al venir de radicar;
   rechazada muestra el motivo y «Radicar una nueva».
 - **A11:** indicadores (en revisión, aplicadas este año, rechazadas) sin los filtros, filtros Estado, Póliza y Desde en la URL
   (`endosos/modelos/filtro-solicitudes.ts`), tabla con «Ver detalle», paginación, vacío y error.
-- **A1:** «Solicitar modificación» en cada póliza en vigor de «Mis pólizas».
+- **A1:** «Solicitar modificación» en cada póliza en vigor de «Mis pólizas»; no en una cancelada por no pago (ajuste A-9).
+- **A2 (ajuste A-10):** en el detalle de una póliza que no está cancelada, «Solicitar modificación» lleva a A3; la tarjeta
+  «Beneficiarios» muestra los vigentes con el oneroso (`consultarCondicionesVigentes`, con los formatos de A3 de
+  `endosos/modelos/formato-beneficiario.ts`) y su «Modificar» también lleva a A3 (A3 no elige el tipo por la URL); «Mis solicitudes»
+  muestra las cinco más recientes de la póliza con su estado (`listarMisSolicitudes` con la póliza) y «Ver todas» abre A11 filtrada
+  por ella (`?poliza=`). Cada tarjeta tiene su carga, su error con «Reintentar» y su texto vacío. Una póliza cancelada no muestra ni
+  consulta nada de esto.
 - Textos en `originacion.solicitudes.*`. E2E: `e2e/flujos/originacion/solicitud-modificacion.spec.ts` (API Gateway y Cognito
   simulados con `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/solicitud-modificacion.spec.ts`.
 - **Fuera:** revisar y aplicar la solicitud y el correo del resultado (HU-W1.4-02), adjuntar soportes y las pólizas del núcleo
@@ -258,8 +264,9 @@ cancelación y meses de la prima), `detalle-poliza.modelos.ts` y `OriginacionApi
 - **S6 (asesor):** la tarjeta «Canceladas por no pago» con el contador de los últimos 30 días, el estado *Cancelada por no pago* en el
   filtro y en la fila, sin vencimiento («—») ni acción.
 - **Botones del prototipo:** todos en la interfaz. «Descargar póliza» y «Condiciones particulares» descargan el documento contractual
-  (HU-W1.3-03); los que no tienen historia (cancelar, modificar, ver solicitudes, condiciones generales, certificado, «Hablar con un
-  asesor», «Solicitar nueva cotización») quedan deshabilitados con «Disponible próximamente». Beneficiarios y solicitudes, sin datos. La
+  (HU-W1.3-03); los que no tienen historia (cancelar, condiciones generales, certificado, «Hablar con un asesor», «Solicitar nueva
+  cotización») quedan deshabilitados con «Disponible próximamente». «Solicitar modificación», «Beneficiarios» y «Mis solicitudes» los
+  conecta HU-W1.4-01 (ajuste A-10, en su sección). La
   notificación dice «Correo y push», no «Correo y SMS». En S6 la fila cancelada no tiene «Ver»: la renovación asistida no aplica a ella.
 - E2E: `e2e/flujos/originacion/cancelacion-no-pago.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 

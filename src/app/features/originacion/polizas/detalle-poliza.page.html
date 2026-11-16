@@ -76,15 +76,12 @@
               >
                 {{ t('acciones.cancelar') }}
               </button>
-              <button
-                type="button"
+              <a
                 class="boton boton--secundario"
-                disabled
-                aria-describedby="proximamente"
-                [title]="t('proximamente')"
+                [routerLink]="['/originacion/polizas', p.polizaId, 'modificar']"
               >
                 <svg lucidePencil [size]="16" aria-hidden="true"></svg>{{ t('acciones.modificar') }}
-              </button>
+              </a>
               <button
                 type="button"
                 class="boton boton--primario"
@@ -283,18 +280,76 @@
                   <h2 id="titulo-beneficiarios" class="seccion__titulo">
                     {{ t('beneficiarios.titulo') }}
                   </h2>
-                  <button
-                    type="button"
+                  <a
                     class="enlace"
-                    disabled
-                    aria-describedby="proximamente"
-                    [title]="t('proximamente')"
+                    [routerLink]="['/originacion/polizas', p.polizaId, 'modificar']"
                   >
                     <svg lucidePencil [size]="16" aria-hidden="true"></svg
                     >{{ t('beneficiarios.modificar') }}
-                  </button>
+                  </a>
                 </div>
-                <p class="texto-suave">{{ t('beneficiarios.sinDatos') }}</p>
+                @switch (faseBeneficiarios()) {
+                  @case ('cargando') {
+                    <p class="texto-suave" role="status">{{ t('beneficiarios.cargando') }}</p>
+                  }
+                  @case ('error') {
+                    <div class="aviso aviso--error" role="alert">
+                      <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                      <p>{{ t('beneficiarios.error') }}</p>
+                    </div>
+                    <button type="button" class="enlace" (click)="cargarBeneficiarios()">
+                      {{ t('reintentar') }}
+                    </button>
+                  }
+                  @default {
+                    @if (condiciones(); as c) {
+                      @if (c.oneroso || c.beneficiarios.length > 0) {
+                        <ng-container *transloco="let ts; prefix: 'originacion.solicitudes'">
+                          <div class="tabla-desplazable">
+                            <table class="tabla">
+                              <caption class="visualmente-oculto">
+                                {{
+                                  ts('beneficiarios.tabla')
+                                }}
+                              </caption>
+                              <thead>
+                                <tr>
+                                  <th scope="col">{{ ts('beneficiarios.nombre') }}</th>
+                                  <th scope="col">{{ ts('beneficiarios.documento') }}</th>
+                                  <th scope="col">{{ ts('beneficiarios.parentesco') }}</th>
+                                  <th scope="col">{{ ts('beneficiarios.participacion') }}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @if (c.oneroso; as o) {
+                                  <tr>
+                                    <th scope="row">{{ nombreOneroso(o) }}</th>
+                                    <td>—</td>
+                                    <td>{{ ts('beneficiarios.oneroso') }}</td>
+                                    <td>{{ ts('beneficiarios.saldoInsoluto') }}</td>
+                                  </tr>
+                                }
+                                @for (b of c.beneficiarios; track $index) {
+                                  <tr>
+                                    <th scope="row">{{ b.nombreCompleto }}</th>
+                                    <td>{{ documento(b) }}</td>
+                                    <td>{{ ts('parentescos.' + b.parentesco) }}</td>
+                                    <td>{{ participacion(b) }} %</td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          </div>
+                          @if (c.beneficiarios.length === 0) {
+                            <p class="texto-suave">{{ ts('beneficiarios.sinDesignados') }}</p>
+                          }
+                        </ng-container>
+                      } @else {
+                        <p class="texto-suave">{{ t('beneficiarios.sinDatos') }}</p>
+                      }
+                    }
+                  }
+                }
               </section>
             }
           </div>
@@ -345,17 +400,56 @@
                   <h2 id="titulo-solicitudes" class="seccion__titulo">
                     {{ t('solicitudes.titulo') }}
                   </h2>
-                  <button
-                    type="button"
+                  <a
                     class="enlace"
-                    disabled
-                    aria-describedby="proximamente"
-                    [title]="t('proximamente')"
+                    routerLink="/originacion/solicitudes"
+                    [queryParams]="filtroSolicitudes()"
+                    >{{ t('solicitudes.verTodas') }}</a
                   >
-                    {{ t('solicitudes.verTodas') }}
-                  </button>
                 </div>
-                <p class="texto-suave">{{ t('solicitudes.sinDatos') }}</p>
+                @switch (faseSolicitudes()) {
+                  @case ('cargando') {
+                    <p class="texto-suave" role="status">{{ t('solicitudes.cargando') }}</p>
+                  }
+                  @case ('error') {
+                    <div class="aviso aviso--error" role="alert">
+                      <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+                      <p>{{ t('solicitudes.error') }}</p>
+                    </div>
+                    <button type="button" class="enlace" (click)="cargarSolicitudes()">
+                      {{ t('reintentar') }}
+                    </button>
+                  }
+                  @default {
+                    @if (solicitudes().length === 0) {
+                      <p class="texto-suave">{{ t('solicitudes.sinDatos') }}</p>
+                    } @else {
+                      <ul
+                        class="solicitudes"
+                        *transloco="let ts; prefix: 'originacion.solicitudes'"
+                      >
+                        @for (s of solicitudes(); track s.solicitudId) {
+                          <li>
+                            <div class="solicitudes__dato">
+                              <a
+                                class="enlace"
+                                [routerLink]="['/originacion/solicitudes', s.solicitudId]"
+                                [attr.aria-label]="
+                                  ts('mias.tabla.verDetalleDe', { id: s.solicitudId })
+                                "
+                                >{{ s.solicitudId }}</a
+                              >
+                              <span class="texto-suave">
+                                {{ ts('tipos.' + s.tipo) }} · {{ fechaCorta(s.radicadaEn) }}
+                              </span>
+                            </div>
+                            <app-estado-solicitud [estado]="s.estado" />
+                          </li>
+                        }
+                      </ul>
+                    }
+                  }
+                }
               </section>
             }
 
