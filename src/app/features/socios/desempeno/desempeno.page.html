@@ -1,0 +1,142 @@
+<div class="pagina" *transloco="let t; prefix: 'socios.desempeno'">
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+      <p class="pagina__descripcion">
+        {{ t('subtitulo', { periodo: t('periodos.descripcion.' + periodo()) }) }}
+        @if (desempeno(); as d) {
+          · {{ t('actualizado', { hora: medidoA(d) }) }}
+        }
+      </p>
+    </div>
+
+    <div class="periodos" role="group" [attr.aria-label]="t('periodos.grupo')">
+      @for (item of periodos; track item) {
+        <button
+          type="button"
+          class="periodos__opcion"
+          [class.periodos__opcion--activa]="periodo() === item"
+          [attr.aria-pressed]="periodo() === item"
+          (click)="elegir(item)"
+        >
+          {{ t('periodos.opciones.' + item) }}
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (fase() === 'error') {
+    <div class="aviso aviso--error" role="alert">
+      <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+      <div>
+        <p class="aviso__titulo">{{ t('error.titulo') }}</p>
+        <p>{{ t('error.texto') }}</p>
+        <button type="button" class="boton boton--secundario" (click)="reintentar()">{{ t('error.reintentar') }}</button>
+      </div>
+    </div>
+  } @else if (fase() === 'cargando' && !desempeno()) {
+    <p class="estado-carga" role="status">{{ t('cargando') }}</p>
+  } @else if (desempeno(); as d) {
+    <section
+      [class]="'estado estado--' + d.estado"
+      [attr.aria-label]="t('estado.region')"
+      [attr.aria-busy]="fase() === 'cargando'"
+      data-testid="estado-api"
+    >
+      <span class="estado__icono" aria-hidden="true">
+        @switch (d.estado) {
+          @case ('operational') {
+            <svg lucideCircleCheck [size]="28"></svg>
+          }
+          @case ('unavailable') {
+            <svg lucideOctagonX [size]="28"></svg>
+          }
+          @default {
+            <svg lucideTriangleAlert [size]="28"></svg>
+          }
+        }
+      </span>
+      <div class="estado__texto">
+        <div class="estado__titulo">
+          <h2>{{ t('estado.nombres.' + d.estado) }}</h2>
+          <app-insignia-estado [tono]="tono(d.estado)">{{ t('estado.nombres.' + d.estado) }}</app-insignia-estado>
+        </div>
+        <p>{{ t('estado.descripciones.' + d.estado) }}</p>
+        @if (abierto(); as incidente) {
+          <p class="estado__incidente">
+            {{ t('estado.incidenteAbierto', { ruta: incidente.ruta, hora: inicio(incidente) }) }}
+          </p>
+        }
+      </div>
+    </section>
+
+    <section class="indicadores" [attr.aria-label]="t('metricas.region')">
+      <article class="indicador" data-testid="tarjeta-disponibilidad">
+        <h2 class="indicador__etiqueta">{{ t('metricas.disponibilidad') }}</h2>
+        <p
+          class="indicador__valor"
+          [class.indicador__valor--exito]="disponibilidadCumple()"
+          [class.indicador__valor--error]="!disponibilidadCumple()"
+        >
+          {{ t('metricas.porcentaje', { valor: (d.disponibilidad.porcentaje | formatoNumero: 2) }) }}
+        </p>
+        <p class="indicador__detalle">
+          {{ t('metricas.objetivo', { valor: (d.disponibilidad.objetivo | formatoNumero: 2) }) }}
+          @if (!disponibilidadCumple()) {
+            · {{ t('metricas.bajoObjetivo') }}
+          }
+        </p>
+      </article>
+      <article class="indicador" data-testid="tarjeta-p95">
+        <h2 class="indicador__etiqueta">{{ t('metricas.p95') }}</h2>
+        @if (d.latencia.p95Ms !== null) {
+          <p
+            class="indicador__valor"
+            [class.indicador__valor--exito]="latenciaCumple()"
+            [class.indicador__valor--error]="!latenciaCumple()"
+          >
+            {{ t('metricas.milisegundos', { valor: (d.latencia.p95Ms | formatoNumero: 0) }) }}
+          </p>
+          <p class="indicador__detalle">
+            {{ t('metricas.presupuesto', { valor: (d.latencia.presupuestoMs | formatoNumero: 0) }) }}
+            @if (!latenciaCumple()) {
+              · {{ t('metricas.sobrePresupuesto') }}
+            }
+          </p>
+        } @else {
+          <p class="indicador__valor">—</p>
+          <p class="indicador__detalle">{{ t('metricas.sinSolicitudes') }}</p>
+        }
+      </article>
+    </section>
+
+    <section class="tarjeta incidentes" [attr.aria-labelledby]="'titulo-incidentes'">
+      <h2 id="titulo-incidentes" class="incidentes__titulo">{{ t('incidentes.titulo') }}</h2>
+      @if (d.incidentes.length === 0) {
+        <p class="incidentes__vacio" data-testid="sin-incidentes">
+          <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+          {{ t('incidentes.sinIncidentes') }}
+        </p>
+      } @else {
+        <ul class="incidentes__lista">
+          @for (incidente of d.incidentes; track incidente.id) {
+            <li class="incidente" data-testid="incidente">
+              <div class="incidente__cabecera">
+                <p class="incidente__tipo">{{ t('incidentes.tipos.' + incidente.tipo) }} · {{ incidente.ruta }}</p>
+                <app-insignia-estado [tono]="incidente.resuelto ? 'exito' : 'advertencia'">
+                  {{ incidente.resuelto ? t('incidentes.resuelto') : t('incidentes.enCurso') }}
+                </app-insignia-estado>
+              </div>
+              <p class="incidente__detalle">
+                {{ t('incidentes.inicio', { fecha: inicio(incidente) }) }} ·
+                {{ incidente.resuelto ? t('incidentes.duro', { duracion: duracion(incidente) }) : t('incidentes.llevaAbierto', { duracion: duracion(incidente) }) }}
+              </p>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <p class="nota">{{ t('nota') }}</p>
+  }
+</div>

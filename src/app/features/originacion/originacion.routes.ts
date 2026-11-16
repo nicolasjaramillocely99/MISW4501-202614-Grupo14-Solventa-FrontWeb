@@ -11,6 +11,7 @@ import { SolicitudModificacionPage } from './endosos/solicitud-modificacion.page
 import { DatosClientePage } from './cotizacion-asistida/datos-cliente.page';
 import { FormalizarCompraPage } from './cotizacion-asistida/formalizar-compra.page';
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
+import { DetallePolizaPage } from './polizas/detalle-poliza.page';
 import { MisPolizasPage } from './polizas/mis-polizas.page';
 import { PolizasPorVencerPage } from './renovaciones/polizas-por-vencer.page';
 import { RenovacionAsistidaPage } from './renovaciones/renovacion-asistida.page';
@@ -52,6 +53,7 @@ export const ORIGINACION_ROUTES: Routes = [
       { path: '', component: MisPolizasPage },
       { path: ':id/renovar', component: RenovarPolizaPage },
       { path: ':id/modificar', component: SolicitarModificacionPage },
+      { path: ':id', component: DetallePolizaPage },
     ],
   },
   {

@@ -27,7 +27,7 @@ describe('filtro de las pólizas próximas a vencer (HU-W1.5-01)', () => {
 
     it('descarta lo que no es válido sin romper la página', () => {
       expect(
-        filtroDesdeParametros({ desde: '01/10/2026', hasta: '2026-02-30', estado: 'cancelled_non_payment', pagina: '-2' }),
+        filtroDesdeParametros({ desde: '01/10/2026', hasta: '2026-02-30', estado: 'suspended', pagina: '-2' }),
       ).toEqual({ ...SIN_CRITERIOS, pagina: 1, tamano: 20 });
       expect(filtroDesdeParametros({ pagina: '1.5' }).pagina).toBe(1);
     });
