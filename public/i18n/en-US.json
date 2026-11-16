@@ -1425,7 +1425,9 @@
         "enRenovacion": "Renewal in progress",
         "renovada": "Renewed",
         "noRenovada": "Not renewed",
-        "finalizada": "Ended"
+        "finalizada": "Ended",
+        "pagoPendiente": "Payment pending",
+        "canceladaNoPago": "Non-payment"
       },
       "acciones": {
         "renovar": "Renew",
@@ -1433,7 +1435,9 @@
         "reintentar": "Try again",
         "radicar": "File a claim",
         "modificar": "Request a change",
-        "modificarPoliza": "Request a change to policy {{id}}"
+        "modificarPoliza": "Request a change to policy {{id}}",
+        "verDetalle": "See details",
+        "verDetalleDe": "See the details of policy {{id}}"
       },
       "vacio": {
         "titulo": "You have no active policies yet",
@@ -1468,7 +1472,12 @@
         "prima": "Premium",
         "estado": "Status",
         "acciones": "Actions",
-        "valorAsegurado": "Insured for {{monto}}"
+        "valorAsegurado": "Insured for {{monto}}",
+        "canceladaSinReembolso": "Cancelled for non-payment · no refund"
+      },
+      "avisoPago": {
+        "titulo": "Your policy {{id}} has a payment pending",
+        "texto": "The instalment fell due on {{vence}}. We will keep charging your payment method; if it is not paid, the policy is cancelled on {{cancela}} with no refund. Meanwhile you keep your coverage."
       }
     },
     "renovacion": {
@@ -1629,7 +1638,10 @@
       "cargando": "Loading the policies about to expire…",
       "indicador": {
         "region": "Policies expiring within the renewal window",
-        "titulo": "Expiring in {{dias}} days"
+        "titulo": "Expiring in {{dias}} days",
+        "canceladas": "Cancelled for non-payment",
+        "canceladasRegion": "Policies cancelled for non-payment in the last 30 days",
+        "canceladasNota": "Last 30 days · no refund"
       },
       "filtros": {
         "titulo": "Filter policies about to expire",
@@ -1651,12 +1663,14 @@
         "vence": "Expires",
         "prima": "Premium",
         "estado": "Status",
-        "acciones": "Actions"
+        "acciones": "Actions",
+        "canceladaEl": "Cancelled on {{fecha}}"
       },
       "estados": {
         "expiring": "Expiring",
         "renewal_in_progress": "Renewal in progress",
-        "desconocido": "Other status"
+        "desconocido": "Other status",
+        "cancelled_non_payment": "Cancelled for non-payment"
       },
       "linea": {
         "life": "Life",
@@ -2690,6 +2704,121 @@
           "titulo": "Premium repriced with the engine",
           "unverifiable": "The original offer to price the new amount was not found"
         }
+      }
+    },
+    "detallePoliza": {
+      "cargando": "Loading the policy…",
+      "volver": "My policies",
+      "reintentar": "Retry",
+      "titulo": "Life · {{id}}",
+      "subtitulo": "Term {{desde}} → {{hasta}} · Policyholder and insured: {{titular}}",
+      "subtituloCancelada": "Original term {{desde}} → {{hasta}} · Policyholder and insured: {{titular}}",
+      "noEncontrada": {
+        "titulo": "We could not find the policy",
+        "texto": "Check that the link is right or go back to your policies."
+      },
+      "error": {
+        "titulo": "We could not load the policy",
+        "texto": "Try again in a few moments."
+      },
+      "estado": {
+        "vigente": "Active",
+        "porVencer": "Expiring",
+        "pagoPendiente": "Payment pending",
+        "enRenovacion": "Renewal in progress",
+        "renovada": "Renewed",
+        "noRenovada": "Not renewed",
+        "canceladaNoPago": "Cancelled for non-payment",
+        "finalizada": "Ended"
+      },
+      "cancelada": {
+        "titulo": "Policy cancelled for non-payment",
+        "texto": "The 30-day grace period ended without the payment of instalment {{mes}}, due on {{vence}}, so the policy was cancelled automatically on {{fecha}}. This cancellation has no refund. If you want to be insured again, request a new quote."
+      },
+      "pendiente": {
+        "titulo": "The payment of instalment {{mes}} is pending",
+        "texto": "You keep your coverage. We will charge it again on {{proximo}}; if it is not paid, the policy is cancelled on {{cancela}} with no refund.",
+        "sinIntentos": "You keep your coverage until the end of the grace period. If it is not paid, the policy is cancelled on {{cancela}} with no refund."
+      },
+      "resumen": {
+        "titulo": "Summary",
+        "prima": "Monthly premium",
+        "valorAsegurado": "Insured amount",
+        "vigencia": "Term",
+        "estadoPago": "Payment status",
+        "alDia": "Up to date",
+        "alDiaProximo": "Up to date · next charge {{fecha}}",
+        "pagoPendiente": "Payment pending · instalment {{mes}}",
+        "medio": "Payment method",
+        "tarjeta": "{{marca}} •••• {{ultimos}} (automatic debit)",
+        "pse": "PSE",
+        "sinDato": "—"
+      },
+      "cancelacion": {
+        "titulo": "Cancellation details",
+        "fecha": "Cancellation date",
+        "motivo": "Reason",
+        "motivoTexto": "Non-payment · instalment {{mes}} ({{monto}})",
+        "reembolso": "Refund",
+        "noAplica": "Not applicable",
+        "ultimoPago": "Last payment received",
+        "sinPagos": "None",
+        "gracia": "Grace period",
+        "notificacion": "Notice",
+        "notificada": "E-mail and push sent on {{fecha}}",
+        "porNotificar": "Push sent; the e-mail is on its way"
+      },
+      "coberturas": {
+        "titulo": "Coverages",
+        "tituloSinVigencia": "Coverages (not in force)",
+        "death": "Death of the insured",
+        "total_permanent_disability": "Total and permanent disability"
+      },
+      "historial": {
+        "titulo": "Charge history",
+        "vacio": "No charges yet.",
+        "cancelacion": "Automatic cancellation",
+        "pagado": "Charge of instalment {{mes}} applied",
+        "rechazado": "Charge of instalment {{mes}} declined ({{intentos}} attempts)",
+        "pendiente": "Instalment {{mes}} pending",
+        "finGracia": "{{fecha}} · end of the grace period",
+        "vence": "Due on {{fecha}}",
+        "motivo": {
+          "fondos": "insufficient funds",
+          "sinTarjeta": "no card to charge",
+          "otro": "declined by the bank"
+        },
+        "rechazadoUno": "Charge of instalment {{mes}} declined (1 attempt)"
+      },
+      "ayuda": {
+        "titulo": "What can I do?",
+        "texto": "You can quote again with the same conditions. If you think the charge was declined by mistake, an advisor can review it with you."
+      },
+      "proximamente": "Coming soon.",
+      "errorDescarga": "We could not download the policy. Try again.",
+      "acciones": {
+        "cancelar": "Cancel policy",
+        "modificar": "Request a change",
+        "descargar": "Download policy",
+        "hablarAsesor": "Talk to an advisor",
+        "nuevaCotizacion": "Request a new quote"
+      },
+      "documentos": {
+        "titulo": "Documents",
+        "particulares": "Particular conditions",
+        "generales": "General conditions",
+        "certificado": "Certificate of coverage",
+        "descargar": "Download {{nombre}}"
+      },
+      "beneficiarios": {
+        "titulo": "Beneficiaries",
+        "modificar": "Edit",
+        "sinDatos": "The beneficiaries of the policy will show here once the system records them."
+      },
+      "solicitudes": {
+        "titulo": "My requests",
+        "verTodas": "See all",
+        "sinDatos": "Your change requests for this policy will show here."
       }
     }
   },

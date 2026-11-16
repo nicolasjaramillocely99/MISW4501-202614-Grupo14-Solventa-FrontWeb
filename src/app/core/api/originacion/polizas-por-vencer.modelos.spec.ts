@@ -30,6 +30,7 @@ describe('modelos de las pólizas próximas a vencer (HU-W1.5-01)', () => {
       puedeRenovar: true,
       ventana: { abreEn: '2026-09-02T23:59:00Z', cierraEn: '2026-10-02T23:59:00Z' },
       renovacion: null,
+      canceladaEn: null,
     });
   });
 
@@ -42,7 +43,21 @@ describe('modelos de las pólizas próximas a vencer (HU-W1.5-01)', () => {
   });
 
   it('un estado que el cliente no conoce (el contrato es ampliable) llega como «desconocido»', () => {
-    expect(mapearPolizaPorVencer({ ...POLIZA_POR_VENCER_DTO, status: 'cancelled_non_payment' }).estado).toBe('desconocido');
+    expect(mapearPolizaPorVencer({ ...POLIZA_POR_VENCER_DTO, status: 'suspended' }).estado).toBe('desconocido');
+  });
+
+  it('una póliza cancelada por no pago trae cuándo se canceló, y la página el contador (HU-W1.6-02)', () => {
+    const poliza = mapearPolizaPorVencer({
+      ...POLIZA_POR_VENCER_DTO,
+      status: 'cancelled_non_payment',
+      can_renew: false,
+      cancelled_at: '2026-09-12T05:00:00Z',
+    });
+
+    expect(poliza.estado).toBe('cancelled_non_payment');
+    expect(poliza.canceladaEn).toBe('2026-09-12T05:00:00Z');
+    expect(mapearPaginaPorVencer(paginaPorVencerDto({ cancelled_non_payment_last_30_days: 2 })).canceladasNoPago).toBe(2);
+    expect(mapearPaginaPorVencer(paginaPorVencerDto()).canceladasNoPago).toBe(0);
   });
 
   it('traduce la página con el rango aplicado, la ventana, el indicador y el total', () => {

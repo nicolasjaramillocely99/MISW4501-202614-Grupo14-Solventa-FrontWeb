@@ -26,6 +26,12 @@
   color: var(--color-texto-secundario);
 }
 
+.indicadores {
+  display: grid;
+  gap: var(--espacio-16);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
 .indicador p {
   margin: 0;
 }
@@ -43,6 +49,14 @@
   line-height: 2.25rem;
   font-weight: 600;
   color: var(--color-advertencia-600);
+
+  &--error {
+    color: var(--color-error-600);
+  }
+}
+
+.indicador__nota {
+  color: var(--color-texto-secundario);
 }
 
 // Filtros del frame: tres campos con etiqueta permanente y ayuda debajo, y el conteo a la derecha.

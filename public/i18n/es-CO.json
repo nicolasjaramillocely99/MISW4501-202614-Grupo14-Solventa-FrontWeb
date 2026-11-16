@@ -1425,7 +1425,9 @@
         "enRenovacion": "Renovación en curso",
         "renovada": "Renovada",
         "noRenovada": "No renovada",
-        "finalizada": "Finalizada"
+        "finalizada": "Finalizada",
+        "pagoPendiente": "Pago pendiente",
+        "canceladaNoPago": "No pago"
       },
       "acciones": {
         "renovar": "Renovar",
@@ -1433,7 +1435,9 @@
         "reintentar": "Reintentar",
         "radicar": "Radicar un siniestro",
         "modificar": "Solicitar modificación",
-        "modificarPoliza": "Solicitar modificación de la póliza {{id}}"
+        "modificarPoliza": "Solicitar modificación de la póliza {{id}}",
+        "verDetalle": "Ver detalle",
+        "verDetalleDe": "Ver el detalle de la póliza {{id}}"
       },
       "vacio": {
         "titulo": "Aún no tienes pólizas activas",
@@ -1468,7 +1472,12 @@
         "prima": "Prima",
         "estado": "Estado",
         "acciones": "Acciones",
-        "valorAsegurado": "Asegurado por {{monto}}"
+        "valorAsegurado": "Asegurado por {{monto}}",
+        "canceladaSinReembolso": "Cancelada por no pago · sin reembolso"
+      },
+      "avisoPago": {
+        "titulo": "Tu póliza {{id}} tiene un pago pendiente",
+        "texto": "La cuota venció el {{vence}}. La seguiremos cobrando a tu medio de pago; si no se paga, la póliza se cancela el {{cancela}} sin reembolso. Mientras tanto conservas tu cobertura."
       }
     },
     "renovacion": {
@@ -1629,7 +1638,10 @@
       "cargando": "Cargando las pólizas próximas a vencer…",
       "indicador": {
         "region": "Pólizas que vencen en la ventana de renovación",
-        "titulo": "Vencen en {{dias}} días"
+        "titulo": "Vencen en {{dias}} días",
+        "canceladas": "Canceladas por no pago",
+        "canceladasRegion": "Pólizas canceladas por no pago en los últimos 30 días",
+        "canceladasNota": "Últimos 30 días · sin reembolso"
       },
       "filtros": {
         "titulo": "Filtrar pólizas próximas a vencer",
@@ -1651,12 +1663,14 @@
         "vence": "Vence",
         "prima": "Prima",
         "estado": "Estado",
-        "acciones": "Acciones"
+        "acciones": "Acciones",
+        "canceladaEl": "Cancelada el {{fecha}}"
       },
       "estados": {
         "expiring": "Por vencer",
         "renewal_in_progress": "Renovación en curso",
-        "desconocido": "Otro estado"
+        "desconocido": "Otro estado",
+        "cancelled_non_payment": "Cancelada por no pago"
       },
       "linea": {
         "life": "Vida",
@@ -2690,6 +2704,121 @@
           "titulo": "Prima recalculada con el motor",
           "unverifiable": "No se encontró la oferta de origen para tarifar la nueva suma"
         }
+      }
+    },
+    "detallePoliza": {
+      "cargando": "Cargando la póliza…",
+      "volver": "Mis pólizas",
+      "reintentar": "Reintentar",
+      "titulo": "Vida · {{id}}",
+      "subtitulo": "Vigencia {{desde}} → {{hasta}} · Tomador y asegurado: {{titular}}",
+      "subtituloCancelada": "Vigencia original {{desde}} → {{hasta}} · Tomador y asegurado: {{titular}}",
+      "noEncontrada": {
+        "titulo": "No encontramos la póliza",
+        "texto": "Revisa que el enlace sea correcto o vuelve a tus pólizas."
+      },
+      "error": {
+        "titulo": "No pudimos cargar la póliza",
+        "texto": "Intenta de nuevo en unos momentos."
+      },
+      "estado": {
+        "vigente": "Activa",
+        "porVencer": "Por vencer",
+        "pagoPendiente": "Pago pendiente",
+        "enRenovacion": "Renovación en curso",
+        "renovada": "Renovada",
+        "noRenovada": "No renovada",
+        "canceladaNoPago": "Cancelada por no pago",
+        "finalizada": "Finalizada"
+      },
+      "cancelada": {
+        "titulo": "Póliza cancelada por incumplimiento de pago",
+        "texto": "Se superó el plazo de gracia de 30 días sin recibir el pago de la cuota {{mes}}, que venció el {{vence}}, por lo que la póliza se canceló automáticamente el {{fecha}}. Esta cancelación no genera reembolso. Si deseas volver a asegurarte, solicita una nueva cotización."
+      },
+      "pendiente": {
+        "titulo": "Tienes pendiente el pago de la cuota {{mes}}",
+        "texto": "Conservas tu cobertura. La cobraremos de nuevo el {{proximo}}; si no se paga, la póliza se cancela el {{cancela}} sin reembolso.",
+        "sinIntentos": "Conservas tu cobertura hasta el fin del periodo de gracia. Si no se paga, la póliza se cancela el {{cancela}} sin reembolso."
+      },
+      "resumen": {
+        "titulo": "Resumen",
+        "prima": "Prima mensual",
+        "valorAsegurado": "Valor asegurado",
+        "vigencia": "Vigencia",
+        "estadoPago": "Estado de pago",
+        "alDia": "Al día",
+        "alDiaProximo": "Al día · próximo cobro {{fecha}}",
+        "pagoPendiente": "Pago pendiente · cuota {{mes}}",
+        "medio": "Medio de pago",
+        "tarjeta": "{{marca}} •••• {{ultimos}} (débito automático)",
+        "pse": "PSE",
+        "sinDato": "—"
+      },
+      "cancelacion": {
+        "titulo": "Detalle de la cancelación",
+        "fecha": "Fecha de cancelación",
+        "motivo": "Motivo",
+        "motivoTexto": "No pago · cuota {{mes}} ({{monto}})",
+        "reembolso": "Reembolso",
+        "noAplica": "No aplica",
+        "ultimoPago": "Último pago recibido",
+        "sinPagos": "Ninguno",
+        "gracia": "Periodo de gracia",
+        "notificacion": "Notificación",
+        "notificada": "Correo y push enviados el {{fecha}}",
+        "porNotificar": "Push enviado; el correo está en camino"
+      },
+      "coberturas": {
+        "titulo": "Coberturas",
+        "tituloSinVigencia": "Coberturas (sin vigencia)",
+        "death": "Fallecimiento del asegurado",
+        "total_permanent_disability": "Incapacidad total y permanente"
+      },
+      "historial": {
+        "titulo": "Historial de cobros",
+        "vacio": "Aún no hay cobros.",
+        "cancelacion": "Cancelación automática",
+        "pagado": "Cobro de la cuota {{mes}} aplicado",
+        "rechazado": "Cobro de la cuota {{mes}} rechazado ({{intentos}} intentos)",
+        "pendiente": "Cuota {{mes}} pendiente",
+        "finGracia": "{{fecha}} · fin del periodo de gracia",
+        "vence": "Vence el {{fecha}}",
+        "motivo": {
+          "fondos": "fondos insuficientes",
+          "sinTarjeta": "sin tarjeta para cobrar",
+          "otro": "rechazado por el banco"
+        },
+        "rechazadoUno": "Cobro de la cuota {{mes}} rechazado (1 intento)"
+      },
+      "ayuda": {
+        "titulo": "¿Qué puedo hacer?",
+        "texto": "Puedes cotizar de nuevo con las mismas condiciones. Si crees que el cobro se rechazó por error, un asesor puede revisarlo contigo."
+      },
+      "proximamente": "Disponible próximamente.",
+      "errorDescarga": "No pudimos descargar la póliza. Inténtalo de nuevo.",
+      "acciones": {
+        "cancelar": "Cancelar póliza",
+        "modificar": "Solicitar modificación",
+        "descargar": "Descargar póliza",
+        "hablarAsesor": "Hablar con un asesor",
+        "nuevaCotizacion": "Solicitar nueva cotización"
+      },
+      "documentos": {
+        "titulo": "Documentos",
+        "particulares": "Condiciones particulares",
+        "generales": "Condiciones generales",
+        "certificado": "Certificado de vigencia",
+        "descargar": "Descargar {{nombre}}"
+      },
+      "beneficiarios": {
+        "titulo": "Beneficiarios",
+        "modificar": "Modificar",
+        "sinDatos": "Los beneficiarios de la póliza se verán aquí cuando el sistema los registre."
+      },
+      "solicitudes": {
+        "titulo": "Mis solicitudes",
+        "verTodas": "Ver todas",
+        "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza."
       }
     }
   },

@@ -36,6 +36,7 @@ type Resultado = { tipo: 'pagina'; pagina: PaginaPorVencer } | { tipo: 'error'; 
 const TONO: Readonly<Record<EstadoPolizaPorVencer, TonoInsignia>> = {
   expiring: 'advertencia',
   renewal_in_progress: 'informacion',
+  cancelled_non_payment: 'error',
   desconocido: 'neutro',
 };
 

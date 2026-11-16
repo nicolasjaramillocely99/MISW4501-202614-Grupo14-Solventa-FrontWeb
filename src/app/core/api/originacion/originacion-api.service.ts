@@ -3,6 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
+import { DetallePoliza, DetallePolizaDto, mapearDetallePoliza, traducirErrorPoliza } from './detalle-poliza.modelos';
+
 import {
   Aceptacion,
   AceptacionDto,
@@ -380,6 +382,18 @@ export class OriginacionApiService {
       // La pantalla A1 es la de renovación: las pólizas del núcleo (sin ventana, HU-M1.2-01) se ven en la billetera móvil.
       map((lista) => lista.items.filter(tieneVentana).map(mapearPolizaListada)),
       catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
+    );
+  }
+
+  /**
+   * Detalle de una póliza del asegurado (`GET /v1/policies/{id}`, HU-W1.6-02, pantallas A2 y A2b): la póliza con su
+   * prima mensual, el medio de pago de la emisión y cada mes facturado, el más reciente primero. Falla con
+   * `ErrorPoliza`: `policy_not_found` si no existe o no es del asegurado.
+   */
+  consultarPoliza(id: string): Observable<DetallePoliza> {
+    return this.http.get<DetallePolizaDto>(`${this.base}/v1/policies/${encodeURIComponent(id)}`).pipe(
+      map(mapearDetallePoliza),
+      catchError((error: unknown) => throwError(() => traducirErrorPoliza(error))),
     );
   }
 

@@ -10,15 +10,16 @@ import { ResumenRenovacion, ResumenRenovacionDto, VentanaRenovacion, mapearResum
 
 /**
  * Estado del periodo vigente de la póliza: `expiring` sin renovación («Por vencer»); `renewal_in_progress` con la
- * renovación aceptada y en cobro («Renovación en curso»).
+ * renovación aceptada y en cobro («Renovación en curso»); `cancelled_non_payment` cancelada por no pago en los últimos 30
+ * días (HU-W1.6-02), que el listado muestra para la gestión comercial sin importar el rango.
  */
-export type EstadoPorVencer = 'expiring' | 'renewal_in_progress';
+export type EstadoPorVencer = 'expiring' | 'renewal_in_progress' | 'cancelled_non_payment';
 
-export const ESTADOS_POR_VENCER: readonly EstadoPorVencer[] = ['expiring', 'renewal_in_progress'];
+export const ESTADOS_POR_VENCER: readonly EstadoPorVencer[] = ['expiring', 'renewal_in_progress', 'cancelled_non_payment'];
 
 /**
- * El contrato es ampliable (decisión D-6 a): HU-W1.6-02 agregará las canceladas por no pago. Un valor que este cliente no
- * conoce llega como `desconocido` y se muestra con una insignia neutra.
+ * El contrato es ampliable (decisión D-6 a). Un valor que este cliente no conoce llega como `desconocido` y se muestra
+ * con una insignia neutra.
  */
 export type EstadoPolizaPorVencer = EstadoPorVencer | 'desconocido';
 
@@ -47,6 +48,8 @@ export interface PolizaPorVencer {
   puedeRenovar: boolean;
   ventana: VentanaRenovacion;
   renovacion: ResumenRenovacion | null;
+  /** Cuándo se canceló por no pago (HU-W1.6-02); `null` en las demás. */
+  canceladaEn: string | null;
 }
 
 /** Una página del listado con lo que la pantalla muestra alrededor. */
@@ -59,6 +62,8 @@ export interface PaginaPorVencer {
   diasVentana: number;
   /** Pólizas con el periodo abierto que vencen dentro de la ventana, sin los filtros (la tarjeta). */
   vencenEnVentana: number;
+  /** Pólizas canceladas por no pago en los últimos 30 días, sin los filtros (la tarjeta de HU-W1.6-02). */
+  canceladasNoPago: number;
   /** Pólizas que cumplen el filtro, en todas las páginas. */
   total: number;
   pagina: number;
@@ -78,6 +83,8 @@ export interface PolizaPorVencerDto {
   can_renew: boolean;
   renewal_window: { opens_at: string; closes_at: string };
   renewal: ResumenRenovacionDto | null;
+  /** Desde 0.17.0 (HU-W1.6-02). */
+  cancelled_at?: string | null;
 }
 
 export interface PaginaPorVencerDto {
@@ -86,6 +93,8 @@ export interface PaginaPorVencerDto {
   expires_to: string;
   window_days: number;
   due_within_window: number;
+  /** Desde 0.17.0 (HU-W1.6-02). */
+  cancelled_non_payment_last_30_days?: number;
   total: number;
   page: number;
   page_size: number;
@@ -127,6 +136,7 @@ export function mapearPolizaPorVencer(dto: PolizaPorVencerDto): PolizaPorVencer 
     puedeRenovar: dto.can_renew,
     ventana: { abreEn: dto.renewal_window.opens_at, cierraEn: dto.renewal_window.closes_at },
     renovacion: dto.renewal ? mapearResumenRenovacion(dto.renewal) : null,
+    canceladaEn: dto.cancelled_at ?? null,
   };
 }
 
@@ -137,6 +147,7 @@ export function mapearPaginaPorVencer(dto: PaginaPorVencerDto): PaginaPorVencer 
     hasta: dto.expires_to,
     diasVentana: dto.window_days,
     vencenEnVentana: dto.due_within_window,
+    canceladasNoPago: dto.cancelled_non_payment_last_30_days ?? 0,
     total: dto.total,
     pagina: dto.page,
     tamano: dto.page_size,

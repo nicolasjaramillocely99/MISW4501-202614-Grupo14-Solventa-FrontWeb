@@ -178,7 +178,7 @@ rechazado la solicitud se conserva y se reutiliza `FormularioMedioPagoComponent`
 - Se contrastó con las capturas de A1, A4 y A4b del prototipo. Diferencias: **sin el botón «Hablar con un asesor»** (no hay canal de contacto en el
   sistema), **sin la fila de deducible** (el contrato no la trae), título genérico «Renovar póliza» (no hay producto) y el cobro se hace **al
   aceptar**, como pide el criterio 2 (A4b lo muestra «programado» para el fin de la vigencia). En A1 faltan el producto, el filtro por producto, la
-  tarjeta de siniestros en curso, las pólizas canceladas («Cancelada», «No pago») y «Ver detalle» (A2, HU-W1.6-02), que no existen en el contrato.
+  tarjeta de siniestros en curso y la cancelación voluntaria («Cancelada», HU-W1.6-01), que no existen en el contrato. «No pago» y «Ver detalle» llegaron con HU-W1.6-02.
 - **No hay mockup** de «fuera de la ventana», «pago rechazado», «sin medio de pago» ni «no renovada» (la wiki ya lo anotaba): se diseñaron desde los
   criterios con los mismos componentes de A4.
 - E2E: `e2e/flujos/cotizacion-emision/renovacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
@@ -203,8 +203,7 @@ del asesor ya existía). Contrato: `docs/contratos/HU-W1.5-01-api.md` del backen
 - **Sin resultados (CA-3):** la tabla conserva los encabezados y muestra «Sin pólizas por vencer en el rango» con el rango y el estado
   aplicados y «Limpiar filtros», que vuelve al rango por defecto. Error del servicio con «Reintentar»; 401 y 403 los resuelve el interceptor.
   Paginación «Anterior / Siguiente» de 20 filas, solo con más de una página.
-- **Diferencias con el frame S6, por datos que no existen todavía:** sin la tarjeta y el estado «Cancelada por no pago» (los produce
-  HU-W1.6-02), sin el filtro «Producto» (originación solo emite pólizas de vida: la columna dice «Vida») y el documento sin el tipo
+- **Diferencias con el frame S6, por datos que no existen todavía:** sin el filtro «Producto» (originación solo emite pólizas de vida: la columna dice «Vida») y el documento sin el tipo
   (la póliza no lo guarda). Las pólizas del núcleo de pólizas (Autos, Hogar, Viaje) no se listan: originación no las renueva.
 - E2E: `e2e/flujos/originacion/polizas-por-vencer.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado) y
   el humo `e2e/nube/polizas-por-vencer.spec.ts` (proyecto `nube`).
@@ -273,6 +272,32 @@ que la resuelva primero). En el menú de operaciones, «Endosos» queda activo t
   `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/endosos.spec.ts`.
 - **Fuera:** «Exportar» de la bandeja y del historial (decisión D-11), el cobro de la diferencia de prima de una nueva suma asegurada y
   la fila «Emisión inicial» del historial (la emisión no es un endoso).
+
+**Cancelación de póliza por incumplimiento de pago (HU-W1.6-02)** — `polizas/detalle-poliza.page.ts` (`DetallePolizaPage`, A2 y A2b),
+ruta `/originacion/polizas/:id` (bloque `polizas`, `rolGuard('asegurado')`), los cambios de A1 y de S6. Contrato:
+`docs/contratos/HU-W1.6-02-api.md` del backend (`openapi.yaml` 0.17.0). Cliente: `core/api/originacion/pago-poliza.modelos.ts` (pago,
+cancelación y meses de la prima), `detalle-poliza.modelos.ts` y `OriginacionApiService.consultarPoliza` (`GET /v1/policies/{id}`).
+
+- **Reglas (del backend):** la prima es mensual; cada cuota vence el día del mes en que empezó la vigencia; 30 días de gracia con
+  cobertura y tres cobros (días 1, 8 y 15); el día 31 la póliza se cancela sin reembolso y se avisa por correo y *push* (no SMS).
+- **Estado de la póliza** (`polizas/modelos/estado-poliza.ts`, compartido por A1 y A2): *No pago* (cancelada) pesa más que todo; luego la
+  renovación; luego *Pago pendiente* (cuota en gracia), que pesa más que *Por vencer* porque se cancela antes. *Pago pendiente* cuenta
+  como activa.
+- **A1:** las insignias *Pago pendiente* y *No pago*, un aviso de la póliza en gracia con la fecha de cancelación, la vigencia de una
+  cancelada hasta el día de la cancelación con «Cancelada por no pago · sin reembolso», el número de póliza enlazado al detalle y
+  «Ver detalle» cuando no hay renovación que ofrecer.
+- **A2:** resumen (prima mensual, valor asegurado, vigencia, estado de pago con el próximo cobro y medio de pago), coberturas e
+  historial de cobros. En gracia, un aviso con el próximo cobro y la fecha de cancelación.
+- **A2b:** aviso de la cancelación, «Detalle de la cancelación» (fecha, motivo con la cuota, reembolso *No aplica*, último pago, periodo de
+  gracia y aviso enviado), coberturas *sin vigencia*, historial (cancelación, cuota rechazada con sus intentos y motivo, pagos) y
+  «¿Qué puedo hacer?».
+- **S6 (asesor):** la tarjeta «Canceladas por no pago» con el contador de los últimos 30 días, el estado *Cancelada por no pago* en el
+  filtro y en la fila, sin vencimiento («—») ni acción.
+- **Botones del prototipo:** todos en la interfaz. «Descargar póliza» y «Condiciones particulares» descargan el documento contractual
+  (HU-W1.3-03); los que no tienen historia (cancelar, modificar, ver solicitudes, condiciones generales, certificado, «Hablar con un
+  asesor», «Solicitar nueva cotización») quedan deshabilitados con «Disponible próximamente». Beneficiarios y solicitudes, sin datos. La
+  notificación dice «Correo y push», no «Correo y SMS». En S6 la fila cancelada no tiene «Ver»: la renovación asistida no aplica a ella.
+- E2E: `e2e/flujos/originacion/cancelacion-no-pago.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
 
 **Renovación asistida con recotización (HU-W1.5-03)** — `renovaciones/renovacion-asistida.page.ts` (`RenovacionAsistidaPage`, S7 y S7b),
 ruta `/originacion/renovaciones/:id` (el `policy_id`) en el bloque `renovaciones` de `originacion.routes.ts` (`rolGuard('asesor')`). Se
