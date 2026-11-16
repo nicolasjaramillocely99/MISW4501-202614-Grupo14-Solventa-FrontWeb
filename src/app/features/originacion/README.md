@@ -248,7 +248,7 @@ en `originacion.routes.ts` (`rolGuard('asegurado')`; el menú del asegurado ya t
 rutas `/originacion/endosos` y `/originacion/endosos/:id` (bloque `endosos`, `rolGuard('operaciones')`) y
 `/originacion/polizas/:id/endosos` (`canActivate: [rolGuard('operaciones')]`, declarada antes del bloque `polizas` del asegurado para
 que la resuelva primero). En el menú de operaciones, «Endosos» queda activo también en el historial (`tambienEn`). Contrato:
-`docs/contratos/HU-W1.4-02-api.md` del backend (servicio `origination`, `openapi.yaml` v0.17.0).
+`docs/contratos/HU-W1.4-02-api.md` del backend (servicio `origination`, `openapi.yaml` v0.19.0).
 
 - Llama a `OriginacionApiService`: `listarSolicitudesEndoso`, `iniciarRevisionEndoso`, `consultarSolicitudEndoso`, `aplicarEndoso`,
   `rechazarSolicitudEndoso`, `devolverSolicitudEndoso` y `consultarHistorialEndosos`. Los errores llegan como `ErrorEndoso` con el

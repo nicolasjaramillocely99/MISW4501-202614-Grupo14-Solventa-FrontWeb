@@ -13,7 +13,7 @@ import {
 
 /**
  * Modelos de la aplicación controlada del endoso (HU-W1.4-02, pantallas O2, O3, O3b y O4), tipados según
- * `services/origination/api/openapi.yaml` 0.17.0 del backend y su contrato para el front (`HU-W1.4-02-api.md`). El cliente
+ * `services/origination/api/openapi.yaml` 0.19.0 del backend y su contrato para el front (`HU-W1.4-02-api.md`). El cliente
  * traduce el JSON del contrato (snake_case) a estos tipos (camelCase). Reutiliza los tipos de la solicitud de HU-W1.4-01.
  */
 

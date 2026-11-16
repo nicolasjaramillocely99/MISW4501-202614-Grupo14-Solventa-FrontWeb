@@ -2,7 +2,7 @@ import { Page, Route } from '@playwright/test';
 
 /**
  * Datos y API Gateway simulado de las E2E de los endosos del analista (HU-W1.4-02), con la forma del contrato
- * (`HU-W1.4-02-api.md`, `openapi.yaml` 0.17.0 de `origination`). El gateway guarda el estado de cada solicitud: *Revisar*
+ * (`HU-W1.4-02-api.md`, `openapi.yaml` 0.19.0 de `origination`). El gateway guarda el estado de cada solicitud: *Revisar*
  * la pasa a «En revisión», *Aplicar endoso* la aplica (SOL-MOD-2026-0042) o registra el intento no aplicado porque el
  * documento de un beneficiario no está en la Registraduría (SOL-MOD-2026-0043), y *Rechazar* y *Devolver al asegurado*
  * exigen observaciones de 10 a 500 caracteres, como el servicio.
