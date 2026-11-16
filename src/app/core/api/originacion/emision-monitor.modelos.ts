@@ -17,10 +17,14 @@ export type EstadoEmision = 'accepted' | 'charging' | 'active' | 'notified' | 'e
 
 export const ESTADOS_EMISION: readonly EstadoEmision[] = ['accepted', 'charging', 'active', 'notified', 'exception'];
 
-/** Dónde se registró la aceptación; `advisor` es la compra formalizada por un asesor (HU-W1.1-03). El aliado y el asesor no se guardan en la aceptación. */
-export type CanalEmision = 'web' | 'mobile' | 'advisor';
+/**
+ * Dónde se registró la aceptación; `advisor` es la compra formalizada por un asesor (HU-W1.1-03) y `renewal` la emisión
+ * de una renovación, en línea (HU-W1.5-02) o asistida (HU-W1.5-03), como en el `enum` de `channel` del contrato de
+ * `origination`. El aliado y el asesor no se guardan en la aceptación.
+ */
+export type CanalEmision = 'web' | 'mobile' | 'advisor' | 'renewal';
 
-export const CANALES_EMISION: readonly CanalEmision[] = ['web', 'mobile', 'advisor'];
+export const CANALES_EMISION: readonly CanalEmision[] = ['web', 'mobile', 'advisor', 'renewal'];
 
 /** Paso del recorrido en el que está la emisión o, si es una excepción, en el que falló. */
 export type PasoEmision =

@@ -1124,7 +1124,8 @@
       "canales": {
         "web": "Web",
         "mobile": "Mobile",
-        "advisor": "Advisor"
+        "advisor": "Advisor",
+        "renewal": "Renewal"
       },
       "motivos": {
         "retry_window_expired": "The payment gateway did not respond within the 24-hour window",
