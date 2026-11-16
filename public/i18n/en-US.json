@@ -2813,12 +2813,16 @@
       "beneficiarios": {
         "titulo": "Beneficiaries",
         "modificar": "Edit",
-        "sinDatos": "The beneficiaries of the policy will show here once the system records them."
+        "sinDatos": "The beneficiaries of the policy will show here once the system records them.",
+        "cargando": "Loading the beneficiaries…",
+        "error": "We could not load the beneficiaries of the policy."
       },
       "solicitudes": {
         "titulo": "My requests",
         "verTodas": "See all",
-        "sinDatos": "Your change requests for this policy will show here."
+        "sinDatos": "Your change requests for this policy will show here.",
+        "cargando": "Loading the requests…",
+        "error": "We could not load the requests of the policy."
       }
     }
   },

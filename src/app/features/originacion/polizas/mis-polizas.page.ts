@@ -31,8 +31,8 @@ const MS_POR_DIA = 86_400_000;
  * asegurado con su vigencia y, dentro de la ventana de renovación, la entrada a «Renovar póliza» (A4). Solo
  * ofrece renovar cuando el backend dice `can_renew`: fuera de la ventana la opción no existe (criterio 3).
  *
- * Cada póliza en vigor ofrece además «Solicitar modificación» (HU-W1.4-01, A3), la entrada a la solicitud mientras no
- * exista el detalle de la póliza (decisión D-12).
+ * Cada póliza en vigor ofrece además «Solicitar modificación» (HU-W1.4-01, A3), que también está en el detalle de la póliza
+ * (A2, ajuste A-10); una cancelada por no pago no la ofrece (ajuste A-9).
  *
  * HU-W1.6-02: el estado del pago (una cuota en gracia es «Pago pendiente» y avisa cuándo se cancela; una póliza
  * cancelada es «No pago», sin reembolso) y el enlace al detalle (A2 y A2b). Sin producto ni siniestros en curso, que
@@ -115,10 +115,14 @@ export class MisPolizasPage implements OnInit {
   }
 
   /**
-   * La póliza está en vigor ahora (empezó y no ha terminado): solo sobre ella se puede solicitar una modificación
-   * (HU-W1.4-01, «Solicitar modificación» lleva a A3).
+   * La póliza está en vigor ahora (empezó, no ha terminado y no fue cancelada por no pago): solo sobre ella se puede
+   * solicitar una modificación (HU-W1.4-01, «Solicitar modificación» lleva a A3). La cancelación de HU-W1.6-02 no cambia
+   * las fechas de la cobertura, así que cuenta aparte, como en el servicio (ajuste A-9).
    */
   protected vigenteAhora(poliza: PolizaListada): boolean {
+    if (estadoDePoliza(poliza) === 'canceladaNoPago') {
+      return false;
+    }
     const ahora = Date.now();
     return new Date(poliza.vigenciaDesde).getTime() <= ahora && ahora < new Date(poliza.vigenciaHasta).getTime();
   }

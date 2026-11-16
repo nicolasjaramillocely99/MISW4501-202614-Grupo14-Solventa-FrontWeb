@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 /**
  * Modelos de la solicitud de modificación del asegurado (HU-W1.4-01, pantallas A3, A3b y A11), tipados según
- * `services/origination/api/openapi.yaml` 0.16.0 del backend y su contrato para el front (`HU-W1.4-01-api.md`). El cliente
+ * `services/origination/api/openapi.yaml` 0.18.0 del backend y su contrato para el front (`HU-W1.4-01-api.md`). El cliente
  * traduce el JSON del contrato (snake_case) a estos tipos (camelCase). HU-W1.4-02 (bandeja del analista) los reutiliza.
  */
 
