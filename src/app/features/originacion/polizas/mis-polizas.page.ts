@@ -115,10 +115,14 @@ export class MisPolizasPage implements OnInit {
   }
 
   /**
-   * La póliza está en vigor ahora (empezó y no ha terminado): solo sobre ella se puede solicitar una modificación
-   * (HU-W1.4-01, «Solicitar modificación» lleva a A3).
+   * La póliza está en vigor ahora (empezó, no ha terminado y no fue cancelada por no pago): solo sobre ella se puede
+   * solicitar una modificación (HU-W1.4-01, «Solicitar modificación» lleva a A3). La cancelación de HU-W1.6-02 no cambia
+   * las fechas de la cobertura, así que cuenta aparte, como en el servicio (ajuste A-9).
    */
   protected vigenteAhora(poliza: PolizaListada): boolean {
+    if (estadoDePoliza(poliza) === 'canceladaNoPago') {
+      return false;
+    }
     const ahora = Date.now();
     return new Date(poliza.vigenciaDesde).getTime() <= ahora && ahora < new Date(poliza.vigenciaHasta).getTime();
   }
