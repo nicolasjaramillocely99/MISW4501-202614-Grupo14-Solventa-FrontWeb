@@ -1,0 +1,21 @@
+<div class="tabla-cambios" *transloco="let t; prefix: 'originacion.endosos.detalle.cambio'">
+  <table class="tabla">
+    <caption class="visualmente-oculto">{{ t('titulo') }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ t('campo') }}</th>
+        <th scope="col">{{ t('anterior') }}</th>
+        <th scope="col">{{ t('nuevo') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (fila of filas(); track $index) {
+        <tr>
+          <th scope="row">{{ fila.campo }}</th>
+          <td>{{ fila.anterior }}</td>
+          <td [class.tabla__nuevo]="fila.cambia">{{ fila.nuevo }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

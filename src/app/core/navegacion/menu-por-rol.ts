@@ -62,7 +62,13 @@ export const MENU_POR_ROL: Readonly<Record<Rol, readonly ItemMenu[]>> = {
   operaciones: [
     INICIO,
     { clave: 'menu.emisiones', ruta: '/originacion/emisiones', icono: LucideActivity },
-    { clave: 'menu.endosos', ruta: '/originacion/endosos', icono: LucidePencil },
+    {
+      clave: 'menu.endosos',
+      ruta: '/originacion/endosos',
+      icono: LucidePencil,
+      // HU-W1.4-02: el historial de endosos de una póliza (`/originacion/polizas/:id/endosos`, O4) también es de «Endosos».
+      tambienEn: ['/originacion/polizas'],
+    },
     {
       clave: 'menu.siniestros',
       // HU-W2.2-03: entra a los casos en evaluación. La cola por id y la prioridad de HU-W2.2-01 (`/siniestros/cola`)

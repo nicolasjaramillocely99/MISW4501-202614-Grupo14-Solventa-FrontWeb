@@ -11,6 +11,11 @@ import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { of, throwError } from 'rxjs';
 
 import { mapearListaEmisiones } from '@core/api/originacion/emision-monitor.modelos';
+import {
+  mapearDetalleEndoso,
+  mapearHistorialEndosos,
+  mapearPaginaEndosos,
+} from '@core/api/originacion/endosos.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
 import { mapearPaginaPorVencer } from '@core/api/originacion/polizas-por-vencer.modelos';
 import { mapearRenovacionAsistida } from '@core/api/originacion/renovacion-asistida.modelos';
@@ -22,6 +27,7 @@ import {
   mapearSolicitudModificacion,
 } from '@core/api/originacion/solicitud-modificacion.modelos';
 import { LISTA_EMISIONES_DTO } from '@testing/emision-monitor-pruebas';
+import { DETALLE_BENEFICIARIOS_DTO, HISTORIAL_ENDOSOS_DTO, PAGINA_ENDOSOS_DTO } from '@testing/endosos-pruebas';
 import { PAGINA_POR_VENCER_DTO } from '@testing/polizas-por-vencer-pruebas';
 import { RENOVACION_SIN_RECOTIZAR_DTO } from '@testing/renovacion-asistida-pruebas';
 import { SOLICITUD_PENDIENTE_DTO } from '@testing/revision-pruebas';
@@ -483,6 +489,78 @@ describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
   it('asesor, operaciones y socio reciben «acceso no autorizado» (CA-4)', async () => {
     for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
       for (const destino of ['/originacion/polizas/pol-1/modificar', '/originacion/solicitudes', '/originacion/solicitudes/SOL-MOD-2026-0042']) {
+        await iniciarSesionComo(rol);
+
+        await harness.navigateByUrl(destino);
+
+        expect(url()).toBe('/acceso/no-autorizado');
+      }
+    }
+  });
+});
+
+describe('rutas de los endosos del analista (HU-W1.4-02)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            listarSolicitudesEndoso: () => of(mapearPaginaEndosos(PAGINA_ENDOSOS_DTO)),
+            consultarSolicitudEndoso: () => of(mapearDetalleEndoso(DETALLE_BENEFICIARIOS_DTO)),
+            consultarHistorialEndosos: () => of(mapearHistorialEndosos(HISTORIAL_ENDOSOS_DTO)),
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+  const destinos = ['/originacion/endosos', '/originacion/endosos/SOL-MOD-2026-0042', '/originacion/polizas/pol-acc-4f2a/endosos'];
+
+  it('operaciones abre la bandeja, el detalle y el historial dentro del shell del portal', async () => {
+    await iniciarSesionComo('operaciones');
+
+    for (const [destino, pagina] of [
+      [destinos[0], 'app-bandeja-endosos-page'],
+      [destinos[1], 'app-detalle-endoso-page'],
+      [destinos[2], 'app-historial-endosos-page'],
+    ]) {
+      await harness.navigateByUrl(destino);
+
+      expect(url()).toBe(destino);
+      expect(harness.routeNativeElement?.querySelector(pagina)).not.toBeNull();
+    }
+  });
+
+  it('el historial de una póliza deja activo «Endosos» en el menú de operaciones', async () => {
+    await iniciarSesionComo('operaciones');
+
+    await harness.navigateByUrl(destinos[2]);
+
+    const activo = harness.routeNativeElement?.querySelector('nav a[aria-current="page"]');
+    expect(activo?.getAttribute('href')).toBe('/originacion/endosos');
+  });
+
+  it('asegurado, asesor y socio reciben «acceso no autorizado» en las tres pantallas', async () => {
+    for (const rol of ['asegurado', 'asesor', 'socio'] as const) {
+      for (const destino of destinos) {
         await iniciarSesionComo(rol);
 
         await harness.navigateByUrl(destino);

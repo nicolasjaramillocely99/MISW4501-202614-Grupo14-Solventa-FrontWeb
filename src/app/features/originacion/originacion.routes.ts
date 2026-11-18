@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { BandejaDecisionPage } from './bandeja-decision/bandeja-decision.page';
+import { BandejaEndososPage } from './endosos/bandeja-endosos.page';
+import { DetalleEndosoPage } from './endosos/detalle-endoso.page';
 import { DetalleSolicitudPage } from './bandeja-decision/detalle-solicitud.page';
 import { EmisionesPage } from './emisiones/emisiones.page';
 import { MisSolicitudesPage } from './endosos/mis-solicitudes.page';
@@ -13,6 +15,7 @@ import { FormalizarCompraPage } from './cotizacion-asistida/formalizar-compra.pa
 import { ResultadoCotizacionPage } from './cotizacion-asistida/resultado-cotizacion.page';
 import { DetallePolizaPage } from './polizas/detalle-poliza.page';
 import { MisPolizasPage } from './polizas/mis-polizas.page';
+import { HistorialEndososPage } from './polizas/historial-endosos.page';
 import { PolizasPorVencerPage } from './renovaciones/polizas-por-vencer.page';
 import { RenovacionAsistidaPage } from './renovaciones/renovacion-asistida.page';
 import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
@@ -26,7 +29,9 @@ import { RenovarPolizaPage } from './renovaciones/renovar-poliza.page';
  * sus pólizas (A1) y la renovación en línea (HU-W1.5-02, `polizas/:id/renovar`) y, para el asesor, las pólizas próximas
  * a vencer (HU-W1.5-01, `renovaciones`) y su renovación asistida con recotización (HU-W1.5-03, `renovaciones/:id`, el
  * `policy_id`). Para el asegurado, la solicitud de modificación de una póliza (HU-W1.4-01, `polizas/:id/modificar`), sus
- * solicitudes (`solicitudes`) y el detalle de cada una (`solicitudes/:id`).
+ * solicitudes (`solicitudes`) y el detalle de cada una (`solicitudes/:id`). Para operaciones, la bandeja de endosos
+ * (HU-W1.4-02, `endosos`), el detalle de cada solicitud (`endosos/:id`) y el historial de endosos de una póliza
+ * (`polizas/:id/endosos`, declarado antes del bloque `polizas` del asegurado para que lo resuelva primero).
  */
 export const ORIGINACION_ROUTES: Routes = [
   {
@@ -47,6 +52,11 @@ export const ORIGINACION_ROUTES: Routes = [
     ],
   },
   {
+    path: 'polizas/:id/endosos',
+    canActivate: [rolGuard('operaciones')],
+    component: HistorialEndososPage,
+  },
+  {
     path: 'polizas',
     canActivateChild: [rolGuard('asegurado')],
     children: [
@@ -62,6 +72,14 @@ export const ORIGINACION_ROUTES: Routes = [
     children: [
       { path: '', component: MisSolicitudesPage },
       { path: ':id', component: SolicitudModificacionPage },
+    ],
+  },
+  {
+    path: 'endosos',
+    canActivateChild: [rolGuard('operaciones')],
+    children: [
+      { path: '', component: BandejaEndososPage },
+      { path: ':id', component: DetalleEndosoPage },
     ],
   },
   {

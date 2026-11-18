@@ -20,6 +20,13 @@ import {
   RENOVACION_RECOTIZADA_DTO,
 } from '@testing/renovacion-asistida-pruebas';
 import { OFERTA_NORMAL_DTO, OFERTA_VENCIDA_DTO } from '@testing/oferta-pruebas';
+import {
+  APLICACION_APLICADA_DTO,
+  DETALLE_BENEFICIARIOS_DTO,
+  HISTORIAL_ENDOSOS_DTO,
+  PAGINA_ENDOSOS_DTO,
+  SOLICITUD_BENEFICIARIOS_ENDOSO_DTO,
+} from '@testing/endosos-pruebas';
 import { SOLICITUD_AJUSTADA_DTO, SOLICITUD_PENDIENTE_DTO, SOLICITUD_RECHAZADA_DTO } from '@testing/revision-pruebas';
 import {
   CONDICIONES_VIGENTES_DTO,
@@ -30,6 +37,13 @@ import {
 
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
 import { ErrorCobro, mapearCobro } from './cobro.modelos';
+import {
+  ErrorEndoso,
+  mapearDetalleEndoso,
+  mapearHistorialEndosos,
+  mapearPaginaEndosos,
+  mapearResultadoAplicacion,
+} from './endosos.modelos';
 import { OriginacionApiService } from './originacion-api.service';
 import { ErrorCotizacionAsistida, mapearCotizacionAsistida } from './cotizacion-asistida.modelos';
 import { ErrorFormalizacion, SolicitudFormalizacion } from './formalizacion.modelos';
@@ -616,6 +630,76 @@ describe('OriginacionApiService', () => {
         .flush({ error: 'change_request_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect(codigos).toEqual(['forbidden', 'change_request_not_found']);
+    });
+  });
+
+  describe('endosos del analista (HU-W1.4-02)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+    const RUTA = `${BASE}/v1/policies/endorsement-requests`;
+
+    it('lista la bandeja con los filtros que tienen valor', () => {
+      let recibido: unknown;
+      servicio
+        .listarSolicitudesEndoso({ tipo: 'beneficiaries', estado: 'pending', desde: null, pagina: 1, tamano: 20 })
+        .subscribe((r) => (recibido = r));
+
+      const peticion = http.expectOne((r) => r.url === RUTA);
+      expect(peticion.request.params.get('change_type')).toBe('beneficiaries');
+      expect(peticion.request.params.get('status')).toBe('pending');
+      expect(peticion.request.params.has('filed_from')).toBe(false);
+      peticion.flush(PAGINA_ENDOSOS_DTO);
+
+      expect(recibido).toEqual(mapearPaginaEndosos(PAGINA_ENDOSOS_DTO));
+    });
+
+    it('consulta el detalle, toma la solicitud y la aplica', () => {
+      const recibidos: unknown[] = [];
+      servicio.consultarSolicitudEndoso('SOL-MOD-2026-0042').subscribe((r) => recibidos.push(r));
+      http.expectOne(`${RUTA}/SOL-MOD-2026-0042`).flush(DETALLE_BENEFICIARIOS_DTO);
+
+      servicio.iniciarRevisionEndoso('SOL-MOD-2026-0042').subscribe((r) => recibidos.push(r.estado));
+      const toma = http.expectOne(`${RUTA}/SOL-MOD-2026-0042/review`);
+      expect(toma.request.method).toBe('POST');
+      toma.flush({ request: SOLICITUD_BENEFICIARIOS_ENDOSO_DTO });
+
+      servicio.aplicarEndoso('SOL-MOD-2026-0042').subscribe((r) => recibidos.push(r));
+      http.expectOne(`${RUTA}/SOL-MOD-2026-0042/application`).flush(APLICACION_APLICADA_DTO);
+
+      expect(recibidos).toEqual([
+        mapearDetalleEndoso(DETALLE_BENEFICIARIOS_DTO),
+        'enRevision',
+        mapearResultadoAplicacion(APLICACION_APLICADA_DTO),
+      ]);
+    });
+
+    it('rechaza y devuelve con las observaciones, y traduce los errores', () => {
+      const codigos: string[] = [];
+      servicio.rechazarSolicitudEndoso('SOL-MOD-2026-0042', 'No procede el cambio').subscribe();
+      const rechazo = http.expectOne(`${RUTA}/SOL-MOD-2026-0042/rejection`);
+      expect(rechazo.request.body).toEqual({ observations: 'No procede el cambio' });
+      rechazo.flush({ request: { ...SOLICITUD_BENEFICIARIOS_ENDOSO_DTO, status: 'rejected' } });
+
+      servicio.devolverSolicitudEndoso('SOL-MOD-2026-0043', 'Corrige el documento').subscribe({
+        error: (e: ErrorEndoso) => codigos.push(`${e.codigo}:${e.estadoActual}`),
+      });
+      http
+        .expectOne(`${RUTA}/SOL-MOD-2026-0043/return`)
+        .flush({ error: 'not_returnable', message: 'm', status: 'applied' }, { status: 409, statusText: 'Conflict' });
+
+      servicio.aplicarEndoso('SOL-MOD-2026-0044').subscribe({ error: (e: ErrorEndoso) => codigos.push(e.noVerificables.join()) });
+      http
+        .expectOne(`${RUTA}/SOL-MOD-2026-0044/application`)
+        .flush({ error: 'validation_unverifiable', message: 'm', unverifiable: ['no_open_claim'] }, { status: 503, statusText: 'x' });
+
+      expect(codigos).toEqual(['not_returnable:applied', 'no_open_claim']);
+    });
+
+    it('consulta el historial de la póliza', () => {
+      let recibido: unknown;
+      servicio.consultarHistorialEndosos('pol-acc-4f2a').subscribe((r) => (recibido = r));
+      http.expectOne(`${BASE}/v1/policies/pol-acc-4f2a/endorsements`).flush(HISTORIAL_ENDOSOS_DTO);
+
+      expect(recibido).toEqual(mapearHistorialEndosos(HISTORIAL_ENDOSOS_DTO));
     });
   });
 

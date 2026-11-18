@@ -1124,7 +1124,8 @@
       "canales": {
         "web": "Web",
         "mobile": "Móvil",
-        "advisor": "Asesor"
+        "advisor": "Asesor",
+        "renewal": "Renovación"
       },
       "motivos": {
         "retry_window_expired": "La pasarela de pagos no respondió en la ventana de 24 horas",
@@ -2318,6 +2319,390 @@
           "pagina": "Página {{pagina}} de {{total}}",
           "anterior": "Anterior",
           "siguiente": "Siguiente"
+        }
+      }
+    },
+    "endosos": {
+      "estados": {
+        "radicada": "Radicada",
+        "enRevision": "En revisión",
+        "aplicada": "Aplicada",
+        "rechazada": "Rechazada",
+        "noAplicado": "No aplicado",
+        "desconocido": "Estado desconocido"
+      },
+      "tipos": {
+        "beneficiaries": "Beneficiarios",
+        "insured_amount": "Sumas aseguradas",
+        "personal_data": "Datos personales"
+      },
+      "tiposCambio": {
+        "beneficiaries": "Cambio de beneficiarios",
+        "insured_amount": "Cambio de suma asegurada",
+        "personal_data": "Actualización de datos personales"
+      },
+      "canal": {
+        "web": "portal web",
+        "mobile": "app móvil"
+      },
+      "canalDesde": {
+        "web": "desde el portal",
+        "mobile": "desde la app"
+      },
+      "linea": {
+        "life": "Vida hipotecario"
+      },
+      "bandeja": {
+        "titulo": "Endosos",
+        "subtitulo": "Solicitudes de modificación radicadas por los asegurados. Revísalas y aplícalas con las validaciones del negocio; el nuevo estado contractual se reflejará en todos los canales.",
+        "indicadores": {
+          "region": "Indicadores de los endosos",
+          "pendientes": "Pendientes",
+          "vencidas": "{{n}} llevan más de 24 h",
+          "vencidaUna": "1 lleva más de 24 h",
+          "ningunaVencida": "Ninguna lleva más de 24 h",
+          "aplicadosHoy": "Aplicados hoy",
+          "tiempoMedio": "Tiempo medio {{tiempo}}",
+          "sinAplicaciones": "Sin aplicaciones hoy",
+          "rechazados": "Rechazados (7 días)",
+          "sinRechazos": "Sin rechazos ni intentos no aplicados",
+          "horasMinutos": "{{h}} h {{m}} min",
+          "minutos": "{{m}} min"
+        },
+        "motivos": {
+          "analyst_rejection": "Rechazo del analista",
+          "shares_total_100": "Validación de participación",
+          "onerous_beneficiary_intact": "Beneficiario oneroso",
+          "identity_documents_valid": "Documentos de identidad",
+          "no_open_claim": "Siniestro en curso",
+          "requester_is_holder": "Solicitante distinto del tomador",
+          "insured_amount_within_limits": "Límites de la suma asegurada",
+          "personal_data_valid": "Formato de los datos",
+          "policy_in_force": "Póliza no vigente",
+          "previous_values_current": "Valores anteriores cambiados",
+          "no_renewal_in_progress": "Renovación en curso",
+          "premium_recalculated": "Prima sin calcular",
+          "otro": "Otro motivo"
+        },
+        "filtros": {
+          "titulo": "Filtrar los endosos",
+          "tipo": "Tipo de cambio",
+          "todos": "Todos",
+          "estado": "Estado",
+          "desde": "Radicada desde",
+          "ayudaFecha": "DD/MM/AAAA"
+        },
+        "estadosFiltro": {
+          "pending": "Pendientes",
+          "filed": "Radicadas",
+          "in_review": "En revisión",
+          "applied": "Aplicadas",
+          "rejected": "Rechazadas",
+          "not_applied": "No aplicadas",
+          "all": "Todos"
+        },
+        "contador": "{{n}} solicitudes",
+        "contadorUno": "1 solicitud",
+        "cargando": "Cargando las solicitudes…",
+        "tabla": {
+          "titulo": "Solicitudes de modificación",
+          "solicitud": "Solicitud",
+          "asegurado": "Asegurado",
+          "poliza": "Póliza",
+          "tipo": "Tipo de cambio",
+          "radicada": "Radicada",
+          "estado": "Estado",
+          "acciones": "Acciones"
+        },
+        "acciones": {
+          "revisar": "Revisar",
+          "continuar": "Continuar",
+          "ver": "Ver",
+          "revisarSolicitud": "Revisar la solicitud {{id}}",
+          "continuarSolicitud": "Continuar la solicitud {{id}}",
+          "verSolicitud": "Ver la solicitud {{id}}"
+        },
+        "devuelta": "Devuelta al asegurado",
+        "vacio": {
+          "titulo": "No hay solicitudes pendientes",
+          "texto": "Cuando un asegurado radique una solicitud de modificación, aparecerá aquí para revisarla."
+        },
+        "sinResultados": {
+          "titulo": "No hay solicitudes con estos filtros",
+          "texto": "Cambia el tipo, el estado o la fecha para ver otras solicitudes.",
+          "limpiar": "Limpiar filtros"
+        },
+        "error": {
+          "titulo": "No pudimos cargar los endosos",
+          "texto": "Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "errorRevisar": "No se pudo tomar la solicitud {{id}}: otro analista ya la decidió o el servicio no respondió. Revisa la bandeja de nuevo.",
+        "paginacion": {
+          "navegacion": "Paginación de la bandeja",
+          "pagina": "Página {{pagina}} de {{total}}",
+          "anterior": "Anterior",
+          "siguiente": "Siguiente"
+        }
+      },
+      "detalle": {
+        "volver": "Endosos",
+        "titulo": "Endoso · {{id}}",
+        "subtitulo": "{{tipo}} · {{producto}} {{poliza}} · {{titular}} · radicada el {{fecha}} {{canal}}",
+        "tipos": {
+          "beneficiaries": "Cambio de beneficiarios",
+          "insured_amount": "Cambio de suma asegurada",
+          "personal_data": "Cambio de datos personales"
+        },
+        "cargando": "Cargando la solicitud…",
+        "noEncontrada": {
+          "titulo": "No encontramos la solicitud",
+          "texto": "Puede que el identificador no exista. Vuelve a la bandeja."
+        },
+        "error": {
+          "titulo": "No pudimos cargar la solicitud",
+          "texto": "Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        },
+        "acciones": {
+          "rechazar": "Rechazar",
+          "aplicar": "Aplicar endoso",
+          "procesando": "Procesando…",
+          "devolver": "Devolver al asegurado",
+          "volverBandeja": "Volver a la bandeja",
+          "verHistorial": "Ver historial"
+        },
+        "cambio": {
+          "titulo": "Cambio solicitado",
+          "campo": "Campo",
+          "anterior": "Valor anterior",
+          "nuevo": "Valor nuevo"
+        },
+        "validaciones": {
+          "titulo": "Validaciones de negocio",
+          "subtitulo": "Si alguna falla, el endoso no se aplica y el motivo queda registrado.",
+          "sinValidaciones": "La solicitud se rechazó antes de aplicarse: no se ejecutaron las validaciones.",
+          "resultado": {
+            "passed": "Cumple",
+            "failed": "No cumple",
+            "unverifiable": "No verificable"
+          }
+        },
+        "poliza": {
+          "titulo": "Póliza",
+          "estado": "Estado",
+          "activa": "Activa",
+          "noVigente": "No vigente",
+          "valorAsegurado": "Valor asegurado",
+          "prima": "Prima mensual",
+          "endososPrevios": "Endosos previos",
+          "ninguno": "Ninguno",
+          "ultimo": "{{n}} · último: {{tipo}} ({{fecha}})",
+          "verHistorial": "Ver el historial de endosos de la póliza {{poliza}}"
+        },
+        "panel": {
+          "alAplicar": {
+            "titulo": "Al aplicar",
+            "beneficiaries": "El nuevo estado contractual se refleja de inmediato en el portal y en la app del asegurado, sin inconsistencias. El endoso queda registrado con tu nombre, la fecha y el detalle anterior y nuevo; el asegurado ve su solicitud como Aplicada.",
+            "insured_amount": "La póliza queda con el valor asegurado y la prima nuevos, y se ve de inmediato en el portal y en la app del asegurado. La diferencia de prima no se cobra en este cambio.",
+            "personal_data": "Los datos de contacto nuevos quedan en la póliza y se ven de inmediato en el portal y en la app del asegurado. El correo con el que inicia sesión no cambia."
+          },
+          "noAplicado": {
+            "titulo": "Por qué no se aplicó",
+            "texto": "La póliza conserva sus condiciones actuales: ningún canal refleja el cambio. El intento quedó registrado en el historial de endosos con la validación que falló, la fecha y el analista. Al devolverla, el asegurado ve su solicitud como rechazada con tus observaciones y puede radicar una nueva."
+          },
+          "devuelto": {
+            "titulo": "Por qué no se aplicó",
+            "texto": "La póliza conserva sus condiciones actuales: ningún canal refleja el cambio. El intento quedó en el historial con la validación que falló. El asegurado ve su solicitud como Rechazada con estas observaciones."
+          },
+          "aplicado": {
+            "titulo": "Endoso aplicado",
+            "texto": "{{endoso}} · aplicado por {{autor}} (operaciones) el {{fecha}}. El asegurado ve su solicitud como Aplicada y recibió el resultado por correo."
+          },
+          "rechazado": {
+            "titulo": "Rechazada",
+            "texto": "Rechazada por {{autor}} (operaciones) el {{fecha}}. El asegurado ve su solicitud como Rechazada con estas observaciones."
+          }
+        },
+        "alertas": {
+          "noAplicado": {
+            "titulo": "El endoso no se aplicó",
+            "texto": "La validación «{{validacion}}» no se cumple. El endoso quedó sin aplicar, la póliza conserva sus condiciones actuales y el motivo quedó registrado en el historial. Devuelve la solicitud al asegurado para que la corrija."
+          },
+          "devuelto": {
+            "titulo": "Devuelto al asegurado",
+            "texto": "El endoso no se aplicó porque la validación «{{validacion}}» no se cumple. {{autor}} lo devolvió al asegurado el {{fecha}} con las observaciones de abajo."
+          },
+          "noVerificable": {
+            "titulo": "No se pudieron verificar las validaciones",
+            "texto": "{{fuentes}} no respondió. No se cambió nada: la solicitud sigue como estaba. Intenta aplicar de nuevo en unos minutos."
+          },
+          "decidida": {
+            "titulo": "Otro analista ya decidió esta solicitud",
+            "texto": "Ahora está en «{{estado}}». El detalle muestra lo que quedó registrado."
+          },
+          "polizaCambio": {
+            "titulo": "La póliza cambió mientras validabas",
+            "texto": "Otro endoso de la misma póliza se aplicó primero. No se cambió nada; aplica de nuevo para validar contra las condiciones nuevas."
+          },
+          "aplicado": {
+            "titulo": "Endoso aplicado",
+            "texto": "{{endoso}} quedó registrado y el asegurado ya ve los cambios."
+          },
+          "rechazado": {
+            "titulo": "Solicitud rechazada",
+            "texto": "El asegurado ve tus observaciones en el estado de su solicitud."
+          },
+          "devueltoOk": {
+            "titulo": "Solicitud devuelta",
+            "texto": "El asegurado ve tus observaciones y puede radicar una nueva solicitud."
+          },
+          "fallo": {
+            "titulo": "No se pudo completar la acción",
+            "texto": "El servicio no respondió. Intenta de nuevo en unos minutos."
+          }
+        },
+        "fuentes": {
+          "identity_documents_valid": "La verificación de documentos",
+          "no_open_claim": "La consulta de siniestros",
+          "premium_recalculated": "El cálculo de la prima",
+          "otra": "Una fuente de validación",
+          "y": "{{a}} y {{b}}"
+        },
+        "observaciones": {
+          "etiqueta": "Observaciones (obligatorias al rechazar)",
+          "etiquetaDevolver": "Observaciones (obligatorias al devolver)",
+          "etiquetaRegistradas": "Observaciones",
+          "ayuda": "Visibles para el asegurado en el estado de su solicitud",
+          "error": "Escribe entre 10 y 500 caracteres: el asegurado los leerá."
+        }
+      },
+      "historial": {
+        "volver": "Volver",
+        "titulo": "Historial de endosos",
+        "soloLectura": "Solo lectura",
+        "subtitulo": "{{n}} entradas en orden cronológico · endosos aplicados e intentos no aplicados",
+        "subtituloUno": "1 entrada · endosos aplicados e intentos no aplicados",
+        "subtituloVacio": "0 entradas · esta póliza no tiene endosos",
+        "poliza": "Póliza {{poliza}} · {{titular}}",
+        "cargando": "Cargando el historial…",
+        "inmutable": {
+          "titulo": "Registro inmutable",
+          "texto": "Las entradas no pueden editarse ni eliminarse. Cada una muestra qué cambió, el valor anterior y el nuevo, quién lo hizo y cuándo. Si una póliza no tiene endosos, el historial se muestra vacío sin errores."
+        },
+        "tabla": {
+          "titulo": "Entradas del historial",
+          "fecha": "Fecha y hora",
+          "endoso": "Endoso",
+          "queCambio": "Qué cambió",
+          "anterior": "Valor anterior",
+          "nuevo": "Valor nuevo",
+          "quien": "Quién"
+        },
+        "noAplicado": "No aplicado",
+        "solicitud": "Solicitud {{id}}",
+        "fallo": "{{validacion}}: no cumple",
+        "sinCambio": "Sin cambio (no se aplicó)",
+        "rol": {
+          "operations": "Analista de operaciones"
+        },
+        "beneficiarioCorto": "{{nombre}} {{participacion}} %",
+        "prima": "Prima {{valor}}",
+        "vacio": {
+          "titulo": "Esta póliza no tiene endosos",
+          "texto": "Cuando se aplique o se intente aplicar una modificación, aparecerá aquí con su detalle."
+        },
+        "noEncontrada": {
+          "titulo": "No encontramos la póliza",
+          "texto": "Puede que el identificador no exista."
+        },
+        "error": {
+          "titulo": "No pudimos cargar el historial",
+          "texto": "Intenta de nuevo en unos minutos.",
+          "reintentar": "Reintentar"
+        }
+      },
+      "campos": {
+        "beneficiarioN": "Beneficiario {{n}}",
+        "beneficiario": "{{nombre}} · {{documento}} · {{participacion}} %",
+        "retirado": "Retirado",
+        "oneroso": "Beneficiario oneroso",
+        "onerosoValor": "{{entidad}} · saldo insoluto",
+        "sinCambio": "Sin cambio",
+        "entidadGenerica": "Entidad financiera del crédito",
+        "insured_amount": "Valor asegurado",
+        "prima": "Prima mensual",
+        "primaNueva": "{{valor}} · recalculada con el motor {{version}}",
+        "primaSinCalcular": "Sin calcular",
+        "address": "Dirección",
+        "email": "Correo de contacto",
+        "phone": "Teléfono",
+        "noRegistrado": {
+          "address": "No registrada",
+          "email": "No registrado",
+          "phone": "No registrado"
+        }
+      },
+      "validaciones": {
+        "desconocida": "Validación {{codigo}}",
+        "shares_total_100": {
+          "titulo": "Suma de participaciones igual a 100 %",
+          "passed": "{{partes}}",
+          "failed": "{{partes}} = {{total}} % · debe sumar 100 %",
+          "unverifiable": "{{partes}}"
+        },
+        "onerous_beneficiary_intact": {
+          "titulo": "Beneficiario oneroso intacto",
+          "passed": "{{entidad}} conserva el saldo insoluto",
+          "failed": "{{entidad}} debe conservar el saldo insoluto",
+          "unverifiable": "Sin información del beneficiario oneroso"
+        },
+        "identity_documents_valid": {
+          "titulo": "Documentos de identidad válidos",
+          "passed": "Registraduría · {{n}} verificaciones",
+          "failed": "Registraduría · {{documento}} no encontrado",
+          "unverifiable": "Registraduría sin respuesta",
+          "sinNuevos": "Sin documentos nuevos por verificar"
+        },
+        "no_open_claim": {
+          "titulo": "Sin siniestro en curso que bloquee el cambio",
+          "passed": "Ninguno sobre la póliza",
+          "failed": "Siniestros en curso sobre la póliza: {{n}}",
+          "unverifiable": "Siniestros sin respuesta"
+        },
+        "requester_is_holder": {
+          "titulo": "Solicitante = tomador autenticado",
+          "failed": "no es el tomador de la póliza"
+        },
+        "insured_amount_within_limits": {
+          "titulo": "Suma asegurada dentro de los límites del producto",
+          "passed": "{{valor}} · entre {{minimo}} y {{maximo}}",
+          "failed": "{{valor}} · fuera del rango entre {{minimo}} y {{maximo}}",
+          "unverifiable": "{{valor}}"
+        },
+        "personal_data_valid": {
+          "titulo": "Datos de contacto con formato válido",
+          "passed": "Teléfono de 10 dígitos · correo válido",
+          "failed": "Formato inválido: {{campos}}",
+          "unverifiable": "Sin verificar"
+        },
+        "policy_in_force": {
+          "titulo": "Póliza vigente",
+          "passed": "Vigente hasta el {{fecha}}",
+          "failed": "La póliza terminó el {{fecha}}"
+        },
+        "previous_values_current": {
+          "titulo": "Los valores anteriores siguen vigentes",
+          "passed": "Sin cambios desde la radicación",
+          "failed": "Otro endoso cambió los valores después de la radicación"
+        },
+        "no_renewal_in_progress": {
+          "titulo": "Sin renovación aceptada pendiente",
+          "failed": "Hay una renovación aceptada que aún no se activa"
+        },
+        "premium_recalculated": {
+          "titulo": "Prima recalculada con el motor",
+          "unverifiable": "No se encontró la oferta de origen para tarifar la nueva suma"
         }
       }
     },

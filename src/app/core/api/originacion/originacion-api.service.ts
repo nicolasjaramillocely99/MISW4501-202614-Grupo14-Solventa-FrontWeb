@@ -60,6 +60,26 @@ import {
   traducirErrorFormalizacion,
 } from './formalizacion.modelos';
 import {
+  DetalleEndoso,
+  DetalleEndosoDto,
+  FiltroEndosos,
+  HistorialEndosos,
+  HistorialEndososDto,
+  PaginaEndosos,
+  PaginaEndososDto,
+  ResultadoAplicacion,
+  ResultadoAplicacionDto,
+  SolicitudEndoso,
+  SolicitudEndosoDto,
+  aParametrosEndosos,
+  mapearDetalleEndoso,
+  mapearHistorialEndosos,
+  mapearPaginaEndosos,
+  mapearResultadoAplicacion,
+  mapearSolicitudEndoso,
+  traducirErrorEndoso,
+} from './endosos.modelos';
+import {
   FiltroPorVencer,
   PaginaPorVencer,
   PaginaPorVencerDto,
@@ -734,6 +754,77 @@ export class OriginacionApiService {
       .pipe(
         map(mapearSolicitudModificacion),
         catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * La bandeja de endosos del analista (`GET /v1/policies/endorsement-requests`, pantalla O2, HU-W1.4-02): la página de
+   * solicitudes con su titular y los tres indicadores. Falla con `ErrorEndoso`.
+   */
+  listarSolicitudesEndoso(filtro: FiltroEndosos): Observable<PaginaEndosos> {
+    return this.http
+      .get<PaginaEndososDto>(`${this.base}/v1/policies/endorsement-requests`, { params: aParametrosEndosos(filtro) })
+      .pipe(
+        map(mapearPaginaEndosos),
+        catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+      );
+  }
+
+  /** El detalle de una solicitud para el analista (O3/O3b): el cambio, la póliza, las validaciones y lo decidido. */
+  consultarSolicitudEndoso(solicitudId: string): Observable<DetalleEndoso> {
+    return this.http.get<DetalleEndosoDto>(this.rutaEndoso(solicitudId)).pipe(
+      map(mapearDetalleEndoso),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  /** «Revisar»: el analista toma la solicitud radicada (pasa a en revisión); tomarla otra vez no cambia nada. */
+  iniciarRevisionEndoso(solicitudId: string): Observable<SolicitudEndoso> {
+    return this.http.post<{ request: SolicitudEndosoDto }>(`${this.rutaEndoso(solicitudId)}/review`, null).pipe(
+      map(mapearSolicitudEndoso),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  /**
+   * «Aplicar endoso» (CA-2, CA-3): aplicada con el endoso o no aplicada con el intento. Falla con `ErrorEndoso`:
+   * `validation_unverifiable` (no cambió nada), `policy_changed`, `request_already_decided`…
+   */
+  aplicarEndoso(solicitudId: string): Observable<ResultadoAplicacion> {
+    return this.http.post<ResultadoAplicacionDto>(`${this.rutaEndoso(solicitudId)}/application`, null).pipe(
+      map(mapearResultadoAplicacion),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  /** «Rechazar» con las observaciones que lee el asegurado (CA-5). */
+  rechazarSolicitudEndoso(solicitudId: string, observaciones: string): Observable<SolicitudEndoso> {
+    return this.cerrarSolicitudEndoso(solicitudId, 'rejection', observaciones);
+  }
+
+  /** «Devolver al asegurado» una no aplicada, con las observaciones que lee el asegurado (CA-5). */
+  devolverSolicitudEndoso(solicitudId: string, observaciones: string): Observable<SolicitudEndoso> {
+    return this.cerrarSolicitudEndoso(solicitudId, 'return', observaciones);
+  }
+
+  /** El historial de endosos de una póliza (O4), el más reciente primero. */
+  consultarHistorialEndosos(polizaId: string): Observable<HistorialEndosos> {
+    return this.http.get<HistorialEndososDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/endorsements`).pipe(
+      map(mapearHistorialEndosos),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  private rutaEndoso(solicitudId: string): string {
+    return `${this.base}/v1/policies/endorsement-requests/${encodeURIComponent(solicitudId)}`;
+  }
+
+  private cerrarSolicitudEndoso(solicitudId: string, accion: 'rejection' | 'return', observaciones: string): Observable<SolicitudEndoso> {
+    return this.http
+      .post<{ request: SolicitudEndosoDto }>(`${this.rutaEndoso(solicitudId)}/${accion}`, { observations: observaciones })
+      .pipe(
+        map(mapearSolicitudEndoso),
+        catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
       );
   }
 }

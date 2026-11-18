@@ -1,0 +1,185 @@
+// O3 / O3b · Detalle del endoso: encabezado con acciones, avisos, tarjetas a la izquierda y «Póliza» con el recuadro a la derecha.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.volver,
+.enlace {
+  font-weight: 500;
+  color: var(--color-azul-700);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  align-self: flex-start;
+  min-height: var(--control-alto);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+}
+
+.encabezado__texto {
+  display: flex;
+  flex: 1 1 480px;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  min-width: 0;
+}
+
+.encabezado__fila,
+.encabezado__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+  overflow-wrap: anywhere;
+}
+
+.encabezado__resumen,
+.estado,
+.seccion__subtitulo,
+.seccion__vacio,
+.observaciones__ayuda {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+.seccion__subtitulo,
+.observaciones__ayuda {
+  font-size: 0.875rem;
+}
+
+.seccion__vacio {
+  margin-top: var(--espacio-16);
+}
+
+.cuerpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+.cuerpo__principal,
+.cuerpo__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  min-width: 0;
+}
+
+.cuerpo__principal {
+  flex: 1;
+}
+
+.cuerpo__lateral {
+  flex: 0 0 370px;
+}
+
+.seccion__titulo {
+  margin: 0 0 var(--espacio-4);
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  margin: var(--espacio-8) 0 0;
+
+  dt {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.recuadro {
+  padding: var(--espacio-24);
+  border-left: 4px solid var(--color-azul-700);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-azul-50);
+
+  p {
+    margin: var(--espacio-8) 0 0;
+  }
+}
+
+.observaciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+
+  .campo__etiqueta {
+    margin: 0;
+  }
+}
+
+.observaciones__control {
+  resize: vertical;
+}
+
+.observaciones__registradas {
+  margin: 0;
+  padding: var(--espacio-12) var(--espacio-16);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-base);
+  background: var(--color-fondo-superficie);
+  overflow-wrap: anywhere;
+}
+
+.estado-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+  max-width: 560px;
+}
+
+@media (max-width: 1024px) {
+  .cuerpo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cuerpo__lateral {
+    flex-basis: auto;
+  }
+}

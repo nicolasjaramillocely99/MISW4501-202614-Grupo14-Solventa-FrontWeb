@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
@@ -113,6 +124,24 @@ export class AceptacionClienteComponent implements OnInit {
     const m = this.medioDePago();
     return m ? medioLegible(m, (clave) => this.transloco.translate(clave)) : '';
   });
+
+  constructor() {
+    // La hora se llena al abrir el formulario; si la recotización cierra en un minuto posterior, esa hora queda antes
+    // de ella y «Formalizar renovación» se apagaría sin mensaje (el error solo se ve al tocar el campo). Al recotizar,
+    // una hora que quedó atrás pasa a la de ahora (o a la de la recotización, si el reloj del servicio va adelantado).
+    effect(() => {
+      const recotizadaEn = this.recotizadaEn();
+      if (!recotizadaEn) {
+        return;
+      }
+      const desde = new Date(recotizadaEn);
+      desde.setSeconds(0, 0);
+      const actual = new Date(this.formulario.controls.fecha.value);
+      if (actual.getTime() < desde.getTime()) {
+        this.formulario.controls.fecha.setValue(aFechaHoraLocal(new Date(Math.max(Date.now(), desde.getTime()))));
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.formulario.valueChanges.pipe(takeUntilDestroyed(this.destruccion)).subscribe(() => this.emitir());
