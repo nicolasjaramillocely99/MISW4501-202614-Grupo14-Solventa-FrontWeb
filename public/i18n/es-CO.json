@@ -1433,6 +1433,8 @@
         "verRenovacion": "Ver renovación",
         "reintentar": "Reintentar",
         "radicar": "Radicar un siniestro",
+        "modificar": "Solicitar modificación",
+        "modificarPoliza": "Solicitar modificación de la póliza {{id}}",
         "verDetalle": "Ver detalle",
         "verDetalleDe": "Ver el detalle de la póliza {{id}}"
       },
@@ -1989,6 +1991,336 @@
         "pse": "PSE"
       }
     },
+    "solicitudes": {
+      "tipos": {
+        "beneficiaries": "Beneficiarios",
+        "insured_amount": "Sumas aseguradas",
+        "personal_data": "Datos personales"
+      },
+      "tiposDescripcion": {
+        "beneficiaries": "Agregar, quitar o cambiar participación",
+        "insured_amount": "Ajustar el valor asegurado",
+        "personal_data": "Dirección, correo o teléfono"
+      },
+      "tiposCambio": {
+        "beneficiaries": "Cambio de beneficiarios",
+        "insured_amount": "Cambio de suma asegurada",
+        "personal_data": "Actualización de datos personales"
+      },
+      "tiposCambioMinuscula": {
+        "beneficiaries": "cambio de beneficiarios",
+        "insured_amount": "cambio de suma asegurada",
+        "personal_data": "actualización de datos"
+      },
+      "parentescos": {
+        "spouse_or_partner": "Cónyuge o compañero(a) permanente",
+        "child": "Hijo(a)",
+        "parent": "Padre o madre",
+        "sibling": "Hermano(a)",
+        "grandchild": "Nieto(a)",
+        "other": "Otro"
+      },
+      "tiposDocumento": {
+        "CC": "Cédula de ciudadanía",
+        "TI": "Tarjeta de identidad",
+        "RC": "Registro civil",
+        "CE": "Cédula de extranjería",
+        "PA": "Pasaporte"
+      },
+      "estados": {
+        "radicada": "Radicada",
+        "enRevision": "En revisión",
+        "aplicada": "Aplicada",
+        "rechazada": "Rechazada",
+        "desconocido": "Sin estado conocido"
+      },
+      "linea": {
+        "life": "Vida hipotecario"
+      },
+      "canal": {
+        "web": "portal web",
+        "mobile": "app móvil"
+      },
+      "errores": {
+        "required": "Completa este dato.",
+        "invalid_format": "Revisa el formato de este dato.",
+        "out_of_range": "El valor está fuera del rango permitido.",
+        "duplicate": "Este documento ya está en la lista.",
+        "no_change": "Es igual al valor actual.",
+        "share_total_not_100": "La suma de participaciones debe ser 100 % (actual: {{total}} %)",
+        "campos": {
+          "nombreCompleto": {
+            "invalid_format": "Escribe entre 3 y 120 caracteres, con letras."
+          },
+          "numeroDocumento": {
+            "invalid_format": "De 5 a 20 letras o dígitos; solo dígitos en CC, TI y RC.",
+            "duplicate": "Este documento ya está en la lista."
+          },
+          "participacion": {
+            "invalid_format": "Usa hasta dos decimales.",
+            "out_of_range": "Debe ser mayor que 0 y hasta 100."
+          },
+          "beneficiarios": {
+            "required": "Agrega al menos un beneficiario.",
+            "out_of_range": "Puedes designar hasta 10 beneficiarios.",
+            "no_change": "Los beneficiarios son los mismos de hoy."
+          },
+          "valorAsegurado": {
+            "invalid_format": "Escribe un valor entero en pesos, sin decimales.",
+            "out_of_range": "Debe estar entre {{min}} y {{max}}.",
+            "no_change": "Es igual al valor asegurado actual."
+          },
+          "contacto": {
+            "required": "Escribe al menos un dato nuevo."
+          },
+          "direccion": {
+            "invalid_format": "Escribe entre 5 y 160 caracteres."
+          },
+          "correo": {
+            "invalid_format": "Escribe un correo válido, como nombre@dominio.com."
+          },
+          "telefono": {
+            "invalid_format": "El teléfono lleva 10 dígitos."
+          }
+        }
+      },
+      "solicitar": {
+        "volver": "Mis pólizas",
+        "titulo": "Solicitar una modificación",
+        "subtitulo": "{{producto}} · {{poliza}} · Los cambios se aplican tras la revisión de operaciones; te avisaremos el resultado.",
+        "subtituloNoVigente": "{{producto}} · {{poliza}} · Esta póliza ya no está vigente.",
+        "cargando": "Cargando las condiciones de tu póliza…",
+        "cancelar": "Cancelar",
+        "radicar": "Radicar solicitud",
+        "radicando": "Radicando…",
+        "tipoCambio": "Tipo de cambio",
+        "abierta": "Ya tienes la solicitud {{id}} en curso",
+        "verSolicitud": "Ver solicitud",
+        "corrige": "Corrige los datos marcados antes de radicar.",
+        "noVigente": {
+          "titulo": "Esta póliza no admite modificaciones",
+          "texto": "Su cobertura terminó el {{fecha}}. Solo puedes solicitar cambios sobre pólizas vigentes; si la renovaste, búscala en Mis pólizas."
+        },
+        "abiertaTodas": "Ya tienes una solicitud en curso de cada tipo; espera su resultado para radicar otra.",
+        "noEncontrada": {
+          "titulo": "No encontramos esta póliza",
+          "texto": "Solo puedes pedir cambios sobre tus pólizas de vida hipotecario. Vuelve a «Mis pólizas» y elige una."
+        },
+        "error": {
+          "titulo": "No pudimos cargar tu póliza",
+          "texto": "Intenta de nuevo en unos momentos.",
+          "reintentar": "Reintentar",
+          "radicar": "No pudimos radicar tu solicitud. Intenta de nuevo en unos momentos; no se radicó nada.",
+          "vencida": "La póliza dejó de estar vigente: ya no puedes pedir cambios sobre ella."
+        }
+      },
+      "beneficiarios": {
+        "actuales": "Beneficiarios actuales",
+        "nuevo": "Nuevo beneficiario",
+        "editar": "Editar beneficiario",
+        "agregar": "Agregar beneficiario",
+        "guardar": "Agregar a la lista",
+        "editarFila": "Editar",
+        "editarFilaDe": "Editar a {{nombre}}",
+        "quitar": "Quitar",
+        "quitarDe": "Quitar a {{nombre}}",
+        "nombre": "Nombre completo",
+        "parentesco": "Parentesco",
+        "tipoDocumento": "Tipo de documento",
+        "numeroDocumento": "Número de documento",
+        "participacion": "Participación (%)",
+        "elegir": "Elige una opción",
+        "documento": "Documento",
+        "acciones": "Acciones",
+        "oneroso": "Oneroso",
+        "saldoInsoluto": "Saldo insoluto",
+        "noModificable": "No modificable",
+        "entidadGenerica": "Entidad que otorgó el crédito",
+        "sinDesignados": "Aún no hay beneficiarios designados para el remanente.",
+        "total": "Total: {{total}} %",
+        "tabla": "Beneficiarios de la póliza"
+      },
+      "suma": {
+        "titulo": "Nueva suma asegurada",
+        "actual": "Valor asegurado actual",
+        "nuevo": "Nuevo valor asegurado (COP)",
+        "ayuda": "Entre {{min}} y {{max}}"
+      },
+      "contacto": {
+        "titulo": "Nuevos datos de contacto",
+        "direccion": "Dirección",
+        "telefono": "Teléfono",
+        "correo": "Correo de contacto de la póliza",
+        "correoAyuda": "Es el correo de los avisos de la póliza; tu usuario no cambia",
+        "ayuda": "Escribe solo lo que quieres cambiar."
+      },
+      "resumen": {
+        "titulo": "Resumen del cambio",
+        "actual": "Valor actual",
+        "nuevo": "Valor nuevo",
+        "efecto": "Efecto",
+        "sinBeneficiarios": "Sin beneficiarios designados",
+        "beneficiario": "{{nombre}} · {{participacion}} %",
+        "pendiente": "Aún sin definir",
+        "direccion": "Dirección: {{valor}}",
+        "telefono": "Teléfono: {{valor}}",
+        "correo": "Correo: {{valor}}",
+        "noRegistrada": "no registrada",
+        "noRegistrado": "no registrado",
+        "efectos": {
+          "beneficiaries": "Aplica al remanente tras el saldo del crédito.",
+          "insured_amount": "La prima mensual se recalcula cuando operaciones aplique el cambio; la verás en el resultado.",
+          "personal_data": "Cambia los datos de contacto de la póliza; tu usuario para iniciar sesión no cambia."
+        }
+      },
+      "antes": {
+        "titulo": "Antes de radicar",
+        "titular": "Solo tú, como titular autenticado, puedes solicitar cambios sobre esta póliza.",
+        "seguimiento": "Recibirás un identificador y podrás seguir el estado: radicada, en revisión, aplicada o rechazada.",
+        "reglas": {
+          "beneficiaries": "Corrige la participación antes de radicar; el formulario no se envía con errores.",
+          "insured_amount": "El valor nuevo debe estar entre {{min}} y {{max}} y ser distinto del actual.",
+          "personal_data": "Escribe al menos un dato distinto del actual; el teléfono lleva 10 dígitos."
+        }
+      },
+      "detalle": {
+        "volver": "Mis solicitudes",
+        "titulo": "Solicitud {{id}}",
+        "subtitulo": "{{tipo}} · {{producto}} {{poliza}} · Radicada el {{fecha}}",
+        "cargando": "Cargando la solicitud…",
+        "verMisSolicitudes": "Ver mis solicitudes",
+        "volverPolizas": "Volver a mis pólizas",
+        "radicarNueva": "Radicar una nueva",
+        "confirmacion": {
+          "titulo": "Tu solicitud quedó radicada",
+          "texto": "Operaciones revisará el cambio y aplicará el endoso con las validaciones de negocio. Te avisaremos por correo y aquí verás el estado actualizado."
+        },
+        "radicada": {
+          "titulo": "Tu solicitud está radicada",
+          "texto": "Operaciones revisará el cambio y aplicará el endoso con las validaciones de negocio. Te avisaremos por correo y aquí verás el estado actualizado."
+        },
+        "enRevision": {
+          "titulo": "Tu solicitud está en revisión",
+          "texto": "Un analista de operaciones está revisando el cambio con las validaciones de negocio. Te avisaremos por correo y aquí verás el resultado."
+        },
+        "aplicada": {
+          "titulo": "Tu solicitud fue aplicada",
+          "texto": "El cambio ya hace parte de tu póliza y se ve en el portal y en la app. Te enviamos el resultado por correo."
+        },
+        "rechazada": {
+          "titulo": "Tu solicitud fue rechazada",
+          "texto": "Operaciones revisó el cambio y no lo aplicó. Tu póliza conserva sus condiciones actuales; corrige lo indicado y radica una nueva solicitud."
+        },
+        "desconocido": {
+          "titulo": "Tu solicitud",
+          "texto": "Consulta más tarde el estado de tu solicitud."
+        },
+        "pasos": {
+          "etiqueta": "Avance de la solicitud",
+          "radicada": "Radicada",
+          "enRevision": "En revisión",
+          "aplicada": "Aplicada",
+          "rechazada": "Rechazada"
+        },
+        "datos": {
+          "identificador": "Identificador",
+          "tipo": "Tipo de cambio",
+          "tiempo": "Tiempo estimado",
+          "tiempoValor": "Hasta 2 días hábiles",
+          "decididaEl": "Decidida el",
+          "aplicadaEl": "Aplicada el",
+          "radicadaPor": "Radicada por",
+          "radicadaPorValor": "{{quien}} · {{canal}}"
+        },
+        "mientras": {
+          "titulo": "Mientras tanto",
+          "texto": "La póliza conserva sus condiciones actuales. Si operaciones rechaza el cambio, verás el motivo en esta misma solicitud y podrás radicar una nueva."
+        },
+        "motivo": "Motivo",
+        "exito": "Tu póliza ya tiene las condiciones nuevas",
+        "condiciones": {
+          "lista": "{{cambios}}.",
+          "beneficiarios": "Beneficiarios: {{lista}}",
+          "beneficiario": "{{nombre}} {{participacion}} %",
+          "retirado": "{{nombre}} (retirado)",
+          "valorAsegurado": "Valor asegurado: {{valor}}",
+          "direccion": "Dirección: {{valor}}",
+          "telefono": "Teléfono: {{valor}}",
+          "correo": "Correo de contacto: {{valor}}"
+        },
+        "noEncontrada": {
+          "titulo": "No encontramos esta solicitud",
+          "texto": "Revisa el identificador o búscala en «Mis solicitudes»."
+        },
+        "error": {
+          "titulo": "No pudimos cargar la solicitud",
+          "texto": "Intenta de nuevo en unos momentos.",
+          "reintentar": "Reintentar"
+        }
+      },
+      "mias": {
+        "titulo": "Mis solicitudes",
+        "subtitulo": "Solicitudes de modificación de tus pólizas. Un asesor de operaciones las revisa y aplica el endoso; aquí ves el estado de cada una y el motivo si alguna fue rechazada.",
+        "nueva": "Nueva solicitud",
+        "cargando": "Cargando tus solicitudes…",
+        "indicadores": {
+          "region": "Resumen de tus solicitudes",
+          "abiertas": "En revisión",
+          "aplicadas": "Aplicadas este año",
+          "rechazadas": "Rechazadas",
+          "referencia": "{{id}} · {{tipo}}",
+          "ultima": "Última: {{fecha}} · {{tipo}}",
+          "sinAbiertas": "Sin solicitudes en curso",
+          "sinAplicadas": "Ninguna este año",
+          "sinRechazadas": "Ninguna",
+          "noDisponible": "No disponible"
+        },
+        "filtros": {
+          "titulo": "Filtrar solicitudes",
+          "estado": "Estado",
+          "poliza": "Póliza",
+          "desde": "Desde",
+          "todos": "Todos",
+          "todas": "Todas",
+          "ayudaFecha": "DD/MM/AAAA"
+        },
+        "contador": "{{n}} solicitudes",
+        "contadorUno": "1 solicitud",
+        "tabla": {
+          "titulo": "Solicitudes de modificación",
+          "solicitud": "Solicitud",
+          "polizaTipo": "Póliza y tipo de cambio",
+          "radicada": "Radicada",
+          "estado": "Estado",
+          "ultimoCambio": "Último cambio",
+          "acciones": "Acciones",
+          "verDetalle": "Ver detalle",
+          "verDetalleDe": "Ver detalle de {{id}}",
+          "productoTipo": "{{producto}} · {{tipo}}"
+        },
+        "vacio": {
+          "titulo": "Aún no tienes solicitudes de modificación",
+          "texto": "Cuando pidas un cambio sobre una de tus pólizas vigentes, aparecerá aquí con su estado.",
+          "verPolizas": "Ver mis pólizas"
+        },
+        "sinResultados": {
+          "titulo": "Ninguna solicitud cumple el filtro",
+          "texto": "Cambia el estado, la póliza o la fecha, o limpia el filtro.",
+          "limpiar": "Limpiar filtros"
+        },
+        "error": {
+          "titulo": "No pudimos cargar tus solicitudes",
+          "texto": "Hubo un problema al consultar el servicio. Tus solicitudes siguen guardadas.",
+          "reintentar": "Reintentar"
+        },
+        "paginacion": {
+          "navegacion": "Paginación",
+          "pagina": "Página {{pagina}} de {{total}}",
+          "anterior": "Anterior",
+          "siguiente": "Siguiente"
+        }
+      }
+    },
     "detallePoliza": {
       "cargando": "Cargando la póliza…",
       "volver": "Mis pólizas",
@@ -2096,12 +2428,16 @@
       "beneficiarios": {
         "titulo": "Beneficiarios",
         "modificar": "Modificar",
-        "sinDatos": "Los beneficiarios de la póliza se verán aquí cuando el sistema los registre."
+        "sinDatos": "Los beneficiarios de la póliza se verán aquí cuando el sistema los registre.",
+        "cargando": "Cargando los beneficiarios…",
+        "error": "No pudimos cargar los beneficiarios de la póliza."
       },
       "solicitudes": {
         "titulo": "Mis solicitudes",
         "verTodas": "Ver todas",
-        "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza."
+        "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza.",
+        "cargando": "Cargando las solicitudes…",
+        "error": "No pudimos cargar las solicitudes de la póliza."
       }
     }
   },

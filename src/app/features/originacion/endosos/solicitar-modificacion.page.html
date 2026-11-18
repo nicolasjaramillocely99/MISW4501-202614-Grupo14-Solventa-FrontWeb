@@ -1,0 +1,134 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.solicitudes'">
+  <a class="pagina__volver" routerLink="/originacion/polizas">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('solicitar.volver') }}
+  </a>
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('solicitar.titulo') }}</h1>
+      @if (condiciones(); as c) {
+        <p class="pagina__subtitulo">
+          {{ t(fase() === 'noVigente' ? 'solicitar.subtituloNoVigente' : 'solicitar.subtitulo', { producto: producto(c.poliza.linea), poliza: c.poliza.polizaId }) }}
+        </p>
+      }
+    </div>
+    <div class="pagina__acciones">
+      <a class="boton boton--secundario" routerLink="/originacion/polizas">{{ t('solicitar.cancelar') }}</a>
+      <button type="button" class="boton boton--primario" [disabled]="!puedeRadicar()" (click)="radicar()">
+        <svg lucideSend [size]="16" aria-hidden="true"></svg>
+        {{ fase() === 'radicando' ? t('solicitar.radicando') : t('solicitar.radicar') }}
+      </button>
+    </div>
+  </header>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('solicitar.cargando') }}</p>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('solicitar.error.titulo') }}</p>
+          <p>{{ t('solicitar.error.texto') }}</p>
+          <button type="button" class="boton boton--secundario" (click)="cargar()">{{ t('solicitar.error.reintentar') }}</button>
+        </div>
+      </div>
+    }
+    @case ('noEncontrada') {
+      <div class="aviso aviso--advertencia" role="alert">
+        <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('solicitar.noEncontrada.titulo') }}</p>
+          <p>{{ t('solicitar.noEncontrada.texto') }}</p>
+        </div>
+      </div>
+    }
+    @case ('noVigente') {
+      @if (condiciones(); as c) {
+        <div class="aviso aviso--advertencia" role="alert">
+          <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+          <div>
+            <p class="aviso__titulo">{{ t('solicitar.noVigente.titulo') }}</p>
+            <p>{{ t('solicitar.noVigente.texto', { fecha: fechaCorta(c.poliza.vigenciaHasta) }) }}</p>
+          </div>
+        </div>
+      }
+    }
+    @default {
+      @if (condiciones(); as c) {
+        @if (aviso(); as a) {
+          @if (a.tipo === 'abierta') {
+            <div class="aviso aviso--advertencia" role="alert">
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+              <p>
+                {{ t('solicitar.abierta', { id: a.solicitudId ?? '' }) }}
+                @if (a.solicitudId) {
+                  · <a class="enlace" [routerLink]="['/originacion/solicitudes', a.solicitudId]">{{ t('solicitar.verSolicitud') }}</a>
+                }
+              </p>
+            </div>
+          } @else {
+            <div class="aviso aviso--error" role="alert">
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              <p>{{ t('solicitar.error.radicar') }}</p>
+            </div>
+          }
+        }
+        @if (todosAbiertos()) {
+          <div class="aviso" role="status">
+            <p>{{ t('solicitar.abiertaTodas') }}</p>
+          </div>
+        }
+        <div class="contenido">
+          <div class="contenido__principal">
+            <app-tipo-cambio [(seleccionado)]="tipo" [abiertas]="c.abiertas" [deshabilitado]="fase() === 'radicando'" />
+            @switch (tipo()) {
+              @case ('beneficiaries') {
+                <app-cambio-beneficiarios
+                  [actuales]="c.beneficiarios"
+                  [oneroso]="c.oneroso"
+                  [errores]="errores()"
+                  [mostrarTodos]="mostrarTodos()"
+                  [deshabilitado]="fase() === 'radicando'"
+                  [(propuesta)]="beneficiarios"
+                />
+              }
+              @case ('insured_amount') {
+                <app-cambio-suma-asegurada
+                  [actual]="c.valorAsegurado"
+                  [moneda]="c.moneda"
+                  [limites]="c.limites"
+                  [errores]="errores()"
+                  [mostrarTodos]="mostrarTodos()"
+                  [deshabilitado]="fase() === 'radicando'"
+                  [(texto)]="textoSuma"
+                />
+              }
+              @case ('personal_data') {
+                <app-cambio-datos-personales
+                  [actual]="c.contacto"
+                  [errores]="errores()"
+                  [mostrarTodos]="mostrarTodos()"
+                  [deshabilitado]="fase() === 'radicando'"
+                  [(captura)]="contacto"
+                />
+              }
+            }
+          </div>
+          @if (tipo(); as elegido) {
+            <aside class="contenido__lateral">
+              <app-resumen-cambio
+                [tipo]="elegido"
+                [condiciones]="c"
+                [beneficiarios]="beneficiarios()"
+                [textoSuma]="textoSuma()"
+                [contacto]="contacto()"
+              />
+              <app-antes-de-radicar [tipo]="elegido" [limites]="c.limites" [conErrores]="errores().length > 0" />
+            </aside>
+          }
+        </div>
+      }
+    }
+  }
+</div>

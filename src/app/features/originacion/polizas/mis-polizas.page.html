@@ -167,6 +167,14 @@
                         >{{ t('acciones.verDetalle') }}</a
                       >
                     }
+                    @if (vigenteAhora(p)) {
+                      <a
+                        class="enlace enlace--modificar"
+                        [routerLink]="['/originacion/polizas', p.polizaId, 'modificar']"
+                        [attr.aria-label]="t('acciones.modificarPoliza', { id: p.polizaId })"
+                        >{{ t('acciones.modificar') }}</a
+                      >
+                    }
                   </td>
                 </tr>
               }

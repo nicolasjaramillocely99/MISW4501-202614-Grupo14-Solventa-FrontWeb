@@ -1,0 +1,42 @@
+<fieldset class="tarjeta tipos" *transloco="let t; prefix: 'originacion.solicitudes'">
+  <legend class="tipos__titulo">{{ t('solicitar.tipoCambio') }}</legend>
+  @for (tipo of tipos; track tipo) {
+    @let abierta = abiertaDe(tipo);
+    <label class="tipo" [class.tipo--elegido]="seleccionado() === tipo" [class.tipo--bloqueado]="abierta">
+      <input
+        class="tipo__radio"
+        type="radio"
+        name="tipo-cambio"
+        [value]="tipo"
+        [checked]="seleccionado() === tipo"
+        [disabled]="deshabilitado() || !!abierta"
+        [attr.aria-describedby]="'tipo-' + tipo + '-descripcion'"
+        (change)="elegir(tipo)"
+      />
+      <span class="tipo__icono" aria-hidden="true">
+        @switch (tipo) {
+          @case ('beneficiaries') {
+            <svg lucideUsers [size]="20"></svg>
+          }
+          @case ('insured_amount') {
+            <svg lucideBanknote [size]="20"></svg>
+          }
+          @default {
+            <svg lucideUser [size]="20"></svg>
+          }
+        }
+      </span>
+      <span class="tipo__texto">
+        <span class="tipo__nombre">{{ t('tipos.' + tipo) }}</span>
+        <span class="tipo__descripcion" [id]="'tipo-' + tipo + '-descripcion'">
+          @if (abierta) {
+            {{ t('solicitar.abierta', { id: abierta.solicitudId }) }} ·
+            <a class="tipo__enlace" [routerLink]="['/originacion/solicitudes', abierta.solicitudId]">{{ t('solicitar.verSolicitud') }}</a>
+          } @else {
+            {{ t('tiposDescripcion.' + tipo) }}
+          }
+        </span>
+      </span>
+    </label>
+  }
+</fieldset>

@@ -1,0 +1,21 @@
+.suma {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.suma__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.suma__ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.campo__control[readonly] {
+  background: var(--color-fondo-pagina);
+}

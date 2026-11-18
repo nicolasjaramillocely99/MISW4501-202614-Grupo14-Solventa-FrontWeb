@@ -7,6 +7,7 @@ import {
   USUARIOS_PRUEBA,
   simularCognito,
 } from '../../fixtures/sesion-por-rol';
+import { SOLICITUDES, condiciones, pagina } from '../../fixtures/solicitudes-modificacion';
 import { InicioSesionPagina } from '../../paginas/inicio-sesion.pagina';
 
 /**
@@ -233,6 +234,22 @@ test.describe('Cancelación de póliza por incumplimiento de pago (HU-W1.6-02)',
   }) => {
     await simularCognito(page);
     const pedidos = await simularPolizas(page);
+    // HU-W1.4-01 (ajuste A-10): «Beneficiarios» y «Mis solicitudes» leen las condiciones vigentes y las solicitudes.
+    await page.route(
+      (url) =>
+        url.pathname.endsWith('/current-terms') || url.pathname === '/v1/policies/change-requests',
+      async (ruta) => {
+        const url = new URL(ruta.request().url());
+        const cuerpo = url.pathname.endsWith('/current-terms')
+          ? condiciones({ policy: { ...condiciones().policy, policy_id: EN_GRACIA.policy_id } })
+          : pagina(url.searchParams, [{ ...SOLICITUDES.radicada, policy_id: EN_GRACIA.policy_id }]);
+        await ruta.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(cuerpo),
+        });
+      },
+    );
 
     await abrirComo(page, '/originacion/polizas/pol-acc-330417', 'asegurado');
 
@@ -242,9 +259,22 @@ test.describe('Cancelación de póliza por incumplimiento de pago (HU-W1.6-02)',
     const resumen = page.getByRole('region', { name: 'Resumen' });
     await expect(resumen).toContainText('Visa •••• 0010');
     await expect(resumen).toContainText('Pago pendiente · cuota 4');
-    for (const nombre of ['Cancelar póliza', 'Solicitar modificación', 'Modificar', 'Ver todas']) {
-      await expect(page.getByRole('button', { name: nombre })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Cancelar póliza' })).toBeDisabled();
+    // HU-W1.4-01 (ajuste A-10): la solicitud de modificación y «Mis solicitudes» ya funcionan.
+    for (const nombre of ['Solicitar modificación', 'Modificar']) {
+      await expect(page.getByRole('link', { name: nombre, exact: true })).toHaveAttribute(
+        'href',
+        '/originacion/polizas/pol-acc-330417/modificar',
+      );
     }
+    await expect(page.getByRole('link', { name: 'Ver todas', exact: true })).toHaveAttribute(
+      'href',
+      '/originacion/solicitudes?poliza=pol-acc-330417',
+    );
+    await expect(page.getByRole('region', { name: 'Beneficiarios' })).toContainText('Banco Aliado');
+    await expect(page.getByRole('region', { name: 'Mis solicitudes' })).toContainText(
+      'SOL-MOD-2026-0042',
+    );
     await expect(page.getByRole('region', { name: 'Documentos' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Historial de cobros' })).toContainText(
       'Cobro de la cuota 4 rechazado (1 intento)',

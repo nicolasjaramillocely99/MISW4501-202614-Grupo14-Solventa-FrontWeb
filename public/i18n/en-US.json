@@ -1433,6 +1433,8 @@
         "verRenovacion": "View renewal",
         "reintentar": "Try again",
         "radicar": "File a claim",
+        "modificar": "Request a change",
+        "modificarPoliza": "Request a change to policy {{id}}",
         "verDetalle": "See details",
         "verDetalleDe": "See the details of policy {{id}}"
       },
@@ -1989,6 +1991,336 @@
         "pse": "PSE"
       }
     },
+    "solicitudes": {
+      "tipos": {
+        "beneficiaries": "Beneficiaries",
+        "insured_amount": "Insured amounts",
+        "personal_data": "Personal data"
+      },
+      "tiposDescripcion": {
+        "beneficiaries": "Add, remove or change shares",
+        "insured_amount": "Adjust the insured value",
+        "personal_data": "Address, e-mail or phone"
+      },
+      "tiposCambio": {
+        "beneficiaries": "Beneficiary change",
+        "insured_amount": "Insured amount change",
+        "personal_data": "Personal data update"
+      },
+      "tiposCambioMinuscula": {
+        "beneficiaries": "beneficiary change",
+        "insured_amount": "insured amount change",
+        "personal_data": "data update"
+      },
+      "parentescos": {
+        "spouse_or_partner": "Spouse or permanent partner",
+        "child": "Child",
+        "parent": "Parent",
+        "sibling": "Sibling",
+        "grandchild": "Grandchild",
+        "other": "Other"
+      },
+      "tiposDocumento": {
+        "CC": "Citizenship card",
+        "TI": "Identity card (minor)",
+        "RC": "Civil registry",
+        "CE": "Foreigner ID card",
+        "PA": "Passport"
+      },
+      "estados": {
+        "radicada": "Filed",
+        "enRevision": "In review",
+        "aplicada": "Applied",
+        "rechazada": "Rejected",
+        "desconocido": "Unknown status"
+      },
+      "linea": {
+        "life": "Mortgage life"
+      },
+      "canal": {
+        "web": "web portal",
+        "mobile": "mobile app"
+      },
+      "errores": {
+        "required": "Fill in this field.",
+        "invalid_format": "Check the format of this field.",
+        "out_of_range": "The value is out of the allowed range.",
+        "duplicate": "This document is already on the list.",
+        "no_change": "It is the same as the current value.",
+        "share_total_not_100": "The shares must add up to 100 % (current: {{total}} %)",
+        "campos": {
+          "nombreCompleto": {
+            "invalid_format": "Write 3 to 120 characters, with letters."
+          },
+          "numeroDocumento": {
+            "invalid_format": "5 to 20 letters or digits; digits only for CC, TI and RC.",
+            "duplicate": "This document is already on the list."
+          },
+          "participacion": {
+            "invalid_format": "Use up to two decimals.",
+            "out_of_range": "It must be above 0 and up to 100."
+          },
+          "beneficiarios": {
+            "required": "Add at least one beneficiary.",
+            "out_of_range": "You can designate up to 10 beneficiaries.",
+            "no_change": "The beneficiaries are the same as today."
+          },
+          "valorAsegurado": {
+            "invalid_format": "Write a whole amount in pesos, without decimals.",
+            "out_of_range": "It must be between {{min}} and {{max}}.",
+            "no_change": "It is the same as the current insured value."
+          },
+          "contacto": {
+            "required": "Write at least one new detail."
+          },
+          "direccion": {
+            "invalid_format": "Write 5 to 160 characters."
+          },
+          "correo": {
+            "invalid_format": "Write a valid e-mail, such as name@domain.com."
+          },
+          "telefono": {
+            "invalid_format": "The phone number has 10 digits."
+          }
+        }
+      },
+      "solicitar": {
+        "volver": "My policies",
+        "titulo": "Request a change",
+        "subtitulo": "{{producto}} · {{poliza}} · Changes apply after the operations review; we will let you know the result.",
+        "subtituloNoVigente": "{{producto}} · {{poliza}} · This policy is no longer in force.",
+        "cargando": "Loading the terms of your policy…",
+        "cancelar": "Cancel",
+        "radicar": "File request",
+        "radicando": "Filing…",
+        "tipoCambio": "Type of change",
+        "abierta": "You already have request {{id}} in progress",
+        "verSolicitud": "View request",
+        "corrige": "Fix the marked fields before filing.",
+        "noVigente": {
+          "titulo": "This policy does not accept changes",
+          "texto": "Its coverage ended on {{fecha}}. You can only request changes to policies in force; if you renewed it, find it in My policies."
+        },
+        "abiertaTodas": "You already have a request in progress of each type; wait for its result to file another one.",
+        "noEncontrada": {
+          "titulo": "We could not find this policy",
+          "texto": "You can only request changes to your mortgage life policies. Go back to «My policies» and choose one."
+        },
+        "error": {
+          "titulo": "We could not load your policy",
+          "texto": "Try again in a few moments.",
+          "reintentar": "Retry",
+          "radicar": "We could not file your request. Try again in a few moments; nothing was filed.",
+          "vencida": "The policy is no longer in force: you cannot request changes to it."
+        }
+      },
+      "beneficiarios": {
+        "actuales": "Current beneficiaries",
+        "nuevo": "New beneficiary",
+        "editar": "Edit beneficiary",
+        "agregar": "Add beneficiary",
+        "guardar": "Add to the list",
+        "editarFila": "Edit",
+        "editarFilaDe": "Edit {{nombre}}",
+        "quitar": "Remove",
+        "quitarDe": "Remove {{nombre}}",
+        "nombre": "Full name",
+        "parentesco": "Relationship",
+        "tipoDocumento": "Document type",
+        "numeroDocumento": "Document number",
+        "participacion": "Share (%)",
+        "elegir": "Choose an option",
+        "documento": "Document",
+        "acciones": "Actions",
+        "oneroso": "Onerous",
+        "saldoInsoluto": "Outstanding balance",
+        "noModificable": "Not editable",
+        "entidadGenerica": "Lender of the credit",
+        "sinDesignados": "No beneficiaries designated for the remainder yet.",
+        "total": "Total: {{total}} %",
+        "tabla": "Beneficiaries of the policy"
+      },
+      "suma": {
+        "titulo": "New insured amount",
+        "actual": "Current insured value",
+        "nuevo": "New insured value (COP)",
+        "ayuda": "Between {{min}} and {{max}}"
+      },
+      "contacto": {
+        "titulo": "New contact details",
+        "direccion": "Address",
+        "telefono": "Phone",
+        "correo": "Contact e-mail of the policy",
+        "correoAyuda": "It is the e-mail for the notices of the policy; your user does not change",
+        "ayuda": "Write only what you want to change."
+      },
+      "resumen": {
+        "titulo": "Summary of the change",
+        "actual": "Current value",
+        "nuevo": "New value",
+        "efecto": "Effect",
+        "sinBeneficiarios": "No beneficiaries designated",
+        "beneficiario": "{{nombre}} · {{participacion}} %",
+        "pendiente": "Not defined yet",
+        "direccion": "Address: {{valor}}",
+        "telefono": "Phone: {{valor}}",
+        "correo": "E-mail: {{valor}}",
+        "noRegistrada": "not registered",
+        "noRegistrado": "not registered",
+        "efectos": {
+          "beneficiaries": "Applies to the remainder after the balance of the credit.",
+          "insured_amount": "The monthly premium is recalculated when operations applies the change; you will see it in the result.",
+          "personal_data": "It changes the contact details of the policy; your sign-in user does not change."
+        }
+      },
+      "antes": {
+        "titulo": "Before filing",
+        "titular": "Only you, as the authenticated holder, can request changes to this policy.",
+        "seguimiento": "You will get an identifier and can follow its status: filed, in review, applied or rejected.",
+        "reglas": {
+          "beneficiaries": "Fix the share before filing; the form is not sent with errors.",
+          "insured_amount": "The new value must be between {{min}} and {{max}} and different from the current one.",
+          "personal_data": "Write at least one detail different from the current one; the phone has 10 digits."
+        }
+      },
+      "detalle": {
+        "volver": "My requests",
+        "titulo": "Request {{id}}",
+        "subtitulo": "{{tipo}} · {{producto}} {{poliza}} · Filed on {{fecha}}",
+        "cargando": "Loading the request…",
+        "verMisSolicitudes": "View my requests",
+        "volverPolizas": "Back to my policies",
+        "radicarNueva": "File a new one",
+        "confirmacion": {
+          "titulo": "Your request was filed",
+          "texto": "Operations will review the change and apply the endorsement with the business validations. We will e-mail you and you will see the updated status here."
+        },
+        "radicada": {
+          "titulo": "Your request is filed",
+          "texto": "Operations will review the change and apply the endorsement with the business validations. We will e-mail you and you will see the updated status here."
+        },
+        "enRevision": {
+          "titulo": "Your request is in review",
+          "texto": "An operations analyst is reviewing the change with the business validations. We will e-mail you and you will see the result here."
+        },
+        "aplicada": {
+          "titulo": "Your request was applied",
+          "texto": "The change is now part of your policy and shows in the portal and in the app. We sent you the result by e-mail."
+        },
+        "rechazada": {
+          "titulo": "Your request was rejected",
+          "texto": "Operations reviewed the change and did not apply it. Your policy keeps its current terms; fix what is indicated and file a new request."
+        },
+        "desconocido": {
+          "titulo": "Your request",
+          "texto": "Check the status of your request later."
+        },
+        "pasos": {
+          "etiqueta": "Progress of the request",
+          "radicada": "Filed",
+          "enRevision": "In review",
+          "aplicada": "Applied",
+          "rechazada": "Rejected"
+        },
+        "datos": {
+          "identificador": "Identifier",
+          "tipo": "Type of change",
+          "tiempo": "Estimated time",
+          "tiempoValor": "Up to 2 business days",
+          "decididaEl": "Decided on",
+          "aplicadaEl": "Applied on",
+          "radicadaPor": "Filed by",
+          "radicadaPorValor": "{{quien}} · {{canal}}"
+        },
+        "mientras": {
+          "titulo": "Meanwhile",
+          "texto": "The policy keeps its current terms. If operations rejects the change, you will see the reason in this same request and you can file a new one."
+        },
+        "motivo": "Reason",
+        "exito": "Your policy already has the new terms",
+        "condiciones": {
+          "lista": "{{cambios}}.",
+          "beneficiarios": "Beneficiaries: {{lista}}",
+          "beneficiario": "{{nombre}} {{participacion}} %",
+          "retirado": "{{nombre}} (removed)",
+          "valorAsegurado": "Insured amount: {{valor}}",
+          "direccion": "Address: {{valor}}",
+          "telefono": "Phone: {{valor}}",
+          "correo": "Contact e-mail: {{valor}}"
+        },
+        "noEncontrada": {
+          "titulo": "We could not find this request",
+          "texto": "Check the identifier or look for it in «My requests»."
+        },
+        "error": {
+          "titulo": "We could not load the request",
+          "texto": "Try again in a few moments.",
+          "reintentar": "Retry"
+        }
+      },
+      "mias": {
+        "titulo": "My requests",
+        "subtitulo": "Change requests of your policies. An operations advisor reviews them and applies the endorsement; here you see the status of each one and the reason if one was rejected.",
+        "nueva": "New request",
+        "cargando": "Loading your requests…",
+        "indicadores": {
+          "region": "Summary of your requests",
+          "abiertas": "In review",
+          "aplicadas": "Applied this year",
+          "rechazadas": "Rejected",
+          "referencia": "{{id}} · {{tipo}}",
+          "ultima": "Last: {{fecha}} · {{tipo}}",
+          "sinAbiertas": "No requests in progress",
+          "sinAplicadas": "None this year",
+          "sinRechazadas": "None",
+          "noDisponible": "Not available"
+        },
+        "filtros": {
+          "titulo": "Filter requests",
+          "estado": "Status",
+          "poliza": "Policy",
+          "desde": "From",
+          "todos": "All",
+          "todas": "All",
+          "ayudaFecha": "MM/DD/YYYY"
+        },
+        "contador": "{{n}} requests",
+        "contadorUno": "1 request",
+        "tabla": {
+          "titulo": "Change requests",
+          "solicitud": "Request",
+          "polizaTipo": "Policy and type of change",
+          "radicada": "Filed",
+          "estado": "Status",
+          "ultimoCambio": "Last change",
+          "acciones": "Actions",
+          "verDetalle": "View detail",
+          "verDetalleDe": "View detail of {{id}}",
+          "productoTipo": "{{producto}} · {{tipo}}"
+        },
+        "vacio": {
+          "titulo": "You have no change requests yet",
+          "texto": "When you request a change to one of your active policies, it will appear here with its status.",
+          "verPolizas": "View my policies"
+        },
+        "sinResultados": {
+          "titulo": "No request matches the filter",
+          "texto": "Change the status, the policy or the date, or clear the filter.",
+          "limpiar": "Clear filters"
+        },
+        "error": {
+          "titulo": "We could not load your requests",
+          "texto": "There was a problem querying the service. Your requests are still saved.",
+          "reintentar": "Retry"
+        },
+        "paginacion": {
+          "navegacion": "Pagination",
+          "pagina": "Page {{pagina}} of {{total}}",
+          "anterior": "Previous",
+          "siguiente": "Next"
+        }
+      }
+    },
     "detallePoliza": {
       "cargando": "Loading the policy…",
       "volver": "My policies",
@@ -2096,12 +2428,16 @@
       "beneficiarios": {
         "titulo": "Beneficiaries",
         "modificar": "Edit",
-        "sinDatos": "The beneficiaries of the policy will show here once the system records them."
+        "sinDatos": "The beneficiaries of the policy will show here once the system records them.",
+        "cargando": "Loading the beneficiaries…",
+        "error": "We could not load the beneficiaries of the policy."
       },
       "solicitudes": {
         "titulo": "My requests",
         "verTodas": "See all",
-        "sinDatos": "Your change requests for this policy will show here."
+        "sinDatos": "Your change requests for this policy will show here.",
+        "cargando": "Loading the requests…",
+        "error": "We could not load the requests of the policy."
       }
     }
   },

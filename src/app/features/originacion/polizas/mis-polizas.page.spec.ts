@@ -1,6 +1,7 @@
 import { provideRouter } from '@angular/router';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { POLIZA_CANCELADA_DTO } from '@testing/cancelacion-pruebas';
 import { LISTA_POLIZAS_DTO, POLIZA_LISTADA_DTO, RESUMEN_ACEPTADA_DTO } from '@testing/renovacion-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, Subject, of, throwError } from 'rxjs';
@@ -51,6 +52,34 @@ describe('MisPolizasPage (A1 · HU-W1.5-02)', () => {
     expect(renovar).toHaveLength(1);
     expect(renovar[0].getAttribute('href')).toBe('/originacion/polizas/pol-acc-118204/renovar');
     expect(screen.getByText('Activa', { selector: 'app-insignia-estado' })).toBeTruthy();
+  });
+
+  it('ofrece «Solicitar modificación» solo en las pólizas en vigor (HU-W1.4-01)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-16T12:00:00Z'));
+    const finalizada = mapearPolizaListada({
+      ...POLIZA_LISTADA_DTO,
+      policy_id: 'pol-vieja',
+      can_renew: false,
+      coverage_start: '2025-01-01T00:00:00Z',
+      coverage_end: '2026-01-01T00:00:00Z',
+    });
+    const futura = mapearPolizaListada({
+      ...POLIZA_LISTADA_DTO,
+      policy_id: 'pol-futura',
+      can_renew: false,
+      coverage_start: '2026-10-02T23:59:00Z',
+      coverage_end: '2027-10-02T23:59:00Z',
+    });
+    // Ajuste A-9: cancelada por no pago (HU-W1.6-02) dentro de sus fechas, junto a la insignia «No pago».
+    const cancelada = mapearPolizaListada(POLIZA_CANCELADA_DTO);
+    await renderizar(of([...LISTA, finalizada, futura, cancelada]));
+
+    const modificar = screen.getAllByRole('link', { name: /Solicitar modificación de la póliza/ });
+    expect(modificar.map((a) => a.getAttribute('href'))).toEqual(LISTA.map((p) => `/originacion/polizas/${p.polizaId}/modificar`));
+    expect(screen.queryByRole('link', { name: 'Solicitar modificación de la póliza pol-vieja' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Solicitar modificación de la póliza pol-futura' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Solicitar modificación de la póliza pol-acc-093377' })).toBeNull();
   });
 
   it('el filtro por estado deja solo las pólizas de ese estado y actualiza el contador', async () => {

@@ -1,0 +1,32 @@
+<section class="tarjeta suma" aria-labelledby="titulo-nueva-suma" *transloco="let t; prefix: 'originacion.solicitudes'">
+  <h2 id="titulo-nueva-suma" class="suma__titulo">{{ t('suma.titulo') }}</h2>
+  <div class="campo">
+    <label class="campo__etiqueta" for="suma-actual">{{ t('suma.actual') }}</label>
+    <input id="suma-actual" class="campo__control" type="text" readonly [value]="actual() | formatoMoneda: moneda()" />
+  </div>
+  <div class="campo">
+    <label class="campo__etiqueta" for="suma-nueva">{{ t('suma.nuevo') }}</label>
+    <input
+      id="suma-nueva"
+      class="campo__control"
+      type="text"
+      inputmode="numeric"
+      autocomplete="off"
+      [value]="texto()"
+      [disabled]="deshabilitado()"
+      [attr.aria-invalid]="claveError() ? 'true' : null"
+      [attr.aria-describedby]="claveError() ? 'suma-nueva-error' : 'suma-nueva-ayuda'"
+      (input)="cambiar($event)"
+      (blur)="tocar()"
+    />
+    @if (claveError(); as clave) {
+      <p id="suma-nueva-error" class="campo__error" role="alert">
+        {{ t(clave, { min: (limites().valorMinimo | formatoMoneda: moneda()), max: (limites().valorMaximo | formatoMoneda: moneda()) }) }}
+      </p>
+    } @else {
+      <p id="suma-nueva-ayuda" class="suma__ayuda">
+        {{ t('suma.ayuda', { min: (limites().valorMinimo | formatoMoneda: moneda()), max: (limites().valorMaximo | formatoMoneda: moneda()) }) }}
+      </p>
+    }
+  </div>
+</section>

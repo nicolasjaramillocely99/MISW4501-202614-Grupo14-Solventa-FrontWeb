@@ -1,0 +1,201 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+}
+
+.pagina__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-24);
+
+  .boton {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--espacio-8);
+  }
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__subtitulo {
+  margin: var(--espacio-8) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espacio-24);
+}
+
+.indicador p {
+  margin: 0;
+}
+
+.indicador__etiqueta {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.indicador .indicador__valor {
+  margin: var(--espacio-8) 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+// Con la misma especificidad de `.indicador .indicador__valor`, para que «Rechazadas» lleve el color de aviso del frame.
+.indicador .indicador__valor--aviso {
+  color: var(--color-advertencia-600);
+}
+
+.indicador__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+}
+
+.filtros__contador {
+  margin: var(--espacio-24) 0 0 auto;
+  color: var(--color-texto-secundario);
+}
+
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-texto-secundario);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.tabla-desplazable {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    border-bottom: 1px solid var(--color-borde-base);
+    text-align: left;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+}
+
+.tabla__solicitud {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tabla__secundario {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-texto-secundario);
+}
+
+.tabla__accion {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tabla__enlace {
+  color: var(--color-azul-700);
+  font-weight: 500;
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-12);
+  text-align: center;
+}
+
+.vacio__icono {
+  display: inline-flex;
+  padding: var(--espacio-16);
+  border-radius: var(--radio-completo);
+  background: var(--color-azul-50);
+  color: var(--color-azul-700);
+}
+
+// Sin solicitudes y con la lista caída, dentro de la tabla: la ilustración punteada del estado vacío (`1398:12618`, `1398:12843`).
+.vacio--tabla {
+  padding: var(--espacio-48) var(--espacio-16);
+
+  .vacio__icono {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    padding: 0;
+    border: 2px dashed var(--color-azul-500);
+    background: none;
+  }
+
+  .vacio__texto {
+    max-width: 48ch;
+  }
+}
+
+.vacio__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.vacio__texto {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--espacio-16);
+}
+
+.pie__pagina {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.pie__botones {
+  display: flex;
+  gap: var(--espacio-8);
+
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espacio-4);
+  }
+}
