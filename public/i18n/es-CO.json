@@ -2823,6 +2823,13 @@
         "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza.",
         "cargando": "Cargando las solicitudes…",
         "error": "No pudimos cargar las solicitudes de la póliza."
+      },
+      "canceladaAPedido": {
+        "titulo": "Vida hipotecario · {{id}}",
+        "estado": "Cancelada",
+        "subtitulo": "Cancelada a solicitud del asegurado el {{fecha}} · Reembolso prorrateado registrado",
+        "subtituloSinReembolso": "Cancelada a solicitud del asegurado el {{fecha}} · Sin reembolso",
+        "volver": "Volver a mis pólizas"
       }
     },
     "cancelacion": {
@@ -2913,6 +2920,40 @@
         "titulo": "¿Prefieres otra opción?",
         "texto": "Puedes solicitar una modificación (por ejemplo, cambiar tus beneficiarios) en lugar de cancelar.",
         "modificar": "Solicitar modificación"
+      },
+      "detalle": {
+        "registrada": "Cancelación registrada",
+        "aviso": {
+          "in_process": "Tu póliza quedó en estado Cancelada. El reembolso de {{monto}} quedó registrado y se está enviando a tu {{medio}}.",
+          "completed": "Tu póliza quedó en estado Cancelada. El reembolso de {{monto}} se envió a tu {{medio}}; según tu banco, puede tardar de 5 a 10 días hábiles en verse en tu extracto.",
+          "failed": "Tu póliza quedó en estado Cancelada, pero no pudimos enviar el reembolso de {{monto}} a tu {{medio}}. Conserva la referencia {{referencia}} para cualquier reclamo.",
+          "not_applicable": "Tu póliza quedó en estado Cancelada. La cuota del mes en curso no estaba pagada, así que no hay reembolso."
+        },
+        "titulo": "Detalle del reembolso",
+        "monto": "Monto",
+        "metodo": "Método",
+        "tarjeta": "{{marca}} •••• {{ultimos}}",
+        "pse": "PSE",
+        "referencia": "Referencia",
+        "fecha": "Fecha de cancelación",
+        "motivo": "Motivo",
+        "estadoReembolso": "Estado del reembolso",
+        "noAplica": "No aplica",
+        "estados": {
+          "in_process": "En proceso",
+          "completed": "Reembolsado",
+          "failed": "No se pudo procesar",
+          "not_applicable": "Sin reembolso"
+        },
+        "poliza": {
+          "titulo": "Estado de la póliza",
+          "cobertura": "Cobertura",
+          "hasta": "Hasta el {{fecha}}",
+          "documentos": "Documentos",
+          "documentosTexto": "Siguen disponibles para consulta",
+          "reactivacion": "Reactivación",
+          "reactivacionTexto": "No disponible · requiere nueva póliza"
+        }
       }
     }
   },

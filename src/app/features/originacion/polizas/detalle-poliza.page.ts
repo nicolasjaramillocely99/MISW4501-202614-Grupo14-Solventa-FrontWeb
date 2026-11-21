@@ -41,6 +41,7 @@ import {
   TonoInsignia,
 } from '@shared/ui/insignia-estado/insignia-estado.component';
 
+import { DetalleCancelacionComponent } from '../cancelaciones/componentes/detalle-cancelacion/detalle-cancelacion.component';
 import { EstadoSolicitudComponent } from '../endosos/componentes/estado-solicitud/estado-solicitud.component';
 import { fechaCorta } from '../endosos/modelos/fecha-corta';
 import { parametrosDesdeFiltro } from '../endosos/modelos/filtro-solicitudes';
@@ -127,8 +128,11 @@ function pasoDe(m: MesPrima): PasoHistorial {
  *
  * Los botones y las tarjetas del prototipo están todos. «Descargar póliza» y las condiciones particulares descargan el
  * documento contractual de HU-W1.3-03. Los que no tienen historia en el sistema aparecen deshabilitados y dicen
- * «Disponible próximamente»: cancelar (HU-W1.6-01), las condiciones generales, el certificado de vigencia, «Hablar con
- * un asesor» y «Solicitar nueva cotización». Ruta: `/originacion/polizas/:id`. Exige la sesión del asegurado.
+ * «Disponible próximamente»: las condiciones generales, el certificado de vigencia, «Hablar con un asesor» y «Solicitar
+ * nueva cotización». Ruta: `/originacion/polizas/:id`. Exige la sesión del asegurado.
+ *
+ * HU-W1.6-01: «Cancelar póliza» lleva a A5 (`/originacion/polizas/:id/cancelar`). Una póliza cancelada a solicitud del
+ * asegurado se muestra como A5b (D-8 a): su encabezado y el detalle del reembolso, en lugar del contenido de A2/A2b.
  *
  * HU-W1.4-01 (ajuste A-10): «Solicitar modificación» y el «Modificar» de «Beneficiarios» llevan a A3
  * (`/originacion/polizas/:id/modificar`); «Beneficiarios» muestra los vigentes con el oneroso, de las condiciones
@@ -143,6 +147,7 @@ function pasoDe(m: MesPrima): PasoHistorial {
     TranslocoDirective,
     InsigniaEstadoComponent,
     EstadoSolicitudComponent,
+    DetalleCancelacionComponent,
     FormatoFechaPipe,
     FormatoFechaHoraPipe,
     FormatoMonedaPipe,
@@ -178,6 +183,11 @@ export class DetallePolizaPage implements OnInit {
     return p ? estadoDePoliza(p) : 'vigente';
   });
   protected readonly tono = computed<TonoInsignia>(() => tonoDePoliza(this.estado()));
+  /** La cancelación a solicitud del asegurado (HU-W1.6-01): la página muestra A5b en lugar de A2/A2b. */
+  protected readonly cancelacionAPedido = computed(() => {
+    const c = this.poliza()?.cancelacion;
+    return c?.motivo === 'insured_request' ? c : null;
+  });
   /** La cancelación por no pago de A2b (HU-W1.6-02); `null` sin cancelación o si fue a solicitud del asegurado. */
   protected readonly cancelacionNoPago = computed(() => {
     const c = this.poliza()?.cancelacion;

@@ -28,6 +28,23 @@
     }
     @case ('listo') {
       @if (poliza(); as p) {
+        @if (cancelacionAPedido(); as c) {
+        <!-- A5b (HU-W1.6-01, D-8 a): la póliza cancelada a solicitud del asegurado, con su reembolso registrado. -->
+        <a class="volver" routerLink="/originacion/polizas">← {{ t('volver') }}</a>
+        <header class="encabezado">
+          <div class="encabezado__titulo">
+            <h1 class="pagina__titulo">{{ t('canceladaAPedido.titulo', { id: p.polizaId }) }}</h1>
+            <app-insignia-estado tono="neutro">{{ t('canceladaAPedido.estado') }}</app-insignia-estado>
+          </div>
+          <p class="pagina__subtitulo">
+            {{ t(c.detalleReembolso && c.detalleReembolso.monto > 0 ? 'canceladaAPedido.subtitulo' : 'canceladaAPedido.subtituloSinReembolso', { fecha: fechaCorta(c.canceladaEn) }) }}
+          </p>
+          <div class="encabezado__acciones">
+            <a class="boton boton--primario" routerLink="/originacion/polizas">{{ t('canceladaAPedido.volver') }}</a>
+          </div>
+        </header>
+        <app-detalle-cancelacion [cancelacion]="c" />
+        } @else {
         <p id="proximamente" class="visualmente-oculto">{{ t('proximamente') }}</p>
         <a class="volver" routerLink="/originacion/polizas">← {{ t('volver') }}</a>
         <header class="encabezado">
@@ -67,15 +84,9 @@
                 >{{ t('acciones.nuevaCotizacion') }}
               </button>
             } @else {
-              <button
-                type="button"
-                class="boton boton--secundario"
-                disabled
-                aria-describedby="proximamente"
-                [title]="t('proximamente')"
-              >
+              <a class="boton boton--secundario" [routerLink]="['/originacion/polizas', p.polizaId, 'cancelar']">
                 {{ t('acciones.cancelar') }}
-              </button>
+              </a>
               <a
                 class="boton boton--secundario"
                 [routerLink]="['/originacion/polizas', p.polizaId, 'modificar']"
@@ -513,6 +524,7 @@
             }
           </aside>
         </div>
+        }
       }
     }
   }
