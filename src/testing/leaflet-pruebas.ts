@@ -1,7 +1,7 @@
 /**
- * Doble mínimo de Leaflet para las pruebas unitarias del mapa de la asignación (HU-W2.3-01). jsdom no tiene diseño, así
- * que el doble registra lo que el componente pide (capas, vista, controles) y deja simular el clic y el arrastre. El
- * mapa real se prueba en Chromium con las E2E.
+ * Doble mínimo de Leaflet para las pruebas unitarias del mapa de la asignación (HU-W2.3-01) y de las asistencias en sitio
+ * (HU-W2.3-03). jsdom no tiene diseño, así que el doble registra lo que el componente pide (capas, vista, encuadres,
+ * controles) y deja simular el clic y el arrastre. El mapa real se prueba en Chromium con las E2E.
  *
  * Uso: `const leaflet = crearLeafletFalso();` y en los *providers*
  * `{ provide: CARGAR_LEAFLET, useValue: () => Promise.resolve(leaflet.modulo) }`.
@@ -23,6 +23,8 @@ export interface LeafletFalso {
   modulo: never;
   capas: CapaFalsa[];
   vistas: { centro: [number, number]; zoom: number }[];
+  /** Cada `fitBounds`: los puntos encuadrados y sus opciones (la bandeja de asistencias, HU-W2.3-03). */
+  encuadres: { puntos: [number, number][]; opciones: Record<string, unknown> }[];
   controles: Record<string, unknown>[];
   teselas: { url: string; opciones: Record<string, unknown> }[];
   eliminado: boolean;
@@ -36,6 +38,7 @@ export function crearLeafletFalso(): LeafletFalso {
   const estado: Omit<LeafletFalso, 'modulo' | 'clic'> = {
     capas: [],
     vistas: [],
+    encuadres: [],
     controles: [],
     teselas: [],
     eliminado: false,
@@ -104,6 +107,10 @@ export function crearLeafletFalso(): LeafletFalso {
       estado.vistas.push({ centro: aPunto(centro), zoom });
       return mapa;
     },
+    fitBounds: (limites: { puntos: [number, number][] }, opciones: Record<string, unknown> = {}) => {
+      estado.encuadres.push({ puntos: limites.puntos, opciones });
+      return mapa;
+    },
     remove: () => {
       estado.eliminado = true;
     },
@@ -116,6 +123,7 @@ export function crearLeafletFalso(): LeafletFalso {
     }),
     layerGroup: () => grupo,
     latLng: (lat: number, lng: number) => ({ lat, lng }),
+    latLngBounds: (puntos: unknown[]) => ({ puntos: puntos.map(aPunto) }),
     circle: (centro: unknown, opciones: Record<string, unknown>) =>
       capa('circle', centro, opciones),
     marker: (centro: unknown, opciones: Record<string, unknown>) =>

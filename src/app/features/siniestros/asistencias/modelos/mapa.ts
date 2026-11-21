@@ -15,6 +15,13 @@ export const URL_DERECHOS_OSM = 'https://www.openstreetmap.org/copyright';
 export const CENTRO_SIN_PIN: Coordenadas = { latitud: 4.6533, longitud: -74.0836 };
 export const ZOOM_SIN_PIN = 11;
 
+/**
+ * Encuadre de varios marcadores sin incidente (la bandeja de HU-W2.3-03): relleno en píxeles alrededor de los marcadores
+ * y zoom máximo, para que un solo marcador no quede a nivel de calle.
+ */
+export const RELLENO_ENCUADRE = 32;
+export const ZOOM_MAXIMO_ENCUADRE = 15;
+
 export interface Coordenadas {
   latitud: number;
   longitud: number;

@@ -11,7 +11,7 @@ import { Traductor } from '../../modelos/catalogo-siniestros';
 /**
  * Presentación de la asignación del prestador (HU-W2.3-01): funciones puras, sin Angular. El front **no calcula**
  * distancias ni elegibilidad: traduce por código lo que el backend decidió y deriva qué acciones se ofrecen. Un código
- * que no conoce (una especialidad de HU-W2.3-03, un motivo nuevo) se muestra tal cual en vez de romper la pantalla (F6).
+ * que no conoce (una especialidad o un motivo nuevos) se muestra tal cual en vez de romper la pantalla (F6).
  */
 
 const ESPECIALIDADES: readonly string[] = [
@@ -21,6 +21,9 @@ const ESPECIALIDADES: readonly string[] = [
   'damp_proofing',
   'painting',
   'bodywork',
+  // HU-W2.3-03: las especialidades de la asistencia en sitio (grúa y asistencia vial), del mismo registro de prestadores.
+  'towing',
+  'roadside_assistance',
 ];
 const MOTIVOS: readonly string[] = ['no_eligible_provider_within_max_radius'];
 
