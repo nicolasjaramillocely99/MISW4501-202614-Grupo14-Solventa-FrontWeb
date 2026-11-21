@@ -177,12 +177,30 @@ describe('RevisionRadicacionPage (S8 · HU-W2.1-03)', () => {
     expect(screen.queryByText('Elige el motivo de la devolución.')).toBeNull();
   });
 
-  it('«Devolver al cliente» lleva al formulario', async () => {
-    const usuario = await renderizar();
+  it('las decisiones están al final, después de los datos y los soportes, no en el encabezado', async () => {
+    await renderizar();
 
-    await usuario.click(screen.getByRole('button', { name: 'Devolver al cliente' }));
+    const encabezado = document.querySelector('header.encabezado') as HTMLElement;
+    expect(within(encabezado).queryByRole('button')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Devolver al cliente' })).toBeNull();
 
-    expect(document.activeElement).toBe(screen.getByLabelText('Motivo'));
+    const soportes = screen.getByRole('heading', { name: 'Soportes adjuntos' });
+    const aprobar = screen.getByRole('button', { name: 'Aprobar y enviar a evaluación' });
+    const devolver = screen.getByRole('button', { name: 'Devolver radicación' });
+    const despues = Node.DOCUMENT_POSITION_FOLLOWING;
+    expect(soportes.compareDocumentPosition(aprobar) & despues).toBeTruthy();
+    expect(aprobar.compareDocumentPosition(devolver) & despues).toBeTruthy();
+  });
+
+  it('la tarjeta «Póliza» muestra el estado en una etiqueta verde con el vencimiento, como S8', async () => {
+    await renderizar();
+
+    const tarjeta = screen
+      .getByRole('heading', { name: 'Póliza' })
+      .closest('section') as HTMLElement;
+    const etiqueta = within(tarjeta).getByText('Activa · vence 02/10/2026');
+    expect(within(tarjeta).getByText('Estado')).toBeTruthy();
+    expect(etiqueta.closest('app-insignia-estado')?.classList).toContain('insignia--exito');
   });
 
   it('una radicación ya devuelta se ve en solo lectura con el veredicto registrado', async () => {

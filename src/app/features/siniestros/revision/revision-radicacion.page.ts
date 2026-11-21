@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslocoDirective } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import {
   LucideArrowLeft,
   LucideCheck,
@@ -37,7 +37,10 @@ import { ResumenSiniestro } from '@core/api/siniestros/siniestro.modelos';
 import { SiniestrosApiService } from '@core/api/siniestros/siniestros-api.service';
 import { FormatoFechaHoraPipe } from '@shared/pipes/formato-fecha-hora.pipe';
 import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
-import { InsigniaEstadoComponent } from '@shared/ui/insignia-estado/insignia-estado.component';
+import {
+  InsigniaEstadoComponent,
+  TonoInsignia,
+} from '@shared/ui/insignia-estado/insignia-estado.component';
 
 import { Traductor, nombreRamo, nombreTipo } from '../modelos/catalogo-siniestros';
 import { tonoEstado } from '../modelos/estado-siniestro';
@@ -48,6 +51,14 @@ import {
 } from './componentes/soportes-revision/soportes-revision.component';
 
 export type FaseRevision = 'cargando' | 'listo' | 'noEncontrado' | 'error';
+
+/** Tono de cada estado de la póliza que informa el núcleo (`evaluacion.poliza.estados`). */
+const TONO_POLIZA: Readonly<Record<string, TonoInsignia>> = {
+  active: 'exito',
+  suspended: 'advertencia',
+  cancelled: 'error',
+  expired: 'neutro',
+};
 
 /** Lo que falta en el formulario de devolución antes de enviarlo. */
 export interface ErroresDevolucion {
@@ -93,6 +104,7 @@ export class RevisionRadicacionPage implements OnInit {
   private readonly api = inject(SiniestrosApiService);
   private readonly destruccion = inject(DestroyRef);
   private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly motivos = MOTIVOS_DEVOLUCION;
   protected readonly datosCorregibles = DATOS_CORREGIBLES;
@@ -199,9 +211,21 @@ export class RevisionRadicacionPage implements OnInit {
     this.errores.update((e) => ({ ...e, pedido: undefined }));
   }
 
-  /** «Devolver al cliente» del encabezado lleva al formulario de devolución. */
-  protected irADevolucion(): void {
-    this.elemento.nativeElement.querySelector<HTMLElement>('#motivo-devolucion')?.focus();
+  /** Tono de la etiqueta del estado de la póliza: verde si está activa, como en S8. */
+  protected tonoPoliza(estado: string): TonoInsignia {
+    return TONO_POLIZA[estado] ?? 'neutro';
+  }
+
+  /** «02/10/2026»: el vencimiento de la póliza en la etiqueta de S8. */
+  protected fechaCorta(iso: string): string {
+    const fecha = new Date(iso);
+    return Number.isNaN(fecha.getTime())
+      ? ''
+      : new Intl.DateTimeFormat(this.transloco.getActiveLang(), {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }).format(fecha);
   }
 
   protected aprobar(): void {
@@ -300,6 +324,7 @@ export class RevisionRadicacionPage implements OnInit {
         next: (resultado) => {
           this.resultado.set(resultado);
           this.cargar();
+          this.mostrarAviso();
         },
         error: (error: unknown) => this.alFallar(codigoDe(error)),
       });
@@ -318,13 +343,23 @@ export class RevisionRadicacionPage implements OnInit {
         // Otro asesor se adelantó: se muestra lo que hay ahora con el aviso.
         this.errorAccion.set(codigo);
         this.cargar();
+        this.mostrarAviso();
         break;
       case 'unauthorized':
       case 'forbidden':
         break;
       default:
         this.errorAccion.set(codigo);
+        this.mostrarAviso();
     }
+  }
+
+  /**
+   * Las decisiones están al final de la página y el aviso del resultado arriba, bajo el título: se sube hasta él para
+   * que el asesor lo vea.
+   */
+  private mostrarAviso(): void {
+    this.elemento.nativeElement.scrollIntoView?.({ block: 'start', behavior: 'smooth' });
   }
 }
 

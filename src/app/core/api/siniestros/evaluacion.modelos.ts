@@ -92,6 +92,8 @@ export interface PolizaVigente {
   producto: string;
   objetoAsegurado: string;
   estado: string;
+  /** Primer instante sin cobertura (`valid_to`): la póliza vence ese día. */
+  vigenciaHasta: string | null;
   coberturas: Cobertura[];
 }
 
@@ -325,6 +327,7 @@ export interface EvaluacionDto {
     product: string;
     insured_object: string;
     status: string;
+    valid_to?: string;
     coverages: CoberturaDto[];
   } | null;
   coverage: CoberturaDto | null;
@@ -472,6 +475,7 @@ export function mapearEvaluacion(dto: EvaluacionDto): Evaluacion {
           producto: dto.policy.product,
           objetoAsegurado: dto.policy.insured_object,
           estado: dto.policy.status,
+          vigenciaHasta: dto.policy.valid_to ?? null,
           coberturas: dto.policy.coverages.map(mapearCobertura),
         }
       : null,
