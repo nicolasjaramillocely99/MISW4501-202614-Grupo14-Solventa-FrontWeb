@@ -112,6 +112,21 @@ import {
   mapearPrestador,
   traducirErrorAsignacion,
 } from './asignacion.modelos';
+import {
+  BandejaAsistencias,
+  BandejaAsistenciasDto,
+  DetalleAsistencia,
+  DetalleAsistenciaDto,
+  FiltroBandeja,
+  PoliticaAsistencia,
+  PoliticaAsistenciaDto,
+  SolicitudCierre,
+  aCierreDto,
+  mapearBandeja,
+  mapearDetalleAsistencia,
+  mapearPoliticaAsistencia,
+  traducirErrorAsistencia,
+} from './asistencia.modelos';
 
 /**
  * Cliente del servicio de siniestros (`claims`) vía API Gateway. Única salida HTTP hacia ese microservicio: ningún
@@ -122,6 +137,8 @@ import {
  * (HU-W2.2-03): los casos en evaluación, las excepciones de pago, el detalle de la evaluación, aprobar, rechazar y
  * reintentar el pago, y la asignación del prestador más cercano (HU-W2.3-01): ubicación, búsqueda, asignación, lote,
  * política y la administración de prestadores (listado y disponibilidad). El interceptor adjunta el token.
+ * Para `operations`, también la atención de solicitudes de asistencia entrantes (HU-W2.3-03): bandeja, detalle, atender,
+ * necesidad, ubicación por voz, despacho, cierre y política.
  */
 @Injectable({ providedIn: 'root' })
 export class SiniestrosApiService {
@@ -502,6 +519,86 @@ export class SiniestrosApiService {
     return this.http.post<PrestadorDto>(ruta, aDisponibilidadDto(solicitud)).pipe(
       map(mapearPrestador),
       catchError((error: unknown) => throwError(() => traducirErrorAsignacion(error))),
+    );
+  }
+
+  /**
+   * Bandeja de solicitudes de asistencia (`GET /v1/claims/assistance-inbox`, HU-W2.3-03, rol `operations`): indicadores y
+   * las más recientes primero. `estados` viaja como `status` repetido; los filtros vacíos no se envían. Falla con
+   * `ErrorAsistencia`.
+   */
+  listarBandejaAsistencias(filtro: FiltroBandeja = {}): Observable<BandejaAsistencias> {
+    let params = new HttpParams();
+    if (filtro.estados?.length) {
+      params = params.appendAll({ status: [...filtro.estados] });
+    }
+    if (filtro.limite !== undefined) {
+      params = params.set('limit', filtro.limite);
+    }
+    return this.http.get<BandejaAsistenciasDto>(`${this.base}/v1/claims/assistance-inbox`, { params }).pipe(
+      map(mapearBandeja),
+      catchError((error: unknown) => throwError(() => traducirErrorAsistencia(error))),
+    );
+  }
+
+  /**
+   * Detalle de una solicitud (`GET /v1/claims/assistance-inbox/{request_id}`, CA-2): necesidad, sugerencia calculada al
+   * leer, despacho, cierre e historial. Abrirlo no cambia su estado. Falla con `ErrorAsistencia`.
+   */
+  consultarAsistencia(id: string): Observable<DetalleAsistencia> {
+    return this.http.get<DetalleAsistenciaDto>(`${this.base}/v1/claims/assistance-inbox/${encodeURIComponent(id)}`).pipe(
+      map(mapearDetalleAsistencia),
+      catchError((error: unknown) => throwError(() => traducirErrorAsistencia(error))),
+    );
+  }
+
+  /**
+   * Atiende la solicitud (`POST …/{request_id}/attend`, sin cuerpo): `new` → `in_call`; sobre la de otro analista, la toma.
+   * Falla con `ErrorAsistencia` (`assistance_not_open`).
+   */
+  atenderAsistencia(id: string): Observable<DetalleAsistencia> {
+    return this.escribirAsistencia(id, 'attend', null);
+  }
+
+  /** Registra la necesidad que define la especialidad (`POST …/{request_id}/need`). Falla con `ErrorAsistencia`. */
+  registrarNecesidad(id: string, necesidad: string): Observable<DetalleAsistencia> {
+    return this.escribirAsistencia(id, 'need', { need: necesidad });
+  }
+
+  /**
+   * Registra la dirección que dicta el asegurado y el pin del analista para una solicitud sin GPS
+   * (`POST …/{request_id}/voice-location`). Falla con `ErrorAsistencia` (`location_from_app`, `validation_failed`…).
+   */
+  registrarUbicacionPorVoz(id: string, solicitud: SolicitudUbicacion): Observable<DetalleAsistencia> {
+    return this.escribirAsistencia(id, 'voice-location', aUbicacionDto(solicitud));
+  }
+
+  /**
+   * Despacha un prestador elegible (`POST …/{request_id}/dispatch`, CA-3); el backend repite la búsqueda. Falla con
+   * `ErrorAsistencia` (`provider_not_eligible`, `assistance_not_open`…).
+   */
+  despacharAsistencia(id: string, prestadorId: string): Observable<DetalleAsistencia> {
+    return this.escribirAsistencia(id, 'dispatch', { provider_id: prestadorId });
+  }
+
+  /** Cierra la solicitud por otro medio con su motivo (`POST …/{request_id}/close`, CA-4). Falla con `ErrorAsistencia`. */
+  cerrarAsistencia(id: string, solicitud: SolicitudCierre): Observable<DetalleAsistencia> {
+    return this.escribirAsistencia(id, 'close', aCierreDto(solicitud));
+  }
+
+  /** Política vigente de la bandeja (`GET /v1/claims/assistance-policy`). Falla con `ErrorAsistencia`. */
+  consultarPoliticaAsistencia(): Observable<PoliticaAsistencia> {
+    return this.http.get<PoliticaAsistenciaDto>(`${this.base}/v1/claims/assistance-policy`).pipe(
+      map(mapearPoliticaAsistencia),
+      catchError((error: unknown) => throwError(() => traducirErrorAsistencia(error))),
+    );
+  }
+
+  private escribirAsistencia(id: string, accion: string, cuerpo: object | null): Observable<DetalleAsistencia> {
+    const ruta = `${this.base}/v1/claims/assistance-inbox/${encodeURIComponent(id)}/${accion}`;
+    return this.http.post<DetalleAsistenciaDto>(ruta, cuerpo).pipe(
+      map(mapearDetalleAsistencia),
+      catchError((error: unknown) => throwError(() => traducirErrorAsistencia(error))),
     );
   }
 

@@ -1,0 +1,363 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <a class="volver" routerLink="/siniestros/asistencias">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('asistencias.detalle.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('asistencias.detalle.cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <section class="tarjeta" aria-labelledby="titulo-no-encontrada">
+        <h1 id="titulo-no-encontrada" class="pagina__titulo">
+          {{ t('asistencias.detalle.noEncontrada.titulo') }}
+        </h1>
+        <p>{{ t('asistencias.detalle.noEncontrada.texto') }}</p>
+        <a class="boton boton--secundario" routerLink="/siniestros/asistencias">{{
+          t('asistencias.detalle.noEncontrada.volver')
+        }}</a>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta" aria-labelledby="titulo-error">
+        <h1 id="titulo-error" class="pagina__titulo">
+          {{ t('asistencias.detalle.error.titulo') }}
+        </h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('asistencias.detalle.error.texto') }}</p>
+        </div>
+        <div>
+          <button type="button" class="boton boton--primario" (click)="cargar()">
+            {{ t('asistencias.detalle.error.reintentar') }}
+          </button>
+        </div>
+      </section>
+    }
+    @case ('lista') {
+      @if (detalle(); as d) {
+        @let ac = acciones();
+        @let ocupado = escritura() !== null;
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <div class="encabezado__titulo">
+              <h1 class="pagina__titulo">
+                {{ t('asistencias.detalle.titulo', { numero: d.numero }) }}
+              </h1>
+              <app-insignia-estado [tono]="tonoEstado(d.estado)">{{
+                nombreEstado(t, d.estado)
+              }}</app-insignia-estado>
+              <button
+                type="button"
+                class="boton boton--terciario"
+                [disabled]="ocupado"
+                (click)="cargar()"
+              >
+                <svg lucideRefreshCw [size]="16" aria-hidden="true"></svg
+                >{{ t('asistencias.detalle.actualizar') }}
+              </button>
+            </div>
+            <p class="encabezado__resumen">{{ subtitulo(t, d) }}</p>
+          </div>
+          @if (ac && (ac.atender || ac.cerrar || ac.continuar)) {
+            <div class="encabezado__acciones">
+              <div class="encabezado__botones">
+                @if (ac.continuar) {
+                  <button
+                    type="button"
+                    class="boton boton--secundario"
+                    [disabled]="ocupado"
+                    (click)="atender()"
+                  >
+                    {{
+                      escritura() === 'atender'
+                        ? t('asistencias.detalle.acciones.atendiendo')
+                        : t('asistencias.detalle.acciones.continuar')
+                    }}
+                  </button>
+                }
+                @if (ac.cerrar) {
+                  <button
+                    type="submit"
+                    form="cierre-asistencia"
+                    class="boton boton--secundario"
+                    [disabled]="ocupado"
+                  >
+                    {{
+                      escritura() === 'cerrar'
+                        ? t('asistencias.detalle.acciones.cerrando')
+                        : t('asistencias.detalle.acciones.cerrar')
+                    }}
+                  </button>
+                }
+                @if (ac.atender) {
+                  <button
+                    type="button"
+                    class="boton boton--primario"
+                    [disabled]="ocupado"
+                    (click)="atender()"
+                  >
+                    {{
+                      escritura() === 'atender'
+                        ? t('asistencias.detalle.acciones.atendiendo')
+                        : t('asistencias.detalle.acciones.atender')
+                    }}
+                  </button>
+                }
+                @if (ac.decidir) {
+                  <button
+                    type="button"
+                    class="boton boton--primario"
+                    [disabled]="ocupado || !ac.sugerido"
+                    [attr.aria-describedby]="ac.motivoSinDespacho ? 'motivo-sin-despacho' : null"
+                    (click)="ac.sugerido && pedirDespacho(ac.sugerido)"
+                  >
+                    <svg lucideTruck [size]="20" aria-hidden="true"></svg
+                    >{{ t('asistencias.detalle.acciones.despacharSugerido') }}
+                  </button>
+                }
+              </div>
+              @if (ac.enLlamadaCon; as analista) {
+                <p class="encabezado__motivo">
+                  {{
+                    t('asistencias.detalle.acciones.enLlamadaCon', {
+                      analista: analista.nombre ?? analista.correo,
+                    })
+                  }}
+                </p>
+              }
+              @if (ac.motivoSinDespacho; as motivo) {
+                <p id="motivo-sin-despacho" class="encabezado__motivo">
+                  {{ t('asistencias.detalle.sinDespacho.' + motivo) }}
+                </p>
+              }
+            </div>
+          }
+        </header>
+
+        @if (aviso(); as clave) {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            <p>{{ t('asistencias.detalle.errores.' + clave) }}</p>
+          </div>
+        }
+
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            <section class="tarjeta ubicacion" aria-labelledby="titulo-ubicacion-asistencia">
+              <h2 id="titulo-ubicacion-asistencia" class="visualmente-oculto">
+                {{ t('asistencias.detalle.ubicacion.titulo') }}
+              </h2>
+              <app-mapa-asignacion
+                [incidente]="incidenteMapa()"
+                [radioKm]="radioMapa()"
+                [marcadores]="marcadores()"
+                [editable]="ubicando()"
+                [etiquetaRegion]="t('mapa.regionAsistencia')"
+                [etiquetaIncidente]="etiquetaPin(t, d)"
+                (pinMovido)="pinEdicion.set($event)"
+              />
+              @if (prestadoresFallidos()) {
+                <p class="ubicacion__nota" role="status">
+                  {{ t('asistencias.detalle.ubicacion.prestadoresNoUbicados') }}
+                </p>
+              }
+              @if (ubicando()) {
+                <app-ubicacion-incidente
+                  [direccionInicial]="corrigiendo() ? (d.ubicacion.voz?.direccion ?? '') : ''"
+                  [pin]="pinEdicion()"
+                  [guardando]="escritura() === 'ubicar'"
+                  [erroresServidor]="erroresUbicacion()"
+                  [cancelable]="corrigiendo()"
+                  (pinEscrito)="pinEdicion.set($event)"
+                  (guardar)="guardarUbicacion($event)"
+                  (cancelar)="cancelarCorreccion()"
+                />
+              }
+              <dl class="ubicacion__datos">
+                <div>
+                  <dt>{{ t('asistencias.detalle.ubicacion.coordenadas') }}</dt>
+                  @let u = d.ubicacion;
+                  @if (u.estado === 'sent' && punto(); as p) {
+                    <dd class="ubicacion__valor">
+                      {{ coordenadas(t, p) }}
+                      @if (u.precisionM !== null) {
+                        ·
+                        {{
+                          t('asistencias.detalle.ubicacion.precision', { precision: u.precisionM })
+                        }}
+                      }
+                    </dd>
+                    @if (u.lugar; as lugar) {
+                      <dd class="ubicacion__nota">{{ lugar }}</dd>
+                    }
+                  } @else if (u.voz; as voz) {
+                    <dd class="ubicacion__valor">{{ voz.direccion }}</dd>
+                    <dd class="ubicacion__nota">
+                      {{ coordenadas(t, voz) }} ·
+                      {{
+                        t('asistencias.detalle.ubicacion.porVoz', {
+                          analista: voz.registradaPor.nombre ?? voz.registradaPor.correo,
+                          hora: hora(voz.registradaEn),
+                        })
+                      }}
+                    </dd>
+                    @if (ac?.decidir && !corrigiendo()) {
+                      <dd>
+                        <button
+                          type="button"
+                          class="boton boton--terciario"
+                          [disabled]="ocupado"
+                          (click)="corregirUbicacion()"
+                        >
+                          {{ t('asistencias.detalle.ubicacion.corregir') }}
+                        </button>
+                      </dd>
+                    }
+                  } @else {
+                    <dd class="ubicacion__valor">
+                      {{ t('asistencias.detalle.ubicacion.sinGps') }}
+                    </dd>
+                    <dd class="ubicacion__nota">{{ motivoSinUbicacion(t, d) }}</dd>
+                    @if (d.estado === 'new') {
+                      <dd class="ubicacion__nota">
+                        {{ t('asistencias.detalle.ubicacion.atiendeParaUbicar') }}
+                      </dd>
+                    }
+                  }
+                </div>
+                <div>
+                  <dt>{{ t('asistencias.detalle.ubicacion.horaUtc') }}</dt>
+                  <dd class="ubicacion__valor">{{ horaUtc(d.solicitadaEn) }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('asistencias.detalle.ubicacion.necesidad') }}</dt>
+                  <dd>
+                    <app-necesidad-asistencia
+                      [estado]="d.estado"
+                      [necesidad]="d.necesidad"
+                      [opciones]="opcionesNecesidad()"
+                      [politicaFallida]="politicaFallida()"
+                      [registrando]="escritura() === 'necesidad'"
+                      [deshabilitado]="ocupado"
+                      (registrar)="registrarNecesidad($event)"
+                      (reintentar)="leerPolitica()"
+                    />
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('asistencias.detalle.ubicacion.especialidad') }}</dt>
+                  <dd class="ubicacion__valor">
+                    {{ d.necesidad ? especialidad(t, d.necesidad.especialidad) : '—' }}
+                  </dd>
+                </div>
+              </dl>
+            </section>
+
+            @if (d.despacho; as despacho) {
+              <app-despacho-asistencia
+                [despacho]="despacho"
+                [nombreSugerido]="nombreSugerido()"
+                [avisoDetenido]="avisoDetenido()"
+                (actualizar)="cargar()"
+              />
+            } @else if (d.cierre; as c) {
+              <section class="tarjeta cerrada" aria-labelledby="titulo-cerrada">
+                <h2 id="titulo-cerrada" class="lateral__titulo">
+                  {{ t('asistencias.detalle.cerrada.titulo') }}
+                </h2>
+                <dl class="ubicacion__datos">
+                  <div>
+                    <dt>{{ t('asistencias.detalle.cerrada.motivo') }}</dt>
+                    <dd>{{ motivoCierre(t, c.motivo) }}</dd>
+                  </div>
+                  <div>
+                    <dt>{{ t('asistencias.detalle.cerrada.cerrada') }}</dt>
+                    <dd>
+                      {{
+                        t('asistencias.detalle.cerrada.cerradaValor', {
+                          fecha: (c.cerradaEn | formatoFechaHora),
+                          analista: c.cerradaPor.nombre ?? c.cerradaPor.correo,
+                        })
+                      }}
+                    </dd>
+                  </div>
+                  @if (c.nota; as nota) {
+                    <div class="cerrada__nota">
+                      <dt>{{ t('asistencias.detalle.cerrada.nota') }}</dt>
+                      <dd>{{ nota }}</dd>
+                    </div>
+                  }
+                </dl>
+              </section>
+            } @else if (ac?.cerrar) {
+              <app-cierre-asistencia
+                [motivos]="motivosCierre()"
+                [enviando]="escritura() === 'cerrar'"
+                [deshabilitado]="ocupado"
+                [erroresServidor]="erroresCierre()"
+                (cerrar)="cerrar($event)"
+              />
+            }
+          </div>
+
+          <aside class="cuerpo__lateral">
+            <app-llamada-asistencia
+              [estado]="d.estado"
+              [inicio]="inicioLlamada()"
+              [atendidaPor]="d.atendidaPor"
+            />
+            <section class="tarjeta" aria-labelledby="titulo-asegurado">
+              <h2 id="titulo-asegurado" class="lateral__titulo">
+                {{ t('asistencias.detalle.asegurado.titulo') }}
+              </h2>
+              <dl class="lateral__datos">
+                <div>
+                  <dt>{{ t('asistencias.detalle.asegurado.nombre') }}</dt>
+                  <dd>{{ d.solicitante ?? t('asistencias.bandeja.sinNombre') }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('asistencias.detalle.asegurado.poliza') }}</dt>
+                  <dd>{{ d.poliza.polizaId }} · {{ d.poliza.producto }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t(etiquetaObjeto(d.poliza.linea)) }}</dt>
+                  <dd>{{ d.poliza.objetoAsegurado }}</dd>
+                </div>
+              </dl>
+            </section>
+            @if (estaAbierta(d.estado)) {
+              <section class="nota" aria-labelledby="titulo-al-despachar">
+                <h2 id="titulo-al-despachar" class="lateral__titulo">
+                  {{ t('asistencias.detalle.alDespachar.titulo') }}
+                </h2>
+                <p class="lateral__texto">{{ t('asistencias.detalle.alDespachar.texto') }}</p>
+              </section>
+            }
+            <app-historial-asistencia [historial]="d.historial" [despacho]="d.despacho" />
+          </aside>
+        </div>
+
+        @if (d.sugerencia.estado !== 'not_applicable') {
+          <app-candidatos-asistencia
+            [sugerencia]="d.sugerencia"
+            [hoy]="hoy"
+            [radioMaximoKm]="radioMaximoKm()"
+            [despachable]="!!ac?.decidir"
+            [deshabilitado]="ocupado"
+            (despachar)="pedirDespacho($event)"
+            (buscarDeNuevo)="cargar()"
+            (cerrarSinPrestador)="cerrarSinPrestador()"
+          />
+        }
+      }
+    }
+  }
+
+  <app-confirmar-despacho
+    [necesidad]="detalle()?.necesidad?.codigo ?? null"
+    [ubicacion]="detalle()?.ubicacion ?? null"
+    [despachando]="escritura() === 'despachar'"
+    (confirmar)="despachar($event)"
+  />
+</div>

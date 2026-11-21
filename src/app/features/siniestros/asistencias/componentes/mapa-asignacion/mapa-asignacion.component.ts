@@ -20,6 +20,8 @@ import {
   CARGAR_LEAFLET,
   CENTRO_SIN_PIN,
   Coordenadas,
+  RELLENO_ENCUADRE,
+  ZOOM_MAXIMO_ENCUADRE,
   MarcadorMapa,
   ModuloLeaflet,
   URL_DERECHOS_OSM,
@@ -35,8 +37,12 @@ import {
  * teclado. Los marcadores no son interactivos: la tabla de candidatos es la alternativa accesible.
  *
  * Leaflet se carga de forma perezosa (`CARGAR_LEAFLET`) e inserta sus marcadores fuera de la plantilla, por eso los
- * estilos no se encapsulan y todas las clases llevan el prefijo `mapa-asignacion`. Si HU-W2.3-03 lo reutiliza (O9b), se
- * promueve a `shared/ui/` (F8).
+ * estilos no se encapsulan y todas las clases llevan el prefijo `mapa-asignacion`.
+ *
+ * También lo usan las asistencias en sitio (HU-W2.3-03), en el mismo dominio, sin promoverlo a `shared/ui/`: la bandeja
+ * (O9) lo usa **sin** incidente y con un marcador por solicitud abierta, y entonces la vista encuadra los marcadores; el
+ * detalle (O9b) lo usa como O7. `etiquetaRegion`, `leyenda` y `etiquetaIncidente` adaptan los textos a cada pantalla; sin
+ * ellas, son los de O7.
  */
 @Component({
   selector: 'app-mapa-asignacion',
@@ -51,6 +57,12 @@ export class MapaAsignacionComponent {
   readonly radioKm = input<number | null>(null);
   readonly marcadores = input<readonly MarcadorMapa[]>([]);
   readonly editable = input(false);
+  /** `aria-label` de la región; por omisión, «Mapa del incidente y de los prestadores». */
+  readonly etiquetaRegion = input<string | null>(null);
+  /** Texto bajo el mapa en lugar del radio de búsqueda (HU-W2.3-03, bandeja). */
+  readonly leyenda = input<string | null>(null);
+  /** Rótulo del pin; por omisión, «Incidente». */
+  readonly etiquetaIncidente = input<string | null>(null);
   /** Nueva posición del pin (clic o arrastre), solo en modo `editable`. */
   readonly pinMovido = output<Coordenadas>();
 
@@ -75,10 +87,17 @@ export class MapaAsignacionComponent {
         radioKm: this.radioKm(),
         marcadores: this.marcadores(),
         editable: this.editable(),
+        etiquetaIncidente: this.etiquetaIncidente(),
       };
       if (this.listo()) {
         untracked(() =>
-          this.pintar(datos.incidente, datos.radioKm, datos.marcadores, datos.editable),
+          this.pintar(
+            datos.incidente,
+            datos.radioKm,
+            datos.marcadores,
+            datos.editable,
+            datos.etiquetaIncidente,
+          ),
         );
       }
     });
@@ -127,6 +146,7 @@ export class MapaAsignacionComponent {
     radioKm: number | null,
     marcadores: readonly MarcadorMapa[],
     editable: boolean,
+    etiquetaIncidente: string | null,
   ): void {
     const L = this.leaflet;
     const mapa = this.mapa;
@@ -144,7 +164,8 @@ export class MapaAsignacionComponent {
           interactive: false,
         }).addTo(capas);
       }
-      const etiqueta = this.transloco.translate('siniestros.mapa.incidente');
+      const etiqueta =
+        etiquetaIncidente ?? this.transloco.translate<string>('siniestros.mapa.incidente');
       const pin = L.marker(centro, {
         icon: this.icono(L, etiqueta, 'incidente'),
         draggable: editable,
@@ -166,16 +187,29 @@ export class MapaAsignacionComponent {
         keyboard: false,
       }).addTo(capas);
     }
-    // Al editar, la vista no salta con cada clic: solo se centra cuando aparece el primer pin.
+    // Al editar, la vista no salta con cada clic: solo se centra cuando aparece el primer pin. Sin incidente y con
+    // marcadores (la bandeja de HU-W2.3-03), encuadra los marcadores y solo vuelve a hacerlo si cambia cuáles son: el
+    // refresco periódico de la bandeja no mueve la vista que el analista ajustó.
+    const encuadrar = !incidente && !editable && marcadores.length > 0;
     const vista = incidente
       ? editable
         ? 'editando'
         : `${incidente.latitud},${incidente.longitud},${radioKm}`
-      : 'sin-pin';
+      : encuadrar
+        ? `encuadre:${marcadores
+            .map((m) => m.id)
+            .sort()
+            .join('|')}`
+        : 'sin-pin';
     if (vista !== this.ultimaVista) {
       this.ultimaVista = vista;
       if (incidente) {
         mapa.setView([incidente.latitud, incidente.longitud], zoomParaRadio(radioKm));
+      } else if (encuadrar) {
+        mapa.fitBounds(
+          L.latLngBounds(marcadores.map((m) => L.latLng(m.latitud, m.longitud))),
+          { padding: [RELLENO_ENCUADRE, RELLENO_ENCUADRE], maxZoom: ZOOM_MAXIMO_ENCUADRE },
+        );
       } else {
         mapa.setView([CENTRO_SIN_PIN.latitud, CENTRO_SIN_PIN.longitud], ZOOM_SIN_PIN);
       }

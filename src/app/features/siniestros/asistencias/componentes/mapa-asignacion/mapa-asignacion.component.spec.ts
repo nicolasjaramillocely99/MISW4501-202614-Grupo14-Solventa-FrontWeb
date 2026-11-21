@@ -32,6 +32,9 @@ describe('MapaAsignacionComponent (O7 · HU-W2.3-01, F1)', () => {
       radioKm: number | null;
       marcadores: MarcadorMapa[];
       editable: boolean;
+      etiquetaRegion: string | null;
+      leyenda: string | null;
+      etiquetaIncidente: string | null;
     }>,
     cargar: () => Promise<unknown> = () => Promise.resolve(leaflet.modulo),
   ) => {
@@ -152,5 +155,93 @@ describe('MapaAsignacionComponent (O7 · HU-W2.3-01, F1)', () => {
     expect(
       screen.getByText('El mapa no está disponible: continúa con la tabla y las coordenadas'),
     ).toBeTruthy();
+  });
+  describe('sin incidente y con marcadores (bandeja de asistencias, HU-W2.3-03)', () => {
+    const SOLICITUDES: MarcadorMapa[] = [
+      { id: 'ast-1', latitud: 4.7712, longitud: -74.0452, etiqueta: 'AST-2026-0001 · Nueva', tipo: 'candidato' },
+      { id: 'ast-2', latitud: 3.4921, longitud: -76.4203, etiqueta: 'AST-2026-0002 · En llamada', tipo: 'asignado' },
+    ];
+
+    it('encuadra todos los marcadores en lugar de quedarse en Bogotá', async () => {
+      await renderizar({ incidente: null, marcadores: SOLICITUDES });
+
+      expect(leaflet.encuadres).toEqual([
+        {
+          puntos: [
+            [4.7712, -74.0452],
+            [3.4921, -76.4203],
+          ],
+          opciones: { padding: [32, 32], maxZoom: 15 },
+        },
+      ]);
+      expect(leaflet.vistas).toEqual([]);
+      expect(leaflet.capas.map((c) => c.etiqueta)).toEqual([
+        'AST-2026-0001 · Nueva',
+        'AST-2026-0002 · En llamada',
+      ]);
+    });
+
+    it('encuadra también un solo marcador, con el zoom máximo', async () => {
+      await renderizar({ incidente: null, marcadores: SOLICITUDES.slice(0, 1) });
+
+      expect(leaflet.encuadres).toHaveLength(1);
+      expect(leaflet.encuadres[0].opciones['maxZoom']).toBe(15);
+    });
+
+    it('no vuelve a encuadrar si los marcadores son los mismos, aunque cambien sus etiquetas', async () => {
+      const { fixture } = await renderizar({ incidente: null, marcadores: SOLICITUDES });
+
+      fixture.componentRef.setInput('marcadores', [
+        { ...SOLICITUDES[1], etiqueta: 'AST-2026-0002 · Nueva' },
+        SOLICITUDES[0],
+      ]);
+      fixture.detectChanges();
+      expect(leaflet.encuadres).toHaveLength(1);
+
+      fixture.componentRef.setInput('marcadores', SOLICITUDES.slice(0, 1));
+      fixture.detectChanges();
+      expect(leaflet.encuadres).toHaveLength(2);
+    });
+
+    it('sin marcadores vuelve a Bogotá', async () => {
+      const { fixture } = await renderizar({ incidente: null, marcadores: SOLICITUDES });
+
+      fixture.componentRef.setInput('marcadores', []);
+      fixture.detectChanges();
+
+      expect(leaflet.vistas.at(-1)).toEqual({ centro: [4.6533, -74.0836], zoom: 11 });
+    });
+
+    it('con incidente no encuadra: centra con el zoom del radio, como en O7', async () => {
+      await renderizar({ incidente: INCIDENTE, radioKm: 5, marcadores: MARCADORES });
+
+      expect(leaflet.encuadres).toEqual([]);
+      expect(leaflet.vistas.at(-1)).toEqual({ centro: [4.6771, -74.0483], zoom: 12 });
+    });
+  });
+
+  describe('textos por pantalla (HU-W2.3-03)', () => {
+    it('por omisión usa los de O7', async () => {
+      await renderizar({ incidente: INCIDENTE, radioKm: 5 });
+
+      expect(screen.getByRole('region', { name: 'Mapa del incidente y de los prestadores' })).toBeTruthy();
+      expect(leaflet.capas.find((c) => c.tipo === 'marker')?.etiqueta).toBe('Incidente');
+      expect(screen.getByText('Radio de búsqueda 5 km')).toBeTruthy();
+    });
+
+    it('acepta la región, la leyenda y el rótulo del pin de otra pantalla', async () => {
+      await renderizar({
+        incidente: INCIDENTE,
+        radioKm: 5,
+        etiquetaRegion: 'Mapa de las solicitudes abiertas',
+        leyenda: '2 solicitudes abiertas con ubicación',
+        etiquetaIncidente: 'Asegurado · ±8 m',
+      });
+
+      expect(screen.getByRole('region', { name: 'Mapa de las solicitudes abiertas' })).toBeTruthy();
+      expect(screen.getByText('2 solicitudes abiertas con ubicación')).toBeTruthy();
+      expect(screen.queryByText('Radio de búsqueda 5 km')).toBeNull();
+      expect(leaflet.capas.find((c) => c.tipo === 'marker')?.etiqueta).toBe('Asegurado · ±8 m');
+    });
   });
 });

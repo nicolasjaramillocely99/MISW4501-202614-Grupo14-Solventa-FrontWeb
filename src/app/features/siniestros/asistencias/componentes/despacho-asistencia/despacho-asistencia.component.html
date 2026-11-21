@@ -1,0 +1,113 @@
+<section
+  class="tarjeta despacho"
+  aria-labelledby="titulo-despacho-asistencia"
+  *transloco="let t; prefix: 'siniestros'"
+>
+  @let d = despacho();
+  <h2 id="titulo-despacho-asistencia" class="despacho__titulo">
+    {{ t('asistencias.detalle.despacho.titulo') }}
+  </h2>
+  <p class="despacho__prestador">{{ d.prestador.nombre }}</p>
+  <p class="despacho__sugerencia">
+    @if (d.prestadorSugeridoId === null || d.prestadorSugeridoId === d.prestador.id) {
+      {{ t('asistencias.detalle.despacho.sugeridoSistema') }}
+    } @else {
+      {{
+        t('asistencias.detalle.despacho.sugeriaOtro', {
+          nombre: nombreSugerido() ?? d.prestadorSugeridoId,
+        })
+      }}
+    }
+  </p>
+
+  <dl class="despacho__datos">
+    <div>
+      <dt>{{ t('asistencias.detalle.despacho.correo') }}</dt>
+      <dd>
+        <a [href]="'mailto:' + d.prestador.correo">{{ d.prestador.correo }}</a>
+      </dd>
+    </div>
+    @if (d.prestador.telefono; as telefono) {
+      <div>
+        <dt>{{ t('asistencias.detalle.despacho.telefono') }}</dt>
+        <dd>
+          <a [href]="'tel:' + telefono">{{ telefono }}</a>
+        </dd>
+      </div>
+    }
+    <div>
+      <dt>{{ t('asistencias.detalle.despacho.distancia') }}</dt>
+      <dd>
+        {{
+          t('asistencias.detalle.candidatos.km', { distancia: (d.distanciaKm | formatoNumero: 1) })
+        }}
+      </dd>
+    </div>
+    <div>
+      <dt>{{ t('asistencias.detalle.despacho.llegada') }}</dt>
+      <dd>{{ t('asistencias.detalle.candidatos.minutos', { minutos: d.llegadaMinutos }) }}</dd>
+    </div>
+    <div>
+      <dt>{{ t('asistencias.detalle.despacho.necesidad') }}</dt>
+      <dd>{{ necesidad(t, d.necesidad) }}</dd>
+    </div>
+    <div>
+      <dt>{{ t('asistencias.detalle.despacho.despachada') }}</dt>
+      <dd>
+        {{
+          t('asistencias.detalle.despacho.despachadaValor', {
+            fecha: (d.despachadaEn | formatoFechaHora),
+            analista: d.despachadaPor.nombre ?? d.despachadaPor.correo,
+          })
+        }}
+      </dd>
+    </div>
+    <div class="despacho__ancho">
+      <dt>{{ t('asistencias.detalle.despacho.ubicacion') }}</dt>
+      @let u = d.ubicacionCompartida;
+      <dd>
+        {{ coordenadas(t, u.latitud, u.longitud) }}
+        @if (u.precisionM !== null) {
+          · {{ t('asistencias.detalle.ubicacion.precision', { precision: u.precisionM }) }}
+        }
+        @if (u.fuente === 'voice') {
+          · {{ t('asistencias.detalle.despacho.ubicacionVoz') }}
+        }
+      </dd>
+      @if (u.direccion ?? u.lugar; as direccion) {
+        <dd>{{ direccion }}</dd>
+      }
+    </div>
+  </dl>
+
+  @if (d.aviso.estado === 'sent') {
+    <div class="aviso aviso--exito" role="status">
+      <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+      <p>
+        {{
+          t('asistencias.detalle.despacho.avisoEnviado', {
+            hora: (d.aviso.enviadoEn | formatoFechaHora: 'hora'),
+          })
+        }}
+      </p>
+    </div>
+  } @else {
+    <div class="aviso aviso--informacion" role="status">
+      <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+      <p>
+        {{
+          avisoDetenido()
+            ? t('asistencias.detalle.despacho.avisoDetenido')
+            : t('asistencias.detalle.despacho.avisoPendiente')
+        }}
+      </p>
+    </div>
+    @if (avisoDetenido()) {
+      <div>
+        <button type="button" class="boton boton--secundario" (click)="actualizar.emit()">
+          {{ t('asistencias.detalle.despacho.actualizar') }}
+        </button>
+      </div>
+    }
+  }
+</section>

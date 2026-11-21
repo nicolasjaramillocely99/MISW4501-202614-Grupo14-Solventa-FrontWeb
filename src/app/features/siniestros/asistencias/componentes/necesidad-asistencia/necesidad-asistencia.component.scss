@@ -1,0 +1,36 @@
+// O9b · Necesidad reportada: el valor o el selector con «Registrar», dentro de la fila de datos bajo el mapa.
+.necesidad {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+}
+
+.necesidad__valor,
+.necesidad__nota {
+  margin: 0;
+}
+
+.necesidad__nota {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.necesidad__fallo,
+.necesidad__formulario {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+  width: 100%;
+}
+
+.necesidad__selector {
+  width: 100%;
+}
+
+.necesidad__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-8);
+}
