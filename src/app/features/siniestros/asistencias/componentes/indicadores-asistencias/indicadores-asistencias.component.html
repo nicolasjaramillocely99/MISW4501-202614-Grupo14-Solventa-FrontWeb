@@ -1,0 +1,46 @@
+@let r = resumen();
+<section
+  class="indicadores"
+  *transloco="let t; prefix: 'siniestros'"
+  [attr.aria-label]="t('asistencias.bandeja.indicadores.etiqueta')"
+>
+  <ul class="indicadores__lista">
+    <li class="tarjeta indicador">
+      <span class="indicador__titulo">{{ t('asistencias.bandeja.indicadores.nuevas') }}</span>
+      <span class="indicador__valor indicador__valor--nuevas">{{ r.nuevas }}</span>
+      <span class="indicador__detalle">{{
+        t('asistencias.bandeja.indicadores.nuevasDetalle')
+      }}</span>
+    </li>
+    <li class="tarjeta indicador">
+      <span class="indicador__titulo">{{ t('asistencias.bandeja.indicadores.despachadas') }}</span>
+      <span class="indicador__valor">{{ r.despachadasHoy }}</span>
+      <span class="indicador__detalle">{{
+        t('asistencias.bandeja.indicadores.despachadasDetalle')
+      }}</span>
+    </li>
+    <li class="tarjeta indicador">
+      <span class="indicador__titulo">{{ t('asistencias.bandeja.indicadores.tiempoMedio') }}</span>
+      @if (r.tiempoMedioDespachoSegundos === null) {
+        <span class="indicador__valor" aria-hidden="true">—</span>
+        <span class="indicador__detalle">{{
+          t('asistencias.bandeja.indicadores.sinDespachos')
+        }}</span>
+      } @else {
+        <span class="indicador__valor">{{ duracion(t, r.tiempoMedioDespachoSegundos) }}</span>
+      }
+      <span class="indicador__detalle">
+        {{
+          t('asistencias.bandeja.indicadores.objetivo', {
+            objetivo: duracion(t, r.objetivoDespachoSegundos),
+          })
+        }}
+      </span>
+      @if (supera(r)) {
+        <span class="indicador__alerta">{{
+          t('asistencias.bandeja.indicadores.fueraDeObjetivo')
+        }}</span>
+      }
+    </li>
+  </ul>
+</section>

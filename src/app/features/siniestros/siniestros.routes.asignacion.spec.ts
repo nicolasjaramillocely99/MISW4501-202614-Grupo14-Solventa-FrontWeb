@@ -48,6 +48,7 @@ describe('rutas de la asignación del prestador (HU-W2.3-01, S14)', () => {
             consultarTriage: () => NEVER,
             listarSiniestros: () => NEVER,
             consultarOpcionesRadicacion: () => NEVER,
+            listarBandejaAsistencias: () => NEVER,
           },
         },
       ],
@@ -94,11 +95,11 @@ describe('rutas de la asignación del prestador (HU-W2.3-01, S14)', () => {
     expect(url()).toBe(`/siniestros/${ID}`);
   });
 
-  it('la redirección de asistencias (HU-W2.3-03) no cambia', async () => {
+  it('/siniestros/asistencias es la bandeja (HU-W2.3-03), no la captura :id del asegurado', async () => {
     await iniciarSesionComo('operaciones');
 
     await harness.navigateByUrl('/siniestros/asistencias');
 
-    expect(url()).toBe('/inicio');
+    expect(url()).toBe('/siniestros/asistencias');
   });
 });

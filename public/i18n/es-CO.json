@@ -3968,7 +3968,17 @@
         "sur": "S",
         "este": "E",
         "oeste": "O"
-      }
+      },
+      "regionSolicitudes": "Mapa de las solicitudes abiertas",
+      "leyendaSolicitudes": {
+        "ninguna": "Ninguna solicitud abierta tiene ubicación",
+        "una": "1 solicitud abierta con ubicación",
+        "varias": "{{cantidad}} solicitudes abiertas con ubicación"
+      },
+      "asegurado": "Asegurado · ±{{precision}} m",
+      "aseguradoSinPrecision": "Asegurado",
+      "aseguradoPorVoz": "Asegurado · por voz",
+      "regionAsistencia": "Mapa del asegurado y de los prestadores cercanos"
     },
     "especialidades": {
       "vehicle_assessment": "Peritaje vehicular",
@@ -3976,7 +3986,9 @@
       "plumbing": "Plomería",
       "damp_proofing": "Humedades",
       "painting": "Pintura",
-      "bodywork": "Latonería"
+      "bodywork": "Latonería",
+      "towing": "Grúa",
+      "roadside_assistance": "Asistencia vial"
     },
     "asignacion": {
       "volver": "Siniestro {{radicado}}",
@@ -4196,6 +4208,309 @@
         "cancelar": "Cancelar",
         "error": "No pudimos guardar la disponibilidad. Intenta de nuevo.",
         "cerrar": "Cerrar"
+      }
+    },
+    "asistencias": {
+      "bandeja": {
+        "titulo": "Asistencias en sitio",
+        "descripcion": "Solicitudes enviadas desde la app con la ubicación del asegurado. Atiéndelas durante la llamada y despacha al prestador más cercano que sugiere el sistema.",
+        "actualizar": "Actualizar",
+        "actualizado": "Actualizado a las {{hora}}",
+        "refrescoFallido": "No pudimos actualizar la bandeja; se muestra la última lectura.",
+        "reintentar": "Reintentar",
+        "cargando": "Cargando las solicitudes de asistencia…",
+        "error": {
+          "titulo": "No pudimos cargar las solicitudes de asistencia",
+          "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos."
+        },
+        "indicadores": {
+          "etiqueta": "Indicadores de hoy",
+          "nuevas": "Nuevas",
+          "nuevasDetalle": "Llamadas entrantes",
+          "despachadas": "Despachadas hoy",
+          "despachadasDetalle": "Con prestador despachado",
+          "tiempoMedio": "Tiempo medio de despacho",
+          "sinDespachos": "Sin despachos hoy",
+          "objetivo": "Objetivo: menos de {{objetivo}}",
+          "fueraDeObjetivo": "Por encima del objetivo"
+        },
+        "sinGps": {
+          "titulo": "Solicitudes sin GPS",
+          "texto": "Si el asegurado no logra obtener señal de satélite o no concede el permiso, la solicitud llega sin coordenadas y la llamada se realiza igual: registra la ubicación que te indique por voz.",
+          "pendientes": {
+            "una": "Hay 1 solicitud sin ubicación registrada.",
+            "varias": "Hay {{cantidad}} solicitudes sin ubicación registrada."
+          }
+        },
+        "leyenda": "Solicitudes de asistencia, de la más reciente a la más antigua",
+        "columnas": {
+          "solicitud": "Solicitud",
+          "asegurado": "Asegurado",
+          "poliza": "Póliza",
+          "ubicacion": "Ubicación",
+          "hora": "Hora",
+          "estado": "Estado",
+          "acciones": "Acciones"
+        },
+        "sinNombre": "Sin nombre",
+        "ubicacion": {
+          "compartida": "Ubicación compartida desde el teléfono",
+          "precision": "±{{precision}} m",
+          "sinGps": "Sin GPS · ubicación por voz"
+        },
+        "conAnalista": "con {{analista}}",
+        "acciones": {
+          "atender": "Atender",
+          "continuar": "Continuar",
+          "ver": "Ver",
+          "atendiendo": "Atendiendo…",
+          "atenderEtiqueta": "Atender {{numero}}",
+          "continuarEtiqueta": "Continuar {{numero}}",
+          "verEtiqueta": "Ver {{numero}}"
+        },
+        "avisos": {
+          "noAbierta": "Otro analista ya despachó o cerró esa solicitud. La bandeja se actualizó.",
+          "noAtendida": "No pudimos atender la solicitud. Intenta de nuevo."
+        },
+        "vacia": "No hay solicitudes de asistencia",
+        "mapa": {
+          "titulo": "Mapa de las solicitudes abiertas"
+        }
+      },
+      "detalle": {
+        "cargando": "Cargando la solicitud de asistencia…",
+        "volver": "Asistencias",
+        "titulo": "Asistencia {{numero}}",
+        "subtitulo": {
+          "recibidaHoy": "recibida hoy a las {{hora}}",
+          "recibidaEl": "recibida el {{fecha}} a las {{hora}}",
+          "enLlamada": "llamada en curso"
+        },
+        "actualizar": "Actualizar",
+        "acciones": {
+          "atender": "Atender",
+          "atendiendo": "Atendiendo…",
+          "continuar": "Continuar la llamada",
+          "cerrar": "Cerrar solicitud",
+          "cerrando": "Cerrando…",
+          "despacharSugerido": "Despachar prestador sugerido",
+          "enLlamadaCon": "En llamada con {{analista}}"
+        },
+        "sinDespacho": {
+          "sinNecesidad": "Registra la necesidad para ver el prestador sugerido.",
+          "sinUbicacion": "Registra la ubicación para ver el prestador sugerido.",
+          "agotada": "No hay un prestador disponible para despachar."
+        },
+        "noEncontrada": {
+          "titulo": "No encontramos esta solicitud",
+          "texto": "Puede que el enlace esté incompleto o que la solicitud no exista.",
+          "volver": "Volver a asistencias"
+        },
+        "error": {
+          "titulo": "No pudimos cargar la solicitud",
+          "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos.",
+          "reintentar": "Reintentar"
+        },
+        "errores": {
+          "assistance_not_open": "Otro analista ya despachó o cerró esta solicitud. La vista se actualizó.",
+          "assistance_not_attended": "Atiende la solicitud antes de continuar. La vista se actualizó.",
+          "location_from_app": "Esta solicitud ya tiene la ubicación del teléfono. La vista se actualizó.",
+          "need_not_for_line": "Esa necesidad no corresponde a la línea de la póliza. La vista se actualizó.",
+          "need_missing": "Registra la necesidad antes de despachar. La vista se actualizó.",
+          "location_missing": "Registra la ubicación antes de despachar. La vista se actualizó.",
+          "provider_not_eligible": "Ese prestador ya no está disponible: revisa la sugerencia actualizada.",
+          "validation_failed": "Revisa los datos e intenta de nuevo.",
+          "lectura": "No pudimos actualizar la solicitud; se muestra la última lectura.",
+          "generico": "No pudimos guardar el cambio. Intenta de nuevo."
+        },
+        "llamada": {
+          "enCurso": "Llamada en curso",
+          "duracion": "Duración de la llamada",
+          "atendidaPor": "Atendida por {{analista}}",
+          "entrante": "Llamada entrante",
+          "entranteTexto": "Atiende la solicitud para registrar la necesidad y despachar."
+        },
+        "asegurado": {
+          "titulo": "Asegurado",
+          "nombre": "Nombre",
+          "poliza": "Póliza",
+          "vehiculo": "Vehículo",
+          "inmueble": "Inmueble",
+          "objeto": "Objeto asegurado"
+        },
+        "alDespachar": {
+          "titulo": "Al despachar",
+          "texto": "El prestador recibe el caso con la ubicación del asegurado y la solicitud pasa a Despachada. Queda registrado el analista, la hora de atención y el prestador enviado."
+        },
+        "ubicacion": {
+          "titulo": "Ubicación del asegurado",
+          "coordenadas": "Coordenadas",
+          "precision": "precisión {{precision}} m",
+          "porVoz": "Indicada por voz · registrada por {{analista}} {{hora}}",
+          "sinGps": "Sin GPS",
+          "atiendeParaUbicar": "Atiende la solicitud para registrar la ubicación que te indique por voz.",
+          "corregir": "Corregir ubicación",
+          "horaUtc": "Hora UTC de la solicitud",
+          "necesidad": "Necesidad reportada",
+          "especialidad": "Especialidad requerida",
+          "prestadoresNoUbicados": "No pudimos ubicar a los prestadores en el mapa: usa la tabla de prestadores cercanos."
+        },
+        "necesidad": {
+          "etiqueta": "Necesidad reportada",
+          "seleccionar": "Selecciona la necesidad",
+          "requerida": "Elige la necesidad.",
+          "registrar": "Registrar",
+          "registrando": "Registrando…",
+          "registrada": "Registrada por {{analista}} {{hora}}",
+          "cambiar": "Cambiar",
+          "cancelar": "Cancelar",
+          "sinNecesidades": "Sin asistencia en sitio para esta póliza: ciérrala con un motivo.",
+          "atiendeParaRegistrar": "Atiende la solicitud para registrarla.",
+          "politicaCaida": "No pudimos cargar las necesidades.",
+          "reintentar": "Reintentar"
+        },
+        "candidatos": {
+          "titulo": "Prestadores cercanos",
+          "criterio": "Mismo criterio de distancia, disponibilidad y especialidad de la asignación de prestadores.",
+          "sinNecesidad": "Elige la necesidad para ver los prestadores sugeridos.",
+          "sinUbicacion": "Registra la ubicación para ver los prestadores sugeridos.",
+          "agotada": {
+            "titulo": "No hay prestadores disponibles a {{radio}} km o menos",
+            "intentoUno": "{{radio}} km · 1 disponible",
+            "intentoVarios": "{{radio}} km · {{cantidad}} disponibles",
+            "intentos": "Búsquedas realizadas",
+            "buscarDeNuevo": "Buscar de nuevo",
+            "cerrarSinPrestador": "Cerrar como «Sin prestador disponible»"
+          },
+          "leyenda": "Prestadores que se pueden despachar, del más cercano al más lejano",
+          "columnas": {
+            "prestador": "Prestador",
+            "especialidad": "Especialidad",
+            "distancia": "Distancia",
+            "llegada": "Llegada estimada",
+            "sugerido": "Sugerencia",
+            "accion": "Acción",
+            "disponibilidad": "Disponibilidad"
+          },
+          "km": "{{distancia}} km",
+          "minutos": "{{minutos}} min",
+          "despachosHoy": {
+            "ninguno": "Sin despachos hoy",
+            "uno": "1 despacho hoy",
+            "varios": "{{cantidad}} despachos hoy"
+          },
+          "sugerido": "Sugerido",
+          "despachar": "Despachar",
+          "despacharA": "Despachar a {{nombre}}",
+          "otros": {
+            "resumen": "Otros prestadores con la especialidad ({{cantidad}}) · no se pueden despachar",
+            "leyenda": "Otros prestadores con la especialidad, que no se pueden despachar"
+          }
+        },
+        "confirmarDespacho": {
+          "titulo": "¿Despachar a {{nombre}}?",
+          "texto": "El prestador recibe el caso por correo con la ubicación del asegurado. El despacho no se puede deshacer.",
+          "distancia": "Distancia",
+          "llegada": "Llegada estimada",
+          "necesidad": "Necesidad",
+          "ubicacion": "Ubicación que se compartirá",
+          "ubicacionPrecision": "{{coordenadas}} · precisión {{precision}} m",
+          "ubicacionVoz": "{{direccion}} · {{coordenadas}} (indicada por voz)",
+          "cancelar": "Cancelar",
+          "confirmar": "Confirmar despacho",
+          "despachando": "Despachando…",
+          "cerrar": "Cerrar"
+        },
+        "cierre": {
+          "titulo": "Cerrar por otro medio",
+          "texto": "Si la solicitud se resolvió sin despachar a un prestador, elige el motivo y usa «Cerrar solicitud».",
+          "motivo": "Motivo de la resolución",
+          "seleccionar": "Selecciona un motivo",
+          "nota": "Nota",
+          "obligatoria": "Obligatoria",
+          "opcional": "Opcional",
+          "contador": "{{cantidad}}/{{maximo}} caracteres",
+          "errores": {
+            "motivo": {
+              "requerido": "Elige el motivo de la resolución."
+            },
+            "nota": {
+              "requerido": "Escribe una nota: es obligatoria con «Otro».",
+              "longitud": "La nota debe tener entre 3 y 500 caracteres.",
+              "formato": "La nota tiene caracteres no permitidos."
+            }
+          }
+        },
+        "cerrada": {
+          "titulo": "Solicitud cerrada",
+          "motivo": "Motivo",
+          "nota": "Nota",
+          "cerrada": "Cerrada",
+          "cerradaValor": "{{fecha}} por {{analista}}"
+        },
+        "despacho": {
+          "titulo": "Prestador despachado",
+          "correo": "Correo",
+          "telefono": "Teléfono",
+          "distancia": "Distancia",
+          "llegada": "Llegada estimada",
+          "necesidad": "Necesidad",
+          "despachada": "Despachada",
+          "despachadaValor": "{{fecha}} por {{analista}}",
+          "ubicacion": "Ubicación compartida",
+          "ubicacionVoz": "indicada por voz",
+          "sugeridoSistema": "Sugerido por el sistema",
+          "sugeriaOtro": "El sistema sugería {{nombre}}",
+          "avisoPendiente": "Enviando el despacho al prestador…",
+          "avisoEnviado": "Aviso enviado al prestador · {{hora}}",
+          "avisoDetenido": "El aviso al prestador sigue pendiente; el sistema lo reintenta. Actualiza para ver su estado.",
+          "actualizar": "Actualizar"
+        },
+        "historial": {
+          "titulo": "Historial",
+          "vacio": "Aún no hay decisiones registradas.",
+          "acciones": {
+            "attended": "{{quien}} atendió la solicitud",
+            "taken_over": "{{quien}} tomó la solicitud de {{desde}}",
+            "need_recorded": "{{quien}} registró la necesidad {{necesidad}}",
+            "voice_location_recorded": "{{quien}} registró la ubicación indicada por voz",
+            "dispatched": "{{quien}} despachó a {{prestador}}",
+            "closed": "{{quien}} cerró la solicitud: {{motivo}}",
+            "otra": "{{quien}} · {{accion}}"
+          }
+        }
+      },
+      "estados": {
+        "new": "Nueva",
+        "in_call": "En llamada",
+        "dispatched": "Despachada",
+        "closed": "Cerrada"
+      },
+      "necesidades": {
+        "towing": "Grúa",
+        "battery": "Batería",
+        "flat_tire": "Cambio de llanta",
+        "fuel": "Combustible",
+        "vehicle_lockout": "Llaves dentro del vehículo",
+        "plumbing_emergency": "Emergencia de plomería"
+      },
+      "motivosCierre": {
+        "resolved_by_phone": "Resuelto durante la llamada",
+        "duplicate": "Solicitud repetida",
+        "cancelled_by_insured": "Cancelada por el asegurado",
+        "not_covered": "No cubierta por la póliza",
+        "no_provider_available": "Sin prestador disponible",
+        "other": "Otro"
+      },
+      "motivosSinUbicacion": {
+        "permission_denied": "Permiso de ubicación negado",
+        "location_disabled": "Ubicación apagada",
+        "no_fix": "Sin señal GPS"
+      },
+      "duracion": {
+        "segundos": "{{segundos}} s",
+        "minutos": "{{minutos}} min",
+        "minutosSegundos": "{{minutos}} min {{segundos}} s"
       }
     }
   },

@@ -1,0 +1,113 @@
+// O9b · Prestadores cercanos: mismo trazo que la tabla de candidatos de O7 (HU-W2.3-01).
+.candidatos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.candidatos__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.candidatos__texto {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.aviso p {
+  margin: 0;
+}
+
+.candidatos__intentos {
+  margin: var(--espacio-4) 0 0;
+  padding-left: var(--espacio-16);
+}
+
+.candidatos__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-12);
+}
+
+.candidatos__desplazamiento {
+  overflow-x: auto;
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+}
+
+.candidatos__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: var(--espacio-12) var(--espacio-16);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+    background: var(--color-fondo-pagina);
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--color-borde-base);
+  }
+}
+
+.candidatos__fila--sugerida {
+  background: var(--color-azul-50);
+}
+
+.candidatos__nombre {
+  font-weight: 500;
+}
+
+.candidatos__secundario {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-texto-secundario);
+}
+
+.candidatos__numero {
+  white-space: nowrap;
+
+  .candidatos__tabla & {
+    text-align: right;
+  }
+}
+
+.candidatos__accion {
+  text-align: right;
+}
+
+.candidatos__otros {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+
+  summary {
+    min-height: var(--control-alto);
+    padding: var(--espacio-8) 0;
+    font-weight: 500;
+    color: var(--color-azul-700);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-azul-500);
+      outline-offset: 2px;
+    }
+  }
+}

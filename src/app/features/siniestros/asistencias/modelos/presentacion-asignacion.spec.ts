@@ -39,11 +39,17 @@ describe('presentacion-asignacion (HU-W2.3-01)', () => {
   describe('traducción por código con respaldo (F6)', () => {
     it('traduce las especialidades conocidas y deja crudas las nuevas', () => {
       expect(nombreEspecialidad(t, 'plumbing')).toBe('<especialidades.plumbing>');
-      expect(nombreEspecialidad(t, 'towing')).toBe('towing');
-      expect(nombresEspecialidades(t, ['plumbing', 'towing'])).toBe(
-        '<especialidades.plumbing> · towing',
+      expect(nombreEspecialidad(t, 'carpentry')).toBe('carpentry');
+      expect(nombresEspecialidades(t, ['plumbing', 'carpentry'])).toBe(
+        '<especialidades.plumbing> · carpentry',
       );
       expect(nombresEspecialidades(t, [])).toBe('');
+    });
+
+    it('traduce las especialidades de la asistencia en sitio (HU-W2.3-03)', () => {
+      expect(nombresEspecialidades(t, ['towing', 'roadside_assistance'])).toBe(
+        '<especialidades.towing> · <especialidades.roadside_assistance>',
+      );
     });
 
     it('traduce el motivo y tolera uno nuevo o ninguno', () => {

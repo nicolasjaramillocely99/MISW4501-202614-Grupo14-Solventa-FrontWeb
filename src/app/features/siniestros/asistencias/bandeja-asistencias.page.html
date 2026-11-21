@@ -1,0 +1,180 @@
+<div class="pagina" *transloco="let t; prefix: 'siniestros'">
+  <header class="encabezado">
+    <div class="encabezado__texto">
+      <h1 class="pagina__titulo">{{ t('asistencias.bandeja.titulo') }}</h1>
+      <p class="encabezado__descripcion">{{ t('asistencias.bandeja.descripcion') }}</p>
+    </div>
+    <div class="encabezado__acciones">
+      <button type="button" class="boton boton--secundario" (click)="actualizar()">
+        <svg lucideRefreshCw [size]="20" aria-hidden="true"></svg
+        >{{ t('asistencias.bandeja.actualizar') }}
+      </button>
+      @if (actualizadoEn(); as en) {
+        <p class="encabezado__meta" role="status">
+          {{ t('asistencias.bandeja.actualizado', { hora: en | formatoFechaHora: 'hora' }) }}
+        </p>
+      }
+    </div>
+  </header>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('asistencias.bandeja.cargando') }}</p>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('asistencias.bandeja.error.titulo') }}</p>
+          <p>{{ t('asistencias.bandeja.error.texto') }}</p>
+        </div>
+      </div>
+      <div class="acciones">
+        <button type="button" class="boton boton--primario" (click)="actualizar()">
+          {{ t('asistencias.bandeja.reintentar') }}
+        </button>
+      </div>
+    }
+    @case ('lista') {
+      @if (bandeja(); as b) {
+        <app-indicadores-asistencias [resumen]="b.resumen" />
+      }
+
+      <div class="aviso aviso--informacion">
+        <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('asistencias.bandeja.sinGps.titulo') }}</p>
+          <p>{{ t('asistencias.bandeja.sinGps.texto') }}</p>
+          @if (pendientesSinGps(); as cantidad) {
+            <p class="aviso__pendientes">
+              {{
+                cantidad === 1
+                  ? t('asistencias.bandeja.sinGps.pendientes.una')
+                  : t('asistencias.bandeja.sinGps.pendientes.varias', { cantidad })
+              }}
+            </p>
+          }
+        </div>
+      </div>
+
+      @if (refrescoFallido()) {
+        <div class="aviso aviso--advertencia aviso--compacto" role="status">
+          <p>{{ t('asistencias.bandeja.refrescoFallido') }}</p>
+          <button type="button" class="boton boton--terciario" (click)="actualizar()">
+            {{ t('asistencias.bandeja.reintentar') }}
+          </button>
+        </div>
+      }
+      @if (aviso(); as clave) {
+        <div class="aviso aviso--advertencia" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('asistencias.bandeja.avisos.' + clave) }}</p>
+        </div>
+      }
+
+      @if (solicitudes().length === 0) {
+        <div class="vacio" role="status">
+          <svg lucideInbox [size]="24" aria-hidden="true"></svg>
+          <p>{{ t('asistencias.bandeja.vacia') }}</p>
+        </div>
+      } @else {
+        <div class="tabla-contenedor">
+          <table class="tabla">
+            <caption class="tabla__leyenda">
+              {{
+                t('asistencias.bandeja.leyenda')
+              }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">{{ t('asistencias.bandeja.columnas.solicitud') }}</th>
+                <th scope="col">{{ t('asistencias.bandeja.columnas.asegurado') }}</th>
+                <th scope="col">{{ t('asistencias.bandeja.columnas.poliza') }}</th>
+                <th scope="col">{{ t('asistencias.bandeja.columnas.ubicacion') }}</th>
+                <th scope="col">{{ t('asistencias.bandeja.columnas.hora') }}</th>
+                <th scope="col">{{ t('asistencias.bandeja.columnas.estado') }}</th>
+                <th scope="col">
+                  <span class="tabla__oculto">{{
+                    t('asistencias.bandeja.columnas.acciones')
+                  }}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of solicitudes(); track s.solicitudId) {
+                @let accion = accionFila(s.estado);
+                <tr [class.fila--nueva]="s.estado === 'new'">
+                  <td class="tabla__identificador">{{ s.numero }}</td>
+                  <td>{{ s.solicitante ?? t('asistencias.bandeja.sinNombre') }}</td>
+                  <td>
+                    <span class="tabla__principal">{{ s.poliza.polizaId }}</span>
+                    <span class="tabla__secundario">{{ polizaResumida(s.poliza) }}</span>
+                  </td>
+                  <td>
+                    <span class="tabla__principal">{{ ubicacionPrincipal(t, s) }}</span>
+                    <span class="tabla__secundario">{{ ubicacionSecundaria(t, s) }}</span>
+                  </td>
+                  <td class="tabla__hora">{{ hora(s) }}</td>
+                  <td>
+                    <app-insignia-estado [tono]="tonoEstado(s.estado)">{{
+                      nombreEstado(t, s.estado)
+                    }}</app-insignia-estado>
+                    @if (s.estado === 'in_call' && s.atendidaPor; as analista) {
+                      <span class="tabla__secundario">
+                        {{
+                          t('asistencias.bandeja.conAnalista', {
+                            analista: analista.nombre ?? analista.correo,
+                          })
+                        }}
+                      </span>
+                    }
+                  </td>
+                  <td class="tabla__acciones">
+                    @if (accion === 'ver') {
+                      <a
+                        class="tabla__enlace"
+                        [routerLink]="['/siniestros/asistencias', s.solicitudId]"
+                        [attr.aria-label]="
+                          t('asistencias.bandeja.acciones.verEtiqueta', { numero: s.numero })
+                        "
+                        >{{ t('asistencias.bandeja.acciones.ver') }}</a
+                      >
+                    } @else {
+                      <button
+                        type="button"
+                        class="tabla__enlace tabla__boton"
+                        [disabled]="atendiendo() !== null"
+                        [attr.aria-label]="
+                          t('asistencias.bandeja.acciones.' + accion + 'Etiqueta', {
+                            numero: s.numero,
+                          })
+                        "
+                        (click)="atender(s)"
+                      >
+                        {{
+                          atendiendo() === s.solicitudId
+                            ? t('asistencias.bandeja.acciones.atendiendo')
+                            : t('asistencias.bandeja.acciones.' + accion)
+                        }}
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- HU-W2.3-03 (F2): el mapa del CA-1; el mockup O9 no lo tiene, por eso va debajo de la tabla. -->
+        <div class="tarjeta mapa-bandeja">
+          <h2 class="mapa-bandeja__titulo">{{ t('asistencias.bandeja.mapa.titulo') }}</h2>
+          <app-mapa-asignacion
+            [marcadores]="marcadores()"
+            [etiquetaRegion]="t('mapa.regionSolicitudes')"
+            [leyenda]="leyendaMapa(t)"
+          />
+        </div>
+      }
+    }
+  }
+</div>

@@ -1,0 +1,202 @@
+<section
+  class="tarjeta candidatos"
+  aria-labelledby="titulo-candidatos-asistencia"
+  *transloco="let t; prefix: 'siniestros'"
+>
+  @let s = sugerencia();
+  @let sep = separados();
+  <div>
+    <h2 id="titulo-candidatos-asistencia" class="candidatos__titulo">
+      {{ t('asistencias.detalle.candidatos.titulo') }}
+    </h2>
+    <p class="candidatos__texto">{{ t('asistencias.detalle.candidatos.criterio') }}</p>
+  </div>
+
+  @switch (s.estado) {
+    @case ('need_missing') {
+      <p class="candidatos__texto">{{ t('asistencias.detalle.candidatos.sinNecesidad') }}</p>
+    }
+    @case ('location_missing') {
+      <p class="candidatos__texto">{{ t('asistencias.detalle.candidatos.sinUbicacion') }}</p>
+    }
+    @case ('exhausted') {
+      <div class="aviso aviso--advertencia" role="status">
+        <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">
+            {{ t('asistencias.detalle.candidatos.agotada.titulo', { radio: radioAgotado() }) }}
+          </p>
+          <p class="visualmente-oculto">
+            {{ t('asistencias.detalle.candidatos.agotada.intentos') }}
+          </p>
+          <ul class="candidatos__intentos">
+            @for (intento of s.intentos; track $index) {
+              <li>
+                {{
+                  intento.elegibles === 1
+                    ? t('asistencias.detalle.candidatos.agotada.intentoUno', {
+                        radio: intento.radioKm,
+                      })
+                    : t('asistencias.detalle.candidatos.agotada.intentoVarios', {
+                        radio: intento.radioKm,
+                        cantidad: intento.elegibles,
+                      })
+                }}
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+      @if (despachable()) {
+        <div class="candidatos__acciones">
+          <button
+            type="button"
+            class="boton boton--secundario"
+            [disabled]="deshabilitado()"
+            (click)="buscarDeNuevo.emit()"
+          >
+            {{ t('asistencias.detalle.candidatos.agotada.buscarDeNuevo') }}
+          </button>
+          <button
+            type="button"
+            class="boton boton--terciario"
+            [disabled]="deshabilitado()"
+            (click)="cerrarSinPrestador.emit()"
+          >
+            {{ t('asistencias.detalle.candidatos.agotada.cerrarSinPrestador') }}
+          </button>
+        </div>
+      }
+    }
+    @case ('found') {
+      <div class="candidatos__desplazamiento">
+        <table class="candidatos__tabla">
+          <caption class="visualmente-oculto">
+            {{
+              t('asistencias.detalle.candidatos.leyenda')
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ t('asistencias.detalle.candidatos.columnas.prestador') }}</th>
+              <th scope="col">{{ t('asistencias.detalle.candidatos.columnas.especialidad') }}</th>
+              <th scope="col" class="candidatos__numero">
+                {{ t('asistencias.detalle.candidatos.columnas.distancia') }}
+              </th>
+              <th scope="col">{{ t('asistencias.detalle.candidatos.columnas.llegada') }}</th>
+              <th scope="col">
+                <span class="visualmente-oculto">{{
+                  t('asistencias.detalle.candidatos.columnas.sugerido')
+                }}</span>
+              </th>
+              <th scope="col">
+                <span class="visualmente-oculto">{{
+                  t('asistencias.detalle.candidatos.columnas.accion')
+                }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of sep.despachables; track c.prestadorId) {
+              <tr [class.candidatos__fila--sugerida]="c.sugerido">
+                <th scope="row" class="candidatos__nombre">
+                  {{ c.nombre }}
+                  <span class="candidatos__secundario">{{
+                    despachosHoy(t, c.despachadosHoy)
+                  }}</span>
+                </th>
+                <td>{{ especialidades(t, c.especialidades) }}</td>
+                <td class="candidatos__numero">
+                  {{
+                    t('asistencias.detalle.candidatos.km', {
+                      distancia: (c.distanciaKm | formatoNumero: 1),
+                    })
+                  }}
+                </td>
+                <td>
+                  <app-insignia-estado [tono]="tonoLlegada(c.llegadaMinutos)">{{
+                    t('asistencias.detalle.candidatos.minutos', { minutos: c.llegadaMinutos })
+                  }}</app-insignia-estado>
+                </td>
+                <td>
+                  @if (c.sugerido) {
+                    <app-insignia-estado tono="informacion">{{
+                      t('asistencias.detalle.candidatos.sugerido')
+                    }}</app-insignia-estado>
+                  }
+                </td>
+                <td class="candidatos__accion">
+                  @if (despachable()) {
+                    <button
+                      type="button"
+                      class="boton boton--terciario"
+                      [disabled]="deshabilitado()"
+                      [attr.aria-label]="
+                        t('asistencias.detalle.candidatos.despacharA', { nombre: c.nombre })
+                      "
+                      (click)="despachar.emit(c)"
+                    >
+                      {{ t('asistencias.detalle.candidatos.despachar') }}
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  @if (sep.otros.length > 0 && (s.estado === 'found' || s.estado === 'exhausted')) {
+    <details class="candidatos__otros">
+      <summary>
+        {{ t('asistencias.detalle.candidatos.otros.resumen', { cantidad: sep.otros.length }) }}
+      </summary>
+      <div class="candidatos__desplazamiento">
+        <table class="candidatos__tabla">
+          <caption class="visualmente-oculto">
+            {{
+              t('asistencias.detalle.candidatos.otros.leyenda')
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ t('asistencias.detalle.candidatos.columnas.prestador') }}</th>
+              <th scope="col" class="candidatos__numero">
+                {{ t('asistencias.detalle.candidatos.columnas.distancia') }}
+              </th>
+              <th scope="col">
+                {{ t('asistencias.detalle.candidatos.columnas.disponibilidad') }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of sep.otros; track c.prestadorId) {
+              @let d = disponibilidad(c);
+              <tr>
+                <th scope="row" class="candidatos__nombre">{{ c.nombre }}</th>
+                <td class="candidatos__numero">
+                  {{
+                    t('asistencias.detalle.candidatos.km', {
+                      distancia: (c.distanciaKm | formatoNumero: 1),
+                    })
+                  }}
+                </td>
+                <td>
+                  <app-insignia-estado [tono]="d.tono">
+                    {{
+                      t('asignacion.disponibilidad.' + d.clave, {
+                        fecha: d.hasta ? (aFechaLocal(d.hasta) | formatoFecha) : '',
+                      })
+                    }}
+                  </app-insignia-estado>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </details>
+  }
+</section>

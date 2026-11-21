@@ -234,6 +234,10 @@ contrato (`ready`, `proposed`, `pending_assignment`, `assigned`, `location_missi
   selector de radio del mockup (se reemplaza por el texto y «Ampliar radio») y «el asegurado ve la fecha de la visita» (HU-W2.3-02).
 - **Para HU-W2.3-03 (F8):** si O9b («Detalle de la asistencia con mapa») reutiliza `MapaAsignacionComponent`, se promueve a
   `shared/ui/`.
+  **Cerrado en HU-W2.3-03:** O9 y O9b lo reutilizan en su lugar, sin promoverlo (mismo dominio y carpeta). Para eso el mapa ganó,
+  sin cambiar O7: encuadrar los marcadores cuando no hay incidente (`fitBounds`, la bandeja) y las entradas opcionales
+  `etiquetaRegion`, `leyenda` y `etiquetaIncidente`. `towing` («Grúa») y `roadside_assistance` («Asistencia vial») se sumaron a las
+  especialidades de `modelos/presentacion-asignacion.ts`, así que también aparecen traducidas en O7 y en el filtro de prestadores.
 
 **Administración de prestadores (HU-W2.3-01, F2; sin mockup)** — `asistencias/prestadores.page.ts` (`PrestadoresPage`), ruta
 `/siniestros/prestadores`, rol operaciones; se llega desde «Administrar prestadores» de O7. El registro por nombre con filtros de
@@ -241,6 +245,42 @@ especialidad y disponibilidad (en `?especialidad=&disponibilidad=`) y el cambio 
 (`componentes/disponibilidad-prestador/`: «Disponible» o «No disponible» con «Hasta» opcional). «Liberar» marca disponible a un
 prestador ocupado en un caso (D13); lo hará solo HU-W2.3-02 al cerrar la intervención. **Pendiente:** el alta y la edición del perfil
 (la API existe; `grep -rn "HU-W2.3-01 F" src`).
+
+**Atención de solicitudes de asistencia entrantes (HU-W2.3-03)** — `asistencias/bandeja-asistencias.page.ts`
+(`BandejaAsistenciasPage`, O9, `/siniestros/asistencias`) y `asistencias/detalle-asistencia.page.ts` (`DetalleAsistenciaPage`, O9b,
+`/siniestros/asistencias/:id`), rol operaciones; se entra por «Asistencias» del menú. Contrato: `docs/contratos/HU-W2.3-03-api.md` del
+backend (`openapi.yaml` v0.18.0). Cliente: `core/api/siniestros/` (modelos en `asistencia.modelos.ts`). La solicitud la envía el
+asegurado desde la app (HU-M2.3-01); el front **no calcula** distancias, elegibilidad ni llegada estimada: la sugerencia la calcula el
+backend en cada lectura con el mecanismo de HU-W2.3-01, y la política (`assistance-policy-v1`: necesidades por línea, motivos de
+cierre, objetivo de despacho) se lee de `GET /v1/claims/assistance-policy`. Presentación en `asistencias/modelos/presentacion-asistencia.ts`.
+
+- **CA-1 (O9):** la bandeja se lee al entrar, cada 30 s (`setTimeout` encadenado, en pausa con la pestaña oculta) y con «Actualizar»;
+  un refresco fallido deja la última lectura con un aviso. `componentes/indicadores-asistencias/` (nuevas, despachadas hoy, tiempo
+  medio frente al objetivo), el aviso de solicitudes sin GPS con cuántas faltan por ubicar y la tabla con póliza, ubicación, hora y
+  estado. «Atender» y «Continuar» hacen `POST …/attend` y abren el detalle con la respuesta (no lo vuelven a leer); «Ver» solo abre.
+  **Debajo de la tabla, el mapa de las abiertas con coordenadas** (de la app o por voz), encuadradas: el mockup O9 no lo tiene, lo pide
+  el CA-1 (F2).
+- **CA-2 (O9b):** encabezado con el estado y las acciones según la solicitud y el analista (`accionesDetalle`); el mapa con el pin del
+  asegurado, el radio y los prestadores a 20 km o menos (coordenadas de `GET /v1/claims/providers`); coordenadas, hora UTC, necesidad
+  (`componentes/necesidad-asistencia/`, de las de la línea de la póliza) y especialidad. Sin GPS, la dirección y el pin que dicta el
+  asegurado (`componentes/ubicacion-incidente/` de HU-W2.3-01, `POST …/voice-location`). `componentes/llamada-asistencia/` con el
+  cronómetro del portal (`role="timer"`, sin anuncios; usa el reloj del navegador). `componentes/candidatos-asistencia/`: los
+  `eligible` con distancia, llegada estimada y el sugerido; los demás de la especialidad (el contrato los trae todos, también a cientos
+  de km) plegados y sin acción; sin elegibles, las búsquedas hechas, «Buscar de nuevo» y «Cerrar como “Sin prestador disponible”».
+- **CA-3:** «Despachar» confirma en un `<dialog>` (`componentes/confirmar-despacho/`) con la ubicación que se comparte y envía
+  `{provider_id}`. `componentes/despacho-asistencia/` muestra el prestador, quién y cuándo, si era el sugerido y el correo al
+  prestador, que la página relee cada 5 s (hasta 12 veces) mientras está pendiente.
+- **CA-4:** «Cerrar por otro medio» (`componentes/cierre-asistencia/`) es un formulario en la página, como el mockup, que envía
+  «Cerrar solicitud» del encabezado (`form="cierre-asistencia"`): motivo obligatorio (empieza vacío) y nota obligatoria con «Otro»
+  (3–500 caracteres, sin caracteres de control, validada como el backend).
+- **CA-5:** `componentes/historial-asistencia/` con cada decisión, su analista y su hora, incluida la toma de la llamada por otro
+  analista (`taken_over`).
+- **Conflictos:** si otro analista se adelantó o la sugerencia cambió (`409 assistance_not_open`, `assistance_not_attended`,
+  `location_from_app`, `422 provider_not_eligible`, `need_not_for_line`…), la página avisa y relee.
+- **Lo que el contrato no trae se oculta (F6):** teléfono, documento y vehículo del asegurado, estado de la póliza, siniestros
+  abiertos, calificación y servicios del prestador y la línea de la llamada. «Despachadas hoy» dice «Con prestador despachado» (no hay
+  seguimiento del prestador) y la tarjeta dice «Asegurado» (el contrato no trae el género). **Provisional:** los colores de la llegada
+  estimada (≤ 15 min verde, ≤ 30 amarillo, más gris; `grep -rn "HU-W2.3-03 F" src`).
 
 **Consulta de estado del siniestro (HU-W2.1-02)** — `seguimiento/mis-siniestros.page.ts` (A7) y
 `seguimiento/detalle-siniestro.page.ts` (A8), rol asegurado. Contrato: `docs/contratos/HU-W2.1-02-api.md` del backend
