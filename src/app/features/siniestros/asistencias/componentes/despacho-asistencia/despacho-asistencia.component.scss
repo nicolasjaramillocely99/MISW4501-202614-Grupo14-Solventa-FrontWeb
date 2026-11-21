@@ -1,0 +1,57 @@
+// O9b · Prestador despachado: mismo trazo que «Prestador asignado» de O7 (HU-W2.3-01).
+.despacho {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+}
+
+.despacho__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.despacho__prestador {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-azul-900);
+}
+
+.despacho__sugerencia {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.despacho__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  a {
+    color: var(--color-azul-700);
+  }
+}
+
+.despacho__ancho {
+  grid-column: 1 / -1;
+}
+
+.aviso p {
+  margin: 0;
+}

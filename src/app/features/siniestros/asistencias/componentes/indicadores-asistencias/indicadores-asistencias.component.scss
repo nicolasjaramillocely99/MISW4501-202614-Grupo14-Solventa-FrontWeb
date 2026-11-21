@@ -1,0 +1,46 @@
+// O9 · Indicadores de la bandeja: nuevas, despachadas hoy y tiempo medio de despacho (como las tarjetas de O5).
+.indicadores__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+  padding: var(--espacio-24);
+  box-shadow: none;
+}
+
+.indicador__titulo {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.indicador__valor {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.indicador__valor--nuevas {
+  color: var(--color-error-600);
+}
+
+.indicador__detalle {
+  color: var(--color-texto-secundario);
+}
+
+.indicador__alerta {
+  font-weight: 600;
+  color: var(--color-error-600);
+}

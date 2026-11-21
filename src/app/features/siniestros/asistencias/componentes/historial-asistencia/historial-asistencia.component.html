@@ -1,0 +1,22 @@
+<section
+  class="tarjeta historial"
+  aria-labelledby="titulo-historial-asistencia"
+  *transloco="let t; prefix: 'siniestros'"
+>
+  <h2 id="titulo-historial-asistencia" class="historial__titulo">
+    {{ t('asistencias.detalle.historial.titulo') }}
+  </h2>
+  @if (historial().length === 0) {
+    <p class="historial__vacio">{{ t('asistencias.detalle.historial.vacio') }}</p>
+  } @else {
+    <ol class="historial__lista">
+      @for (accion of historial(); track $index) {
+        <li class="historial__accion">
+          <time class="historial__hora" [attr.datetime]="accion.en">{{ hora(accion.en) }}</time>
+          <span class="visualmente-oculto"> · </span>
+          <span>{{ texto(t, accion) }}</span>
+        </li>
+      }
+    </ol>
+  }
+</section>

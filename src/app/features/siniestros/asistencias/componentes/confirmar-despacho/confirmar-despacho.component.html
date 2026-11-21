@@ -1,0 +1,72 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-confirmar-despacho"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'siniestros'"
+>
+  @if (candidato(); as c) {
+    <form class="modal__contenido" (submit)="enviar($event)" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-confirmar-despacho" class="modal__titulo">
+          {{ t('asistencias.detalle.confirmarDespacho.titulo', { nombre: c.nombre }) }}
+        </h2>
+        <button
+          type="button"
+          class="modal__cerrar"
+          [attr.aria-label]="t('asistencias.detalle.confirmarDespacho.cerrar')"
+          [disabled]="despachando()"
+          (click)="pedirCierre()"
+        >
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">{{ t('asistencias.detalle.confirmarDespacho.texto') }}</p>
+
+      <dl class="despacho__datos">
+        <div>
+          <dt>{{ t('asistencias.detalle.confirmarDespacho.distancia') }}</dt>
+          <dd>
+            {{
+              t('asistencias.detalle.candidatos.km', {
+                distancia: (c.distanciaKm | formatoNumero: 1),
+              })
+            }}
+          </dd>
+        </div>
+        <div>
+          <dt>{{ t('asistencias.detalle.confirmarDespacho.llegada') }}</dt>
+          <dd>{{ t('asistencias.detalle.candidatos.minutos', { minutos: c.llegadaMinutos }) }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('asistencias.detalle.confirmarDespacho.necesidad') }}</dt>
+          <dd>{{ nombreNecesidad(t, necesidad()) }}</dd>
+        </div>
+        <div class="despacho__ancho">
+          <dt>{{ t('asistencias.detalle.confirmarDespacho.ubicacion') }}</dt>
+          <dd>{{ ubicacionCompartida(t) }}</dd>
+        </div>
+      </dl>
+
+      <div class="modal__acciones">
+        <button
+          type="button"
+          class="boton boton--secundario"
+          [disabled]="despachando()"
+          (click)="pedirCierre()"
+        >
+          {{ t('asistencias.detalle.confirmarDespacho.cancelar') }}
+        </button>
+        <button type="submit" class="boton boton--primario" [disabled]="despachando()">
+          {{
+            despachando()
+              ? t('asistencias.detalle.confirmarDespacho.despachando')
+              : t('asistencias.detalle.confirmarDespacho.confirmar')
+          }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>
