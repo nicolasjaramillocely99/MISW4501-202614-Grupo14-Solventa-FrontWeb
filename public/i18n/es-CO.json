@@ -1427,7 +1427,8 @@
         "noRenovada": "No renovada",
         "finalizada": "Finalizada",
         "pagoPendiente": "Pago pendiente",
-        "canceladaNoPago": "No pago"
+        "canceladaNoPago": "No pago",
+        "cancelada": "Cancelada"
       },
       "acciones": {
         "renovar": "Renovar",
@@ -1473,7 +1474,9 @@
         "estado": "Estado",
         "acciones": "Acciones",
         "valorAsegurado": "Asegurado por {{monto}}",
-        "canceladaSinReembolso": "Cancelada por no pago · sin reembolso"
+        "canceladaSinReembolso": "Cancelada por no pago · sin reembolso",
+        "canceladaConReembolso": "Cancelada a solicitud · reembolso {{monto}}",
+        "canceladaAPedidoSinReembolso": "Cancelada a solicitud · sin reembolso"
       },
       "avisoPago": {
         "titulo": "Tu póliza {{id}} tiene un pago pendiente",
@@ -2729,7 +2732,8 @@
         "renovada": "Renovada",
         "noRenovada": "No renovada",
         "canceladaNoPago": "Cancelada por no pago",
-        "finalizada": "Finalizada"
+        "finalizada": "Finalizada",
+        "cancelada": "Cancelada"
       },
       "cancelada": {
         "titulo": "Póliza cancelada por incumplimiento de pago",

@@ -1427,7 +1427,8 @@
         "noRenovada": "Not renewed",
         "finalizada": "Ended",
         "pagoPendiente": "Payment pending",
-        "canceladaNoPago": "Non-payment"
+        "canceladaNoPago": "Non-payment",
+        "cancelada": "Cancelled"
       },
       "acciones": {
         "renovar": "Renew",
@@ -1473,7 +1474,9 @@
         "estado": "Status",
         "acciones": "Actions",
         "valorAsegurado": "Insured for {{monto}}",
-        "canceladaSinReembolso": "Cancelled for non-payment · no refund"
+        "canceladaSinReembolso": "Cancelled for non-payment · no refund",
+        "canceladaConReembolso": "Cancelled on request · refund {{monto}}",
+        "canceladaAPedidoSinReembolso": "Cancelled on request · no refund"
       },
       "avisoPago": {
         "titulo": "Your policy {{id}} has a payment pending",
@@ -2729,7 +2732,8 @@
         "renovada": "Renewed",
         "noRenovada": "Not renewed",
         "canceladaNoPago": "Cancelled for non-payment",
-        "finalizada": "Ended"
+        "finalizada": "Ended",
+        "cancelada": "Cancelled"
       },
       "cancelada": {
         "titulo": "Policy cancelled for non-payment",

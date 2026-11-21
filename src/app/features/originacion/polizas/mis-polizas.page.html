@@ -128,8 +128,20 @@
                 <tr>
                   <th scope="row" class="tabla__poliza">
                     <a class="enlace" [routerLink]="['/originacion/polizas', p.polizaId]">{{ p.polizaId }}</a>
-                    @if (p.cancelacion) {
-                      <span class="texto-suave">{{ t('tabla.canceladaSinReembolso') }}</span>
+                    @if (p.cancelacion; as c) {
+                      @if (c.motivo === 'insured_request') {
+                        @if (c.detalleReembolso && c.detalleReembolso.monto > 0) {
+                          <span class="texto-suave">{{
+                            t('tabla.canceladaConReembolso', {
+                              monto: (c.detalleReembolso.monto | formatoMoneda: c.moneda),
+                            })
+                          }}</span>
+                        } @else {
+                          <span class="texto-suave">{{ t('tabla.canceladaAPedidoSinReembolso') }}</span>
+                        }
+                      } @else {
+                        <span class="texto-suave">{{ t('tabla.canceladaSinReembolso') }}</span>
+                      }
                     }
                     <span class="texto-suave">{{
                       t('tabla.valorAsegurado', {
