@@ -31,14 +31,16 @@
         @if (cancelacionAPedido(); as c) {
         <!-- A5b (HU-W1.6-01, D-8 a): la póliza cancelada a solicitud del asegurado, con su reembolso registrado. -->
         <a class="volver" routerLink="/originacion/polizas">← {{ t('volver') }}</a>
-        <header class="encabezado">
-          <div class="encabezado__titulo">
-            <h1 class="pagina__titulo">{{ t('canceladaAPedido.titulo', { id: p.polizaId }) }}</h1>
-            <app-insignia-estado tono="neutro">{{ t('canceladaAPedido.estado') }}</app-insignia-estado>
+        <header class="encabezado encabezado--fila">
+          <div>
+            <div class="encabezado__titulo">
+              <h1 class="pagina__titulo">{{ t('canceladaAPedido.titulo', { id: p.polizaId }) }}</h1>
+              <app-insignia-estado tono="neutro">{{ t('canceladaAPedido.estado') }}</app-insignia-estado>
+            </div>
+            <p class="encabezado__subtitulo">
+              {{ t(c.detalleReembolso && c.detalleReembolso.monto > 0 ? 'canceladaAPedido.subtitulo' : 'canceladaAPedido.subtituloSinReembolso', { fecha: fechaCorta(c.canceladaEn) }) }}
+            </p>
           </div>
-          <p class="pagina__subtitulo">
-            {{ t(c.detalleReembolso && c.detalleReembolso.monto > 0 ? 'canceladaAPedido.subtitulo' : 'canceladaAPedido.subtituloSinReembolso', { fecha: fechaCorta(c.canceladaEn) }) }}
-          </p>
           <div class="encabezado__acciones">
             <a class="boton boton--primario" routerLink="/originacion/polizas">{{ t('canceladaAPedido.volver') }}</a>
           </div>

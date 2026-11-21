@@ -14,7 +14,7 @@
           {{
             t('detalle.aviso.' + c.reembolso, {
               monto: (r.monto | formatoMoneda: r.moneda),
-              medio: r.medio?.tipo === 'card' ? t('detalle.tarjeta', { marca: (r.medio?.marca ?? '' | titlecase), ultimos: r.medio?.ultimosCuatro ?? '' }) : t('detalle.pse'),
+              medio: r.medio?.tipo === 'card' ? t('detalle.tarjeta', { marca: (r.medio.marca ?? '' | titlecase), ultimos: r.medio.ultimosCuatro ?? '' }) : t('detalle.pse'),
               referencia: r.referencia ?? '',
             })
           }}
