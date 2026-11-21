@@ -27,8 +27,8 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [A1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=17-266) | Mis pólizas | `/originacion/polizas` | Asegurado | HU-W1.5-02, HU-W1.6-02 | S2 |
-| [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02, HU-W1.4-01 | S3 |
+| [A1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=17-266) | Mis pólizas | `/originacion/polizas` | Asegurado | HU-W1.5-02, HU-W1.6-02, HU-W1.6-01 | S2 |
+| [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02, HU-W1.4-01, HU-W1.6-01 | S3 |
 | [O4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4018) | Historial de endosos de la póliza | `/originacion/polizas/:id/endosos` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
 
 ### `endosos/` — F1.4 · Gestión de modificaciones y endosos
@@ -53,7 +53,7 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [A5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-972), [A5b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-1211) | Cancelación con reembolso prorrateado | `/originacion/polizas/:id/cancelar` | Asegurado | HU-W1.6-01 | S3 |
+| [A5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-972), [A5b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-1211) | Cancelación con reembolso prorrateado (A5b se ve en el detalle de la póliza) | `/originacion/polizas/:id/cancelar`; A5b en `/originacion/polizas/:id` | Asegurado | HU-W1.6-01 | S3 (implementada) |
 
 ### `emisiones/` — F1.3 · Monitoreo de emisiones y excepciones de cobro
 
@@ -178,7 +178,7 @@ rechazado la solicitud se conserva y se reutiliza `FormularioMedioPagoComponent`
 - Se contrastó con las capturas de A1, A4 y A4b del prototipo. Diferencias: **sin el botón «Hablar con un asesor»** (no hay canal de contacto en el
   sistema), **sin la fila de deducible** (el contrato no la trae), título genérico «Renovar póliza» (no hay producto) y el cobro se hace **al
   aceptar**, como pide el criterio 2 (A4b lo muestra «programado» para el fin de la vigencia). En A1 faltan el producto, el filtro por producto, la
-  tarjeta de siniestros en curso y la cancelación voluntaria («Cancelada», HU-W1.6-01), que no existen en el contrato. «No pago» y «Ver detalle» llegaron con HU-W1.6-02.
+  tarjeta de siniestros en curso y la cancelación voluntaria («Cancelada», HU-W1.6-01), que no existían en el contrato. «No pago» y «Ver detalle» llegaron con HU-W1.6-02 y «Cancelada» con HU-W1.6-01.
 - **No hay mockup** de «fuera de la ventana», «pago rechazado», «sin medio de pago» ni «no renovada» (la wiki ya lo anotaba): se diseñaron desde los
   criterios con los mismos componentes de A4.
 - E2E: `e2e/flujos/cotizacion-emision/renovacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
@@ -300,11 +300,36 @@ cancelación y meses de la prima), `detalle-poliza.modelos.ts` y `OriginacionApi
 - **S6 (asesor):** la tarjeta «Canceladas por no pago» con el contador de los últimos 30 días, el estado *Cancelada por no pago* en el
   filtro y en la fila, sin vencimiento («—») ni acción.
 - **Botones del prototipo:** todos en la interfaz. «Descargar póliza» y «Condiciones particulares» descargan el documento contractual
-  (HU-W1.3-03); los que no tienen historia (cancelar, condiciones generales, certificado, «Hablar con un asesor», «Solicitar nueva
-  cotización») quedan deshabilitados con «Disponible próximamente». «Solicitar modificación», «Beneficiarios» y «Mis solicitudes» los
+  (HU-W1.3-03); los que no tienen historia (condiciones generales, certificado, «Hablar con un asesor», «Solicitar nueva
+  cotización») quedan deshabilitados con «Disponible próximamente»; «Cancelar póliza» lo conecta HU-W1.6-01 (en su sección). «Solicitar modificación», «Beneficiarios» y «Mis solicitudes» los
   conecta HU-W1.4-01 (ajuste A-10, en su sección). La
   notificación dice «Correo y push», no «Correo y SMS». En S6 la fila cancelada no tiene «Ver»: la renovación asistida no aplica a ella.
 - E2E: `e2e/flujos/originacion/cancelacion-no-pago.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
+
+**Cancelación de póliza con reembolso prorrateado (HU-W1.6-01)** — `cancelaciones/cancelar-poliza.page.ts` (`CancelarPolizaPage`,
+A5), ruta `/originacion/polizas/:id/cancelar` (bloque `polizas`, antes de `:id`, `rolGuard('asegurado')`), y
+`cancelaciones/componentes/detalle-cancelacion/` (`DetalleCancelacionComponent`, A5b), que muestra el detalle de la póliza
+(`/originacion/polizas/:id`) cuando la cancelación fue a solicitud del asegurado. Contrato: `docs/contratos/HU-W1.6-01-api.md` del backend
+(`openapi.yaml` 0.20.0), con la regla del cálculo. Cliente: `core/api/originacion/cancelacion.modelos.ts` (cotización, solicitud, reembolso
+y errores) y `OriginacionApiService.cotizarCancelacion` y `cancelarPoliza`; `CancelacionPoliza` (`pago-poliza.modelos.ts`) es una unión por
+motivo: `non_payment` (HU-W1.6-02) o `insured_request`.
+
+- **A5:** antes de confirmar (CA-1), «Cálculo del reembolso» con la prima pagada del mes en curso y su periodo, los días no utilizados
+  («14 de 30»), el prorrateo, el método (el medio de pago de la emisión), la fecha efectiva («Hoy, …, al final del día») y el plazo, y la
+  tarjeta «Monto a reembolsar». El motivo de la lista (`cancelaciones/modelos/motivos-cancelacion.ts`) y la casilla «Entiendo que la
+  cancelación es definitiva…» habilitan «Confirmar cancelación», que envía el monto que vio el asegurado (CA-2) y vuelve al detalle.
+  «Conservar mi póliza» vuelve al detalle sin cambios y «¿Prefieres otra opción?» lleva a A3.
+- **Estados de A5 en la misma página:** reembolso 0 con la cuota del mes en gracia («No aplica»), bloqueada por una renovación en curso,
+  póliza no vigente, monto cambiado (`409 refund_changed`: muestra el nuevo y desmarca la casilla), cobro de la cuota en curso
+  (`409 payment_in_progress`), error al calcular con «Reintentar» y póliza ya cancelada (va al detalle).
+- **A5b:** aviso «Cancelación registrada», «Detalle del reembolso» (monto, método, referencia `REF-…`, fecha de la cancelación con hora,
+  motivo y estado del reembolso: *En proceso*, *Reembolsado*, *No se pudo procesar* o *Sin reembolso*) y «Estado de la póliza» (la
+  cobertura terminó, los documentos siguen disponibles, no se reactiva). Sin «Descargar constancia» ni correo.
+- **A1:** estado nuevo *Cancelada* (insignia gris), «Cancelada a solicitud · reembolso $ …» en la fila y la vigencia hasta la fecha
+  efectiva; *Cancelada* también en el filtro.
+- **A2:** «Cancelar póliza» pasa de deshabilitado a enlace hacia A5.
+- E2E: `e2e/flujos/originacion/cancelacion-reembolso.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada
+  estado) y `e2e/nube/cancelacion.spec.ts` (portal desplegado, solo con `E2E_NUBE=1`).
 
 **Renovación asistida con recotización (HU-W1.5-03)** — `renovaciones/renovacion-asistida.page.ts` (`RenovacionAsistidaPage`, S7 y S7b),
 ruta `/originacion/renovaciones/:id` (el `policy_id`) en el bloque `renovaciones` de `originacion.routes.ts` (`rolGuard('asesor')`). Se
