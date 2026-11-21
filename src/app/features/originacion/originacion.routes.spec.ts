@@ -8,7 +8,7 @@ import {
   proveerSesionPrueba,
 } from '@testing/sesion-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 
 import { mapearListaEmisiones } from '@core/api/originacion/emision-monitor.modelos';
 import {
@@ -441,6 +441,8 @@ describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
             consultarCondicionesVigentes: () => of(mapearCondicionesVigentes(CONDICIONES_VIGENTES_DTO)),
             consultarSolicitudModificacion: () => of(mapearSolicitudModificacion(SOLICITUD_BENEFICIARIOS_DTO)),
             listarMisSolicitudes: () => of(mapearPaginaSolicitudes(PAGINA_SOLICITUDES_DTO)),
+            // A5 (HU-W1.6-01) se queda cargando: aquí solo importa a qué página lleva la ruta.
+            consultarPoliza: () => NEVER,
           },
         },
       ],
@@ -468,6 +470,15 @@ describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
     expect(harness.routeNativeElement?.querySelector('app-solicitar-modificacion-page')).not.toBeNull();
   });
 
+  it('«polizas/:id/cancelar» abre A5 (HU-W1.6-01), no el detalle de la póliza', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/polizas/pol-1/cancelar');
+
+    expect(url()).toBe('/originacion/polizas/pol-1/cancelar');
+    expect(harness.routeNativeElement?.querySelector('app-cancelar-poliza-page')).not.toBeNull();
+  });
+
   it('«solicitudes» abre «Mis solicitudes» (A11), el ítem del menú del asegurado', async () => {
     await iniciarSesionComo('asegurado');
 
@@ -488,7 +499,7 @@ describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
 
   it('asesor, operaciones y socio reciben «acceso no autorizado» (CA-4)', async () => {
     for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
-      for (const destino of ['/originacion/polizas/pol-1/modificar', '/originacion/solicitudes', '/originacion/solicitudes/SOL-MOD-2026-0042']) {
+      for (const destino of ['/originacion/polizas/pol-1/modificar', '/originacion/polizas/pol-1/cancelar', '/originacion/solicitudes', '/originacion/solicitudes/SOL-MOD-2026-0042']) {
         await iniciarSesionComo(rol);
 
         await harness.navigateByUrl(destino);

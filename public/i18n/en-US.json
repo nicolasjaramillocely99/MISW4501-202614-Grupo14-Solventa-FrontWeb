@@ -2824,6 +2824,96 @@
         "cargando": "Loading the requests…",
         "error": "We could not load the requests of the policy."
       }
+    },
+    "cancelacion": {
+      "volver": "Policy {{id}}",
+      "titulo": "Cancel mortgage life policy",
+      "subtitulo": "{{id}} · Coverage {{desde}} → {{hasta}} · Monthly premium",
+      "conservar": "Keep my policy",
+      "confirmar": "Confirm cancellation",
+      "confirmando": "Cancelling…",
+      "cargando": "Calculating your refund…",
+      "error": {
+        "titulo": "We could not calculate your refund",
+        "texto": "Try again in a few seconds. Your policy is still active and nothing changed.",
+        "reintentar": "Retry"
+      },
+      "noEncontrada": {
+        "titulo": "We could not find this policy",
+        "texto": "The policy does not exist or is not in your name. Check your policies in «My policies»."
+      },
+      "renovacion": {
+        "titulo": "This policy cannot be cancelled for now",
+        "texto": "You have an accepted renewal for the next period. While it is in progress you cannot cancel here; if you need a change, use «Request a change»."
+      },
+      "noVigente": {
+        "titulo": "This policy is not in force",
+        "texto": "A policy can only be cancelled while its coverage is running."
+      },
+      "avisos": {
+        "montoCambio": {
+          "titulo": "The refund amount changed",
+          "texto": "While you were deciding the day changed and fewer days are left unused. Check the new amount and tick the box again to confirm."
+        },
+        "cobroEnCurso": {
+          "titulo": "We are charging this month's instalment",
+          "texto": "Try to cancel again in a few minutes. This way we avoid charging a policy you already cancelled."
+        },
+        "errorConfirmar": {
+          "titulo": "We could not cancel your policy",
+          "texto": "Try again in a few seconds. Your policy is still active and nothing changed."
+        }
+      },
+      "calculo": {
+        "titulo": "Refund calculation",
+        "texto": "The system prorates what you paid for the current month ({{desde}} – {{hasta}}) by the days of coverage you will not use. This is the amount you will receive if you confirm today.",
+        "textoGracia": "This month's instalment ({{desde}} – {{hasta}}) is not paid: it is in its grace period. As there is no paid premium left unused, there is no refund. When you cancel, that instalment is closed and not charged.",
+        "primaPagada": "Premium paid for the period",
+        "cuotaSinPagar": "{{monto}} · instalment not paid",
+        "diasNoUtilizados": "Unused days",
+        "diasDe": "{{n}} of {{d}}",
+        "prorrateo": "Proration",
+        "porcentaje": "{{valor}} %",
+        "metodo": "Refund method",
+        "tarjeta": "{{marca}} •••• {{ultimos}} (original payment method)",
+        "pse": "PSE (original payment method)",
+        "fechaEfectiva": "Effective date",
+        "hoyFinDelDia": "Today, {{fecha}}, at the end of the day",
+        "plazo": "Refund time",
+        "plazoTexto": "5 to 10 business days",
+        "noAplica": "Not applicable"
+      },
+      "motivo": {
+        "titulo": "Reason",
+        "etiqueta": "Reason for the cancellation",
+        "elegir": "Select a reason",
+        "comentarios": "Comments (optional)",
+        "ayuda": "It helps us improve the product"
+      },
+      "motivos": {
+        "property_sold": "I sold the property",
+        "mortgage_paid": "I paid off the mortgage",
+        "better_offer": "I found a better offer",
+        "no_longer_needed": "I no longer need the insurance",
+        "financial_reasons": "Financial reasons",
+        "other": "Other reason"
+      },
+      "definitiva": {
+        "titulo": "The cancellation is final",
+        "texto": "When you confirm, the coverage ends today and the policy cannot be reactivated; if you need protection later, you will have to buy a new one."
+      },
+      "acepto": "I understand the cancellation is final and I accept the calculated refund amount.",
+      "aceptoSinReembolso": "I understand the cancellation is final and that there is no refund.",
+      "monto": {
+        "titulo": "Refund amount",
+        "nota": "It is registered with date, amount and method when you confirm",
+        "notaSinReembolso": "There is no paid premium left unused in the current period"
+      },
+      "otraOpcion": {
+        "titulo": "Would you rather do something else?",
+        "texto": "You can request a change (for example, your beneficiaries) instead of cancelling.",
+        "modificar": "Request a change"
+      }
     }
   },
   "siniestros": {

@@ -1,0 +1,212 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.cancelacion'">
+  <a class="pagina__volver" [routerLink]="['/originacion/polizas', polizaId()]">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('volver', { id: polizaId() }) }}
+  </a>
+  <header class="pagina__encabezado">
+    <div>
+      <h1 class="pagina__titulo">{{ t('titulo') }}</h1>
+      @if (poliza(); as p) {
+        <p class="pagina__subtitulo">
+          {{ t('subtitulo', { id: p.polizaId, desde: fecha(p.vigenciaDesde), hasta: fecha(p.vigenciaHasta) }) }}
+        </p>
+      }
+    </div>
+    <div class="pagina__acciones">
+      <a class="boton boton--secundario" [routerLink]="['/originacion/polizas', polizaId()]">{{ t('conservar') }}</a>
+      <button type="button" class="boton boton--peligro" [disabled]="!puedeConfirmar()" (click)="confirmar()">
+        {{ fase() === 'confirmando' ? t('confirmando') : t('confirmar') }}
+      </button>
+    </div>
+  </header>
+
+  <div class="contenido">
+    <div class="contenido__principal">
+      @switch (fase()) {
+        @case ('cargando') {
+          <p class="estado" role="status">{{ t('cargando') }}</p>
+        }
+        @case ('error') {
+          <div class="aviso aviso--error" role="alert">
+            <svg lucideCircleX [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('error.titulo') }}</p>
+              <p>{{ t('error.texto') }}</p>
+            </div>
+          </div>
+          <div>
+            <button type="button" class="boton boton--secundario" (click)="cargar()">{{ t('error.reintentar') }}</button>
+          </div>
+        }
+        @case ('noEncontrada') {
+          <div class="aviso aviso--advertencia" role="alert">
+            <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('noEncontrada.titulo') }}</p>
+              <p>{{ t('noEncontrada.texto') }}</p>
+            </div>
+          </div>
+        }
+        @case ('renovacion') {
+          <div class="aviso aviso--informacion" role="status">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('renovacion.titulo') }}</p>
+              <p>{{ t('renovacion.texto') }}</p>
+            </div>
+          </div>
+        }
+        @case ('noVigente') {
+          <div class="aviso aviso--informacion" role="status">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('noVigente.titulo') }}</p>
+              <p>{{ t('noVigente.texto') }}</p>
+            </div>
+          </div>
+        }
+      }
+
+      @if (conCalculo()) {
+        @if (aviso(); as a) {
+          <div class="aviso" [class.aviso--advertencia]="a !== 'errorConfirmar'" [class.aviso--error]="a === 'errorConfirmar'" role="alert">
+            @if (a === 'errorConfirmar') {
+              <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+            } @else {
+              <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            }
+            <div>
+              <p class="aviso__titulo">{{ t('avisos.' + a + '.titulo') }}</p>
+              <p>{{ t('avisos.' + a + '.texto') }}</p>
+            </div>
+          </div>
+        }
+
+        @if (cotizacion(); as c) {
+          <section class="tarjeta" aria-labelledby="titulo-calculo">
+            <h2 id="titulo-calculo" class="seccion__titulo">{{ t('calculo.titulo') }}</h2>
+            <p class="seccion__texto">
+              {{ t(sinReembolso() ? 'calculo.textoGracia' : 'calculo.texto', { desde: fecha(c.periodoPagado.inicio), hasta: fin(c) }) }}
+            </p>
+            <dl class="datos">
+              <div>
+                <dt>{{ t('calculo.primaPagada') }}</dt>
+                <dd class="datos__destacado">
+                  {{
+                    sinReembolso()
+                      ? t('calculo.cuotaSinPagar', { monto: (0 | formatoMoneda: c.moneda) })
+                      : (c.periodoPagado.montoPagado | formatoMoneda: c.moneda)
+                  }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ t('calculo.diasNoUtilizados') }}</dt>
+                <dd>{{ t('calculo.diasDe', { n: c.diasNoUtilizados, d: c.diasPeriodo }) }}</dd>
+              </div>
+              <div>
+                <dt>{{ t('calculo.prorrateo') }}</dt>
+                <dd>
+                  {{ sinReembolso() ? t('calculo.noAplica') : t('calculo.porcentaje', { valor: (c.porcentajeProrrateo | formatoNumero: 1) }) }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ t('calculo.metodo') }}</dt>
+                <dd>
+                  @if (!sinReembolso() && c.medioReembolso; as m) {
+                    {{
+                      m.tipo === 'card'
+                        ? t('calculo.tarjeta', { marca: (m.marca ?? '' | titlecase), ultimos: m.ultimosCuatro ?? '' })
+                        : t('calculo.pse')
+                    }}
+                  } @else {
+                    {{ t('calculo.noAplica') }}
+                  }
+                </dd>
+              </div>
+              <div>
+                <dt>{{ t('calculo.fechaEfectiva') }}</dt>
+                <dd>{{ t('calculo.hoyFinDelDia', { fecha: fecha(c.efectivaEn) }) }}</dd>
+              </div>
+              <div>
+                <dt>{{ t('calculo.plazo') }}</dt>
+                <dd>{{ sinReembolso() ? t('calculo.noAplica') : t('calculo.plazoTexto') }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="tarjeta" aria-labelledby="titulo-motivo">
+            <h2 id="titulo-motivo" class="seccion__titulo">{{ t('motivo.titulo') }}</h2>
+            <div class="formulario">
+              <div class="campo">
+                <label class="campo__etiqueta" for="motivo-cancelacion">{{ t('motivo.etiqueta') }}</label>
+                <select
+                  id="motivo-cancelacion"
+                  class="campo__control"
+                  required
+                  [value]="motivo()"
+                  [disabled]="fase() === 'confirmando'"
+                  (change)="elegirMotivo($event)"
+                >
+                  <option value="">{{ t('motivo.elegir') }}</option>
+                  @for (m of motivos; track m.codigo) {
+                    <option [value]="m.codigo">{{ t(m.clave) }}</option>
+                  }
+                </select>
+              </div>
+              <div class="campo">
+                <label class="campo__etiqueta" for="comentarios-cancelacion">{{ t('motivo.comentarios') }}</label>
+                <input
+                  id="comentarios-cancelacion"
+                  class="campo__control"
+                  type="text"
+                  [maxLength]="maxComentarios"
+                  [value]="comentarios()"
+                  [disabled]="fase() === 'confirmando'"
+                  aria-describedby="ayuda-comentarios"
+                  (input)="escribirComentarios($event)"
+                />
+                <p id="ayuda-comentarios" class="campo__ayuda">{{ t('motivo.ayuda') }}</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="aviso aviso--advertencia">
+            <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('definitiva.titulo') }}</p>
+              <p>{{ t('definitiva.texto') }}</p>
+            </div>
+          </div>
+
+          <label class="casilla">
+            <input
+              type="checkbox"
+              [checked]="acepta()"
+              [disabled]="fase() === 'confirmando'"
+              (change)="marcar($event)"
+            />
+            <span>{{ t(sinReembolso() ? 'aceptoSinReembolso' : 'acepto') }}</span>
+          </label>
+        }
+      }
+    </div>
+
+    <aside class="contenido__lateral">
+      @if (conCalculo()) {
+        @if (cotizacion(); as c) {
+          <section class="monto" aria-labelledby="titulo-monto">
+            <h2 id="titulo-monto" class="monto__etiqueta">{{ t('monto.titulo') }}</h2>
+            <p class="monto__valor">{{ c.montoReembolso | formatoMoneda: c.moneda }}</p>
+            <p class="monto__nota">{{ t(sinReembolso() ? 'monto.notaSinReembolso' : 'monto.nota') }}</p>
+          </section>
+        }
+      }
+      <section class="tarjeta" aria-labelledby="titulo-otra-opcion">
+        <h2 id="titulo-otra-opcion" class="seccion__titulo">{{ t('otraOpcion.titulo') }}</h2>
+        <p class="seccion__texto">{{ t('otraOpcion.texto') }}</p>
+        <a class="enlace enlace--icono" [routerLink]="['/originacion/polizas', polizaId(), 'modificar']">
+          <svg lucidePencil [size]="16" aria-hidden="true"></svg>{{ t('otraOpcion.modificar') }}
+        </a>
+      </section>
+    </aside>
+  </div>
+</div>
