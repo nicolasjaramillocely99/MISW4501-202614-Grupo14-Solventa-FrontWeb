@@ -1,7 +1,15 @@
+import {
+  DetalleReembolso,
+  DetalleReembolsoDto,
+  EstadoReembolso,
+  MotivoCancelacion,
+  mapearDetalleReembolso,
+} from './cancelacion.modelos';
+
 /**
  * Modelos de la prima mensual de una póliza y su cancelación por no pago (HU-W1.6-02), tipados según
  * `services/origination/api/openapi.yaml` 0.17.0 y su contrato para el front (`HU-W1.6-02-api.md`). Las fechas son
- * RFC 3339 en UTC.
+ * RFC 3339 en UTC. HU-W1.6-01 (0.20.0): la cancelación también puede ser a solicitud del asegurado, con su reembolso.
  */
 
 /**
@@ -34,9 +42,11 @@ export interface PagoPoliza {
 }
 
 /** Cancelación por no pago: nunca hay reembolso. */
-export interface CancelacionPoliza {
+export interface CancelacionPorNoPago {
   motivo: 'non_payment';
   canceladaEn: string;
+  /** Cuando terminó la cobertura: la misma cancelación. */
+  efectivaEn: string;
   /** La cuota que no se pagó. */
   mes: number;
   venceEn: string;
@@ -47,6 +57,20 @@ export interface CancelacionPoliza {
   /** Cuándo salió el correo al asegurado; `null` mientras no ha salido. */
   correoEnviadoEn: string | null;
 }
+
+/** Cancelación a solicitud del asegurado (HU-W1.6-01), con el reembolso de lo pagado del mes en curso sin usar. */
+export interface CancelacionAPedido {
+  motivo: 'insured_request';
+  canceladaEn: string;
+  /** El final del día de la cancelación: cuando terminó la cobertura. */
+  efectivaEn: string;
+  moneda: string;
+  reembolso: EstadoReembolso;
+  detalleReembolso: DetalleReembolso | null;
+  motivoAsegurado: { codigo: MotivoCancelacion; comentarios: string | null };
+}
+
+export type CancelacionPoliza = CancelacionPorNoPago | CancelacionAPedido;
 
 /** Un intento de cobro de una cuota. */
 export interface IntentoCobro {
@@ -85,17 +109,22 @@ export interface PagoPolizaDto {
   } | null;
 }
 
+/** Los campos de la cuota impaga son nulos para una cancelación a solicitud del asegurado, y al revés. */
 export interface CancelacionPolizaDto {
-  reason: 'non_payment';
+  reason: 'non_payment' | 'insured_request';
   cancelled_at: string;
-  refund: 'not_applicable';
-  month: number;
-  due_at: string;
-  grace_ends_at: string;
-  amount: number;
+  /** Desde 0.20.0; una respuesta anterior no lo trae. */
+  effective_at?: string;
+  refund: EstadoReembolso;
+  month: number | null;
+  due_at: string | null;
+  grace_ends_at: string | null;
+  amount: number | null;
   currency: string;
-  attempts: number;
+  attempts: number | null;
   email_sent_at: string | null;
+  refund_detail?: DetalleReembolsoDto | null;
+  insured_reason?: { code: MotivoCancelacion; comments: string | null } | null;
 }
 
 export interface MesPrimaDto {
@@ -143,15 +172,31 @@ export function mapearCancelacion(
   if (!dto) {
     return null;
   }
+  const efectivaEn = dto.effective_at ?? dto.cancelled_at;
+  if (dto.reason === 'insured_request') {
+    return {
+      motivo: 'insured_request',
+      canceladaEn: dto.cancelled_at,
+      efectivaEn,
+      moneda: dto.currency,
+      reembolso: dto.refund,
+      detalleReembolso: mapearDetalleReembolso(dto.refund_detail),
+      motivoAsegurado: {
+        codigo: dto.insured_reason?.code ?? 'other',
+        comentarios: dto.insured_reason?.comments ?? null,
+      },
+    };
+  }
   return {
-    motivo: dto.reason,
+    motivo: 'non_payment',
     canceladaEn: dto.cancelled_at,
-    mes: dto.month,
-    venceEn: dto.due_at,
-    graciaHasta: dto.grace_ends_at,
-    monto: dto.amount,
+    efectivaEn,
+    mes: dto.month ?? 0,
+    venceEn: dto.due_at ?? dto.cancelled_at,
+    graciaHasta: dto.grace_ends_at ?? dto.cancelled_at,
+    monto: dto.amount ?? 0,
     moneda: dto.currency,
-    intentos: dto.attempts,
+    intentos: dto.attempts ?? 0,
     correoEnviadoEn: dto.email_sent_at,
   };
 }

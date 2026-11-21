@@ -77,7 +77,8 @@ export interface PasoHistorial {
 export function historialDe(poliza: DetallePoliza): PasoHistorial[] {
   const pasos: PasoHistorial[] = [];
   const c = poliza.cancelacion;
-  if (c) {
+  // La cancelación a solicitud del asegurado (HU-W1.6-01) no es un paso del historial de cobros.
+  if (c?.motivo === 'non_payment') {
     pasos.push({
       clave: 'cancelacion',
       tipo: 'cancelacion',
@@ -177,6 +178,11 @@ export class DetallePolizaPage implements OnInit {
     return p ? estadoDePoliza(p) : 'vigente';
   });
   protected readonly tono = computed<TonoInsignia>(() => tonoDePoliza(this.estado()));
+  /** La cancelación por no pago de A2b (HU-W1.6-02); `null` sin cancelación o si fue a solicitud del asegurado. */
+  protected readonly cancelacionNoPago = computed(() => {
+    const c = this.poliza()?.cancelacion;
+    return c?.motivo === 'non_payment' ? c : null;
+  });
   protected readonly historial = computed(() => {
     const p = this.poliza();
     return p ? historialDe(p) : [];

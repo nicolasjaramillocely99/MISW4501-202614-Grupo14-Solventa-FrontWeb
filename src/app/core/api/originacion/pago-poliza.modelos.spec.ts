@@ -36,6 +36,8 @@ describe('modelos del pago y la cancelación de la póliza (HU-W1.6-02)', () => 
     expect(p.cancelacion).toEqual({
       motivo: 'non_payment',
       canceladaEn: '2026-09-12T05:00:00Z',
+      // HU-W1.6-01: sin effective_at (respuesta anterior a 0.20.0) termina cuando se canceló.
+      efectivaEn: '2026-09-12T05:00:00Z',
       mes: 2,
       venceEn: '2026-08-12T05:00:00Z',
       graciaHasta: '2026-09-11T05:00:00Z',

@@ -3,7 +3,16 @@ import { Injectable, inject } from '@angular/core';
 import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
+import {
+  CotizacionCancelacion,
+  CotizacionCancelacionDto,
+  SolicitudCancelacion,
+  aSolicitudCancelacionDto,
+  mapearCotizacionCancelacion,
+  traducirErrorCancelacion,
+} from './cancelacion.modelos';
 import { DetallePoliza, DetallePolizaDto, mapearDetallePoliza, traducirErrorPoliza } from './detalle-poliza.modelos';
+import { CancelacionAPedido, CancelacionPolizaDto, mapearCancelacion } from './pago-poliza.modelos';
 
 import {
   Aceptacion,
@@ -395,6 +404,36 @@ export class OriginacionApiService {
       map(mapearDetallePoliza),
       catchError((error: unknown) => throwError(() => traducirErrorPoliza(error))),
     );
+  }
+
+  /**
+   * Cálculo del reembolso si el asegurado cancelara hoy (`GET /v1/policies/{id}/cancellation/quote`, HU-W1.6-01,
+   * pantalla A5, CA-1). Falla con `ErrorCancelacion`: `policy_not_found`, `policy_not_in_force`,
+   * `policy_already_cancelled`, `renewal_in_progress` o `cancellation_unavailable`.
+   */
+  cotizarCancelacion(polizaId: string): Observable<CotizacionCancelacion> {
+    return this.http
+      .get<CotizacionCancelacionDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/cancellation/quote`)
+      .pipe(
+        map(mapearCotizacionCancelacion),
+        catchError((error: unknown) => throwError(() => traducirErrorCancelacion(error))),
+      );
+  }
+
+  /**
+   * Cancela la póliza con el reembolso que vio el asegurado (`POST /v1/policies/{id}/cancellation`, HU-W1.6-01, CA-2) y
+   * devuelve la cancelación registrada. Falla con `ErrorCancelacion`; con `refund_changed` trae la cotización nueva.
+   */
+  cancelarPoliza(polizaId: string, solicitud: SolicitudCancelacion): Observable<CancelacionAPedido> {
+    return this.http
+      .post<{ cancellation: CancelacionPolizaDto }>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/cancellation`,
+        aSolicitudCancelacionDto(solicitud),
+      )
+      .pipe(
+        map((r) => mapearCancelacion(r.cancellation) as CancelacionAPedido),
+        catchError((error: unknown) => throwError(() => traducirErrorCancelacion(error))),
+      );
   }
 
   /**

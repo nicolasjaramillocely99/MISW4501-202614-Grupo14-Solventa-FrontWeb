@@ -102,7 +102,7 @@
           </div>
         }
 
-        @if (p.cancelacion; as c) {
+        @if (cancelacionNoPago(); as c) {
           <div class="aviso aviso--error" role="alert">
             <svg lucideCircleX [size]="20" aria-hidden="true"></svg>
             <div>
@@ -139,7 +139,7 @@
 
         <div class="cuerpo">
           <div class="cuerpo__principal">
-            @if (p.cancelacion; as c) {
+            @if (cancelacionNoPago(); as c) {
               <section class="tarjeta" aria-labelledby="titulo-cancelacion">
                 <h2 id="titulo-cancelacion" class="seccion__titulo">
                   {{ t('cancelacion.titulo') }}
