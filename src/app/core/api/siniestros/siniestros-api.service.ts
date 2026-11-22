@@ -127,6 +127,16 @@ import {
   mapearPoliticaAsistencia,
   traducirErrorAsistencia,
 } from './asistencia.modelos';
+import {
+  Intervencion,
+  IntervencionDto,
+  SolicitudAvance,
+  SolicitudCierreCaso,
+  aAvanceDto,
+  aCierreCasoDto,
+  mapearIntervencion,
+  traducirErrorIntervencion,
+} from './intervencion.modelos';
 
 /**
  * Cliente del servicio de siniestros (`claims`) vía API Gateway. Única salida HTTP hacia ese microservicio: ningún
@@ -599,6 +609,40 @@ export class SiniestrosApiService {
     return this.http.post<DetalleAsistenciaDto>(ruta, cuerpo).pipe(
       map(mapearDetalleAsistencia),
       catchError((error: unknown) => throwError(() => traducirErrorAsistencia(error))),
+    );
+  }
+
+  /**
+   * Intervención del prestador asignado (`GET /v1/claims/{claim_id}/intervention`, HU-W2.3-02): los pasos en orden, el
+   * informe de la visita, el siguiente paso, si se puede cerrar y qué falta. Falla con `ErrorIntervencion`.
+   */
+  consultarIntervencion(id: string): Observable<Intervencion> {
+    return this.http.get<IntervencionDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/intervention`).pipe(
+      map(mapearIntervencion),
+      catchError((error: unknown) => throwError(() => traducirErrorIntervencion(error))),
+    );
+  }
+
+  /**
+   * Registra un avance que reportó el prestador (`POST …/intervention/steps`, CA-1). Devuelve la intervención ya
+   * actualizada. Falla con `ErrorIntervencion`.
+   */
+  registrarAvance(id: string, solicitud: SolicitudAvance): Observable<Intervencion> {
+    return this.escribirIntervencion(id, 'intervention/steps', aAvanceDto(solicitud));
+  }
+
+  /**
+   * Cierra el caso con su resultado (`POST …/closure`, CA-3 a CA-5). Si la intervención no ha terminado falla con
+   * `ErrorIntervencion('intervention_not_finished')` y los pasos que faltan.
+   */
+  cerrarCaso(id: string, solicitud: SolicitudCierreCaso): Observable<Intervencion> {
+    return this.escribirIntervencion(id, 'closure', aCierreCasoDto(solicitud));
+  }
+
+  private escribirIntervencion(id: string, accion: string, cuerpo: object): Observable<Intervencion> {
+    return this.http.post<IntervencionDto>(`${this.base}/v1/claims/${encodeURIComponent(id)}/${accion}`, cuerpo).pipe(
+      map(mapearIntervencion),
+      catchError((error: unknown) => throwError(() => traducirErrorIntervencion(error))),
     );
   }
 

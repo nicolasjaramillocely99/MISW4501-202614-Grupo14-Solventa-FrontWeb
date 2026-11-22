@@ -1,0 +1,240 @@
+// O8 · Intervención del prestador: línea de tiempo e informe a la izquierda, prestador y siniestro a la derecha.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  align-self: flex-start;
+  min-height: var(--control-alto);
+  font-weight: 500;
+  color: var(--color-azul-700);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+}
+
+.encabezado__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  min-width: 16rem;
+}
+
+.encabezado__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+  overflow-wrap: anywhere;
+}
+
+.encabezado__resumen,
+.estado,
+.nota {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.nota {
+  font-size: 0.875rem;
+}
+
+.encabezado__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-12);
+}
+
+.cuerpo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+.cuerpo__principal,
+.cuerpo__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  min-width: 0;
+}
+
+.cuerpo__principal {
+  flex: 1 1 36rem;
+}
+
+.cuerpo__lateral {
+  flex: 1 1 18rem;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.tarjeta__titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.datos {
+  display: grid;
+  gap: var(--espacio-12);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.datos--dos {
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.fotos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fotos__foto {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radio-base);
+  background: var(--color-azul-50);
+  color: var(--color-azul-700);
+}
+
+// Línea de tiempo: el mismo trazo que el detalle del asegurado (A8).
+.linea {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linea__paso {
+  position: relative;
+  display: flex;
+  gap: var(--espacio-12);
+  padding-bottom: var(--espacio-16);
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 1.75rem;
+    bottom: 0;
+    left: 0.8125rem;
+    width: 2px;
+    background: var(--color-borde-base);
+  }
+}
+
+.linea__paso--hecha:not(:last-child)::before {
+  background: var(--color-azul-700);
+}
+
+.linea__marca {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid var(--color-borde-base);
+  border-radius: 50%;
+  background: var(--color-fondo-superficie);
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.linea__paso--hecha .linea__marca {
+  border-color: var(--color-azul-700);
+  background: var(--color-azul-700);
+  color: var(--color-texto-inverso);
+}
+
+.linea__paso--actual .linea__marca {
+  border-color: var(--color-azul-700);
+  color: var(--color-azul-700);
+  font-weight: 600;
+}
+
+.linea__contenido {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+  min-width: 0;
+}
+
+.linea__titulo,
+.linea__fecha,
+.linea__detalle {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.linea__titulo {
+  font-weight: 500;
+}
+
+.linea__paso:not(.linea__paso--hecha):not(.linea__paso--actual) .linea__titulo {
+  color: var(--color-texto-secundario);
+}
+
+.linea__fecha,
+.linea__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.linea__accion {
+  margin-top: var(--espacio-4);
+}

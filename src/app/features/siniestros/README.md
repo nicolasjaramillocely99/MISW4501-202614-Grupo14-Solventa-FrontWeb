@@ -243,7 +243,7 @@ contrato (`ready`, `proposed`, `pending_assignment`, `assigned`, `location_missi
 `/siniestros/prestadores`, rol operaciones; se llega desde «Administrar prestadores» de O7. El registro por nombre con filtros de
 especialidad y disponibilidad (en `?especialidad=&disponibilidad=`) y el cambio de disponibilidad
 (`componentes/disponibilidad-prestador/`: «Disponible» o «No disponible» con «Hasta» opcional). «Liberar» marca disponible a un
-prestador ocupado en un caso (D13); lo hará solo HU-W2.3-02 al cerrar la intervención. **Pendiente:** el alta y la edición del perfil
+prestador ocupado en un caso (D13); desde HU-W2.3-02 el cierre del caso también lo libera. **Pendiente:** el alta y la edición del perfil
 (la API existe; `grep -rn "HU-W2.3-01 F" src`).
 
 **Atención de solicitudes de asistencia entrantes (HU-W2.3-03)** — `asistencias/bandeja-asistencias.page.ts`
@@ -281,6 +281,27 @@ cierre, objetivo de despacho) se lee de `GET /v1/claims/assistance-policy`. Pres
   abiertos, calificación y servicios del prestador y la línea de la llamada. «Despachadas hoy» dice «Con prestador despachado» (no hay
   seguimiento del prestador) y la tarjeta dice «Asegurado» (el contrato no trae el género). **Provisional:** los colores de la llegada
   estimada (≤ 15 min verde, ≤ 30 amarillo, más gris; `grep -rn "HU-W2.3-03 F" src`).
+
+**Seguimiento de la intervención y cierre del caso (HU-W2.3-02)** — `asistencias/seguimiento-intervencion.page.ts`
+(`SeguimientoIntervencionPage`, O8), ruta `/siniestros/:id/seguimiento`, rol operaciones; se entra desde «Ver seguimiento de la
+intervención» de O7 cuando el caso ya tiene prestador. Contrato: `docs/contratos/HU-W2.3-02-api.md` del backend (`openapi.yaml`
+v0.19.0). Modelos en `core/api/siniestros/intervencion.modelos.ts`. El backend decide el orden de los pasos, si se puede cerrar y
+qué falta; la página pinta `next_step`, `closable` y `missing`.
+
+- **CA-1 y CA-2:** la línea de tiempo tiene seis filas: la asignación y los cinco avances (aceptado, en desplazamiento, visita con
+  informe, reparación autorizada, reparación ejecutada). Los hechos muestran la fecha, quién los registró y la observación; el
+  siguiente tiene «Registrar avance», que abre `componentes/registrar-avance/` (fecha y hora con `datetime-local`, observación y, en la
+  visita, causa, daño, costo en pesos, días y fotos; el costo se envía en centavos). La respuesta del `POST` actualiza la página sin
+  recargar. Un `409 step_out_of_order` (otro analista se adelantó) avisa y relee.
+- **Informe del prestador:** la tarjeta muestra causa, daño, costo, tiempo y hasta cuatro recuadros de foto; las fotos no viajan
+  (el backend solo guarda cuántas son).
+- **CA-3 a CA-5:** «Cerrar caso» abre `componentes/cerrar-caso/` con el resultado obligatorio, la fecha y hora, las observaciones y la
+  confirmación de que el cierre no decide la indemnización. Si faltan pasos, el diálogo dice cuáles y no deja enviar; un `409
+  intervention_not_finished` hace lo mismo con los `missing` de la respuesta. Ya cerrado, un aviso muestra el resultado, la fecha y el
+  analista, y no quedan acciones.
+- **Sin mockup:** los dos diálogos (O8 solo trae la pantalla) siguen el patrón de `_modal.scss` de O1b y O11b.
+- **Lo que el contrato no trae se reemplaza:** la tarjeta «Asegurada» del mockup (claims no guarda su contacto) pasa a «Siniestro»,
+  con la póliza, el lugar y el estado; la calificación y los casos del prestador se ocultan, como en O7.
 
 **Consulta de estado del siniestro (HU-W2.1-02)** — `seguimiento/mis-siniestros.page.ts` (A7) y
 `seguimiento/detalle-siniestro.page.ts` (A8), rol asegurado. Contrato: `docs/contratos/HU-W2.1-02-api.md` del backend

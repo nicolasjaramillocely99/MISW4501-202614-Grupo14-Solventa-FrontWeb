@@ -1,0 +1,12 @@
+@use '../modal';
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-16);
+}
+
+.campo__control--area {
+  min-height: 5rem;
+  resize: vertical;
+}

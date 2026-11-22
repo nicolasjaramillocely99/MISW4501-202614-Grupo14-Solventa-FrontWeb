@@ -7,6 +7,7 @@ import { BandejaAsistenciasPage } from './asistencias/bandeja-asistencias.page';
 import { DetalleAsistenciaPage } from './asistencias/detalle-asistencia.page';
 import { CorreccionRadicacionPage } from './correccion/correccion-radicacion.page';
 import { PrestadoresPage } from './asistencias/prestadores.page';
+import { SeguimientoIntervencionPage } from './asistencias/seguimiento-intervencion.page';
 import { CasosEvaluacionPage } from './evaluacion/casos-evaluacion.page';
 import { EvaluacionSiniestroPage } from './evaluacion/evaluacion-siniestro.page';
 import { RadicacionSiniestroPage } from './radicacion/radicacion-siniestro.page';
@@ -26,10 +27,11 @@ import { PrioridadSiniestroPage } from './triage/prioridad-siniestro.page';
  * y O6b), y la revisión del asesor (HU-W2.1-03): las radicaciones por revisar y la revisión de una (S8), y la asignación
  * del prestador más cercano (HU-W2.3-01): «Asignar prestador» de un caso (O7 y O7b) y la administración de prestadores,
  * y la edición de la radicación devuelta del asegurado (HU-W2.1-04, A9, `:id/corregir`), y la atención de solicitudes de
- * asistencia entrantes (HU-W2.3-03): la bandeja «Asistencias en sitio» (O9) y el detalle de una solicitud (O9b).
+ * asistencia entrantes (HU-W2.3-03): la bandeja «Asistencias en sitio» (O9) y el detalle de una solicitud (O9b), y el
+ * seguimiento de la intervención del prestador con el cierre del caso (HU-W2.3-02, O8, `:id/seguimiento`).
  *
  * El orden importa: los grupos de operaciones (`cola`, `evaluacion`, `:id/evaluar`, `:id/asignar-prestador`,
- * `prestadores` y `asistencias`) y del asesor (`revision`) van antes del grupo del asegurado
+ * `:id/seguimiento`, `prestadores` y `asistencias`) y del asesor (`revision`) van antes del grupo del asegurado
  * y `:id` va después de `radicar` y `mis-siniestros`; si no, `:id` capturaría `cola` y el guard del asegurado
  * rechazaría al analista.
  */
@@ -56,6 +58,12 @@ export const SINIESTROS_ROUTES: Routes = [
     path: ':id/asignar-prestador',
     canActivate: [rolGuard('operaciones')],
     component: AsignacionPrestadorPage,
+  },
+  // HU-W2.3-02 (O8): el seguimiento de la intervención del prestador y el cierre del caso.
+  {
+    path: ':id/seguimiento',
+    canActivate: [rolGuard('operaciones')],
+    component: SeguimientoIntervencionPage,
   },
   {
     path: 'revision',

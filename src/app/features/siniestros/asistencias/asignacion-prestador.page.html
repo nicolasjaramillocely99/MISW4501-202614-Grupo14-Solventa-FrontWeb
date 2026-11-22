@@ -231,6 +231,11 @@
                   [avisoDetenido]="avisoDetenido()"
                   (actualizar)="cargar()"
                 />
+                <a
+                  class="boton boton--primario seguimiento"
+                  [routerLink]="['/siniestros', a.siniestroId, 'seguimiento']"
+                  >{{ t('asignacion.asignado.seguimiento') }}</a
+                >
               }
             </div>
 

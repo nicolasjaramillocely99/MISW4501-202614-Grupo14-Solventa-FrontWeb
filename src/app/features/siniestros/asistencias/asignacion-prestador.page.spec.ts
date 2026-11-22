@@ -380,4 +380,12 @@ describe('AsignacionPrestadorPage (O7 y O7b · HU-W2.3-01)', () => {
       'Cargando la asignación del prestador…',
     );
   });
+
+  it('con el prestador asignado, enlaza al seguimiento de la intervención (HU-W2.3-02)', async () => {
+    await renderizar(de(ASIGNACION_AVISADA_DTO));
+
+    expect(
+      screen.getByRole('link', { name: 'Ver seguimiento de la intervención' }).getAttribute('href'),
+    ).toBe(`/siniestros/${ID_EVALUADO}/seguimiento`);
+  });
 });
