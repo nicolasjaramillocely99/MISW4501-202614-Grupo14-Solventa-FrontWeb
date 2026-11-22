@@ -18,6 +18,8 @@ const DE_AUTOS = necesidadesDeLinea(mapearPoliticaAsistencia(POLITICA_ASISTENCIA
 const GRUA = mapearDetalleAsistencia(DETALLE_CON_SUGERENCIA_DTO).necesidad as NecesidadRegistrada;
 
 describe('NecesidadAsistenciaComponent (O9b · HU-W2.3-03, S13)', () => {
+  afterEach(() => vi.useRealTimers());
+
   const renderizar = async (
     entradas: {
       estado?: EstadoAsistencia;
@@ -71,6 +73,8 @@ describe('NecesidadAsistenciaComponent (O9b · HU-W2.3-03, S13)', () => {
   });
 
   it('registrada: muestra quién y cuándo, y «Cambiar» la vuelve a abrir con la actual', async () => {
+    // Los datos son del 21/11/2026: la hora va sin fecha solo si el evento es de hoy.
+    vi.useFakeTimers({ now: new Date('2026-11-21T17:00:00Z'), toFake: ['Date'] });
     const { registrar, usuario, fixture } = await renderizar({ necesidad: GRUA });
 
     expect(screen.getByText('Grúa')).toBeTruthy();
