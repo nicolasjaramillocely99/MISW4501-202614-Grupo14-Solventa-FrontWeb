@@ -4280,7 +4280,8 @@
         "avisoPendiente": "Sending the assignment to the provider…",
         "avisoEnviado": "Notice sent to the provider · {{fecha}}",
         "avisoDetenido": "The notice has not left yet; the system keeps trying.",
-        "actualizar": "Refresh"
+        "actualizar": "Refresh",
+        "seguimiento": "View intervention follow-up"
       },
       "errores": {
         "location_from_app": "The claim already has the app coordinates: no other location is recorded.",
@@ -4650,6 +4651,134 @@
         "segundos": "{{segundos}} s",
         "minutos": "{{minutos}} min",
         "minutosSegundos": "{{minutos}} min {{segundos}} s"
+      }
+    },
+    "intervencion": {
+      "volver": "Claim {{radicado}}",
+      "titulo": "Provider intervention · {{radicado}}",
+      "cargando": "Loading the intervention…",
+      "subtitulo": "{{prestador}} · assigned on {{fecha}} · {{tipo}} · the case reflects every progress the provider reports",
+      "estados": {
+        "in_progress": "In progress",
+        "ready_to_close": "Ready to close",
+        "closed": "Closed"
+      },
+      "acciones": {
+        "contactar": "Contact the provider",
+        "cerrar": "Close case",
+        "registrar": "Record progress"
+      },
+      "sinPrestador": {
+        "titulo": "This case has no provider yet",
+        "texto": "The follow-up starts once a provider is assigned to the claim.",
+        "asignar": "Assign provider"
+      },
+      "noEncontrado": {
+        "titulo": "We couldn't find this claim",
+        "texto": "Check the link or go back to the cases in evaluation.",
+        "volver": "Back to cases in evaluation"
+      },
+      "error": {
+        "titulo": "We couldn't load the intervention",
+        "texto": "The claims service didn't respond. Try again in a few seconds.",
+        "reintentar": "Retry"
+      },
+      "linea": {
+        "titulo": "Intervention timeline",
+        "asignado": "Assigned",
+        "asignadoDetalle": "{{fecha}} · {{analista}} · {{distancia}} km away",
+        "hecho": "{{fecha}} · recorded by {{analista}}",
+        "siguiente": "Pending · record it when the provider reports it",
+        "pendiente": "Pending",
+        "informe": "Cause: {{causa}} · estimated cost {{costo}} · {{fotos}} photos",
+        "pasos": {
+          "accepted": "Accepted by the provider",
+          "en_route": "On the way",
+          "visit_done": "Visit done and report sent",
+          "repair_authorized": "Repair authorized",
+          "repair_executed": "Repair done and closing"
+        }
+      },
+      "informe": {
+        "titulo": "Provider report",
+        "causa": "Verified cause",
+        "dano": "Damage",
+        "costo": "Repair cost",
+        "tiempo": "Execution time",
+        "dias": "{{dias}} business days",
+        "fotos": "{{fotos}} photos received by the provider",
+        "foto": "Provider photo {{numero}}",
+        "sinInforme": "The report comes with the provider's visit."
+      },
+      "prestador": {
+        "titulo": "Provider",
+        "nombre": "Name",
+        "contacto": "Contact",
+        "distancia": "Distance to the incident",
+        "distanciaValor": "{{distancia}} km"
+      },
+      "caso": {
+        "titulo": "Claim",
+        "poliza": "Policy",
+        "lugar": "Incident location",
+        "estado": "Claim status"
+      },
+      "cierre": {
+        "titulo": "Case closed",
+        "texto": "Closed on {{fecha}} by {{analista}}.",
+        "resultado": "Result",
+        "observaciones": "Notes"
+      },
+      "resultados": {
+        "repaired": "Repair completed",
+        "partially_repaired": "Partial repair",
+        "no_repair_needed": "No repair needed",
+        "not_repairable": "Not repairable"
+      },
+      "avance": {
+        "titulo": "Record progress: {{paso}}",
+        "texto": "Record the progress as the provider reported it.",
+        "fecha": "Date and time of the progress",
+        "observacion": "Note",
+        "ayudaObservacion": "Optional. What the provider reported.",
+        "causa": "Verified cause",
+        "dano": "Damage",
+        "costo": "Repair cost (COP)",
+        "dias": "Execution time (business days)",
+        "fotos": "Photos received",
+        "guardar": "Record progress",
+        "guardando": "Recording…",
+        "cancelar": "Cancel",
+        "cerrar": "Close"
+      },
+      "cerrarCaso": {
+        "titulo": "Close case {{radicado}}",
+        "texto": "Record how the intervention ended. Closing does not approve, reject or pay the indemnity.",
+        "faltan": "You can't close the case yet: {{pasos}} still has to be recorded.",
+        "resultado": "Closing result",
+        "elegir": "Choose a result",
+        "fecha": "Closing date and time",
+        "observaciones": "Notes",
+        "ayudaObservaciones": "Optional.",
+        "confirmo": "I confirm the intervention ended and that this closing does not decide the indemnity.",
+        "confirmar": "Close case",
+        "cerrando": "Closing…",
+        "cancelar": "Cancel",
+        "cerrar": "Close"
+      },
+      "campos": {
+        "required": "This field is required.",
+        "out_of_range": "The value is out of the allowed range.",
+        "invalid_format": "The value is not valid.",
+        "fecha": "The date can't be before the previous progress or in the future.",
+        "confirmacion": "Check the confirmation to close the case."
+      },
+      "errores": {
+        "step_out_of_order": "Another analyst already recorded that progress. We refreshed the timeline.",
+        "case_closed": "The case is already closed.",
+        "not_assigned": "The case no longer has an assigned provider.",
+        "claims_unavailable": "We couldn't save the change. Try again in a few seconds.",
+        "generico": "We couldn't complete the action. Try again."
       }
     }
   },

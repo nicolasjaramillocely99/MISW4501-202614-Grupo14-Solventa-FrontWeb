@@ -4280,7 +4280,8 @@
         "avisoPendiente": "Enviando la asignación al prestador…",
         "avisoEnviado": "Aviso enviado al prestador · {{fecha}}",
         "avisoDetenido": "El aviso aún no sale; el sistema lo sigue intentando.",
-        "actualizar": "Actualizar"
+        "actualizar": "Actualizar",
+        "seguimiento": "Ver seguimiento de la intervención"
       },
       "errores": {
         "location_from_app": "El caso ya tiene las coordenadas de la app: no se registra otra ubicación.",
@@ -4650,6 +4651,134 @@
         "segundos": "{{segundos}} s",
         "minutos": "{{minutos}} min",
         "minutosSegundos": "{{minutos}} min {{segundos}} s"
+      }
+    },
+    "intervencion": {
+      "volver": "Siniestro {{radicado}}",
+      "titulo": "Intervención del prestador · {{radicado}}",
+      "cargando": "Cargando la intervención…",
+      "subtitulo": "{{prestador}} · asignado el {{fecha}} · {{tipo}} · el caso refleja cada avance que reporta el prestador",
+      "estados": {
+        "in_progress": "En curso",
+        "ready_to_close": "Listo para cerrar",
+        "closed": "Cerrado"
+      },
+      "acciones": {
+        "contactar": "Contactar al prestador",
+        "cerrar": "Cerrar caso",
+        "registrar": "Registrar avance"
+      },
+      "sinPrestador": {
+        "titulo": "Este caso aún no tiene prestador",
+        "texto": "El seguimiento empieza cuando se asigna un prestador al siniestro.",
+        "asignar": "Asignar prestador"
+      },
+      "noEncontrado": {
+        "titulo": "No encontramos este siniestro",
+        "texto": "Revisa el enlace o vuelve a los casos en evaluación.",
+        "volver": "Volver a casos en evaluación"
+      },
+      "error": {
+        "titulo": "No pudimos cargar la intervención",
+        "texto": "El servicio de siniestros no respondió. Intenta de nuevo en unos segundos.",
+        "reintentar": "Reintentar"
+      },
+      "linea": {
+        "titulo": "Línea de tiempo de la intervención",
+        "asignado": "Asignado",
+        "asignadoDetalle": "{{fecha}} · {{analista}} · distancia {{distancia}} km",
+        "hecho": "{{fecha}} · registrado por {{analista}}",
+        "siguiente": "Pendiente · registra el avance cuando el prestador lo reporte",
+        "pendiente": "Pendiente",
+        "informe": "Causa: {{causa}} · costo estimado {{costo}} · {{fotos}} fotos",
+        "pasos": {
+          "accepted": "Aceptado por el prestador",
+          "en_route": "En desplazamiento",
+          "visit_done": "Visita realizada e informe enviado",
+          "repair_authorized": "Reparación autorizada",
+          "repair_executed": "Reparación ejecutada y cierre"
+        }
+      },
+      "informe": {
+        "titulo": "Informe del prestador",
+        "causa": "Causa verificada",
+        "dano": "Daño",
+        "costo": "Costo de reparación",
+        "tiempo": "Tiempo de ejecución",
+        "dias": "{{dias}} días hábiles",
+        "fotos": "{{fotos}} fotografías recibidas por el prestador",
+        "foto": "Fotografía {{numero}} del prestador",
+        "sinInforme": "El informe llega con la visita del prestador."
+      },
+      "prestador": {
+        "titulo": "Prestador",
+        "nombre": "Nombre",
+        "contacto": "Contacto",
+        "distancia": "Distancia al incidente",
+        "distanciaValor": "{{distancia}} km"
+      },
+      "caso": {
+        "titulo": "Siniestro",
+        "poliza": "Póliza",
+        "lugar": "Lugar del incidente",
+        "estado": "Estado del siniestro"
+      },
+      "cierre": {
+        "titulo": "Caso cerrado",
+        "texto": "Cerrado el {{fecha}} por {{analista}}.",
+        "resultado": "Resultado",
+        "observaciones": "Observaciones"
+      },
+      "resultados": {
+        "repaired": "Reparación completada",
+        "partially_repaired": "Reparación parcial",
+        "no_repair_needed": "No requirió reparación",
+        "not_repairable": "No reparable"
+      },
+      "avance": {
+        "titulo": "Registrar avance: {{paso}}",
+        "texto": "Registra el avance tal como lo reportó el prestador.",
+        "fecha": "Fecha y hora del avance",
+        "observacion": "Observación",
+        "ayudaObservacion": "Opcional. Lo que reportó el prestador.",
+        "causa": "Causa verificada",
+        "dano": "Daño",
+        "costo": "Costo de reparación (COP)",
+        "dias": "Tiempo de ejecución (días hábiles)",
+        "fotos": "Fotografías recibidas",
+        "guardar": "Registrar avance",
+        "guardando": "Registrando…",
+        "cancelar": "Cancelar",
+        "cerrar": "Cerrar"
+      },
+      "cerrarCaso": {
+        "titulo": "Cerrar caso {{radicado}}",
+        "texto": "Registra cómo terminó la intervención. El cierre no aprueba, rechaza ni paga la indemnización.",
+        "faltan": "Todavía no puedes cerrar el caso: falta registrar {{pasos}}.",
+        "resultado": "Resultado del cierre",
+        "elegir": "Selecciona un resultado",
+        "fecha": "Fecha y hora de cierre",
+        "observaciones": "Observaciones",
+        "ayudaObservaciones": "Opcional.",
+        "confirmo": "Confirmo que la intervención terminó y que este cierre no decide la indemnización.",
+        "confirmar": "Cerrar caso",
+        "cerrando": "Cerrando…",
+        "cancelar": "Cancelar",
+        "cerrar": "Cerrar"
+      },
+      "campos": {
+        "required": "Este dato es obligatorio.",
+        "out_of_range": "El valor está fuera del rango permitido.",
+        "invalid_format": "El valor no es válido.",
+        "fecha": "La fecha no puede ser anterior al avance previo ni estar en el futuro.",
+        "confirmacion": "Marca la confirmación para cerrar el caso."
+      },
+      "errores": {
+        "step_out_of_order": "Otro analista ya registró ese avance. Actualizamos la línea de tiempo.",
+        "case_closed": "El caso ya está cerrado.",
+        "not_assigned": "El caso ya no tiene prestador asignado.",
+        "claims_unavailable": "No pudimos guardar el cambio. Intenta de nuevo en unos segundos.",
+        "generico": "No pudimos completar la acción. Intenta de nuevo."
       }
     }
   },

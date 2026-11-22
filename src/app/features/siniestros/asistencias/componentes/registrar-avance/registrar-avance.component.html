@@ -1,0 +1,182 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-registrar-avance"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'siniestros.intervencion'"
+>
+  @if (paso(); as p) {
+    <form class="modal__contenido" (submit)="enviar($event)" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-registrar-avance" class="modal__titulo">
+          {{ t('avance.titulo', { paso: t('linea.pasos.' + p) }) }}
+        </h2>
+        <button
+          type="button"
+          class="modal__cerrar"
+          [attr.aria-label]="t('avance.cerrar')"
+          [disabled]="guardando()"
+          (click)="pedirCierre()"
+        >
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">{{ t('avance.texto') }}</p>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="avance-fecha">{{ t('avance.fecha') }}</label>
+        <input
+          id="avance-fecha"
+          class="campo__control"
+          type="datetime-local"
+          required
+          [max]="ahora()"
+          [value]="fecha()"
+          [attr.aria-invalid]="errorDe('occurred_at') ? 'true' : null"
+          [attr.aria-describedby]="errorDe('occurred_at') ? 'avance-fecha-error' : null"
+          (input)="editar('occurred_at', $any($event.target).value)"
+        />
+        @if (errorDe('occurred_at'); as codigo) {
+          <p id="avance-fecha-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+        }
+      </div>
+
+      @if (conInforme()) {
+        <div class="rejilla">
+          <div class="campo">
+            <label class="campo__etiqueta" for="avance-causa">{{ t('avance.causa') }}</label>
+            <input
+              id="avance-causa"
+              class="campo__control"
+              type="text"
+              required
+              [attr.maxlength]="maxTexto"
+              [value]="causa()"
+              [attr.aria-invalid]="errorDe('report.cause') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('report.cause') ? 'avance-causa-error' : null"
+              (input)="editar('report.cause', $any($event.target).value)"
+            />
+            @if (errorDe('report.cause'); as codigo) {
+              <p id="avance-causa-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+            }
+          </div>
+          <div class="campo">
+            <label class="campo__etiqueta" for="avance-dano">{{ t('avance.dano') }}</label>
+            <input
+              id="avance-dano"
+              class="campo__control"
+              type="text"
+              required
+              [attr.maxlength]="maxTexto"
+              [value]="dano()"
+              [attr.aria-invalid]="errorDe('report.damage') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('report.damage') ? 'avance-dano-error' : null"
+              (input)="editar('report.damage', $any($event.target).value)"
+            />
+            @if (errorDe('report.damage'); as codigo) {
+              <p id="avance-dano-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+            }
+          </div>
+          <div class="campo">
+            <label class="campo__etiqueta" for="avance-costo">{{ t('avance.costo') }}</label>
+            <input
+              id="avance-costo"
+              class="campo__control"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              required
+              [value]="costo()"
+              [attr.aria-invalid]="errorDe('report.repair_cost_minor') ? 'true' : null"
+              [attr.aria-describedby]="
+                errorDe('report.repair_cost_minor') ? 'avance-costo-error' : null
+              "
+              (input)="editar('report.repair_cost_minor', $any($event.target).value)"
+            />
+            @if (errorDe('report.repair_cost_minor'); as codigo) {
+              <p id="avance-costo-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+            }
+          </div>
+          <div class="campo">
+            <label class="campo__etiqueta" for="avance-dias">{{ t('avance.dias') }}</label>
+            <input
+              id="avance-dias"
+              class="campo__control"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="365"
+              required
+              [value]="dias()"
+              [attr.aria-invalid]="errorDe('report.repair_days') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('report.repair_days') ? 'avance-dias-error' : null"
+              (input)="editar('report.repair_days', $any($event.target).value)"
+            />
+            @if (errorDe('report.repair_days'); as codigo) {
+              <p id="avance-dias-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+            }
+          </div>
+          <div class="campo">
+            <label class="campo__etiqueta" for="avance-fotos">{{ t('avance.fotos') }}</label>
+            <input
+              id="avance-fotos"
+              class="campo__control"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="50"
+              [value]="fotos()"
+              [attr.aria-invalid]="errorDe('report.photos') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('report.photos') ? 'avance-fotos-error' : null"
+              (input)="editar('report.photos', $any($event.target).value)"
+            />
+            @if (errorDe('report.photos'); as codigo) {
+              <p id="avance-fotos-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="avance-observacion">{{
+          t('avance.observacion')
+        }}</label>
+        <textarea
+          id="avance-observacion"
+          class="campo__control campo__control--area"
+          rows="3"
+          [attr.maxlength]="maxObservacion"
+          [value]="observacion()"
+          [attr.aria-invalid]="errorDe('note') ? 'true' : null"
+          [attr.aria-describedby]="
+            errorDe('note') ? 'avance-observacion-error' : 'avance-observacion-ayuda'
+          "
+          (input)="editar('note', $any($event.target).value)"
+        ></textarea>
+        @if (errorDe('note'); as codigo) {
+          <p id="avance-observacion-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+        } @else {
+          <p id="avance-observacion-ayuda" class="modal__texto">
+            {{ t('avance.ayudaObservacion') }}
+          </p>
+        }
+      </div>
+
+      <div class="modal__acciones">
+        <button
+          type="button"
+          class="boton boton--secundario"
+          [disabled]="guardando()"
+          (click)="pedirCierre()"
+        >
+          {{ t('avance.cancelar') }}
+        </button>
+        <button type="submit" class="boton boton--primario" [disabled]="guardando()">
+          {{ guardando() ? t('avance.guardando') : t('avance.guardar') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>
