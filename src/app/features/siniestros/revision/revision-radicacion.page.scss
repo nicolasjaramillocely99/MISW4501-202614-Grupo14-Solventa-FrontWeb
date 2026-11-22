@@ -1,4 +1,4 @@
-// S8 · Revisión de la radicación: datos, soportes y devolución a la izquierda; póliza, «Al aprobar» y revisiones a la derecha.
+// S8 · Revisión de la radicación: datos, soportes, aprobación y devolución a la izquierda; póliza, «Al aprobar» y revisiones a la derecha.
 .pagina {
   display: flex;
   flex-direction: column;
@@ -183,10 +183,29 @@
   justify-content: flex-end;
 }
 
-.encabezado__acciones {
+// Barra de aprobación al final de la columna: el texto a la izquierda y el botón a la derecha; en pantallas angostas
+// el botón baja y ocupa el ancho.
+.decision {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--espacio-12);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+
+  .boton {
+    flex-shrink: 0;
+  }
+}
+
+.decision__texto {
+  flex: 1 1 20rem;
+}
+
+@media (max-width: 40rem) {
+  .decision .boton {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .formulario {

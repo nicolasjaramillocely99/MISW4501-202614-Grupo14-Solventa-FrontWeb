@@ -3722,7 +3722,6 @@
         "mobile": "la app móvil"
       },
       "acciones": {
-        "devolver": "Devolver al cliente",
         "aprobar": "Aprobar y enviar a evaluación",
         "aprobarDeshabilitado": "Para aprobar, todos los soportes deben estar válidos y no debe faltar ninguno. Si alguno es ilegible o falta, devuelve la radicación al cliente."
       },
@@ -3808,13 +3807,18 @@
       },
       "poliza": {
         "titulo": "Póliza",
-        "estado": "Póliza y estado",
+        "estado": "Estado",
+        "estadoVence": "{{estado}} · vence {{fecha}}",
         "cobertura": "Cobertura aplicable",
         "deducible": "Deducible",
         "deducibleValor": "{{pct}} %",
         "previos": "Siniestros previos",
         "sinPrevios": "Ninguno",
         "previo": "{{estado}} ({{tipo}}, {{fecha}})"
+      },
+      "aprobacion": {
+        "titulo": "Aprobar la radicación",
+        "texto": "Si revisaste los datos y todos los soportes están válidos, envía el caso a evaluación."
       },
       "alAprobar": {
         "titulo": "Al aprobar",

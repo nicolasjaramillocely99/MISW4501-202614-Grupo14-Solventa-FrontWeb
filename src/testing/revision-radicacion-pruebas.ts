@@ -67,6 +67,7 @@ export const RADICACION_EN_REVISION_DTO: RadicacionEnRevisionDto = {
     product: 'Autos',
     insured_object: 'KJT-482',
     status: 'active',
+    valid_to: '2026-10-02T17:00:00Z',
     coverages: [
       {
         incident: 'collision',

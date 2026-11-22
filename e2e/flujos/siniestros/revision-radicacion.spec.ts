@@ -85,8 +85,9 @@ test.describe('Revisión de la radicación por el asesor (HU-W2.1-03)', () => {
       page.getByRole('button', { name: 'Aprobar y enviar a evaluación' }),
     ).toBeDisabled();
 
-    await page.getByRole('button', { name: 'Devolver al cliente' }).click();
-    await expect(page.getByLabel('Motivo')).toBeFocused();
+    await expect(page.getByText('Activa · vence 02/10/2026')).toBeVisible();
+    // Las decisiones están al final de la página: el encabezado ya no tiene botones.
+    await expect(page.locator('header.encabezado').getByRole('button')).toHaveCount(0);
     await page.getByLabel('Motivo').selectOption('illegible_or_incomplete_supports');
     await page
       .getByLabel('Mensaje para el cliente')

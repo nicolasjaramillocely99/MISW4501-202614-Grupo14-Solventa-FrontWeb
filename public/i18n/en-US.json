@@ -3722,7 +3722,6 @@
         "mobile": "the mobile app"
       },
       "acciones": {
-        "devolver": "Return to customer",
         "aprobar": "Approve and send to evaluation",
         "aprobarDeshabilitado": "To approve, every support must be valid and none may be missing. If one is illegible or missing, return the filing to the customer."
       },
@@ -3808,13 +3807,18 @@
       },
       "poliza": {
         "titulo": "Policy",
-        "estado": "Policy and status",
+        "estado": "Status",
+        "estadoVence": "{{estado}} · expires {{fecha}}",
         "cobertura": "Applicable coverage",
         "deducible": "Deductible",
         "deducibleValor": "{{pct}} %",
         "previos": "Previous claims",
         "sinPrevios": "None",
         "previo": "{{estado}} ({{tipo}}, {{fecha}})"
+      },
+      "aprobacion": {
+        "titulo": "Approve the filing",
+        "texto": "If you reviewed the data and every support is valid, send the claim to evaluation."
       },
       "alAprobar": {
         "titulo": "When approved",
