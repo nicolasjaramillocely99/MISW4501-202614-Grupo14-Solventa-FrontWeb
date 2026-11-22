@@ -67,7 +67,7 @@ export const RADICACION = {
     current: null,
     history: [],
   },
-  policy: { ...POLIZA, status: 'active', coverages: [COBERTURA] },
+  policy: { ...POLIZA, status: 'active', valid_to: '2026-10-02T17:00:00Z', coverages: [COBERTURA] },
   coverage: COBERTURA,
   holder: {
     full_name: 'Carolina Pérez Ruiz',

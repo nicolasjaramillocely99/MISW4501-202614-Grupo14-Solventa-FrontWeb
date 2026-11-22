@@ -52,33 +52,7 @@
               }}
             </p>
           </div>
-          @if (revisable()) {
-            <div class="encabezado__acciones">
-              <button
-                type="button"
-                class="boton boton--secundario"
-                [disabled]="enviando()"
-                (click)="irADevolucion()"
-              >
-                {{ t('revision.acciones.devolver') }}
-              </button>
-              <button
-                type="button"
-                class="boton boton--primario"
-                [disabled]="!aprobable() || enviando()"
-                [attr.aria-describedby]="aprobable() ? null : 'ayuda-aprobar'"
-                (click)="aprobar()"
-              >
-                <svg lucideCheck [size]="20" aria-hidden="true"></svg
-                >{{ t('revision.acciones.aprobar') }}
-              </button>
-            </div>
-          }
         </header>
-
-        @if (revisable() && !aprobable()) {
-          <p id="ayuda-aprobar" class="estado">{{ t('revision.acciones.aprobarDeshabilitado') }}</p>
-        }
 
         @if (resultado(); as res) {
           <div class="aviso aviso--exito" role="status">
@@ -169,6 +143,34 @@
             </section>
 
             @if (revisable()) {
+              <!-- Las decisiones van al final: el asesor recorre los datos y los soportes antes de aprobar o devolver. -->
+              <section class="tarjeta decision" aria-labelledby="titulo-aprobacion">
+                <div class="decision__texto">
+                  <h2 id="titulo-aprobacion" class="seccion__titulo">
+                    {{ t('revision.aprobacion.titulo') }}
+                  </h2>
+                  <p id="ayuda-aprobar" class="estado">
+                    {{
+                      t(
+                        aprobable()
+                          ? 'revision.aprobacion.texto'
+                          : 'revision.acciones.aprobarDeshabilitado'
+                      )
+                    }}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  class="boton boton--primario"
+                  [disabled]="!aprobable() || enviando()"
+                  aria-describedby="ayuda-aprobar"
+                  (click)="aprobar()"
+                >
+                  <svg lucideCheck [size]="20" aria-hidden="true"></svg
+                  >{{ t('revision.acciones.aprobar') }}
+                </button>
+              </section>
+
               <section class="tarjeta" aria-labelledby="titulo-devolucion">
                 <h2 id="titulo-devolucion" class="seccion__titulo">
                   {{ t('revision.devolucion.titulo') }}
@@ -278,7 +280,20 @@
                 <dl class="datos datos--uno">
                   <div>
                     <dt>{{ t('revision.poliza.estado') }}</dt>
-                    <dd>{{ p.id }} · {{ t('evaluacion.poliza.estados.' + p.estado) }}</dd>
+                    <dd>
+                      <app-insignia-estado [tono]="tonoPoliza(p.estado)">
+                        @if (p.vigenciaHasta) {
+                          {{
+                            t('revision.poliza.estadoVence', {
+                              estado: t('evaluacion.poliza.estados.' + p.estado),
+                              fecha: fechaCorta(p.vigenciaHasta),
+                            })
+                          }}
+                        } @else {
+                          {{ t('evaluacion.poliza.estados.' + p.estado) }}
+                        }
+                      </app-insignia-estado>
+                    </dd>
                   </div>
                   <div>
                     <dt>{{ t('revision.poliza.cobertura') }}</dt>

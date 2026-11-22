@@ -46,6 +46,7 @@ describe('rutas de la prioridad del siniestro (HU-W2.2-01, S12)', () => {
             consultarOpcionesRadicacion: () => NEVER,
             listarRevisiones: () => NEVER,
             consultarRevision: () => NEVER,
+            listarBandejaAsistencias: () => NEVER,
           },
         },
       ],
@@ -119,12 +120,12 @@ describe('rutas de la prioridad del siniestro (HU-W2.2-01, S12)', () => {
     expect(url()).toBe('/acceso/no-autorizado');
   });
 
-  it('el menú de operaciones lleva /siniestros/asistencias, que aún no existe, al inicio y no a «acceso no autorizado»', async () => {
+  it('el menú de operaciones lleva a /siniestros/asistencias (HU-W2.3-03) y no a «acceso no autorizado»', async () => {
     await iniciarSesionComo('operaciones');
 
     await harness.navigateByUrl('/siniestros/asistencias');
 
-    expect(url()).toBe('/inicio');
+    expect(url()).toBe('/siniestros/asistencias');
   });
 
   it('el menú del asesor lleva a las radicaciones por revisar (HU-W2.1-03) y el detalle es S8', async () => {

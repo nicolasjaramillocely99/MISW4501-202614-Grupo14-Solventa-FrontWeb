@@ -1,0 +1,171 @@
+// O9b · Detalle de la asistencia: mapa, datos y cierre o despacho a la izquierda; llamada, asegurado e historial a la
+// derecha; prestadores cercanos debajo. En pantallas angostas, una columna en ese orden.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  align-self: flex-start;
+  min-height: var(--control-alto);
+  font-weight: 500;
+  color: var(--color-azul-700);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-16);
+}
+
+.encabezado__texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  min-width: 16rem;
+}
+
+.encabezado__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.encabezado__resumen,
+.estado,
+.aviso p {
+  margin: 0;
+}
+
+.encabezado__resumen,
+.estado {
+  color: var(--color-texto-secundario);
+}
+
+.encabezado__acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--espacio-8);
+}
+
+.encabezado__botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-12);
+}
+
+.encabezado__motivo {
+  margin: 0;
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.cuerpo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-24);
+}
+
+.cuerpo__principal,
+.cuerpo__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  min-width: 0;
+}
+
+.cuerpo__principal {
+  flex: 2 1 36rem;
+}
+
+.cuerpo__lateral {
+  flex: 1 1 18rem;
+}
+
+.ubicacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-16);
+}
+
+.ubicacion__datos,
+.lateral__datos {
+  display: grid;
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.ubicacion__datos {
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.ubicacion__valor {
+  font-variant-numeric: tabular-nums;
+}
+
+.ubicacion__nota,
+.lateral__texto {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.lateral__titulo {
+  margin: 0 0 var(--espacio-12);
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.cerrada__nota {
+  grid-column: 1 / -1;
+}
+
+.nota {
+  padding: var(--espacio-24);
+  border-left: 4px solid var(--color-azul-700);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-azul-50);
+}

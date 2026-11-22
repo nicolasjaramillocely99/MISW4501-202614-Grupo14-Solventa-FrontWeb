@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { rolGuard } from '@core/auth/guards/rol.guard';
 
 import { AsignacionPrestadorPage } from './asistencias/asignacion-prestador.page';
+import { BandejaAsistenciasPage } from './asistencias/bandeja-asistencias.page';
+import { DetalleAsistenciaPage } from './asistencias/detalle-asistencia.page';
 import { CorreccionRadicacionPage } from './correccion/correccion-radicacion.page';
 import { PrestadoresPage } from './asistencias/prestadores.page';
 import { CasosEvaluacionPage } from './evaluacion/casos-evaluacion.page';
@@ -23,10 +25,11 @@ import { PrioridadSiniestroPage } from './triage/prioridad-siniestro.page';
  * la evaluación, aprobación y pago (HU-W2.2-03): los casos en evaluación del analista y la evaluación de un caso (O6
  * y O6b), y la revisión del asesor (HU-W2.1-03): las radicaciones por revisar y la revisión de una (S8), y la asignación
  * del prestador más cercano (HU-W2.3-01): «Asignar prestador» de un caso (O7 y O7b) y la administración de prestadores,
- * y la edición de la radicación devuelta del asegurado (HU-W2.1-04, A9, `:id/corregir`).
+ * y la edición de la radicación devuelta del asegurado (HU-W2.1-04, A9, `:id/corregir`), y la atención de solicitudes de
+ * asistencia entrantes (HU-W2.3-03): la bandeja «Asistencias en sitio» (O9) y el detalle de una solicitud (O9b).
  *
- * El orden importa: los grupos de operaciones (`cola`, `evaluacion`, `:id/evaluar`, `:id/asignar-prestador` y
- * `prestadores`) y del asesor (`revision`) van antes del grupo del asegurado
+ * El orden importa: los grupos de operaciones (`cola`, `evaluacion`, `:id/evaluar`, `:id/asignar-prestador`,
+ * `prestadores` y `asistencias`) y del asesor (`revision`) van antes del grupo del asegurado
  * y `:id` va después de `radicar` y `mis-siniestros`; si no, `:id` capturaría `cola` y el guard del asegurado
  * rechazaría al analista.
  */
@@ -68,10 +71,16 @@ export const SINIESTROS_ROUTES: Routes = [
     canActivate: [rolGuard('operaciones')],
     component: PrestadoresPage,
   },
-  // Entrada del menú cuya historia todavía no existe: las asistencias de operaciones (HU-W2.3-03). Lleva al inicio del
-  // rol, como las demás rutas pendientes; sin esto `:id` la captura y el guard del asegurado muestra «acceso no
-  // autorizado».
-  { path: 'asistencias', redirectTo: '/inicio', pathMatch: 'prefix' },
+  // HU-W2.3-03: las asistencias en sitio de operaciones, la bandeja (O9) y el detalle de una solicitud (O9b); antes del
+  // grupo del asegurado, para que su `:id` no las capture.
+  {
+    path: 'asistencias',
+    canActivateChild: [rolGuard('operaciones')],
+    children: [
+      { path: '', component: BandejaAsistenciasPage },
+      { path: ':id', component: DetalleAsistenciaPage },
+    ],
+  },
   {
     path: '',
     canActivateChild: [rolGuard('asegurado')],

@@ -1,0 +1,35 @@
+<ng-container *transloco="let t; prefix: 'siniestros.asistencias.detalle.llamada'">
+  @switch (estado()) {
+    @case ('in_call') {
+      <section class="tarjeta llamada llamada--en-curso" aria-labelledby="titulo-llamada">
+        <div class="llamada__encabezado">
+          <svg lucidePhoneCall [size]="20" aria-hidden="true"></svg>
+          <h2 id="titulo-llamada" class="llamada__titulo">{{ t('enCurso') }}</h2>
+          @if (cronometro(); as tiempo) {
+            <span
+              class="llamada__cronometro"
+              role="timer"
+              aria-live="off"
+              [attr.aria-label]="t('duracion')"
+              >{{ tiempo }}</span
+            >
+          }
+        </div>
+        @if (atendidaPor(); as analista) {
+          <p class="llamada__texto">
+            {{ t('atendidaPor', { analista: analista.nombre ?? analista.correo }) }}
+          </p>
+        }
+      </section>
+    }
+    @case ('new') {
+      <section class="tarjeta llamada" aria-labelledby="titulo-llamada">
+        <div class="llamada__encabezado">
+          <svg lucidePhoneIncoming [size]="20" aria-hidden="true"></svg>
+          <h2 id="titulo-llamada" class="llamada__titulo">{{ t('entrante') }}</h2>
+        </div>
+        <p class="llamada__texto">{{ t('entranteTexto') }}</p>
+      </section>
+    }
+  }
+</ng-container>

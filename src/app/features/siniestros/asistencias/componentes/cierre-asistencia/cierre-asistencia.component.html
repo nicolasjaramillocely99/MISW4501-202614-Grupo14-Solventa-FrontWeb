@@ -1,0 +1,85 @@
+<form
+  class="tarjeta cierre"
+  [id]="id"
+  aria-labelledby="titulo-cierre-asistencia"
+  (submit)="enviar($event)"
+  novalidate
+  *transloco="let t; prefix: 'siniestros'"
+>
+  <div>
+    <h2 id="titulo-cierre-asistencia" class="cierre__titulo">
+      {{ t('asistencias.detalle.cierre.titulo') }}
+    </h2>
+    <p class="cierre__texto">{{ t('asistencias.detalle.cierre.texto') }}</p>
+  </div>
+
+  @let p = problemas();
+  <div class="campo">
+    <label class="campo__etiqueta" for="cierre-motivo">{{
+      t('asistencias.detalle.cierre.motivo')
+    }}</label>
+    <select
+      #selector
+      id="cierre-motivo"
+      class="campo__control"
+      required
+      [disabled]="enviando()"
+      [attr.aria-invalid]="p.motivo ? 'true' : null"
+      [attr.aria-describedby]="p.motivo ? 'cierre-motivo-error' : null"
+      (change)="escribir('motivo', $any($event.target).value)"
+      (blur)="tocar('motivo')"
+    >
+      <option value="" [selected]="formulario().motivo === ''">
+        {{ t('asistencias.detalle.cierre.seleccionar') }}
+      </option>
+      @for (motivo of motivos(); track motivo) {
+        <option [value]="motivo" [selected]="formulario().motivo === motivo">
+          {{ nombreMotivo(t, motivo) }}
+        </option>
+      }
+    </select>
+    @if (p.motivo; as problema) {
+      <p id="cierre-motivo-error" class="campo__error">
+        {{ t('asistencias.detalle.cierre.errores.motivo.' + problema) }}
+      </p>
+    }
+  </div>
+
+  <div class="campo">
+    <label class="campo__etiqueta" for="cierre-nota">
+      {{ t('asistencias.detalle.cierre.nota') }}
+      <span class="cierre__requisito" [class.cierre__requisito--obligatoria]="notaObligatoria()">
+        ·
+        {{
+          notaObligatoria()
+            ? t('asistencias.detalle.cierre.obligatoria')
+            : t('asistencias.detalle.cierre.opcional')
+        }}
+      </span>
+    </label>
+    <textarea
+      #nota
+      id="cierre-nota"
+      class="campo__control cierre__nota"
+      rows="3"
+      [maxLength]="maximo"
+      [required]="notaObligatoria()"
+      [disabled]="enviando()"
+      [value]="formulario().nota"
+      [attr.aria-invalid]="p.nota ? 'true' : null"
+      [attr.aria-describedby]="
+        p.nota ? 'cierre-nota-error cierre-nota-contador' : 'cierre-nota-contador'
+      "
+      (input)="escribir('nota', $any($event.target).value)"
+      (blur)="tocar('nota')"
+    ></textarea>
+    <p id="cierre-nota-contador" class="cierre__contador">
+      {{ t('asistencias.detalle.cierre.contador', { cantidad: largoNota(), maximo }) }}
+    </p>
+    @if (p.nota; as problema) {
+      <p id="cierre-nota-error" class="campo__error">
+        {{ t('asistencias.detalle.cierre.errores.nota.' + problema) }}
+      </p>
+    }
+  </div>
+</form>

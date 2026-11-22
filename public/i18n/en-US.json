@@ -3857,7 +3857,6 @@
         "mobile": "the mobile app"
       },
       "acciones": {
-        "devolver": "Return to customer",
         "aprobar": "Approve and send to evaluation",
         "aprobarDeshabilitado": "To approve, every support must be valid and none may be missing. If one is illegible or missing, return the filing to the customer."
       },
@@ -3943,13 +3942,18 @@
       },
       "poliza": {
         "titulo": "Policy",
-        "estado": "Policy and status",
+        "estado": "Status",
+        "estadoVence": "{{estado}} · expires {{fecha}}",
         "cobertura": "Applicable coverage",
         "deducible": "Deductible",
         "deducibleValor": "{{pct}} %",
         "previos": "Previous claims",
         "sinPrevios": "None",
         "previo": "{{estado}} ({{tipo}}, {{fecha}})"
+      },
+      "aprobacion": {
+        "titulo": "Approve the filing",
+        "texto": "If you reviewed the data and every support is valid, send the claim to evaluation."
       },
       "alAprobar": {
         "titulo": "When approved",
@@ -4103,7 +4107,17 @@
         "sur": "S",
         "este": "E",
         "oeste": "W"
-      }
+      },
+      "regionSolicitudes": "Map of the open requests",
+      "leyendaSolicitudes": {
+        "ninguna": "No open request has a location",
+        "una": "1 open request with a location",
+        "varias": "{{cantidad}} open requests with a location"
+      },
+      "asegurado": "Insured · ±{{precision}} m",
+      "aseguradoSinPrecision": "Insured",
+      "aseguradoPorVoz": "Insured · by voice",
+      "regionAsistencia": "Map of the insured and nearby providers"
     },
     "especialidades": {
       "vehicle_assessment": "Vehicle assessment",
@@ -4111,7 +4125,9 @@
       "plumbing": "Plumbing",
       "damp_proofing": "Damp proofing",
       "painting": "Painting",
-      "bodywork": "Bodywork"
+      "bodywork": "Bodywork",
+      "towing": "Tow truck",
+      "roadside_assistance": "Roadside assistance"
     },
     "asignacion": {
       "volver": "Claim {{radicado}}",
@@ -4331,6 +4347,309 @@
         "cancelar": "Cancel",
         "error": "We could not save the availability. Try again.",
         "cerrar": "Close"
+      }
+    },
+    "asistencias": {
+      "bandeja": {
+        "titulo": "On-site assistance",
+        "descripcion": "Requests sent from the app with the location of the insured. Handle them during the call and dispatch the nearest provider the system suggests.",
+        "actualizar": "Refresh",
+        "actualizado": "Updated at {{hora}}",
+        "refrescoFallido": "We could not refresh the inbox; showing the last reading.",
+        "reintentar": "Try again",
+        "cargando": "Loading the assistance requests…",
+        "error": {
+          "titulo": "We could not load the assistance requests",
+          "texto": "The claims service did not respond. Try again in a few seconds."
+        },
+        "indicadores": {
+          "etiqueta": "Today's indicators",
+          "nuevas": "New",
+          "nuevasDetalle": "Incoming calls",
+          "despachadas": "Dispatched today",
+          "despachadasDetalle": "With a provider dispatched",
+          "tiempoMedio": "Mean dispatch time",
+          "sinDespachos": "No dispatches today",
+          "objetivo": "Target: under {{objetivo}}",
+          "fueraDeObjetivo": "Above the target"
+        },
+        "sinGps": {
+          "titulo": "Requests without GPS",
+          "texto": "If the insured cannot get a satellite signal or does not grant the permission, the request arrives without coordinates and the call goes ahead: record the location they tell you.",
+          "pendientes": {
+            "una": "There is 1 request without a recorded location.",
+            "varias": "There are {{cantidad}} requests without a recorded location."
+          }
+        },
+        "leyenda": "Assistance requests, from the most recent to the oldest",
+        "columnas": {
+          "solicitud": "Request",
+          "asegurado": "Insured",
+          "poliza": "Policy",
+          "ubicacion": "Location",
+          "hora": "Time",
+          "estado": "Status",
+          "acciones": "Actions"
+        },
+        "sinNombre": "No name",
+        "ubicacion": {
+          "compartida": "Location shared from the phone",
+          "precision": "±{{precision}} m",
+          "sinGps": "No GPS · location by voice"
+        },
+        "conAnalista": "with {{analista}}",
+        "acciones": {
+          "atender": "Handle",
+          "continuar": "Continue",
+          "ver": "View",
+          "atendiendo": "Handling…",
+          "atenderEtiqueta": "Handle {{numero}}",
+          "continuarEtiqueta": "Continue {{numero}}",
+          "verEtiqueta": "View {{numero}}"
+        },
+        "avisos": {
+          "noAbierta": "Another analyst already dispatched or closed that request. The inbox was refreshed.",
+          "noAtendida": "We could not handle the request. Try again."
+        },
+        "vacia": "There are no assistance requests",
+        "mapa": {
+          "titulo": "Map of the open requests"
+        }
+      },
+      "detalle": {
+        "cargando": "Loading the assistance request…",
+        "volver": "Assistance",
+        "titulo": "Assistance {{numero}}",
+        "subtitulo": {
+          "recibidaHoy": "received today at {{hora}}",
+          "recibidaEl": "received on {{fecha}} at {{hora}}",
+          "enLlamada": "call in progress"
+        },
+        "actualizar": "Refresh",
+        "acciones": {
+          "atender": "Attend",
+          "atendiendo": "Attending…",
+          "continuar": "Take over the call",
+          "cerrar": "Close request",
+          "cerrando": "Closing…",
+          "despacharSugerido": "Dispatch suggested provider",
+          "enLlamadaCon": "On a call with {{analista}}"
+        },
+        "sinDespacho": {
+          "sinNecesidad": "Record the need to see the suggested provider.",
+          "sinUbicacion": "Record the location to see the suggested provider.",
+          "agotada": "There is no provider available to dispatch."
+        },
+        "noEncontrada": {
+          "titulo": "We couldn't find this request",
+          "texto": "The link may be incomplete or the request may not exist.",
+          "volver": "Back to assistance"
+        },
+        "error": {
+          "titulo": "We couldn't load the request",
+          "texto": "The claims service did not respond. Try again in a few seconds.",
+          "reintentar": "Retry"
+        },
+        "errores": {
+          "assistance_not_open": "Another analyst already dispatched or closed this request. The view was refreshed.",
+          "assistance_not_attended": "Attend the request before continuing. The view was refreshed.",
+          "location_from_app": "This request already has the phone's location. The view was refreshed.",
+          "need_not_for_line": "That need does not match the policy line. The view was refreshed.",
+          "need_missing": "Record the need before dispatching. The view was refreshed.",
+          "location_missing": "Record the location before dispatching. The view was refreshed.",
+          "provider_not_eligible": "That provider is no longer available: check the updated suggestion.",
+          "validation_failed": "Check the data and try again.",
+          "lectura": "We couldn't refresh the request; showing the last reading.",
+          "generico": "We couldn't save the change. Try again."
+        },
+        "llamada": {
+          "enCurso": "Call in progress",
+          "duracion": "Call duration",
+          "atendidaPor": "Handled by {{analista}}",
+          "entrante": "Incoming call",
+          "entranteTexto": "Attend the request to record the need and dispatch."
+        },
+        "asegurado": {
+          "titulo": "Insured",
+          "nombre": "Name",
+          "poliza": "Policy",
+          "vehiculo": "Vehicle",
+          "inmueble": "Property",
+          "objeto": "Insured object"
+        },
+        "alDespachar": {
+          "titulo": "On dispatch",
+          "texto": "The provider receives the case with the insured's location and the request becomes Dispatched. The analyst, the time of attention and the dispatched provider are recorded."
+        },
+        "ubicacion": {
+          "titulo": "Location of the insured",
+          "coordenadas": "Coordinates",
+          "precision": "accuracy {{precision}} m",
+          "porVoz": "Given by voice · recorded by {{analista}} {{hora}}",
+          "sinGps": "No GPS",
+          "atiendeParaUbicar": "Attend the request to record the location given to you by voice.",
+          "corregir": "Correct location",
+          "horaUtc": "Request time (UTC)",
+          "necesidad": "Reported need",
+          "especialidad": "Required specialty",
+          "prestadoresNoUbicados": "We couldn't place the providers on the map: use the nearby providers table."
+        },
+        "necesidad": {
+          "etiqueta": "Reported need",
+          "seleccionar": "Select the need",
+          "requerida": "Choose the need.",
+          "registrar": "Record",
+          "registrando": "Recording…",
+          "registrada": "Recorded by {{analista}} {{hora}}",
+          "cambiar": "Change",
+          "cancelar": "Cancel",
+          "sinNecesidades": "No on-site assistance for this policy: close it with a reason.",
+          "atiendeParaRegistrar": "Attend the request to record it.",
+          "politicaCaida": "We couldn't load the needs.",
+          "reintentar": "Retry"
+        },
+        "candidatos": {
+          "titulo": "Nearby providers",
+          "criterio": "Same distance, availability and specialty criteria as provider assignment.",
+          "sinNecesidad": "Choose the need to see the suggested providers.",
+          "sinUbicacion": "Record the location to see the suggested providers.",
+          "agotada": {
+            "titulo": "No providers available within {{radio}} km",
+            "intentoUno": "{{radio}} km · 1 available",
+            "intentoVarios": "{{radio}} km · {{cantidad}} available",
+            "intentos": "Searches performed",
+            "buscarDeNuevo": "Search again",
+            "cerrarSinPrestador": "Close as “No provider available”"
+          },
+          "leyenda": "Providers that can be dispatched, from nearest to farthest",
+          "columnas": {
+            "prestador": "Provider",
+            "especialidad": "Specialty",
+            "distancia": "Distance",
+            "llegada": "Estimated arrival",
+            "sugerido": "Suggestion",
+            "accion": "Action",
+            "disponibilidad": "Availability"
+          },
+          "km": "{{distancia}} km",
+          "minutos": "{{minutos}} min",
+          "despachosHoy": {
+            "ninguno": "No dispatches today",
+            "uno": "1 dispatch today",
+            "varios": "{{cantidad}} dispatches today"
+          },
+          "sugerido": "Suggested",
+          "despachar": "Dispatch",
+          "despacharA": "Dispatch {{nombre}}",
+          "otros": {
+            "resumen": "Other providers with the specialty ({{cantidad}}) · cannot be dispatched",
+            "leyenda": "Other providers with the specialty, which cannot be dispatched"
+          }
+        },
+        "confirmarDespacho": {
+          "titulo": "Dispatch {{nombre}}?",
+          "texto": "The provider receives the case by email with the insured's location. The dispatch cannot be undone.",
+          "distancia": "Distance",
+          "llegada": "Estimated arrival",
+          "necesidad": "Need",
+          "ubicacion": "Location to be shared",
+          "ubicacionPrecision": "{{coordenadas}} · accuracy {{precision}} m",
+          "ubicacionVoz": "{{direccion}} · {{coordenadas}} (given by voice)",
+          "cancelar": "Cancel",
+          "confirmar": "Confirm dispatch",
+          "despachando": "Dispatching…",
+          "cerrar": "Close"
+        },
+        "cierre": {
+          "titulo": "Close by other means",
+          "texto": "If the request was resolved without dispatching a provider, choose the reason and use “Close request”.",
+          "motivo": "Resolution reason",
+          "seleccionar": "Select a reason",
+          "nota": "Note",
+          "obligatoria": "Required",
+          "opcional": "Optional",
+          "contador": "{{cantidad}}/{{maximo}} characters",
+          "errores": {
+            "motivo": {
+              "requerido": "Choose the resolution reason."
+            },
+            "nota": {
+              "requerido": "Write a note: it is required with “Other”.",
+              "longitud": "The note must be between 3 and 500 characters.",
+              "formato": "The note has characters that are not allowed."
+            }
+          }
+        },
+        "cerrada": {
+          "titulo": "Request closed",
+          "motivo": "Reason",
+          "nota": "Note",
+          "cerrada": "Closed",
+          "cerradaValor": "{{fecha}} by {{analista}}"
+        },
+        "despacho": {
+          "titulo": "Dispatched provider",
+          "correo": "Email",
+          "telefono": "Phone",
+          "distancia": "Distance",
+          "llegada": "Estimated arrival",
+          "necesidad": "Need",
+          "despachada": "Dispatched",
+          "despachadaValor": "{{fecha}} by {{analista}}",
+          "ubicacion": "Shared location",
+          "ubicacionVoz": "given by voice",
+          "sugeridoSistema": "Suggested by the system",
+          "sugeriaOtro": "The system suggested {{nombre}}",
+          "avisoPendiente": "Sending the dispatch to the provider…",
+          "avisoEnviado": "Notice sent to the provider · {{hora}}",
+          "avisoDetenido": "The notice to the provider is still pending; the system keeps retrying. Refresh to see its status.",
+          "actualizar": "Refresh"
+        },
+        "historial": {
+          "titulo": "History",
+          "vacio": "No decisions recorded yet.",
+          "acciones": {
+            "attended": "{{quien}} attended the request",
+            "taken_over": "{{quien}} took over the request from {{desde}}",
+            "need_recorded": "{{quien}} recorded the need {{necesidad}}",
+            "voice_location_recorded": "{{quien}} recorded the location given by voice",
+            "dispatched": "{{quien}} dispatched {{prestador}}",
+            "closed": "{{quien}} closed the request: {{motivo}}",
+            "otra": "{{quien}} · {{accion}}"
+          }
+        }
+      },
+      "estados": {
+        "new": "New",
+        "in_call": "On call",
+        "dispatched": "Dispatched",
+        "closed": "Closed"
+      },
+      "necesidades": {
+        "towing": "Tow truck",
+        "battery": "Battery",
+        "flat_tire": "Flat tire",
+        "fuel": "Fuel",
+        "vehicle_lockout": "Keys locked inside the vehicle",
+        "plumbing_emergency": "Plumbing emergency"
+      },
+      "motivosCierre": {
+        "resolved_by_phone": "Solved during the call",
+        "duplicate": "Repeated request",
+        "cancelled_by_insured": "Cancelled by the insured",
+        "not_covered": "Not covered by the policy",
+        "no_provider_available": "No provider available",
+        "other": "Other"
+      },
+      "motivosSinUbicacion": {
+        "permission_denied": "Location permission denied",
+        "location_disabled": "Location turned off",
+        "no_fix": "No GPS signal"
+      },
+      "duracion": {
+        "segundos": "{{segundos}} s",
+        "minutos": "{{minutos}} min",
+        "minutosSegundos": "{{minutos}} min {{segundos}} s"
       }
     }
   },
