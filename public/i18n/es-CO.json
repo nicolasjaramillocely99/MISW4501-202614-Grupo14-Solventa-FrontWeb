@@ -1427,7 +1427,8 @@
         "noRenovada": "No renovada",
         "finalizada": "Finalizada",
         "pagoPendiente": "Pago pendiente",
-        "canceladaNoPago": "No pago"
+        "canceladaNoPago": "No pago",
+        "cancelada": "Cancelada"
       },
       "acciones": {
         "renovar": "Renovar",
@@ -1473,7 +1474,9 @@
         "estado": "Estado",
         "acciones": "Acciones",
         "valorAsegurado": "Asegurado por {{monto}}",
-        "canceladaSinReembolso": "Cancelada por no pago · sin reembolso"
+        "canceladaSinReembolso": "Cancelada por no pago · sin reembolso",
+        "canceladaConReembolso": "Cancelada a solicitud · reembolso {{monto}}",
+        "canceladaAPedidoSinReembolso": "Cancelada a solicitud · sin reembolso"
       },
       "avisoPago": {
         "titulo": "Tu póliza {{id}} tiene un pago pendiente",
@@ -2729,7 +2732,8 @@
         "renovada": "Renovada",
         "noRenovada": "No renovada",
         "canceladaNoPago": "Cancelada por no pago",
-        "finalizada": "Finalizada"
+        "finalizada": "Finalizada",
+        "cancelada": "Cancelada"
       },
       "cancelada": {
         "titulo": "Póliza cancelada por incumplimiento de pago",
@@ -2823,6 +2827,137 @@
         "sinDatos": "Aquí verás las solicitudes de modificación de esta póliza.",
         "cargando": "Cargando las solicitudes…",
         "error": "No pudimos cargar las solicitudes de la póliza."
+      },
+      "canceladaAPedido": {
+        "titulo": "Vida hipotecario · {{id}}",
+        "estado": "Cancelada",
+        "subtitulo": "Cancelada a solicitud del asegurado el {{fecha}} · Reembolso prorrateado registrado",
+        "subtituloSinReembolso": "Cancelada a solicitud del asegurado el {{fecha}} · Sin reembolso",
+        "volver": "Volver a mis pólizas"
+      }
+    },
+    "cancelacion": {
+      "volver": "Póliza {{id}}",
+      "titulo": "Cancelar póliza de vida hipotecario",
+      "subtitulo": "{{id}} · Vigencia {{desde}} → {{hasta}} · Prima mensual",
+      "conservar": "Conservar mi póliza",
+      "confirmar": "Confirmar cancelación",
+      "confirmando": "Cancelando…",
+      "cargando": "Calculando tu reembolso…",
+      "error": {
+        "titulo": "No pudimos calcular tu reembolso",
+        "texto": "Intenta de nuevo en unos segundos. Tu póliza sigue activa y no cambió nada.",
+        "reintentar": "Reintentar"
+      },
+      "noEncontrada": {
+        "titulo": "No encontramos esta póliza",
+        "texto": "La póliza no existe o no está a tu nombre. Revisa tus pólizas en «Mis pólizas»."
+      },
+      "renovacion": {
+        "titulo": "Esta póliza no se puede cancelar por ahora",
+        "texto": "Tienes una renovación aceptada para el próximo periodo. Mientras esté en curso no puedes cancelar desde aquí; si necesitas un cambio, usa «Solicitar modificación»."
+      },
+      "noVigente": {
+        "titulo": "Esta póliza no está vigente",
+        "texto": "Solo se cancela una póliza mientras su cobertura está en curso."
+      },
+      "avisos": {
+        "montoCambio": {
+          "titulo": "El monto a reembolsar cambió",
+          "texto": "Mientras decidías cambió el día y ahora quedan menos días sin usar. Revisa el nuevo monto y vuelve a marcar la casilla para confirmar."
+        },
+        "cobroEnCurso": {
+          "titulo": "Estamos cobrando la cuota de este mes",
+          "texto": "Intenta cancelar de nuevo en unos minutos. Así evitamos cobrarte una póliza que ya cancelaste."
+        },
+        "errorConfirmar": {
+          "titulo": "No pudimos cancelar tu póliza",
+          "texto": "Intenta de nuevo en unos segundos. Tu póliza sigue activa y no cambió nada."
+        }
+      },
+      "calculo": {
+        "titulo": "Cálculo del reembolso",
+        "texto": "El sistema prorratea lo que pagaste por el mes en curso ({{desde}} – {{hasta}}) según los días de cobertura que no vas a usar. Este es el monto que recibirás si confirmas hoy.",
+        "textoGracia": "La cuota del mes en curso ({{desde}} – {{hasta}}) no está pagada: está en periodo de gracia. Como no hay prima pagada sin usar, no hay reembolso. Al cancelar, esa cuota se cierra y no se te cobra.",
+        "primaPagada": "Prima pagada del periodo",
+        "cuotaSinPagar": "{{monto}} · cuota sin pagar",
+        "diasNoUtilizados": "Días no utilizados",
+        "diasDe": "{{n}} de {{d}}",
+        "prorrateo": "Prorrateo",
+        "porcentaje": "{{valor}} %",
+        "metodo": "Método de reembolso",
+        "tarjeta": "{{marca}} •••• {{ultimos}} (medio de pago original)",
+        "pse": "PSE (medio de pago original)",
+        "fechaEfectiva": "Fecha efectiva",
+        "hoyFinDelDia": "Hoy, {{fecha}}, al final del día",
+        "plazo": "Plazo del reembolso",
+        "plazoTexto": "5 a 10 días hábiles",
+        "noAplica": "No aplica"
+      },
+      "motivo": {
+        "titulo": "Motivo",
+        "etiqueta": "Motivo de la cancelación",
+        "elegir": "Selecciona un motivo",
+        "comentarios": "Comentarios (opcional)",
+        "ayuda": "Nos ayuda a mejorar el producto"
+      },
+      "motivos": {
+        "property_sold": "Vendí el inmueble",
+        "mortgage_paid": "Pagué el crédito hipotecario",
+        "better_offer": "Encontré una mejor oferta",
+        "no_longer_needed": "Ya no necesito el seguro",
+        "financial_reasons": "Razones económicas",
+        "other": "Otro motivo"
+      },
+      "definitiva": {
+        "titulo": "La cancelación es definitiva",
+        "texto": "Al confirmar, la cobertura termina hoy y la póliza no podrá reactivarse; si más adelante necesitas protección, deberás contratar una nueva."
+      },
+      "acepto": "Entiendo que la cancelación es definitiva y acepto el monto de reembolso calculado.",
+      "aceptoSinReembolso": "Entiendo que la cancelación es definitiva y que no hay reembolso.",
+      "monto": {
+        "titulo": "Monto a reembolsar",
+        "nota": "Se registra con fecha, monto y método al confirmar",
+        "notaSinReembolso": "No hay prima pagada sin usar en el periodo en curso"
+      },
+      "otraOpcion": {
+        "titulo": "¿Prefieres otra opción?",
+        "texto": "Puedes solicitar una modificación (por ejemplo, cambiar tus beneficiarios) en lugar de cancelar.",
+        "modificar": "Solicitar modificación"
+      },
+      "detalle": {
+        "registrada": "Cancelación registrada",
+        "aviso": {
+          "in_process": "Tu póliza quedó en estado Cancelada. El reembolso de {{monto}} quedó registrado y se está enviando a tu {{medio}}.",
+          "completed": "Tu póliza quedó en estado Cancelada. El reembolso de {{monto}} se envió a tu {{medio}}; según tu banco, puede tardar de 5 a 10 días hábiles en verse en tu extracto.",
+          "failed": "Tu póliza quedó en estado Cancelada, pero no pudimos enviar el reembolso de {{monto}} a tu {{medio}}. Conserva la referencia {{referencia}} para cualquier reclamo.",
+          "not_applicable": "Tu póliza quedó en estado Cancelada. La cuota del mes en curso no estaba pagada, así que no hay reembolso."
+        },
+        "titulo": "Detalle del reembolso",
+        "monto": "Monto",
+        "metodo": "Método",
+        "tarjeta": "{{marca}} •••• {{ultimos}}",
+        "pse": "PSE",
+        "referencia": "Referencia",
+        "fecha": "Fecha de cancelación",
+        "motivo": "Motivo",
+        "estadoReembolso": "Estado del reembolso",
+        "noAplica": "No aplica",
+        "estados": {
+          "in_process": "En proceso",
+          "completed": "Reembolsado",
+          "failed": "No se pudo procesar",
+          "not_applicable": "Sin reembolso"
+        },
+        "poliza": {
+          "titulo": "Estado de la póliza",
+          "cobertura": "Cobertura",
+          "hasta": "Hasta el {{fecha}}",
+          "documentos": "Documentos",
+          "documentosTexto": "Siguen disponibles para consulta",
+          "reactivacion": "Reactivación",
+          "reactivacionTexto": "No disponible · requiere nueva póliza"
+        }
       }
     }
   },

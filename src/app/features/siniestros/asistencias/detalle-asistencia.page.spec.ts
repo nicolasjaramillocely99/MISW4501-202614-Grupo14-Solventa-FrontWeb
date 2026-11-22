@@ -445,6 +445,8 @@ describe('DetalleAsistenciaPage (O9b · HU-W2.3-03)', () => {
     });
 
     it('en llamada sin GPS: guarda la dirección y el pin y muestra la sugerencia', async () => {
+      // Los datos son del 21/11/2026: la hora va sin fecha solo si el evento es de hoy.
+      vi.useFakeTimers({ now: new Date('2026-11-21T17:00:00Z'), toFake: ['Date'] });
       const { usuario } = await renderizar(de(SIN_GPS_EN_LLAMADA));
 
       await usuario.type(

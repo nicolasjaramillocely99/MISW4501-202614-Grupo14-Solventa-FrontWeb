@@ -5,6 +5,7 @@ import {
   POLIZA_CANCELADA_DTO,
   POLIZA_EN_GRACIA_DTO,
 } from '@testing/cancelacion-pruebas';
+import { POLIZA_CANCELADA_A_PEDIDO_DTO } from '@testing/cancelacion-voluntaria-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, of } from 'rxjs';
 
@@ -17,7 +18,9 @@ import { MisPolizasPage } from './mis-polizas.page';
 
 describe('MisPolizasPage · pago y cancelación (A1 · HU-W1.6-02)', () => {
   const api = { listarPolizas: vi.fn<() => Observable<PolizaListada[]>>() };
-  const LISTA = [POLIZA_AL_DIA_DTO, POLIZA_EN_GRACIA_DTO, POLIZA_CANCELADA_DTO].map(
+  // HU-W1.6-01: una cancelada a solicitud del asegurado, con su reembolso.
+  const A_PEDIDO = { ...POLIZA_CANCELADA_A_PEDIDO_DTO, policy_id: 'pol-acc-550912' };
+  const LISTA = [POLIZA_AL_DIA_DTO, POLIZA_EN_GRACIA_DTO, POLIZA_CANCELADA_DTO, A_PEDIDO].map(
     mapearPolizaListada,
   );
 
@@ -62,6 +65,21 @@ describe('MisPolizasPage · pago y cancelación (A1 · HU-W1.6-02)', () => {
     expect(within(cancelada).getByText('Cancelada por no pago · sin reembolso')).toBeTruthy();
     expect(cancelada.textContent).toContain('12 de septiembre de 2026');
     expect(cancelada.textContent).not.toContain('2027');
+  });
+
+  it('una cancelada a solicitud es «Cancelada», con su reembolso, y termina el día de la cancelación (HU-W1.6-01)', async () => {
+    await renderizar();
+
+    const cancelada = fila('pol-acc-550912');
+    expect(within(cancelada).getByText('Cancelada', { selector: 'app-insignia-estado' })).toBeTruthy();
+    expect(within(cancelada).getByText(/Cancelada a solicitud · reembolso \$\s66\.406 COP/)).toBeTruthy();
+    expect(cancelada.textContent).toContain('de diciembre de 2026');
+    expect(cancelada.textContent).not.toContain('2027');
+    expect(screen.getByText('Pólizas activas').nextElementSibling?.textContent).toBe('2');
+    const opciones = Array.from((screen.getByLabelText('Estado') as HTMLSelectElement).options).map(
+      (o) => o.textContent?.trim(),
+    );
+    expect(opciones).toContain('Cancelada');
   });
 
   it('cada póliza lleva a su detalle (A2)', async () => {

@@ -10,6 +10,7 @@ export type EstadoPoliza =
   | 'renovada'
   | 'noRenovada'
   | 'canceladaNoPago'
+  | 'cancelada'
   | 'finalizada';
 
 export const ESTADOS_POLIZA: readonly EstadoPoliza[] = [
@@ -20,6 +21,7 @@ export const ESTADOS_POLIZA: readonly EstadoPoliza[] = [
   'renovada',
   'noRenovada',
   'canceladaNoPago',
+  'cancelada',
   'finalizada',
 ];
 
@@ -39,14 +41,20 @@ const TONO_POR_ESTADO: Readonly<Record<EstadoPoliza, TonoInsignia>> = {
   renovada: 'exito',
   noRenovada: 'error',
   canceladaNoPago: 'error',
+  // HU-W1.6-01: la cancelación a solicitud del asegurado es la insignia gris de `21:1211` y `17:266`.
+  cancelada: 'neutro',
   finalizada: 'neutro',
 };
 
 /**
- * Estado de una póliza. Primero la cancelación por no pago (HU-W1.6-02); luego la renovación del periodo; luego una
- * cuota pendiente, que pesa más que la ventana de renovación porque se cancela antes; y al final la vigencia.
+ * Estado de una póliza. Primero la cancelación: a solicitud del asegurado (HU-W1.6-01) o por no pago (HU-W1.6-02); luego
+ * la renovación del periodo; luego una cuota pendiente, que pesa más que la ventana de renovación porque se cancela
+ * antes; y al final la vigencia.
  */
 export function estadoDePoliza(poliza: PolizaListada, ahora: number = Date.now()): EstadoPoliza {
+  if (poliza.cancelacion?.motivo === 'insured_request') {
+    return 'cancelada';
+  }
   if (poliza.cancelacion || poliza.pago?.estado === 'cancelled') {
     return 'canceladaNoPago';
   }
@@ -73,7 +81,10 @@ export function tonoDePoliza(estado: EstadoPoliza): TonoInsignia {
   return TONO_POR_ESTADO[estado];
 }
 
-/** Fin efectivo de la vigencia: la fecha de cancelación si la póliza se canceló, la de su cobertura si no. */
+/**
+ * Fin efectivo de la vigencia: cuando terminó la cobertura si la póliza se canceló (la cancelación por no pago, o el final
+ * del día de la cancelación a solicitud, HU-W1.6-01), la de su cobertura si no.
+ */
 export function finDeVigencia(poliza: PolizaListada): string {
-  return poliza.cancelacion?.canceladaEn ?? poliza.vigenciaHasta;
+  return poliza.cancelacion?.efectivaEn ?? poliza.vigenciaHasta;
 }

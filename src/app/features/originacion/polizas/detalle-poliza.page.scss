@@ -20,6 +20,24 @@
   }
 }
 
+// A5b (HU-W1.6-01): título y subtítulo a la izquierda, «Volver a mis pólizas» a la derecha (frame `21:1211`).
+.encabezado--fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+
+  .encabezado__acciones {
+    margin-block-start: 0;
+  }
+}
+
+.encabezado__subtitulo {
+  margin: var(--espacio-8) 0 0;
+  color: var(--color-texto-secundario);
+}
+
 .encabezado__acciones {
   display: flex;
   flex-wrap: wrap;

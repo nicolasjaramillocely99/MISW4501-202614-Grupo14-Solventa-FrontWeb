@@ -35,7 +35,16 @@ import {
   SOLICITUD_SUMA_EN_REVISION_DTO,
 } from '@testing/solicitud-modificacion-pruebas';
 
+import {
+  CANCELACION_EN_PROCESO_DTO,
+  COTIZACION_CANCELACION_DTO,
+  COTIZACION_DIA_SIGUIENTE_DTO,
+  POLIZA_A_CANCELAR,
+} from '@testing/cancelacion-voluntaria-pruebas';
+
 import { Aceptacion, AceptacionDto, ErrorAceptacion, mapearAceptacion } from './aceptacion.modelos';
+import { ErrorCancelacion, mapearCotizacionCancelacion } from './cancelacion.modelos';
+import { mapearCancelacion } from './pago-poliza.modelos';
 import { ErrorCobro, mapearCobro } from './cobro.modelos';
 import {
   ErrorEndoso,
@@ -630,6 +639,55 @@ describe('OriginacionApiService', () => {
         .flush({ error: 'change_request_not_found', message: 'm' }, { status: 404, statusText: 'Not Found' });
 
       expect(codigos).toEqual(['forbidden', 'change_request_not_found']);
+    });
+  });
+
+  describe('cancelación con reembolso prorrateado (HU-W1.6-01)', () => {
+    const BASE = CONFIGURACION_PRUEBAS.apiGatewayUrl.replace(/\/+$/, '');
+
+    it('cotiza y luego cancela con el monto que vio el asegurado', () => {
+      let cotizacion: unknown;
+      let cancelacion: unknown;
+      servicio.cotizarCancelacion(POLIZA_A_CANCELAR).subscribe((r) => (cotizacion = r));
+      const consulta = http.expectOne(`${BASE}/v1/policies/${POLIZA_A_CANCELAR}/cancellation/quote`);
+      expect(consulta.request.method).toBe('GET');
+      consulta.flush(COTIZACION_CANCELACION_DTO);
+
+      servicio
+        .cancelarPoliza(POLIZA_A_CANCELAR, { motivo: 'mortgage_paid', comentarios: null, montoReembolso: 66406 })
+        .subscribe((r) => (cancelacion = r));
+      const confirmacion = http.expectOne(`${BASE}/v1/policies/${POLIZA_A_CANCELAR}/cancellation`);
+      expect(confirmacion.request.method).toBe('POST');
+      expect(confirmacion.request.body).toEqual({
+        reason: 'mortgage_paid',
+        comments: null,
+        refund_amount: 66406,
+        accept_terms: true,
+      });
+      confirmacion.flush(
+        { policy_id: POLIZA_A_CANCELAR, status: 'cancelled', cancellation: CANCELACION_EN_PROCESO_DTO },
+        { status: 201, statusText: 'Created' },
+      );
+
+      expect(cotizacion).toEqual(mapearCotizacionCancelacion(COTIZACION_CANCELACION_DTO));
+      expect(cancelacion).toEqual(mapearCancelacion(CANCELACION_EN_PROCESO_DTO));
+    });
+
+    it('falla con el código del contrato', () => {
+      const errores: ErrorCancelacion[] = [];
+      servicio.cotizarCancelacion(POLIZA_A_CANCELAR).subscribe({ error: (e: ErrorCancelacion) => errores.push(e) });
+      http
+        .expectOne(`${BASE}/v1/policies/${POLIZA_A_CANCELAR}/cancellation/quote`)
+        .flush({ error: 'renewal_in_progress', message: 'm' }, { status: 409, statusText: 'Conflict' });
+      servicio
+        .cancelarPoliza(POLIZA_A_CANCELAR, { motivo: 'other', comentarios: null, montoReembolso: 66406 })
+        .subscribe({ error: (e: ErrorCancelacion) => errores.push(e) });
+      http
+        .expectOne(`${BASE}/v1/policies/${POLIZA_A_CANCELAR}/cancellation`)
+        .flush({ error: 'refund_changed', message: 'm', quote: COTIZACION_DIA_SIGUIENTE_DTO }, { status: 409, statusText: 'Conflict' });
+
+      expect(errores.map((e) => e.codigo)).toEqual(['renewal_in_progress', 'refund_changed']);
+      expect(errores[1].cotizacion?.montoReembolso).toBe(61663);
     });
   });
 

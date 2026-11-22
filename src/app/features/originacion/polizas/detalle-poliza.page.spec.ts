@@ -14,6 +14,7 @@ import {
   SOLICITUD_RECHAZADA_DTO,
   filaDe,
 } from '@testing/solicitud-modificacion-pruebas';
+import { detalleCanceladoAPedido } from '@testing/cancelacion-voluntaria-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
 import { Observable, Subject, of, throwError } from 'rxjs';
 
@@ -70,6 +71,18 @@ describe('DetallePolizaPage (A2 y A2b · HU-W1.6-02)', () => {
     vi.resetAllMocks();
     api.consultarCondicionesVigentes.mockReturnValue(of(CONDICIONES));
     api.listarMisSolicitudes.mockReturnValue(of(SOLICITUDES));
+  });
+
+  it('A5b (HU-W1.6-01): una póliza cancelada a solicitud muestra su reembolso en lugar de A2 (CA-2)', async () => {
+    await renderizar(of(mapearDetallePoliza(detalleCanceladoAPedido())), 'pol-acc-220331');
+
+    expect(screen.getByRole('heading', { name: 'Vida hipotecario · pol-acc-220331' })).toBeTruthy();
+    expect(screen.getByText('Cancelada', { selector: 'app-insignia-estado' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Volver a mis pólizas' }).getAttribute('href')).toBe('/originacion/polizas');
+    expect(screen.getByRole('region', { name: 'Detalle del reembolso' })).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Resumen' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Cancelar póliza' })).toBeNull();
+    expect(api.consultarCondicionesVigentes).not.toHaveBeenCalled();
   });
 
   it('mientras consulta informa que carga', async () => {
@@ -153,9 +166,10 @@ describe('DetallePolizaPage (A2 y A2b · HU-W1.6-02)', () => {
   it('A2 tiene todos los botones del prototipo; los que no tienen historia quedan deshabilitados', async () => {
     await renderizar(of(mapearDetallePoliza(DETALLE_AL_DIA_DTO)), 'pol-acc-220331');
 
-    const cancelar = screen.getByRole('button', { name: 'Cancelar póliza' }) as HTMLButtonElement;
-    expect(cancelar.disabled).toBe(true);
-    expect(cancelar.getAttribute('aria-describedby')).toBe('proximamente');
+    // HU-W1.6-01: «Cancelar póliza» lleva a A5.
+    expect(screen.getByRole('link', { name: 'Cancelar póliza' }).getAttribute('href')).toBe(
+      '/originacion/polizas/pol-acc-220331/cancelar',
+    );
     // HU-W1.4-01 (ajuste A-10): la solicitud de modificación y «Mis solicitudes» ya existen.
     for (const nombre of ['Solicitar modificación', 'Modificar']) {
       expect(screen.getByRole('link', { name: nombre }).getAttribute('href')).toBe(

@@ -259,7 +259,11 @@ test.describe('Cancelación de póliza por incumplimiento de pago (HU-W1.6-02)',
     const resumen = page.getByRole('region', { name: 'Resumen' });
     await expect(resumen).toContainText('Visa •••• 0010');
     await expect(resumen).toContainText('Pago pendiente · cuota 4');
-    await expect(page.getByRole('button', { name: 'Cancelar póliza' })).toBeDisabled();
+    // HU-W1.6-01: «Cancelar póliza» lleva a A5.
+    await expect(page.getByRole('link', { name: 'Cancelar póliza', exact: true })).toHaveAttribute(
+      'href',
+      '/originacion/polizas/pol-acc-330417/cancelar',
+    );
     // HU-W1.4-01 (ajuste A-10): la solicitud de modificación y «Mis solicitudes» ya funcionan.
     for (const nombre of ['Solicitar modificación', 'Modificar']) {
       await expect(page.getByRole('link', { name: nombre, exact: true })).toHaveAttribute(

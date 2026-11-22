@@ -15,7 +15,9 @@ import {
 import { HistorialAsistenciaComponent } from './historial-asistencia.component';
 
 describe('HistorialAsistenciaComponent (O9b · HU-W2.3-03, S18, CA-5)', () => {
-  const renderizar = (historial: readonly AccionHistorial[], despacho: Despacho | null = null) =>
+  afterEach(() => vi.useRealTimers());
+
+  const renderizar =(historial: readonly AccionHistorial[], despacho: Despacho | null = null) =>
     render(HistorialAsistenciaComponent, {
       imports: [proveerTranslocoPruebas()],
       inputs: { historial, despacho },
@@ -25,6 +27,8 @@ describe('HistorialAsistenciaComponent (O9b · HU-W2.3-03, S18, CA-5)', () => {
     screen.getAllByRole('listitem').map((li) => li.textContent?.replace(/\s+/g, ' ').trim());
 
   it('cada decisión con su hora y su analista, en orden, incluida la toma', async () => {
+    // Los datos son del 21/11/2026: la hora va sin fecha solo si el evento es de hoy.
+    vi.useFakeTimers({ now: new Date('2026-11-21T17:00:00Z'), toFake: ['Date'] });
     await renderizar(mapearDetalleAsistencia(DETALLE_UBICADA_POR_VOZ_DTO).historial);
 
     expect(screen.getByRole('heading', { name: 'Historial' })).toBeTruthy();
