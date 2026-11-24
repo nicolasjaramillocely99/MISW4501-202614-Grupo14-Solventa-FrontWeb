@@ -1,0 +1,244 @@
+:host {
+  display: block;
+}
+
+.volver {
+  display: inline-block;
+  margin-block-end: var(--espacio-12);
+  color: var(--color-azul-700);
+  text-decoration: none;
+}
+
+.encabezado {
+  margin-block-end: var(--espacio-16);
+
+  &__titulo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espacio-12);
+  }
+}
+
+// A5b (HU-W1.6-01): título y subtítulo a la izquierda, «Volver a mis pólizas» a la derecha (frame `21:1211`).
+.encabezado--fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+
+  .encabezado__acciones {
+    margin-block-start: 0;
+  }
+}
+
+.encabezado__subtitulo {
+  margin: var(--espacio-8) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.encabezado__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-12);
+  margin-block-start: var(--espacio-12);
+}
+
+.aviso {
+  margin-block-end: var(--espacio-16);
+}
+
+.tarjeta__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-12);
+}
+
+.documentos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-8);
+    padding-block: var(--espacio-12);
+    border-block-end: 1px solid var(--color-borde-base);
+  }
+
+  &__nombre {
+    flex: 1;
+  }
+}
+
+.enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--color-azul-700);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.cuerpo {
+  display: grid;
+  gap: var(--espacio-16);
+  grid-template-columns: minmax(0, 1fr);
+
+  @media (min-width: 64rem) {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  &__principal,
+  &__lateral {
+    display: grid;
+    gap: var(--espacio-16);
+    align-content: start;
+  }
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--espacio-16);
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+  }
+
+  &__cifra {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.coberturas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-8);
+    padding-block: var(--espacio-12);
+    border-block-end: 1px solid var(--color-borde-base);
+  }
+
+  &__monto {
+    margin-inline-start: auto;
+    text-align: end;
+  }
+
+  &--sin-vigencia {
+    color: var(--color-texto-secundario);
+  }
+}
+
+.historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__paso {
+    position: relative;
+    padding-inline-start: var(--espacio-24);
+    padding-block-end: var(--espacio-12);
+    border-inline-start: 2px solid var(--color-borde-base);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: -7px;
+      inset-block-start: 2px;
+      inline-size: 12px;
+      block-size: 12px;
+      border-radius: 50%;
+      background: var(--color-azul-700);
+    }
+
+    &[data-paso='cancelacion']::before,
+    &[data-paso='rechazado']::before {
+      background: var(--color-error-600);
+    }
+  }
+
+  &__titulo {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.ayuda {
+  border-inline-start: 4px solid var(--color-azul-700);
+}
+
+// HU-W1.4-01: «Beneficiarios» (tabla de solo lectura, como la de A3) y «Mis solicitudes».
+.tabla-desplazable {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--espacio-8) var(--espacio-12);
+    border-block-end: 1px solid var(--color-borde-base);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  tbody th {
+    font-weight: 500;
+  }
+}
+
+.solicitudes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-8);
+    padding-block: var(--espacio-12);
+    border-block-end: 1px solid var(--color-borde-base);
+  }
+
+  &__dato {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-4);
+  }
+}

@@ -1,0 +1,104 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.endosos'">
+  <a class="volver" routerLink="/originacion/endosos">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('historial.volver') }}
+  </a>
+
+  <header class="encabezado">
+    <div class="encabezado__fila">
+      <h1 class="pagina__titulo">{{ t('historial.titulo') }}</h1>
+      <app-insignia-estado tono="neutro">{{ t('historial.soloLectura') }}</app-insignia-estado>
+    </div>
+    @if (fase() === 'listo') {
+      @if (historial(); as h) {
+        <p class="encabezado__resumen">{{ subtitulo(h) }}</p>
+        <p class="encabezado__resumen">{{ t('historial.poliza', { poliza: h.polizaId, titular: h.titular.nombre }) }}</p>
+      }
+    }
+  </header>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('historial.cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <div class="aviso aviso--advertencia" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('historial.noEncontrada.titulo') }}</p>
+          <p>{{ t('historial.noEncontrada.texto') }}</p>
+        </div>
+      </div>
+    }
+    @case ('error') {
+      <div class="aviso aviso--error" role="alert">
+        <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+        <div>
+          <p class="aviso__titulo">{{ t('historial.error.titulo') }}</p>
+          <p>{{ t('historial.error.texto') }}</p>
+          <button type="button" class="boton boton--secundario aviso__boton" (click)="cargar()">
+            {{ t('historial.error.reintentar') }}
+          </button>
+        </div>
+      </div>
+    }
+    @default {
+      @if (historial(); as h) {
+        <div class="aviso aviso--informacion">
+          <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+          <div>
+            <p class="aviso__titulo">{{ t('historial.inmutable.titulo') }}</p>
+            <p>{{ t('historial.inmutable.texto') }}</p>
+          </div>
+        </div>
+
+        <section class="tarjeta tabla-contenedor" aria-labelledby="titulo-historial-endosos">
+          <h2 id="titulo-historial-endosos" class="visualmente-oculto">{{ t('historial.tabla.titulo') }}</h2>
+          <div class="tabla-desplazable">
+            <table class="tabla">
+              <caption class="visualmente-oculto">{{ t('historial.tabla.titulo') }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{{ t('historial.tabla.fecha') }}</th>
+                  <th scope="col">{{ t('historial.tabla.endoso') }}</th>
+                  <th scope="col">{{ t('historial.tabla.queCambio') }}</th>
+                  <th scope="col">{{ t('historial.tabla.anterior') }}</th>
+                  <th scope="col">{{ t('historial.tabla.nuevo') }}</th>
+                  <th scope="col">{{ t('historial.tabla.quien') }}</th>
+                </tr>
+              </thead>
+              @if (h.entradas.length > 0) {
+                <tbody>
+                  @for (entrada of h.entradas; track $index) {
+                    @let f = fila(entrada);
+                    <tr>
+                      <td class="tabla__fecha">{{ entrada.en | formatoFechaHora }}</td>
+                      <td class="tabla__endoso">{{ f.aplicado ? entrada.endosoId : t('historial.noAplicado') }}</td>
+                      <td>
+                        <span class="tabla__principal">{{ t('tipos.' + entrada.tipo) }}</span>
+                        <span class="tabla__secundario">{{ f.origen }}</span>
+                      </td>
+                      <td>{{ f.anterior }}</td>
+                      <td class="tabla__nuevo">{{ f.nuevo }}</td>
+                      <td>
+                        <span class="tabla__principal">{{ entrada.por.nombre }}</span>
+                        <span class="tabla__secundario">{{ f.rol }}</span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              }
+            </table>
+          </div>
+
+          @if (h.entradas.length === 0) {
+            <div class="vacio" role="status">
+              <span class="vacio__icono" aria-hidden="true"><svg lucideFileText [size]="28"></svg></span>
+              <h3 class="vacio__titulo">{{ t('historial.vacio.titulo') }}</h3>
+              <p class="vacio__texto">{{ t('historial.vacio.texto') }}</p>
+            </div>
+          }
+        </section>
+      }
+    }
+  }
+</div>

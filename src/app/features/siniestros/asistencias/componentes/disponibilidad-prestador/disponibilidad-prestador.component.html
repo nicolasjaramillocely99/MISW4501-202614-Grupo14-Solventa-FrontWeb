@@ -1,0 +1,102 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-disponibilidad"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'siniestros.prestadores.dialogo'"
+>
+  @if (prestador(); as p) {
+    <form class="modal__contenido" (submit)="enviar($event)" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-disponibilidad" class="modal__titulo">
+          {{ t('titulo', { nombre: p.nombre }) }}
+        </h2>
+        <button
+          type="button"
+          class="modal__cerrar"
+          [attr.aria-label]="t('cerrar')"
+          [disabled]="guardando()"
+          (click)="pedirCierre()"
+        >
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      @if (p.disponibilidad === 'busy') {
+        <p class="modal__texto">{{ t('ocupado') }}</p>
+      }
+
+      <fieldset class="opciones">
+        <legend class="visualmente-oculto">{{ t('titulo', { nombre: p.nombre }) }}</legend>
+        <label class="opciones__opcion">
+          <input
+            type="radio"
+            name="disponibilidad"
+            value="available"
+            [checked]="disponibilidad() === 'available'"
+            (change)="disponibilidad.set('available')"
+          />
+          {{ t('disponible') }}
+        </label>
+        <label class="opciones__opcion">
+          <input
+            type="radio"
+            name="disponibilidad"
+            value="unavailable"
+            [checked]="disponibilidad() === 'unavailable'"
+            (change)="disponibilidad.set('unavailable')"
+          />
+          {{ t('noDisponible') }}
+        </label>
+      </fieldset>
+
+      @if (disponibilidad() === 'unavailable') {
+        <div class="campo">
+          <label class="campo__etiqueta" for="disponibilidad-hasta">{{ t('hasta') }}</label>
+          <input
+            id="disponibilidad-hasta"
+            class="campo__control"
+            type="date"
+            [min]="hoy()"
+            [value]="hasta()"
+            [attr.aria-invalid]="fechaPasada() ? 'true' : null"
+            [attr.aria-describedby]="
+              fechaPasada() ? 'disponibilidad-hasta-error' : 'disponibilidad-hasta-ayuda'
+            "
+            (input)="hasta.set($any($event.target).value)"
+          />
+          @if (fechaPasada()) {
+            <p id="disponibilidad-hasta-error" class="campo__error">{{ t('fechaPasada') }}</p>
+          } @else {
+            <p id="disponibilidad-hasta-ayuda" class="modal__texto">{{ t('ayudaHasta') }}</p>
+          }
+        </div>
+      }
+
+      @if (error()) {
+        <div class="aviso aviso--error" role="alert">
+          <p>{{ t('error') }}</p>
+        </div>
+      }
+
+      <div class="modal__acciones">
+        <button
+          type="button"
+          class="boton boton--secundario"
+          [disabled]="guardando()"
+          (click)="pedirCierre()"
+        >
+          {{ t('cancelar') }}
+        </button>
+        <button
+          type="submit"
+          class="boton boton--primario"
+          [disabled]="guardando() || fechaPasada()"
+        >
+          {{ guardando() ? t('guardando') : t('guardar') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

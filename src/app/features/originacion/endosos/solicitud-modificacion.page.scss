@@ -1,0 +1,107 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+}
+
+.pagina__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  width: fit-content;
+  color: var(--color-azul-700);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pagina__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-24);
+}
+
+.pagina__titulo-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__subtitulo {
+  margin: var(--espacio-8) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.pagina__acciones {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--espacio-12);
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.aviso .boton {
+  margin-top: var(--espacio-12);
+}
+
+.resultado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-16);
+  text-align: center;
+}
+
+.resultado__icono {
+  display: inline-flex;
+  padding: var(--espacio-16);
+  border-radius: var(--radio-completo);
+  background: var(--color-exito-100);
+  color: var(--color-exito-600);
+}
+
+// El indicador ocupa todo el ancho de la tarjeta para que se vean las líneas que unen los pasos (frame `20:866`).
+.resultado__pasos {
+  align-self: stretch;
+}
+
+.resultado__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.resultado__texto {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espacio-16);
+  width: 100%;
+  margin: 0;
+  text-align: left;
+
+  dt {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+
+  dd {
+    margin: var(--espacio-4) 0 0;
+  }
+}

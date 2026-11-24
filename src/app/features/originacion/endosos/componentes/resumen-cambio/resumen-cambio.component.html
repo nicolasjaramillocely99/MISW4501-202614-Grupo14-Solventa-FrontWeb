@@ -1,0 +1,11 @@
+<section class="resumen" aria-labelledby="titulo-resumen-cambio" aria-live="polite" *transloco="let t; prefix: 'originacion.solicitudes.resumen'">
+  <h2 id="titulo-resumen-cambio" class="resumen__titulo">{{ t('titulo') }}</h2>
+  <dl class="resumen__datos">
+    <dt>{{ t('actual') }}</dt>
+    <dd>{{ actual() }}</dd>
+    <dt>{{ t('nuevo') }}</dt>
+    <dd>{{ nuevo() }}</dd>
+    <dt>{{ t('efecto') }}</dt>
+    <dd>{{ t('efectos.' + tipo()) }}</dd>
+  </dl>
+</section>

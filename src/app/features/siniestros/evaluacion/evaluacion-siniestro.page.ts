@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { LucideArrowLeft, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideMail } from '@lucide/angular';
+import { LucideArrowLeft, LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideMail, LucideMapPin } from '@lucide/angular';
 import { Observable, finalize } from 'rxjs';
 
 import { CodigoErrorEvaluacion, Decision, DestinoPago, ErrorEvaluacion, Evaluacion } from '@core/api/siniestros/evaluacion.modelos';
@@ -63,6 +63,7 @@ interface EventoHistorial {
     LucideCircleCheck,
     LucideInfo,
     LucideMail,
+    LucideMapPin,
   ],
   templateUrl: './evaluacion-siniestro.page.html',
   styleUrl: './evaluacion-siniestro.page.scss',
@@ -87,11 +88,11 @@ export class EvaluacionSiniestroPage implements OnInit {
   protected readonly tonoPrioridad = tonoPrioridad;
 
   protected readonly decision = computed(() => this.evaluacion()?.decision ?? null);
-  /** Un caso en evaluación se decide aquí; uno decidido se ve en solo lectura. */
-  protected readonly decidible = computed(() => {
-    const estado = this.evaluacion()?.siniestro.estado;
-    return !this.decision() && (estado === 'active' || estado === 'in_evaluation');
-  });
+  /**
+   * Un caso en evaluación se decide aquí; uno decidido se ve en solo lectura. Desde HU-W2.1-03 solo `in_evaluation`:
+   * una radicación `active` espera la revisión del asesor.
+   */
+  protected readonly decidible = computed(() => !this.decision() && this.evaluacion()?.siniestro.estado === 'in_evaluation');
   protected readonly sinTerminos = computed(() => {
     const e = this.evaluacion();
     return !!e && (e.polizaNoDisponible || !e.cobertura);

@@ -25,7 +25,7 @@ test.describe('Evaluación, aprobación y pago del siniestro (HU-W2.2-03)', () =
 
     await evaluacion.abrirComo('/siniestros/evaluacion');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Casos en evaluación' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Cola de siniestros' })).toBeVisible();
     await expect(page.getByRole('row', { name: /Triage 2.*SIN-2026-01655.*Hogar · Daño por agua/ })).toBeVisible();
     await expect(page.getByRole('row', { name: /Triage 1.*SIN-2026-01690/ })).toBeVisible();
     await verificarAccesibilidad(page);

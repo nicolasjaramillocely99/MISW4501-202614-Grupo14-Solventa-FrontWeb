@@ -1,0 +1,29 @@
+<section
+  class="intentos"
+  aria-labelledby="titulo-intentos"
+  *transloco="let t; prefix: 'siniestros.asignacion.intentos'"
+>
+  @let b = busqueda();
+  <h2 id="titulo-intentos" class="intentos__titulo">{{ t('titulo') }}</h2>
+  <p class="intentos__origen">
+    @if (b.buscadaPor; as analista) {
+      {{ t('analista', { nombre: analista.nombre ?? analista.correo }) }}
+    } @else {
+      {{ t('automatica') }}
+    }
+    · {{ b.buscadaEn | formatoFechaHora }}
+  </p>
+  <ol class="intentos__lista">
+    @for (intento of b.intentos; track $index) {
+      <li>
+        {{
+          t(intento.radioKm === radioMaximoKm() ? 'lineaMaximo' : 'linea', {
+            hora: (intento.intentadoEn | formatoFechaHora: 'hora'),
+            radio: intento.radioKm,
+          })
+        }}
+        · {{ t(resultado(intento), { cantidad: intento.elegibles }) }}
+      </li>
+    }
+  </ol>
+</section>

@@ -1,0 +1,33 @@
+<ng-container *transloco="let t; read: 'originacion.renovacionAsistida.consentimientoAsesor'">
+  @if (soloLectura(); as afirmacion) {
+    <p class="consentimiento__registro">
+      <svg lucideInfo [size]="16" aria-hidden="true"></svg>
+      {{ t('registrado', { asesor: afirmacion.asesor, fecha: afirmacion.fecha | formatoFechaHora }) }}
+    </p>
+  } @else {
+    <div class="aviso" role="note">
+      <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+      <div>
+        <p class="aviso__titulo">{{ t('titulo') }}</p>
+        <p>{{ t('texto') }}</p>
+      </div>
+    </div>
+    <div class="consentimiento__casilla">
+      <input
+        id="consentimiento-asesor"
+        type="checkbox"
+        [checked]="afirmado()"
+        [disabled]="deshabilitado()"
+        [attr.aria-invalid]="conError() && !afirmado() ? 'true' : null"
+        [attr.aria-describedby]="conError() && !afirmado() ? 'consentimiento-asesor-error' : null"
+        (change)="cambiar($event)"
+      />
+      <label for="consentimiento-asesor">{{ t('casilla') }}</label>
+    </div>
+    @if (conError() && !afirmado()) {
+      <p id="consentimiento-asesor-error" class="campo__error" role="alert">
+        <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('error') }}
+      </p>
+    }
+  }
+</ng-container>

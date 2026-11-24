@@ -94,7 +94,7 @@ export interface SolicitudRadicacion {
   montoEstimadoMinor?: number;
 }
 
-interface RequisitoDto {
+export interface RequisitoDto {
   code: string;
   label: string;
   required: boolean;
@@ -156,7 +156,7 @@ export interface SoporteSubidoDto {
   confirmed_at: string;
 }
 
-function mapearRequisito(dto: RequisitoDto): RequisitoSoporte {
+export function mapearRequisito(dto: RequisitoDto): RequisitoSoporte {
   return {
     codigo: dto.code,
     etiqueta: dto.label,

@@ -6,7 +6,7 @@
 - **Shell de navegación:** portal
 - **Requiere sesión:** sí (guard de autenticación en el shell del portal; el rol se restringe por ruta)
 
-**Estado:** `gestion/` implementado para **HU-W3.1-01** (rol operaciones; cliente `SociosApiService`): O10 `listado-socios.page.ts` (tres indicadores, tabla con credenciales, cuota diaria y consumo de hoy del gateway, estados cargando / vacío / error y el modal «Registrar socio», que deja al socio pendiente de aprobación) y O11 `detalle-socio.page.ts` («Aprobar y generar credenciales» para un socio pendiente, «Rotar credenciales» con periodo de transición para uno activo, credenciales sin el secreto, cuota y aislamiento, historial; estados cargando / no encontrado / error). Tras aprobar o rotar, `componentes/secreto-emitido` muestra el secreto **una sola vez** (no cierra con `Escape`; «Ya guardé el secreto» lo borra de memoria). La cuota es diaria (usage plans de API Gateway, decisión del equipo). «Dar de baja» (O11b, HU-W3.1-02) no se muestra y «Uso reciente (24 h)» queda como aviso hasta el tablero (HU-W3.2-01). `credenciales/`, `tablero/` y `desempeno/` siguen vacíos: sus rutas (`/socios/tablero*`, `/socios/credenciales`) redirigen al inicio.
+**Estado:** `gestion/` implementado para **HU-W3.1-01** (rol operaciones; cliente `SociosApiService`): O10 `listado-socios.page.ts` (tres indicadores, tabla con credenciales, cuota diaria y consumo de hoy del gateway, estados cargando / vacío / error y el modal «Registrar socio», que deja al socio pendiente de aprobación) y O11 `detalle-socio.page.ts` («Aprobar y generar credenciales» para un socio pendiente, «Rotar credenciales» con periodo de transición para uno activo, credenciales sin el secreto, cuota y aislamiento, historial; estados cargando / no encontrado / error). Tras aprobar o rotar, `componentes/secreto-emitido` muestra el secreto **una sola vez** (no cierra con `Escape`; «Ya guardé el secreto» lo borra de memoria). La cuota es diaria (usage plans de API Gateway, decisión del equipo). «Dar de baja» (O11b, HU-W3.1-02) no se muestra y «Uso reciente (24 h)» queda como aviso. `tablero/` implementado para **HU-W3.2-01** (rol socio; `OriginacionApiService.consultarResumenSocio`): B1 `tablero.page.ts` con el selector Hoy / Últimos 7 días / Últimos 30 días (por defecto) / Personalizado, las tarjetas de cotizaciones solicitadas, pólizas emitidas y tasa de conversión, el estado sin datos (0 y 0 % sin errores, con «Ver últimos 7 días» o «Ver últimos 30 días») y el aviso de aislamiento. Los rangos son días de Colombia con los dos extremos incluidos (`modelos/rango-tablero.ts`); el personalizado no consulta si la fecha inicial es posterior a la final o pasa de 366 días. El socio nunca viaja en la petición: el backend lo toma del token. La gráfica por día, la comparación con el periodo anterior, el desglose por producto (HU-W3.2-02) y el estado de la API (HU-W3.2-03) no son de esta historia. `desempeno/` implementado para **HU-W3.2-03** (rol socio; `SociosApiService.consultarDesempeno`): B3 `desempeno.page.ts` con el selector Hoy / Últimos 7 días (por defecto) / Últimos 30 días, la tarjeta del estado actual de la API (operativo en verde; degradado en ámbar y no disponible en rojo, cada uno con su ícono, su texto y el incidente abierto), la disponibilidad frente al objetivo del 99,9 % y el p95 frente al presupuesto de 400 ms (marcados cuando no cumplen), y los incidentes del periodo con su tipo, ruta, fecha y hora de inicio en Colombia, duración y estado, o «La integración operó sin interrupciones en el período». Las métricas son las del SLO de la API de socios en CloudWatch, iguales para todos los socios. El tiempo promedio, la gráfica por hora y «Reportar a Solventa» del prototipo quedaron fuera (la revisión INVEST dejó solo el p95). `credenciales/` sigue vacío: `/socios/credenciales` redirige al inicio.
 
 | Archivo de `gestion/` | Qué hace |
 |---|---|
@@ -16,6 +16,16 @@
 | `componentes/rotar-credenciales` | Modal de la rotación: periodo de transición en horas (1–168, por defecto el del servicio) |
 | `componentes/secreto-emitido` | Modal del secreto: copiar al portapapeles con aviso accesible, sin almacenamiento ni URL |
 | `modelos/presentacion-socios.ts` | Insignias, tono de la barra de consumo, validación del registro y del periodo de transición |
+
+| Archivo de `tablero/` | Qué hace |
+|---|---|
+| `tablero.page.ts` | B1. Un 503 muestra «Reintentar»; 401 y 403 los resuelve el interceptor |
+| `modelos/rango-tablero.ts` | Día de Colombia, rangos de las opciones fijas, validación del personalizado y la opción más amplia del estado sin datos |
+
+| Archivo de `desempeno/` | Qué hace |
+|---|---|
+| `desempeno.page.ts` | B3. Conserva el último desempeño mientras consulta otro periodo; un 503 muestra «Reintentar»; 401 y 403 los resuelve el interceptor |
+| `modelos/presentacion-desempeno.ts` | Duración del incidente en minutos, horas o días, y fecha y hora en Colombia |
 
 ## Pantallas y dónde va cada una
 

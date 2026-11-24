@@ -1,0 +1,258 @@
+// B3 · Desempeño técnico de la API (HU-W3.2-03): periodo, estado resaltado, disponibilidad, p95 e incidentes.
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+  padding: var(--espacio-32) clamp(var(--espacio-16), 4vw, var(--espacio-48));
+}
+
+.pagina__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__descripcion {
+  margin: var(--espacio-4) 0 0;
+  max-width: 70ch;
+  color: var(--color-texto-secundario);
+}
+
+.periodos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-8);
+}
+
+.periodos__opcion {
+  min-height: var(--control-alto);
+  padding: 0 var(--espacio-16);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo-superficie);
+  color: var(--color-texto-primario);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.periodos__opcion--activa {
+  border-color: var(--color-azul-700);
+  background: var(--color-azul-700);
+  color: var(--color-texto-inverso);
+}
+
+
+.aviso .boton {
+  margin-top: var(--espacio-8);
+}
+
+// Tarjeta del estado actual. Degradado y no disponible cambian borde, fondo, ícono y texto (CA-2).
+.estado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-16);
+  padding: var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+}
+
+.estado__icono {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radio-completo);
+}
+
+.estado__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-12);
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+.estado__texto p {
+  margin: var(--espacio-4) 0 0;
+  color: var(--color-texto-primario);
+}
+
+.estado__incidente {
+  font-weight: 600;
+}
+
+.estado--operational {
+  .estado__icono {
+    background: var(--color-exito-100);
+    color: var(--color-exito-600);
+  }
+
+  h2 {
+    color: var(--color-exito-600);
+  }
+}
+
+.estado--degraded {
+  border: 2px solid var(--color-advertencia-500);
+  background: var(--color-advertencia-100);
+
+  .estado__icono {
+    background: var(--color-advertencia-500);
+    color: var(--color-texto-inverso);
+  }
+
+  h2 {
+    color: var(--color-advertencia-600);
+  }
+}
+
+.estado--unavailable {
+  border: 2px solid var(--color-error-500);
+  background: var(--color-error-100);
+
+  .estado__icono {
+    background: var(--color-error-500);
+    color: var(--color-texto-inverso);
+  }
+
+  h2 {
+    color: var(--color-error-600);
+  }
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--espacio-16);
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-16) var(--espacio-24);
+  border: 1px solid var(--color-borde-base);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-fondo-superficie);
+
+  p {
+    margin: 0;
+  }
+}
+
+.indicador__etiqueta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--color-texto-secundario);
+}
+
+.indicador__valor {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.indicador__valor--exito {
+  color: var(--color-exito-600);
+}
+
+.indicador__valor--error {
+  color: var(--color-error-600);
+}
+
+.indicador__detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.incidentes {
+  padding: var(--espacio-24);
+}
+
+.incidentes__titulo {
+  margin: 0 0 var(--espacio-12);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-texto-primario);
+}
+
+.incidentes__vacio {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  color: var(--color-exito-600);
+}
+
+.incidentes__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.incidente {
+  padding: var(--espacio-12) 0;
+  border-top: 1px solid var(--color-borde-base);
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.incidente__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-8);
+}
+
+.incidente__tipo {
+  font-weight: 600;
+  color: var(--color-texto-primario);
+}
+
+.incidente__detalle {
+  margin-top: var(--espacio-4);
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.estado-carga,
+.nota {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

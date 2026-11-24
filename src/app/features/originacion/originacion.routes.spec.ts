@@ -8,14 +8,34 @@ import {
   proveerSesionPrueba,
 } from '@testing/sesion-pruebas';
 import { proveerTranslocoPruebas } from '@testing/transloco-pruebas';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 
 import { mapearListaEmisiones } from '@core/api/originacion/emision-monitor.modelos';
+import {
+  mapearDetalleEndoso,
+  mapearHistorialEndosos,
+  mapearPaginaEndosos,
+} from '@core/api/originacion/endosos.modelos';
 import { OriginacionApiService } from '@core/api/originacion/originacion-api.service';
+import { mapearPaginaPorVencer } from '@core/api/originacion/polizas-por-vencer.modelos';
+import { mapearRenovacionAsistida } from '@core/api/originacion/renovacion-asistida.modelos';
 import { ErrorRenovacion } from '@core/api/originacion/renovacion.modelos';
 import { mapearSolicitudRevision } from '@core/api/originacion/revision.modelos';
+import {
+  mapearCondicionesVigentes,
+  mapearPaginaSolicitudes,
+  mapearSolicitudModificacion,
+} from '@core/api/originacion/solicitud-modificacion.modelos';
 import { LISTA_EMISIONES_DTO } from '@testing/emision-monitor-pruebas';
+import { DETALLE_BENEFICIARIOS_DTO, HISTORIAL_ENDOSOS_DTO, PAGINA_ENDOSOS_DTO } from '@testing/endosos-pruebas';
+import { PAGINA_POR_VENCER_DTO } from '@testing/polizas-por-vencer-pruebas';
+import { RENOVACION_SIN_RECOTIZAR_DTO } from '@testing/renovacion-asistida-pruebas';
 import { SOLICITUD_PENDIENTE_DTO } from '@testing/revision-pruebas';
+import {
+  CONDICIONES_VIGENTES_DTO,
+  PAGINA_SOLICITUDES_DTO,
+  SOLICITUD_BENEFICIARIOS_DTO,
+} from '@testing/solicitud-modificacion-pruebas';
 
 import { routes } from '../../app.routes';
 
@@ -296,6 +316,262 @@ describe('rutas de las pólizas y la renovación en línea (HU-W1.5-02)', () => 
   it('asesor, operaciones y socio reciben «acceso no autorizado»', async () => {
     for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
       for (const destino of ['/originacion/polizas', '/originacion/polizas/pol-1/renovar']) {
+        await iniciarSesionComo(rol);
+
+        await harness.navigateByUrl(destino);
+
+        expect(url()).toBe('/acceso/no-autorizado');
+      }
+    }
+  });
+});
+
+describe('rutas de las pólizas próximas a vencer (HU-W1.5-01)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            listarPolizasPorVencer: () => of(mapearPaginaPorVencer(PAGINA_POR_VENCER_DTO)),
+            consultarRenovacionAsistida: () => of(mapearRenovacionAsistida(RENOVACION_SIN_RECOTIZAR_DTO)),
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+
+  it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {
+    await harness.navigateByUrl('/originacion/renovaciones');
+
+    expect(url()).toBe('/acceso/iniciar-sesion?returnUrl=%2Foriginacion%2Frenovaciones');
+  });
+
+  it('el asesor entra a «Renovaciones» dentro del shell del portal', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/originacion/renovaciones');
+
+    expect(url()).toBe('/originacion/renovaciones');
+    expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-polizas-por-vencer-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Renovaciones');
+  });
+
+  it('el ítem «Renovaciones» del menú del asesor lleva a esta ruta', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/inicio');
+
+    const enlace = Array.from(harness.routeNativeElement?.querySelectorAll('nav a') ?? []).find((a) =>
+      a.getAttribute('href')?.endsWith('/originacion/renovaciones'),
+    );
+    expect(enlace).toBeDefined();
+  });
+
+  it('asegurado, operaciones y socio reciben «acceso no autorizado» (la URL nunca lleva el rol)', async () => {
+    for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
+      await iniciarSesionComo(rol);
+
+      await harness.navigateByUrl('/originacion/renovaciones');
+
+      expect(url()).toBe('/acceso/no-autorizado');
+    }
+  });
+
+  it('el asesor abre la renovación asistida de una póliza por su id (HU-W1.5-03)', async () => {
+    await iniciarSesionComo('asesor');
+
+    await harness.navigateByUrl('/originacion/renovaciones/pol-acc-118204');
+
+    expect(url()).toBe('/originacion/renovaciones/pol-acc-118204');
+    expect(harness.routeNativeElement?.querySelector('app-renovacion-asistida-page')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain('Renovación asistida · pol-acc-118204');
+  });
+
+  it('la renovación asistida es solo del asesor (HU-W1.5-03)', async () => {
+    for (const rol of ['asegurado', 'operaciones', 'socio'] as const) {
+      await iniciarSesionComo(rol);
+
+      await harness.navigateByUrl('/originacion/renovaciones/pol-acc-118204');
+
+      expect(url()).toBe('/acceso/no-autorizado');
+    }
+  });
+});
+
+describe('rutas de la solicitud de modificación (HU-W1.4-01)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            consultarCondicionesVigentes: () => of(mapearCondicionesVigentes(CONDICIONES_VIGENTES_DTO)),
+            consultarSolicitudModificacion: () => of(mapearSolicitudModificacion(SOLICITUD_BENEFICIARIOS_DTO)),
+            listarMisSolicitudes: () => of(mapearPaginaSolicitudes(PAGINA_SOLICITUDES_DTO)),
+            // A5 (HU-W1.6-01) se queda cargando: aquí solo importa a qué página lleva la ruta.
+            consultarPoliza: () => NEVER,
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+
+  it('sin sesión lleva al inicio de sesión conservando la URL pedida', async () => {
+    await harness.navigateByUrl('/originacion/polizas/pol-1/modificar');
+
+    expect(url()).toBe('/acceso/iniciar-sesion?returnUrl=%2Foriginacion%2Fpolizas%2Fpol-1%2Fmodificar');
+  });
+
+  it('«polizas/:id/modificar» abre A3 para el asegurado dentro del shell del portal', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/polizas/pol-1/modificar');
+
+    expect(url()).toBe('/originacion/polizas/pol-1/modificar');
+    expect(harness.routeNativeElement?.querySelector('nav')).not.toBeNull();
+    expect(harness.routeNativeElement?.querySelector('app-solicitar-modificacion-page')).not.toBeNull();
+  });
+
+  it('«polizas/:id/cancelar» abre A5 (HU-W1.6-01), no el detalle de la póliza', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/polizas/pol-1/cancelar');
+
+    expect(url()).toBe('/originacion/polizas/pol-1/cancelar');
+    expect(harness.routeNativeElement?.querySelector('app-cancelar-poliza-page')).not.toBeNull();
+  });
+
+  it('«solicitudes» abre «Mis solicitudes» (A11), el ítem del menú del asegurado', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/solicitudes');
+
+    expect(url()).toBe('/originacion/solicitudes');
+    expect(harness.routeNativeElement?.querySelector('app-mis-solicitudes-page')).not.toBeNull();
+  });
+
+  it('«solicitudes/:id» abre el detalle de la solicitud (A3b)', async () => {
+    await iniciarSesionComo('asegurado');
+
+    await harness.navigateByUrl('/originacion/solicitudes/SOL-MOD-2026-0042');
+
+    expect(url()).toBe('/originacion/solicitudes/SOL-MOD-2026-0042');
+    expect(harness.routeNativeElement?.querySelector('app-solicitud-modificacion-page')).not.toBeNull();
+  });
+
+  it('asesor, operaciones y socio reciben «acceso no autorizado» (CA-4)', async () => {
+    for (const rol of ['asesor', 'operaciones', 'socio'] as const) {
+      for (const destino of ['/originacion/polizas/pol-1/modificar', '/originacion/polizas/pol-1/cancelar', '/originacion/solicitudes', '/originacion/solicitudes/SOL-MOD-2026-0042']) {
+        await iniciarSesionComo(rol);
+
+        await harness.navigateByUrl(destino);
+
+        expect(url()).toBe('/acceso/no-autorizado');
+      }
+    }
+  });
+});
+
+describe('rutas de los endosos del analista (HU-W1.4-02)', () => {
+  let proveedor: ProveedorIdentidadFalso;
+  let harness: RouterTestingHarness;
+
+  beforeAll(async () => {
+    await import('@layout/portal/portal-shell.component');
+    await import('@features/originacion/originacion.routes');
+  }, 120_000);
+
+  beforeEach(async () => {
+    sessionStorage.clear();
+    proveedor = crearProveedorIdentidadFalso();
+    TestBed.configureTestingModule({
+      imports: [proveerTranslocoPruebas()],
+      providers: [
+        provideRouter(routes),
+        ...proveerSesionPrueba(proveedor),
+        {
+          provide: OriginacionApiService,
+          useValue: {
+            listarSolicitudesEndoso: () => of(mapearPaginaEndosos(PAGINA_ENDOSOS_DTO)),
+            consultarSolicitudEndoso: () => of(mapearDetalleEndoso(DETALLE_BENEFICIARIOS_DTO)),
+            consultarHistorialEndosos: () => of(mapearHistorialEndosos(HISTORIAL_ENDOSOS_DTO)),
+          },
+        },
+      ],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  afterEach(() => sessionStorage.clear());
+
+  const url = () => TestBed.inject(Router).url;
+  const destinos = ['/originacion/endosos', '/originacion/endosos/SOL-MOD-2026-0042', '/originacion/polizas/pol-acc-4f2a/endosos'];
+
+  it('operaciones abre la bandeja, el detalle y el historial dentro del shell del portal', async () => {
+    await iniciarSesionComo('operaciones');
+
+    for (const [destino, pagina] of [
+      [destinos[0], 'app-bandeja-endosos-page'],
+      [destinos[1], 'app-detalle-endoso-page'],
+      [destinos[2], 'app-historial-endosos-page'],
+    ]) {
+      await harness.navigateByUrl(destino);
+
+      expect(url()).toBe(destino);
+      expect(harness.routeNativeElement?.querySelector(pagina)).not.toBeNull();
+    }
+  });
+
+  it('el historial de una póliza deja activo «Endosos» en el menú de operaciones', async () => {
+    await iniciarSesionComo('operaciones');
+
+    await harness.navigateByUrl(destinos[2]);
+
+    const activo = harness.routeNativeElement?.querySelector('nav a[aria-current="page"]');
+    expect(activo?.getAttribute('href')).toBe('/originacion/endosos');
+  });
+
+  it('asegurado, asesor y socio reciben «acceso no autorizado» en las tres pantallas', async () => {
+    for (const rol of ['asegurado', 'asesor', 'socio'] as const) {
+      for (const destino of destinos) {
         await iniciarSesionComo(rol);
 
         await harness.navigateByUrl(destino);

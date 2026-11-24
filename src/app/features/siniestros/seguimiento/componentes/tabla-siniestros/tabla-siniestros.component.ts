@@ -10,10 +10,9 @@ import { Traductor, nombreRamo, nombreTipo } from '../../../modelos/catalogo-sin
 import { tonoEstado } from '../../../modelos/estado-siniestro';
 
 /**
- * Tabla de «Mis siniestros» (A7 mínima; HU-W2.1-01, F1): radicado, póliza y tipo, fecha del hecho, etapa y fecha de
- * radicación. Los casos de la app móvil no traen la foto de la póliza: se muestra el tipo y «Radicado desde la app».
- * HU-W2.2-01 agrega «Ver detalle» por fila hacia `/siniestros/:id` (A8 mínima); «Corregir» y el resto de las acciones son
- * de HU-W2.1-02.
+ * Tabla de «Mis siniestros» (A7; HU-W2.1-01 y HU-W2.1-02): radicado, póliza y tipo, fecha del hecho, etapa y fecha del
+ * último cambio. Los casos de la app móvil no traen la foto de la póliza: se muestra el tipo y «Radicado desde la app».
+ * Cada fila lleva a su detalle (A8), y un caso devuelto ofrece «Corregir» (A9).
  */
 @Component({
   selector: 'app-tabla-siniestros',

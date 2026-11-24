@@ -1,0 +1,145 @@
+<ng-container *transloco="let t; read: 'originacion.renovacionAsistida.aceptacion'">
+  <section class="tarjeta aceptacion" aria-labelledby="titulo-aceptacion">
+    @if (soloLectura(); as f) {
+      <h2 id="titulo-aceptacion" class="aceptacion__titulo">{{ t('tituloRegistrada') }}</h2>
+      <p class="aceptacion__texto">{{ t('textoRegistrada') }}</p>
+      <dl class="aceptacion__registro">
+        <div>
+          <dt>{{ t('medio') }}</dt>
+          <dd>{{ t('metodos.' + f.metodo) }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('fechaHora') }}</dt>
+          <dd>{{ f.aceptadaEn | formatoFechaHora }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('referencia') }}</dt>
+          <dd>{{ f.referencia || t('sinReferencia') }}</dd>
+        </div>
+      </dl>
+      <p class="aceptacion__confirmada">{{ medio() ? t('confirmoConMedio', { medio: medio() }) : t('confirmo') }}</p>
+    } @else {
+      <h2 id="titulo-aceptacion" class="aceptacion__titulo">{{ t('titulo') }}</h2>
+      <p class="aceptacion__texto">{{ t('texto') }}</p>
+      <form class="aceptacion__formulario" [formGroup]="formulario" novalidate>
+        <fieldset class="aceptacion__campos" [disabled]="deshabilitado() || trabajando()">
+          <legend class="aceptacion__leyenda">{{ t('titulo') }}</legend>
+          <div class="campo">
+            <label class="campo__etiqueta" for="aceptacion-metodo">{{ t('medio') }}</label>
+            <select id="aceptacion-metodo" class="campo__control" formControlName="metodo" (blur)="tocar('metodo')">
+              @for (metodo of metodos; track metodo) {
+                <option [value]="metodo">{{ t('metodos.' + metodo) }}</option>
+              }
+            </select>
+          </div>
+          <div class="campo">
+            <label class="campo__etiqueta" for="aceptacion-fecha">{{ t('fechaHora') }}</label>
+            <input
+              id="aceptacion-fecha"
+              class="campo__control"
+              type="datetime-local"
+              formControlName="fecha"
+              (blur)="tocar('fecha')"
+              [attr.aria-invalid]="errores().fecha ? 'true' : null"
+              [attr.aria-describedby]="errores().fecha ? 'aceptacion-fecha-error' : 'aceptacion-fecha-ayuda'"
+            />
+            @if (errores().fecha; as clave) {
+              <p id="aceptacion-fecha-error" class="campo__error">
+                <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.fecha.' + clave) }}
+              </p>
+            } @else {
+              <p id="aceptacion-fecha-ayuda" class="campo__ayuda">{{ t('formatoFecha') }}</p>
+            }
+          </div>
+          @if (conCodigo()) {
+            <div class="campo">
+              <label class="campo__etiqueta" for="aceptacion-codigo">{{ t('codigo') }}</label>
+              <input
+                id="aceptacion-codigo"
+                class="campo__control"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                formControlName="codigo"
+                (blur)="tocar('codigo')"
+                [attr.aria-invalid]="errores().codigo || errorCodigo() ? 'true' : null"
+                [attr.aria-describedby]="errores().codigo || errorCodigo() ? 'aceptacion-codigo-error' : 'aceptacion-codigo-ayuda'"
+              />
+              @if (errorCodigo(); as clave) {
+                <p id="aceptacion-codigo-error" class="campo__error">
+                  <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.servicio.' + clave) }}
+                </p>
+              } @else if (errores().codigo; as clave) {
+                <p id="aceptacion-codigo-error" class="campo__error">
+                  <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.codigo.' + clave) }}
+                </p>
+              } @else {
+                <p id="aceptacion-codigo-ayuda" class="campo__ayuda">{{ t('codigoAyuda') }}</p>
+              }
+            </div>
+          } @else {
+            <div class="campo">
+              <label class="campo__etiqueta" for="aceptacion-referencia">{{ t('referencia') }}</label>
+              <input
+                id="aceptacion-referencia"
+                class="campo__control"
+                type="text"
+                autocomplete="off"
+                [attr.maxlength]="maxReferencia"
+                formControlName="referencia"
+                (blur)="tocar('referencia')"
+                [attr.aria-invalid]="errores().referencia ? 'true' : null"
+                [attr.aria-describedby]="errores().referencia ? 'aceptacion-referencia-error' : null"
+              />
+              @if (errores().referencia; as clave) {
+                <p id="aceptacion-referencia-error" class="campo__error">
+                  <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.referencia.' + clave, { max: maxReferencia }) }}
+                </p>
+              }
+            </div>
+          }
+        </fieldset>
+        @if (conCodigo()) {
+          <div class="aceptacion__codigo">
+            <button
+              type="button"
+              class="boton boton--secundario"
+              [disabled]="deshabilitado() || trabajando() || envios() >= maxEnvios"
+              (click)="enviarCodigo.emit()"
+            >
+              {{ envios() > 0 ? t('reenviarCodigo') : t('enviarCodigo') }}
+            </button>
+            @if (codigoEnviado(); as envio) {
+              <p class="aceptacion__enviado" role="status">
+                {{
+                  t('codigoEnviado', {
+                    correo: envio.enviadoA,
+                    hasta: envio.venceEn | formatoFechaHora: 'hora',
+                    restantes: maxEnvios - envios(),
+                  })
+                }}
+              </p>
+            }
+          </div>
+        }
+        <fieldset class="aceptacion__casilla" [disabled]="deshabilitado() || trabajando()">
+          <input
+            id="aceptacion-confirmo"
+            type="checkbox"
+            formControlName="confirmo"
+            (change)="cambiarConfirmo()"
+            [attr.aria-invalid]="errores().confirmo ? 'true' : null"
+            [attr.aria-describedby]="errores().confirmo ? 'aceptacion-confirmo-error' : null"
+          />
+          <label for="aceptacion-confirmo">{{ medio() ? t('confirmoConMedio', { medio: medio() }) : t('confirmo') }}</label>
+        </fieldset>
+        @if (errores().confirmo) {
+          <p id="aceptacion-confirmo-error" class="campo__error">
+            <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('errores.confirmo') }}
+          </p>
+        }
+      </form>
+    }
+  </section>
+</ng-container>

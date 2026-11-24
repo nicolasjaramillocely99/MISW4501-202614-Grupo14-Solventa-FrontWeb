@@ -1,0 +1,87 @@
+<section
+  class="tarjeta candidatos"
+  aria-labelledby="titulo-candidatos"
+  *transloco="let t; prefix: 'siniestros'"
+>
+  @let b = busqueda();
+  <h2 id="titulo-candidatos" class="candidatos__titulo">
+    @if (b.resultado === 'exhausted') {
+      {{
+        t('asignacion.candidatos.tituloAgotado', {
+          especialidad: especialidad(t, b.especialidad),
+          radio: b.radioKm,
+        })
+      }}
+    } @else {
+      {{ t('asignacion.candidatos.titulo', { especialidad: especialidad(t, b.especialidad) }) }}
+    }
+  </h2>
+
+  @if (b.candidatos.length === 0) {
+    <p class="candidatos__vacio">{{ t('asignacion.candidatos.vacio') }}</p>
+  } @else {
+    <div class="candidatos__desplazamiento">
+      <table class="candidatos__tabla">
+        <caption class="visualmente-oculto">
+          {{
+            t('asignacion.candidatos.titulo', { especialidad: especialidad(t, b.especialidad) })
+          }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ t('asignacion.candidatos.prestador') }}</th>
+            <th scope="col">{{ t('asignacion.candidatos.especialidad') }}</th>
+            <th scope="col" class="candidatos__numero">
+              {{ t('asignacion.candidatos.distancia') }}
+            </th>
+            <th scope="col">{{ t('asignacion.candidatos.disponibilidad') }}</th>
+            <th scope="col">
+              <span class="visualmente-oculto">{{ t('asignacion.candidatos.accion') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of b.candidatos; track c.prestadorId) {
+            @let d = disponibilidad(c);
+            <tr [class.candidatos__fila--sugerida]="c.sugerido">
+              <th scope="row" class="candidatos__nombre">{{ c.nombre }}</th>
+              <td>{{ especialidades(t, c.especialidades) }}</td>
+              <td class="candidatos__numero">
+                {{
+                  t('asignacion.candidatos.km', { distancia: (c.distanciaKm | formatoNumero: 1) })
+                }}
+              </td>
+              <td>
+                <span class="candidatos__estado">
+                  <app-insignia-estado [tono]="d.tono">
+                    {{
+                      t('asignacion.disponibilidad.' + d.clave, {
+                        fecha: d.hasta ? (aFechaLocal(d.hasta) | formatoFecha) : '',
+                      })
+                    }}
+                  </app-insignia-estado>
+                  @if (c.sugerido) {
+                    <app-insignia-estado tono="informacion">{{
+                      t('asignacion.candidatos.sugerido')
+                    }}</app-insignia-estado>
+                  }
+                </span>
+              </td>
+              <td class="candidatos__accion">
+                <button
+                  type="button"
+                  class="boton boton--terciario"
+                  [disabled]="deshabilitado() || c.elegibilidad !== 'eligible'"
+                  [attr.aria-label]="t('asignacion.candidatos.asignarA', { nombre: c.nombre })"
+                  (click)="asignar.emit(c)"
+                >
+                  {{ t('asignacion.candidatos.asignar') }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

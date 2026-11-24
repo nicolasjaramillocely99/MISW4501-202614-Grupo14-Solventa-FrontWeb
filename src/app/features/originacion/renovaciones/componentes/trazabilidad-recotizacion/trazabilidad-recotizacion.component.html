@@ -1,0 +1,97 @@
+<ng-container *transloco="let t; read: 'originacion.renovacionAsistida.trazabilidad'">
+  <section class="tarjeta trazabilidad" aria-labelledby="titulo-trazabilidad">
+    <h2 id="titulo-trazabilidad" class="trazabilidad__titulo">{{ trazabilidad() ? t('tituloRegistrada') : t('titulo') }}</h2>
+    <ul class="trazabilidad__lista">
+      @if (recotizacion(); as r) {
+        @for (fuente of fuentes(); track fuente.nombre) {
+          <li class="trazabilidad__fila">
+            @if (disponible(fuente)) {
+              <svg lucideCircleCheck [size]="20" class="icono icono--exito" aria-hidden="true"></svg>
+            } @else {
+              <svg lucideCircleX [size]="20" class="icono icono--error" aria-hidden="true"></svg>
+            }
+            <div class="trazabilidad__texto">
+              <p class="trazabilidad__nombre">{{ t('fuentes.' + fuente.nombre) }}</p>
+              <p class="trazabilidad__detalle">
+                @if (disponible(fuente)) {
+                  {{ t('consultado', { ms: (fuente.latenciaMs | formatoNumero) }) }}
+                } @else {
+                  {{ t('falla.' + fuente.estado, { ms: (fuente.latenciaMs | formatoNumero) }) }}
+                }
+              </p>
+            </div>
+            @if (disponible(fuente)) {
+              <app-insignia-estado tono="exito">{{ t('operativo') }}</app-insignia-estado>
+            } @else {
+              <app-insignia-estado tono="error">{{ t('noDisponible') }}</app-insignia-estado>
+            }
+          </li>
+        }
+        <li class="trazabilidad__fila">
+          @if (r.recotizada) {
+            <svg lucideCircleCheck [size]="20" class="icono icono--exito" aria-hidden="true"></svg>
+          } @else {
+            <svg lucideInfo [size]="20" class="icono" aria-hidden="true"></svg>
+          }
+          <div class="trazabilidad__texto">
+            <p class="trazabilidad__nombre">{{ t('motor') }}</p>
+            <p class="trazabilidad__detalle">
+              {{ r.recotizada ? t('motorAplicado', { version: r.versionMotor }) : t('motorSinTarifa') }}
+            </p>
+            @if (r.factores.length > 0) {
+              <details class="trazabilidad__factores">
+                <summary>{{ t('verFactores') }}</summary>
+                <dl>
+                  @for (factor of r.factores; track factor.codigo) {
+                    <div>
+                      <dt>{{ t('factores.' + factor.codigo) }}</dt>
+                      <dd>{{ factor.valor | formatoNumero: 6 }}</dd>
+                    </div>
+                  }
+                </dl>
+              </details>
+            }
+          </div>
+          @if (r.recotizada) {
+            <app-insignia-estado tono="exito">{{ t('aplicado') }}</app-insignia-estado>
+          } @else {
+            <app-insignia-estado tono="neutro">{{ t('sinAplicar') }}</app-insignia-estado>
+          }
+        </li>
+      } @else {
+        @for (fuente of fuentesPendientes; track fuente) {
+          <li class="trazabilidad__fila">
+            <svg lucideInfo [size]="20" class="icono" aria-hidden="true"></svg>
+            <div class="trazabilidad__texto">
+              <p class="trazabilidad__nombre">{{ t('fuentes.' + fuente) }}</p>
+              <p class="trazabilidad__detalle">{{ t('pendiente.detalle.' + (pendiente() ?? 'sinRecotizar')) }}</p>
+            </div>
+            <app-insignia-estado tono="neutro">{{ t('pendiente.insignia.' + (pendiente() ?? 'sinRecotizar')) }}</app-insignia-estado>
+          </li>
+        }
+        <li class="trazabilidad__fila">
+          <svg lucideInfo [size]="20" class="icono" aria-hidden="true"></svg>
+          <div class="trazabilidad__texto">
+            <p class="trazabilidad__nombre">{{ t('motor') }}</p>
+            <p class="trazabilidad__detalle">{{ t('sinAplicar') }}</p>
+          </div>
+          <app-insignia-estado tono="neutro">{{ t('pendiente.insignia.' + (pendiente() ?? 'sinRecotizar')) }}</app-insignia-estado>
+        </li>
+      }
+    </ul>
+    <p class="trazabilidad__nota">
+      <svg lucideInfo [size]="16" aria-hidden="true"></svg>
+      @switch (recotizacion()?.aviso) {
+        @case ('last_profile_in_use') {
+          {{ t('nota.cache', { fecha: dia(recotizacion()?.fechaPerfil ?? null) }) }}
+        }
+        @case ('personalization_unavailable') {
+          {{ t('nota.base') }}
+        }
+        @default {
+          {{ t('nota.general') }}
+        }
+      }
+    </p>
+  </section>
+</ng-container>

@@ -1,0 +1,87 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-24);
+}
+
+.pagina__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  width: fit-content;
+  color: var(--color-azul-700);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pagina__encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-24);
+}
+
+.pagina__titulo {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-azul-900);
+}
+
+.pagina__subtitulo {
+  margin: var(--espacio-8) 0 0;
+  color: var(--color-texto-secundario);
+}
+
+.pagina__acciones {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--espacio-12);
+
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espacio-8);
+  }
+}
+
+.estado {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.aviso .boton {
+  margin-top: var(--espacio-12);
+}
+
+.enlace {
+  color: var(--color-azul-700);
+  font-weight: 500;
+}
+
+// Fila 1: «Tipo de cambio»; fila 2: la captura, que absorbe el alto que le sobre al lateral para que las dos tarjetas
+// queden juntas; fila 3 (implícita): «Beneficiarios actuales» a todo el ancho (frame `20:529`).
+.contenido {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: var(--espacio-24);
+  align-items: start;
+}
+
+// La columna principal no dibuja una caja propia: sus tarjetas son celdas de la cuadrícula.
+.contenido__principal {
+  display: contents;
+
+  > * {
+    grid-column: 1;
+  }
+}
+
+.contenido__lateral {
+  display: flex;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  flex-direction: column;
+  gap: var(--espacio-24);
+}

@@ -4,6 +4,17 @@ import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import {
+  CotizacionCancelacion,
+  CotizacionCancelacionDto,
+  SolicitudCancelacion,
+  aSolicitudCancelacionDto,
+  mapearCotizacionCancelacion,
+  traducirErrorCancelacion,
+} from './cancelacion.modelos';
+import { DetallePoliza, DetallePolizaDto, mapearDetallePoliza, traducirErrorPoliza } from './detalle-poliza.modelos';
+import { CancelacionAPedido, CancelacionPolizaDto, mapearCancelacion } from './pago-poliza.modelos';
+
+import {
   Aceptacion,
   AceptacionDto,
   CanalAceptacion,
@@ -58,6 +69,58 @@ import {
   traducirErrorFormalizacion,
 } from './formalizacion.modelos';
 import {
+  DetalleEndoso,
+  DetalleEndosoDto,
+  FiltroEndosos,
+  HistorialEndosos,
+  HistorialEndososDto,
+  PaginaEndosos,
+  PaginaEndososDto,
+  ResultadoAplicacion,
+  ResultadoAplicacionDto,
+  SolicitudEndoso,
+  SolicitudEndosoDto,
+  aParametrosEndosos,
+  mapearDetalleEndoso,
+  mapearHistorialEndosos,
+  mapearPaginaEndosos,
+  mapearResultadoAplicacion,
+  mapearSolicitudEndoso,
+  traducirErrorEndoso,
+} from './endosos.modelos';
+import {
+  FiltroPorVencer,
+  PaginaPorVencer,
+  PaginaPorVencerDto,
+  aParametrosPorVencer,
+  mapearPaginaPorVencer,
+  traducirErrorPorVencer,
+} from './polizas-por-vencer.modelos';
+import {
+  RangoResumen,
+  ResumenSocio,
+  ResumenSocioDto,
+  aParametrosResumen,
+  mapearResumenSocio,
+  traducirErrorResumenSocio,
+} from './resumen-socio.modelos';
+import {
+  CodigoRenovacionEnviado,
+  CodigoRenovacionEnviadoDto,
+  RecotizacionRenovacion,
+  RecotizacionRenovacionDto,
+  RenovacionAsistida,
+  RenovacionAsistidaDto,
+  ResultadoFormalizacionRenovacion,
+  SolicitudFormalizacionRenovacion,
+  aSolicitudFormalizacionRenovacionDto,
+  aSolicitudRecotizacionDto,
+  mapearCodigoEnviado,
+  mapearRecotizacion,
+  mapearRenovacionAsistida,
+  traducirErrorRenovacionAsistida,
+} from './renovacion-asistida.modelos';
+import {
   CondicionesRenovacion,
   CondicionesRenovacionDto,
   ListaPolizasDto,
@@ -91,6 +154,22 @@ import {
   SolicitudPerfilRiesgo,
   mapearPerfilRiesgo,
 } from './perfil-riesgo.modelos';
+import {
+  CondicionesVigentes,
+  CondicionesVigentesDto,
+  FiltroSolicitudes,
+  PaginaSolicitudes,
+  PaginaSolicitudesDto,
+  SolicitudModificacion,
+  SolicitudModificacionDto,
+  SolicitudNueva,
+  aParametrosSolicitudes,
+  aSolicitudNuevaDto,
+  mapearCondicionesVigentes,
+  mapearPaginaSolicitudes,
+  mapearSolicitudModificacion,
+  traducirErrorSolicitud,
+} from './solicitud-modificacion.modelos';
 import {
   FiltroBandeja,
   ListaSolicitudesRevision,
@@ -129,8 +208,9 @@ const RESPALDO_CLIENTE: RespaldoErrorCotizacion = {
  * ningún dominio usa `HttpClient` directamente. Hoy expone el perfilamiento de riesgo (HU-W1.2-02), la
  * aceptación de la oferta (HU-W1.3-01), la cotización asistida por asesor (HU-W1.1-01), la emisión contractual
  * (HU-W1.3-03), el estado del cobro de la prima (HA-D02), la bandeja de decisión humana del asesor (HU-W1.1-02), la
- * oferta personalizada (HU-W1.2-03), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04) y las pólizas del
- * asegurado con su renovación en línea (HU-W1.5-02).
+ * oferta personalizada (HU-W1.2-03), el monitoreo de emisiones y excepciones de operaciones (HU-W1.3-04), las pólizas del
+ * asegurado con su renovación en línea (HU-W1.5-02), las pólizas próximas a vencer del asesor (HU-W1.5-01) y la solicitud
+ * de modificación del asegurado (HU-W1.4-01).
  */
 @Injectable({ providedIn: 'root' })
 export class OriginacionApiService {
@@ -315,6 +395,48 @@ export class OriginacionApiService {
   }
 
   /**
+   * Detalle de una póliza del asegurado (`GET /v1/policies/{id}`, HU-W1.6-02, pantallas A2 y A2b): la póliza con su
+   * prima mensual, el medio de pago de la emisión y cada mes facturado, el más reciente primero. Falla con
+   * `ErrorPoliza`: `policy_not_found` si no existe o no es del asegurado.
+   */
+  consultarPoliza(id: string): Observable<DetallePoliza> {
+    return this.http.get<DetallePolizaDto>(`${this.base}/v1/policies/${encodeURIComponent(id)}`).pipe(
+      map(mapearDetallePoliza),
+      catchError((error: unknown) => throwError(() => traducirErrorPoliza(error))),
+    );
+  }
+
+  /**
+   * Cálculo del reembolso si el asegurado cancelara hoy (`GET /v1/policies/{id}/cancellation/quote`, HU-W1.6-01,
+   * pantalla A5, CA-1). Falla con `ErrorCancelacion`: `policy_not_found`, `policy_not_in_force`,
+   * `policy_already_cancelled`, `renewal_in_progress` o `cancellation_unavailable`.
+   */
+  cotizarCancelacion(polizaId: string): Observable<CotizacionCancelacion> {
+    return this.http
+      .get<CotizacionCancelacionDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/cancellation/quote`)
+      .pipe(
+        map(mapearCotizacionCancelacion),
+        catchError((error: unknown) => throwError(() => traducirErrorCancelacion(error))),
+      );
+  }
+
+  /**
+   * Cancela la póliza con el reembolso que vio el asegurado (`POST /v1/policies/{id}/cancellation`, HU-W1.6-01, CA-2) y
+   * devuelve la cancelación registrada. Falla con `ErrorCancelacion`; con `refund_changed` trae la cotización nueva.
+   */
+  cancelarPoliza(polizaId: string, solicitud: SolicitudCancelacion): Observable<CancelacionAPedido> {
+    return this.http
+      .post<{ cancellation: CancelacionPolizaDto }>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/cancellation`,
+        aSolicitudCancelacionDto(solicitud),
+      )
+      .pipe(
+        map((r) => mapearCancelacion(r.cancellation) as CancelacionAPedido),
+        catchError((error: unknown) => throwError(() => traducirErrorCancelacion(error))),
+      );
+  }
+
+  /**
    * Condiciones vigentes y recotizadas de una póliza dentro de su ventana (`GET /v1/policies/{id}/renewal`,
    * pantalla A4). Falla con `ErrorRenovacion`: `renewal_not_available` fuera de la ventana (la opción de renovar no
    * existe) y `renewal_closed` si el periodo ya se aceptó o renovó.
@@ -356,6 +478,105 @@ export class OriginacionApiService {
       .pipe(
         map(mapearRenovacion),
         catchError((error: unknown) => throwError(() => traducirErrorRenovacion(error))),
+      );
+  }
+
+  /**
+   * Lista al asesor las pólizas próximas a vencer (`GET /v1/policies/expiring`, solo `advisor`; HU-W1.5-01, pantalla
+   * S6) con el rango de vencimiento (días de Colombia; sin él, la ventana de renovación desde hoy), el estado y la página.
+   * Sin pólizas en el rango es una lista vacía, no un error. Falla con `ErrorPorVencer`: `out_of_range` si «Hasta» es
+   * anterior a «Vencen desde».
+   */
+  listarPolizasPorVencer(filtro: FiltroPorVencer): Observable<PaginaPorVencer> {
+    return this.http
+      .get<PaginaPorVencerDto>(`${this.base}/v1/policies/expiring`, { params: aParametrosPorVencer(filtro) })
+      .pipe(
+        map(mapearPaginaPorVencer),
+        catchError((error: unknown) => throwError(() => traducirErrorPorVencer(error))),
+      );
+  }
+
+  /**
+   * Resumen del tablero del socio comercial (`GET /v1/partner-metrics/summary`, solo `partner`; HU-W3.2-01, pantalla B1):
+   * cotizaciones solicitadas, pólizas emitidas y tasa de conversión en el rango (días de Colombia, los dos incluidos). El
+   * socio no viaja: el backend lo toma del token (CA-4). Un rango sin datos responde ceros, no un error (CA-3). Falla con
+   * `ErrorResumenSocio`: `out_of_range` si la fecha final es anterior a la inicial.
+   */
+  consultarResumenSocio(rango: RangoResumen): Observable<ResumenSocio> {
+    return this.http
+      .get<ResumenSocioDto>(`${this.base}/v1/partner-metrics/summary`, { params: aParametrosResumen(rango) })
+      .pipe(
+        map(mapearResumenSocio),
+        catchError((error: unknown) => throwError(() => traducirErrorResumenSocio(error))),
+      );
+  }
+
+  /**
+   * Dónde está la renovación asistida de una póliza (`GET /v1/policies/{policy_id}/assisted-renewal`, solo `advisor`;
+   * HU-W1.5-03, pantallas S7 y S7b): la póliza, la última recotización, la renovación del periodo con su canal, el
+   * registro del asesor y el cobro con su plazo de reintento. Falla con `ErrorRenovacionAsistida`.
+   */
+  consultarRenovacionAsistida(polizaId: string): Observable<RenovacionAsistida> {
+    return this.http
+      .get<RenovacionAsistidaDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal`)
+      .pipe(
+        map(mapearRenovacionAsistida),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
+      );
+  }
+
+  /**
+   * Recotiza la renovación con el motor de rating (`POST …/assisted-renewal/requotes`, CA-1). Para una póliza de origen
+   * asistido viaja la casilla del asesor (`consent_affirmed`); sin ella responde `validation_failed`. Falla con
+   * `ErrorRenovacionAsistida`: `consent_required`, `consent_unverifiable`, `renewal_not_available`…
+   */
+  recotizarRenovacion(polizaId: string, consentimientoAfirmado: boolean): Observable<RecotizacionRenovacion> {
+    return this.http
+      .post<RecotizacionRenovacionDto>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal/requotes`,
+        aSolicitudRecotizacionDto(consentimientoAfirmado),
+      )
+      .pipe(
+        map(mapearRecotizacion),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
+      );
+  }
+
+  /**
+   * Pide el código de confirmación de la renovación (`POST …/assisted-renewal/consent`): el servicio se lo envía por
+   * correo al titular y responde solo con el correo enmascarado; hasta 3 por recotización. Falla con
+   * `ErrorRenovacionAsistida`.
+   */
+  enviarCodigoRenovacion(polizaId: string, recotizacionId: string): Observable<CodigoRenovacionEnviado> {
+    return this.http
+      .post<CodigoRenovacionEnviadoDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal/consent`, {
+        requote_id: recotizacionId,
+      })
+      .pipe(
+        map(mapearCodigoEnviado),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
+      );
+  }
+
+  /**
+   * Formaliza la renovación en nombre del cliente (`POST …/assisted-renewal/formalization`, CA-2 a CA-4) con la
+   * recotización que aceptó y cómo la aceptó. 201 la primera vez, 200 si el mismo asesor repite. Falla con
+   * `ErrorRenovacionAsistida`: `validation_failed` trae todos los campos a la vez; también `already_formalized`,
+   * `requote_expired`, `payment_method_missing`, `invalid_confirmation_code`…
+   */
+  formalizarRenovacion(polizaId: string, solicitud: SolicitudFormalizacionRenovacion): Observable<ResultadoFormalizacionRenovacion> {
+    return this.http
+      .post<RenovacionAsistidaDto>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/assisted-renewal/formalization`,
+        aSolicitudFormalizacionRenovacionDto(solicitud),
+        { observe: 'response' },
+      )
+      .pipe(
+        map((respuesta) => ({
+          renovacion: mapearRenovacionAsistida(respuesta.body as RenovacionAsistidaDto),
+          creada: respuesta.status === 201,
+        })),
+        catchError((error: unknown) => throwError(() => traducirErrorRenovacionAsistida(error))),
       );
   }
 
@@ -513,6 +734,136 @@ export class OriginacionApiService {
       .pipe(
         map(mapearReintento),
         catchError((error: unknown) => throwError(() => traducirErrorMonitoreo(error))),
+      );
+  }
+
+  /**
+   * Condiciones de la póliza que el asegurado puede cambiar (`GET /v1/policies/{policy_id}/current-terms`, solo el
+   * asegurado dueño; HU-W1.4-01, pantalla A3): valor asegurado, beneficiarios, beneficiario oneroso, contacto, vigencia,
+   * las solicitudes abiertas por tipo y los límites de la captura. Falla con `ErrorSolicitudModificacion`.
+   */
+  consultarCondicionesVigentes(polizaId: string): Observable<CondicionesVigentes> {
+    return this.http
+      .get<CondicionesVigentesDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/current-terms`)
+      .pipe(
+        map(mapearCondicionesVigentes),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * Radica la solicitud de modificación (`POST /v1/policies/{policy_id}/change-requests`, CA-1 y CA-2): 201 con el
+   * identificador `SOL-MOD-<año>-<número>`. Falla con `ErrorSolicitudModificacion`: `validation_failed` con todos los
+   * campos (CA-3), `change_request_open` con la solicitud abierta del mismo tipo, `policy_not_in_force`, `forbidden`…
+   */
+  radicarSolicitudModificacion(polizaId: string, solicitud: SolicitudNueva): Observable<SolicitudModificacion> {
+    return this.http
+      .post<SolicitudModificacionDto>(
+        `${this.base}/v1/policies/${encodeURIComponent(polizaId)}/change-requests`,
+        aSolicitudNuevaDto(solicitud),
+      )
+      .pipe(
+        map(mapearSolicitudModificacion),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * Las solicitudes del asegurado (`GET /v1/policies/change-requests`, pantalla A11) con el filtro de estado (como lo ve el
+   * asegurado), póliza y día de radicación, la página, los tres indicadores y las pólizas del filtro. Falla con
+   * `ErrorSolicitudModificacion`.
+   */
+  listarMisSolicitudes(filtro: FiltroSolicitudes): Observable<PaginaSolicitudes> {
+    return this.http
+      .get<PaginaSolicitudesDto>(`${this.base}/v1/policies/change-requests`, { params: aParametrosSolicitudes(filtro) })
+      .pipe(
+        map(mapearPaginaSolicitudes),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * Una solicitud del asegurado (`GET /v1/policies/change-requests/{request_id}`, pantalla A3b): la foto del valor
+   * anterior, lo pedido, la diferencia y su estado. Falla con `ErrorSolicitudModificacion`: `change_request_not_found` o
+   * `forbidden` si es de otro asegurado.
+   */
+  consultarSolicitudModificacion(solicitudId: string): Observable<SolicitudModificacion> {
+    return this.http
+      .get<SolicitudModificacionDto>(`${this.base}/v1/policies/change-requests/${encodeURIComponent(solicitudId)}`)
+      .pipe(
+        map(mapearSolicitudModificacion),
+        catchError((error: unknown) => throwError(() => traducirErrorSolicitud(error))),
+      );
+  }
+
+  /**
+   * La bandeja de endosos del analista (`GET /v1/policies/endorsement-requests`, pantalla O2, HU-W1.4-02): la página de
+   * solicitudes con su titular y los tres indicadores. Falla con `ErrorEndoso`.
+   */
+  listarSolicitudesEndoso(filtro: FiltroEndosos): Observable<PaginaEndosos> {
+    return this.http
+      .get<PaginaEndososDto>(`${this.base}/v1/policies/endorsement-requests`, { params: aParametrosEndosos(filtro) })
+      .pipe(
+        map(mapearPaginaEndosos),
+        catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+      );
+  }
+
+  /** El detalle de una solicitud para el analista (O3/O3b): el cambio, la póliza, las validaciones y lo decidido. */
+  consultarSolicitudEndoso(solicitudId: string): Observable<DetalleEndoso> {
+    return this.http.get<DetalleEndosoDto>(this.rutaEndoso(solicitudId)).pipe(
+      map(mapearDetalleEndoso),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  /** «Revisar»: el analista toma la solicitud radicada (pasa a en revisión); tomarla otra vez no cambia nada. */
+  iniciarRevisionEndoso(solicitudId: string): Observable<SolicitudEndoso> {
+    return this.http.post<{ request: SolicitudEndosoDto }>(`${this.rutaEndoso(solicitudId)}/review`, null).pipe(
+      map(mapearSolicitudEndoso),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  /**
+   * «Aplicar endoso» (CA-2, CA-3): aplicada con el endoso o no aplicada con el intento. Falla con `ErrorEndoso`:
+   * `validation_unverifiable` (no cambió nada), `policy_changed`, `request_already_decided`…
+   */
+  aplicarEndoso(solicitudId: string): Observable<ResultadoAplicacion> {
+    return this.http.post<ResultadoAplicacionDto>(`${this.rutaEndoso(solicitudId)}/application`, null).pipe(
+      map(mapearResultadoAplicacion),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  /** «Rechazar» con las observaciones que lee el asegurado (CA-5). */
+  rechazarSolicitudEndoso(solicitudId: string, observaciones: string): Observable<SolicitudEndoso> {
+    return this.cerrarSolicitudEndoso(solicitudId, 'rejection', observaciones);
+  }
+
+  /** «Devolver al asegurado» una no aplicada, con las observaciones que lee el asegurado (CA-5). */
+  devolverSolicitudEndoso(solicitudId: string, observaciones: string): Observable<SolicitudEndoso> {
+    return this.cerrarSolicitudEndoso(solicitudId, 'return', observaciones);
+  }
+
+  /** El historial de endosos de una póliza (O4), el más reciente primero. */
+  consultarHistorialEndosos(polizaId: string): Observable<HistorialEndosos> {
+    return this.http.get<HistorialEndososDto>(`${this.base}/v1/policies/${encodeURIComponent(polizaId)}/endorsements`).pipe(
+      map(mapearHistorialEndosos),
+      catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
+    );
+  }
+
+  private rutaEndoso(solicitudId: string): string {
+    return `${this.base}/v1/policies/endorsement-requests/${encodeURIComponent(solicitudId)}`;
+  }
+
+  private cerrarSolicitudEndoso(solicitudId: string, accion: 'rejection' | 'return', observaciones: string): Observable<SolicitudEndoso> {
+    return this.http
+      .post<{ request: SolicitudEndosoDto }>(`${this.rutaEndoso(solicitudId)}/${accion}`, { observations: observaciones })
+      .pipe(
+        map(mapearSolicitudEndoso),
+        catchError((error: unknown) => throwError(() => traducirErrorEndoso(error))),
       );
   }
 }

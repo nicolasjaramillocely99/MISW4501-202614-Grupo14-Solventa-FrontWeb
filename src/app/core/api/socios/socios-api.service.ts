@@ -4,6 +4,14 @@ import { CONFIGURACION_EJECUCION } from '@core/configuracion/configuracion';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import {
+  DesempenoApi,
+  DesempenoApiDto,
+  PeriodoDesempeno,
+  aParametrosDesempeno,
+  mapearDesempeno,
+  traducirErrorDesempeno,
+} from './desempeno.modelos';
+import {
   CredencialesEmitidas,
   CredencialesEmitidasDto,
   DetalleSocio,
@@ -22,7 +30,7 @@ import {
  * Cliente del servicio de socios B2B (`partners`) vía API Gateway. Única salida HTTP hacia ese microservicio. Hoy expone
  * la incorporación de socios y sus credenciales (HU-W3.1-01, solo `operations`): listado, registro, detalle, aprobación y
  * rotación. El secreto de una credencial solo llega en la respuesta de la aprobación y de la rotación (CA-4); este
- * cliente no lo guarda ni lo registra.
+ * cliente no lo guarda ni lo registra. Para el socio, el desempeño técnico de la API de socios (HU-W3.2-03).
  */
 @Injectable({ providedIn: 'root' })
 export class SociosApiService {
@@ -81,6 +89,20 @@ export class SociosApiService {
       .pipe(
         map(mapearCredencialesEmitidas),
         catchError((error: unknown) => throwError(() => traducirErrorSocios(error))),
+      );
+  }
+
+  /**
+   * `GET /v1/partner-performance?period=…` (solo `partner`; HU-W3.2-03, pantalla B3): estado actual de la API de socios,
+   * disponibilidad y p95 del periodo e incidentes, medidos con las alarmas del SLO en CloudWatch. Falla con
+   * `ErrorDesempeno`: `telemetry_unavailable` si no se pudo leer.
+   */
+  consultarDesempeno(periodo: PeriodoDesempeno): Observable<DesempenoApi> {
+    return this.http
+      .get<DesempenoApiDto>(`${this.base}/v1/partner-performance`, { params: aParametrosDesempeno(periodo) })
+      .pipe(
+        map(mapearDesempeno),
+        catchError((error: unknown) => throwError(() => traducirErrorDesempeno(error))),
       );
   }
 }

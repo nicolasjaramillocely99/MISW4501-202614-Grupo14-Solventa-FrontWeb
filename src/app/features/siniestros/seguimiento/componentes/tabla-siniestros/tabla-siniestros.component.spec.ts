@@ -25,7 +25,7 @@ describe('TablaSiniestrosComponent (A7 mínima · HU-W2.1-01)', () => {
       'Póliza y tipo',
       'Fecha del hecho',
       'Etapa',
-      'Radicado el',
+      'Último cambio',
       'Acciones',
     ]);
   });

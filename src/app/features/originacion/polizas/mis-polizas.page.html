@@ -71,6 +71,23 @@
           </div>
         }
 
+        @if (pagosPendientes()[0]; as pendiente) {
+          <div class="aviso aviso--advertencia" role="alert">
+            <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+            <div>
+              <p class="aviso__titulo">{{ t('avisoPago.titulo', { id: pendiente.polizaId }) }}</p>
+              <p>
+                {{
+                  t('avisoPago.texto', {
+                    vence: (pendiente.pago?.pendiente?.venceEn | formatoFecha),
+                    cancela: (pendiente.pago?.pendiente?.cancelaEn | formatoFecha),
+                  })
+                }}
+              </p>
+            </div>
+          </div>
+        }
+
         <div class="filtros">
           <label class="campo">
             <span class="campo__etiqueta">{{ t('filtros.estado') }}</span>
@@ -110,7 +127,22 @@
               @for (p of visibles(); track p.polizaId) {
                 <tr>
                   <th scope="row" class="tabla__poliza">
-                    {{ p.polizaId }}
+                    <a class="enlace" [routerLink]="['/originacion/polizas', p.polizaId]">{{ p.polizaId }}</a>
+                    @if (p.cancelacion; as c) {
+                      @if (c.motivo === 'insured_request') {
+                        @if (c.detalleReembolso && c.detalleReembolso.monto > 0) {
+                          <span class="texto-suave">{{
+                            t('tabla.canceladaConReembolso', {
+                              monto: (c.detalleReembolso.monto | formatoMoneda: c.moneda),
+                            })
+                          }}</span>
+                        } @else {
+                          <span class="texto-suave">{{ t('tabla.canceladaAPedidoSinReembolso') }}</span>
+                        }
+                      } @else {
+                        <span class="texto-suave">{{ t('tabla.canceladaSinReembolso') }}</span>
+                      }
+                    }
                     <span class="texto-suave">{{
                       t('tabla.valorAsegurado', {
                         monto: (p.valorAsegurado | formatoMoneda: p.moneda),
@@ -118,7 +150,7 @@
                     }}</span>
                   </th>
                   <td>
-                    {{ p.vigenciaDesde | formatoFecha }} → {{ p.vigenciaHasta | formatoFecha }}
+                    {{ p.vigenciaDesde | formatoFecha }} → {{ finDeVigencia(p) | formatoFecha }}
                   </td>
                   <td class="tabla__numero">{{ p.prima | formatoMoneda: p.moneda }}</td>
                   <td>
@@ -138,6 +170,21 @@
                         class="enlace"
                         [routerLink]="['/originacion/polizas', p.polizaId, 'renovar']"
                         >{{ t('acciones.verRenovacion') }}</a
+                      >
+                    } @else {
+                      <a
+                        class="enlace"
+                        [routerLink]="['/originacion/polizas', p.polizaId]"
+                        [attr.aria-label]="t('acciones.verDetalleDe', { id: p.polizaId })"
+                        >{{ t('acciones.verDetalle') }}</a
+                      >
+                    }
+                    @if (vigenteAhora(p)) {
+                      <a
+                        class="enlace enlace--modificar"
+                        [routerLink]="['/originacion/polizas', p.polizaId, 'modificar']"
+                        [attr.aria-label]="t('acciones.modificarPoliza', { id: p.polizaId })"
+                        >{{ t('acciones.modificar') }}</a
                       >
                     }
                   </td>

@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-12);
+}
+
+.consentimiento__casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+
+  input {
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+    accent-color: var(--color-azul-700);
+    flex-shrink: 0;
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 2px;
+  }
+}
+
+.consentimiento__registro {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  margin: 0;
+  color: var(--color-texto-secundario);
+}

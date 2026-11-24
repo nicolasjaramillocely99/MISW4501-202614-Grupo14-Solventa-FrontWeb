@@ -44,7 +44,8 @@ function guionRadicacion(cambios: Partial<GuionSiniestros> = {}): GuionSiniestro
   return {
     opciones: { estado: 200, cuerpo: OPCIONES_RADICACION },
     radicaciones: [{ estado: 201, cuerpo: casoRadicado(HECHO) }],
-    detalle: { estado: 200, cuerpo: { ...casoRadicado(HECHO), estimated_amount_minor: 480000000 } },
+    // Desde HU-W2.1-03 un caso con prioridad ya pasó la revisión del asesor: está en evaluación.
+    detalle: { estado: 200, cuerpo: { ...casoRadicado(HECHO), status: 'in_evaluation', estimated_amount_minor: 480000000 } },
     listado: [{ estado: 200, cuerpo: { items: [filaDelCaso(HECHO), CASO_MOVIL], next_page_token: null } }],
     ...cambios,
   };
@@ -166,8 +167,9 @@ test.describe('Prioridad automática del siniestro (HU-W2.2-01)', () => {
 
       await page.clock.runFor(5_000);
 
-      await expect(detalle.etapas.getByText('Prioridad Triage 2')).toBeVisible();
-      await expect(detalle.etapas.getByText('Tiempo estimado de resolución: 5 días hábiles')).toBeVisible();
+      await expect(
+        detalle.etapas.getByText('Prioridad Triage 2 · Tiempo estimado de resolución: 5 días hábiles'),
+      ).toBeVisible();
       await expect(detalle.etapas.getByText('Calculando prioridad…')).toHaveCount(0);
       await expect(detalle.dato('Monto estimado')).toContainText('4.800.000 COP');
       await expect(page.getByText(/severidad|monto (alto|medio|bajo)/i)).toHaveCount(0);
@@ -186,7 +188,7 @@ test.describe('Prioridad automática del siniestro (HU-W2.2-01)', () => {
 
     test('un caso sin monto declarado muestra «—» en «Monto estimado»', async ({ page }) => {
       await prepararAsegurado(page, { triage: { estado: 200, cuerpo: triageAsegurado(ID_CASO) } }, `/siniestros/${ID_CASO}`, {
-        detalle: { estado: 200, cuerpo: casoRadicado(HECHO) },
+        detalle: { estado: 200, cuerpo: { ...casoRadicado(HECHO), status: 'in_evaluation' } },
       });
       const detalle = new DetalleSiniestroPagina(page);
 

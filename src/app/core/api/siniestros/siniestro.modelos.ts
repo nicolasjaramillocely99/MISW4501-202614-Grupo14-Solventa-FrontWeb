@@ -9,10 +9,12 @@ import { RamoPoliza } from './radicacion.modelos';
  */
 
 /**
- * Estado del caso: `active` al radicar («Radicado»), `in_evaluation`, y los de la decisión de operaciones
- * (HU-W2.2-03): `approved` (pago en curso), `paid`, `rejected` y `payment_exception`.
+ * Estado del caso: `active` al radicar («Radicado», pendiente de la revisión del asesor), `returned` («Devuelto al
+ * cliente», HU-W2.1-03), `in_evaluation` (aprobado por el asesor) y los de la decisión de operaciones (HU-W2.2-03):
+ * `approved` (pago en curso), `paid`, `rejected` y `payment_exception`.
  */
-export type EstadoSiniestro = 'active' | 'in_evaluation' | 'approved' | 'paid' | 'rejected' | 'payment_exception';
+export type EstadoSiniestro =
+  'active' | 'returned' | 'in_evaluation' | 'approved' | 'paid' | 'rejected' | 'payment_exception';
 
 export type CanalSiniestro = 'web' | 'mobile';
 
@@ -51,6 +53,8 @@ export interface ResumenSiniestro {
   ocurridoEn: string;
   /** Hora del servidor (RFC 3339, UTC); se muestra en la zona del usuario. */
   radicadoEn: string;
+  /** Cuándo llegó a su estado actual (HU-W2.1-02); la radicación si el backend no lo trae. */
+  ultimoCambioEn: string;
 }
 
 /** Detalle del caso: también es la respuesta de la radicación (confirmación A6b). */
@@ -65,6 +69,8 @@ export interface DetalleSiniestro extends ResumenSiniestro {
 /** Filtros de `GET /v1/claims`. Al cambiar un filtro se empieza sin `tokenPagina`. */
 export interface FiltroSiniestros {
   polizaId?: string;
+  /** La etapa del caso (HU-W2.1-02). */
+  estado?: EstadoSiniestro;
   /** `YYYY-MM-DD`: radicados desde ese día a las 00:00 (hora de Colombia). */
   desde?: string;
   /** 1 a 50; 20 por defecto en el backend. */
@@ -76,6 +82,49 @@ export interface PaginaSiniestros {
   items: ResumenSiniestro[];
   /** `null` en la última página. */
   siguienteToken: string | null;
+  /** Conteo de todos los casos del asegurado, sin importar los filtros (HU-W2.1-02, A7); `null` si no llega. */
+  resumen?: ResumenCasos | null;
+}
+
+/** Los indicadores de A7: en curso, pagados en el año y lo que espera al asegurado. */
+export interface ResumenCasos {
+  enCurso: number;
+  porEstado: Partial<Record<EstadoSiniestro, number>>;
+  pagadosAnio: { casos: number; montoMinor: number; moneda: string | null };
+  /** Los devueltos para corregir, del más reciente al más antiguo. */
+  pendientes: { id: string; numeroRadicado: string }[];
+  /** Las pólizas de los siniestros del asegurado: las que ofrece el filtro de A7, también las vencidas. */
+  polizas: PolizaSiniestro[];
+}
+
+/** Enlace firmado para leer un soporte (HU-W2.1-02); vence a los 10 minutos. */
+export interface EnlaceSoporte {
+  soporteId: string;
+  nombreArchivo: string;
+  tipoContenido: string;
+  tamanoBytes: number;
+  url: string;
+  venceEn: string;
+}
+
+export interface EnlaceSoporteDto {
+  support_id: string;
+  file_name: string;
+  content_type: string;
+  byte_size: number;
+  download_url: string;
+  expires_at: string;
+}
+
+export function mapearEnlaceSoporte(dto: EnlaceSoporteDto): EnlaceSoporte {
+  return {
+    soporteId: dto.support_id,
+    nombreArchivo: dto.file_name,
+    tipoContenido: dto.content_type,
+    tamanoBytes: dto.byte_size,
+    url: dto.download_url,
+    venceEn: dto.expires_at,
+  };
 }
 
 interface PolizaSiniestroDto {
@@ -95,6 +144,8 @@ export interface ResumenSiniestroDto {
   incident_type: string;
   occurred_at: string;
   filed_at: string;
+  /** Ausente donde el backend no lo lee. */
+  last_changed_at?: string;
 }
 
 /** Respuesta cruda de `GET /v1/claims/{claim_id}` y de la radicación (201/200). */
@@ -119,6 +170,22 @@ export interface DetalleSiniestroDto extends ResumenSiniestroDto {
 export interface PaginaSiniestrosDto {
   items: ResumenSiniestroDto[];
   next_page_token: string | null;
+  summary?: {
+    in_progress: number;
+    by_status: Partial<Record<EstadoSiniestro, number>>;
+    paid_this_year: { claims: number; amount_minor: number; currency: string | null };
+    pending_action: { claim_id: string; filing_number: string }[];
+    policies?: PolizaSiniestroDto[];
+  };
+}
+
+function mapearPolizaSiniestro(dto: PolizaSiniestroDto): PolizaSiniestro {
+  return {
+    id: dto.policy_id,
+    ramo: dto.line,
+    producto: dto.product,
+    objetoAsegurado: dto.insured_object,
+  };
 }
 
 export function mapearResumenSiniestro(dto: ResumenSiniestroDto): ResumenSiniestro {
@@ -127,15 +194,11 @@ export function mapearResumenSiniestro(dto: ResumenSiniestroDto): ResumenSiniest
     numeroRadicado: dto.filing_number,
     estado: dto.status,
     canal: dto.channel,
-    poliza: {
-      id: dto.policy.policy_id,
-      ramo: dto.policy.line,
-      producto: dto.policy.product,
-      objetoAsegurado: dto.policy.insured_object,
-    },
+    poliza: mapearPolizaSiniestro(dto.policy),
     tipoSiniestro: dto.incident_type,
     ocurridoEn: dto.occurred_at,
     radicadoEn: dto.filed_at,
+    ultimoCambioEn: dto.last_changed_at ?? dto.filed_at,
   };
 }
 
@@ -164,7 +227,24 @@ export function mapearDetalleSiniestro(dto: DetalleSiniestroDto): DetalleSiniest
 }
 
 export function mapearPaginaSiniestros(dto: PaginaSiniestrosDto): PaginaSiniestros {
-  return { items: dto.items.map(mapearResumenSiniestro), siguienteToken: dto.next_page_token };
+  const s = dto.summary;
+  return {
+    items: dto.items.map(mapearResumenSiniestro),
+    siguienteToken: dto.next_page_token,
+    resumen: s
+      ? {
+          enCurso: s.in_progress,
+          porEstado: { ...s.by_status },
+          pagadosAnio: {
+            casos: s.paid_this_year.claims,
+            montoMinor: s.paid_this_year.amount_minor,
+            moneda: s.paid_this_year.currency,
+          },
+          pendientes: s.pending_action.map((p) => ({ id: p.claim_id, numeroRadicado: p.filing_number })),
+          polizas: (s.policies ?? []).map(mapearPolizaSiniestro),
+        }
+      : null,
+  };
 }
 
 /** Códigos estables de las lecturas (listado, detalle y PDF). */

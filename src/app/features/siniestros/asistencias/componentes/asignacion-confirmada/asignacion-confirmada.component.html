@@ -1,0 +1,84 @@
+<section
+  class="tarjeta asignada"
+  aria-labelledby="titulo-asignada"
+  *transloco="let t; prefix: 'siniestros'"
+>
+  @let a = asignacion();
+  <h2 id="titulo-asignada" class="asignada__titulo">{{ t('asignacion.asignado.titulo') }}</h2>
+  <p class="asignada__prestador">{{ a.prestador.nombre }}</p>
+
+  <dl class="asignada__datos">
+    <div>
+      <dt>{{ t('asignacion.asignado.correo') }}</dt>
+      <dd>
+        <a [href]="'mailto:' + a.prestador.correo">{{ a.prestador.correo }}</a>
+      </dd>
+    </div>
+    @if (a.prestador.telefono; as telefono) {
+      <div>
+        <dt>{{ t('asignacion.asignado.telefono') }}</dt>
+        <dd>
+          <a [href]="'tel:' + telefono">{{ telefono }}</a>
+        </dd>
+      </div>
+    }
+    <div>
+      <dt>{{ t('asignacion.asignado.distancia') }}</dt>
+      <dd>
+        {{ t('asignacion.candidatos.km', { distancia: (a.distanciaKm | formatoNumero: 1) }) }}
+      </dd>
+    </div>
+    <div>
+      <dt>{{ t('asignacion.asignado.asignado') }}</dt>
+      <dd>
+        {{
+          t('asignacion.asignado.asignadoValor', {
+            fecha: (a.asignadaEn | formatoFechaHora),
+            nombre: a.asignadaPor.nombre ?? a.asignadaPor.correo,
+          })
+        }}
+      </dd>
+    </div>
+    <div>
+      <dt>{{ t('asignacion.asignado.ubicacion') }}</dt>
+      <dd>
+        {{ coordenadas(t, a.ubicacionCompartida.latitud, a.ubicacionCompartida.longitud) }}
+        @if (a.ubicacionCompartida.precisionM !== null) {
+          · {{ t('asignacion.ubicacion.app', { precision: a.ubicacionCompartida.precisionM }) }}
+        }
+        @if (a.ubicacionCompartida.direccion; as direccion) {
+          <br />{{ direccion }}
+        }
+      </dd>
+    </div>
+  </dl>
+
+  @if (a.aviso.estado === 'sent') {
+    <div class="aviso aviso--exito" role="status">
+      <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+      <p>
+        {{
+          t('asignacion.asignado.avisoEnviado', { fecha: (a.aviso.enviadoEn | formatoFechaHora) })
+        }}
+      </p>
+    </div>
+  } @else {
+    <div class="aviso aviso--informacion" role="status">
+      <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+      <p>
+        {{
+          avisoDetenido()
+            ? t('asignacion.asignado.avisoDetenido')
+            : t('asignacion.asignado.avisoPendiente')
+        }}
+      </p>
+    </div>
+    @if (avisoDetenido()) {
+      <div>
+        <button type="button" class="boton boton--secundario" (click)="actualizar.emit()">
+          {{ t('asignacion.asignado.actualizar') }}
+        </button>
+      </div>
+    }
+  }
+</section>

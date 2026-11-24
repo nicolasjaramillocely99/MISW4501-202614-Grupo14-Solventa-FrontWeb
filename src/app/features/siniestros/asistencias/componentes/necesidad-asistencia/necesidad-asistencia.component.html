@@ -1,0 +1,94 @@
+<div class="necesidad" *transloco="let t; prefix: 'siniestros'">
+  @let n = necesidad();
+  @if (n && !cambiando()) {
+    <p class="necesidad__valor">{{ nombre(t, n.codigo) }}</p>
+    <p class="necesidad__nota">
+      {{
+        t('asistencias.detalle.necesidad.registrada', {
+          analista: n.registradaPor.nombre ?? n.registradaPor.correo,
+          hora: hora(n.registradaEn),
+        })
+      }}
+    </p>
+    @if (estado() === 'in_call') {
+      <button
+        type="button"
+        class="boton boton--terciario necesidad__cambiar"
+        [disabled]="deshabilitado() || registrando()"
+        (click)="cambiar()"
+      >
+        {{ t('asistencias.detalle.necesidad.cambiar') }}
+      </button>
+    }
+  } @else if (estado() === 'new') {
+    <p class="necesidad__nota">{{ t('asistencias.detalle.necesidad.atiendeParaRegistrar') }}</p>
+  } @else if (estado() !== 'in_call') {
+    <p class="necesidad__valor">—</p>
+  } @else if (politicaFallida()) {
+    <div class="necesidad__fallo" role="status">
+      <p class="necesidad__nota">{{ t('asistencias.detalle.necesidad.politicaCaida') }}</p>
+      <button type="button" class="boton boton--terciario" (click)="reintentar.emit()">
+        {{ t('asistencias.detalle.necesidad.reintentar') }}
+      </button>
+    </div>
+  } @else if (opciones(); as lista) {
+    @if (lista.length === 0) {
+      <p class="necesidad__nota">{{ t('asistencias.detalle.necesidad.sinNecesidades') }}</p>
+    } @else {
+      <form class="necesidad__formulario" (submit)="enviar($event)" novalidate>
+        <label class="visualmente-oculto" for="necesidad-asistencia">{{
+          t('asistencias.detalle.necesidad.etiqueta')
+        }}</label>
+        <select
+          #selector
+          id="necesidad-asistencia"
+          class="campo__control necesidad__selector"
+          required
+          [disabled]="deshabilitado() || registrando()"
+          [attr.aria-invalid]="sinElegir() ? 'true' : null"
+          [attr.aria-describedby]="sinElegir() ? 'necesidad-asistencia-error' : null"
+          (change)="elegir($any($event.target).value)"
+        >
+          <option value="" [selected]="elegida() === ''">
+            {{ t('asistencias.detalle.necesidad.seleccionar') }}
+          </option>
+          @for (opcion of lista; track opcion.codigo) {
+            <option [value]="opcion.codigo" [selected]="elegida() === opcion.codigo">
+              {{ nombre(t, opcion.codigo) }}
+            </option>
+          }
+        </select>
+        <div class="necesidad__botones">
+          <button
+            type="submit"
+            class="boton boton--secundario"
+            [disabled]="deshabilitado() || registrando()"
+          >
+            {{
+              registrando()
+                ? t('asistencias.detalle.necesidad.registrando')
+                : t('asistencias.detalle.necesidad.registrar')
+            }}
+          </button>
+          @if (cambiando()) {
+            <button
+              type="button"
+              class="boton boton--terciario"
+              [disabled]="registrando()"
+              (click)="cambiando.set(false)"
+            >
+              {{ t('asistencias.detalle.necesidad.cancelar') }}
+            </button>
+          }
+        </div>
+        @if (sinElegir()) {
+          <p id="necesidad-asistencia-error" class="campo__error">
+            {{ t('asistencias.detalle.necesidad.requerida') }}
+          </p>
+        }
+      </form>
+    }
+  } @else {
+    <p class="necesidad__valor">—</p>
+  }
+</div>

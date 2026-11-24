@@ -1,0 +1,221 @@
+<div class="pagina" *transloco="let t; prefix: 'originacion.endosos'">
+  <a class="volver" routerLink="/originacion/endosos">
+    <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>{{ t('detalle.volver') }}
+  </a>
+
+  @switch (fase()) {
+    @case ('cargando') {
+      <p class="estado" role="status">{{ t('detalle.cargando') }}</p>
+    }
+    @case ('noEncontrada') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-endoso-no-encontrado">
+        <h1 id="titulo-endoso-no-encontrado" class="pagina__titulo">{{ t('detalle.noEncontrada.titulo') }}</h1>
+        <p>{{ t('detalle.noEncontrada.texto') }}</p>
+      </section>
+    }
+    @case ('error') {
+      <section class="tarjeta estado-tarjeta" aria-labelledby="titulo-endoso-error">
+        <h1 id="titulo-endoso-error" class="pagina__titulo">{{ t('detalle.error.titulo') }}</h1>
+        <div class="aviso aviso--error" role="alert">
+          <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('detalle.error.texto') }}</p>
+        </div>
+        <div>
+          <button type="button" class="boton boton--primario" (click)="cargar()">{{ t('detalle.error.reintentar') }}</button>
+        </div>
+      </section>
+    }
+    @default {
+      @if (detalle(); as d) {
+        <header class="encabezado">
+          <div class="encabezado__texto">
+            <div class="encabezado__fila">
+              <h1 class="pagina__titulo">{{ t('detalle.titulo', { id: d.solicitud.solicitudId }) }}</h1>
+              <app-insignia-estado [tono]="tono[d.solicitud.estado]">{{ t('estados.' + d.solicitud.estado) }}</app-insignia-estado>
+            </div>
+            <p class="encabezado__resumen">
+              {{
+                t('detalle.subtitulo', {
+                  tipo: t('detalle.tipos.' + d.solicitud.tipo),
+                  producto: producto(d.poliza.linea),
+                  poliza: d.poliza.polizaId,
+                  titular: d.poliza.titular.nombre,
+                  fecha: (d.solicitud.radicadaEn | formatoFechaHora),
+                  canal: t('canalDesde.' + canal(d.solicitud.canal))
+                })
+              }}
+            </p>
+          </div>
+          <div class="encabezado__acciones">
+            @switch (modo()) {
+              @case ('revision') {
+                <button type="button" class="boton boton--secundario" [disabled]="enviando() !== null" (click)="rechazar()">
+                  {{ enviando() === 'rechazar' ? t('detalle.acciones.procesando') : t('detalle.acciones.rechazar') }}
+                </button>
+                <button type="button" class="boton boton--primario" [disabled]="enviando() !== null" (click)="aplicar()">
+                  <svg lucideCheck [size]="18" aria-hidden="true"></svg>
+                  {{ enviando() === 'aplicar' ? t('detalle.acciones.procesando') : t('detalle.acciones.aplicar') }}
+                </button>
+              }
+              @case ('noAplicado') {
+                <a class="boton boton--secundario" routerLink="/originacion/endosos">{{ t('detalle.acciones.volverBandeja') }}</a>
+                <button type="button" class="boton boton--primario" [disabled]="enviando() !== null" (click)="devolver()">
+                  <svg lucideCheck [size]="18" aria-hidden="true"></svg>
+                  {{ enviando() === 'devolver' ? t('detalle.acciones.procesando') : t('detalle.acciones.devolver') }}
+                </button>
+              }
+              @case ('aplicada') {
+                <a class="boton boton--secundario" [routerLink]="['/originacion/polizas', d.poliza.polizaId, 'endosos']">
+                  {{ t('detalle.acciones.verHistorial') }}
+                </a>
+              }
+              @default {
+                <a class="boton boton--secundario" routerLink="/originacion/endosos">{{ t('detalle.acciones.volverBandeja') }}</a>
+              }
+            }
+          </div>
+        </header>
+
+        @if (alerta(); as a) {
+          @let avisoAccion = aviso(a);
+          <div [class]="'aviso aviso--' + avisoAccion.tono" [attr.role]="avisoAccion.tono === 'exito' ? 'status' : 'alert'">
+            @switch (avisoAccion.tono) {
+              @case ('exito') {
+                <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+              }
+              @case ('advertencia') {
+                <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+              }
+              @case ('informacion') {
+                <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+              }
+              @default {
+                <svg lucideCircleAlert [size]="20" aria-hidden="true"></svg>
+              }
+            }
+            <div>
+              <p class="aviso__titulo">{{ avisoAccion.titulo }}</p>
+              <p>{{ avisoAccion.texto }}</p>
+            </div>
+          </div>
+        }
+
+        @if (modo() === 'noAplicado' || modo() === 'devuelto') {
+          <div class="aviso aviso--error" [attr.role]="modo() === 'noAplicado' ? 'alert' : null">
+            <svg lucideCircleX [size]="20" aria-hidden="true"></svg>
+            <div>
+              @if (modo() === 'noAplicado') {
+                <p class="aviso__titulo">{{ t('detalle.alertas.noAplicado.titulo') }}</p>
+                <p>{{ t('detalle.alertas.noAplicado.texto', { validacion: tituloValidacion(fallida() ?? '') }) }}</p>
+              } @else {
+                @let devuelta = devolucion(d);
+                <p class="aviso__titulo">{{ t('detalle.alertas.devuelto.titulo') }}</p>
+                <p>
+                  {{
+                    t('detalle.alertas.devuelto.texto', {
+                      validacion: tituloValidacion(fallida() ?? ''),
+                      autor: devuelta.autor,
+                      fecha: devuelta.fecha
+                    })
+                  }}
+                </p>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="cuerpo">
+          <div class="cuerpo__principal">
+            <section class="tarjeta" aria-labelledby="titulo-cambio-solicitado">
+              <h2 id="titulo-cambio-solicitado" class="seccion__titulo">{{ t('detalle.cambio.titulo') }}</h2>
+              <app-tabla-cambios [filas]="filas(d)" />
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-validaciones">
+              <h2 id="titulo-validaciones" class="seccion__titulo">{{ t('detalle.validaciones.titulo') }}</h2>
+              <p class="seccion__subtitulo">{{ t('detalle.validaciones.subtitulo') }}</p>
+              @if (validaciones().length > 0) {
+                <app-lista-validaciones [validaciones]="validaciones()" />
+              } @else {
+                <p class="seccion__vacio">{{ t('detalle.validaciones.sinValidaciones') }}</p>
+              }
+            </section>
+
+            @if (modo() === 'revision' || modo() === 'noAplicado') {
+              <div class="campo observaciones">
+                <label class="campo__etiqueta" for="observaciones-endoso">
+                  {{ modo() === 'noAplicado' ? t('detalle.observaciones.etiquetaDevolver') : t('detalle.observaciones.etiqueta') }}
+                </label>
+                <textarea
+                  #campoObservaciones
+                  id="observaciones-endoso"
+                  class="campo__control observaciones__control"
+                  rows="2"
+                  [attr.maxlength]="maximo"
+                  [value]="observaciones()"
+                  [attr.aria-invalid]="errorObservaciones() ? 'true' : null"
+                  [attr.aria-describedby]="
+                    errorObservaciones() ? 'observaciones-endoso-error observaciones-endoso-ayuda' : 'observaciones-endoso-ayuda'
+                  "
+                  (input)="escribir($event)"
+                ></textarea>
+                @if (errorObservaciones()) {
+                  <p id="observaciones-endoso-error" class="campo__error">
+                    <svg lucideCircleAlert [size]="16" aria-hidden="true"></svg>{{ t('detalle.observaciones.error') }}
+                  </p>
+                }
+                <p id="observaciones-endoso-ayuda" class="observaciones__ayuda">{{ t('detalle.observaciones.ayuda') }}</p>
+              </div>
+            } @else if (modo() === 'devuelto' || modo() === 'rechazada') {
+              <section class="observaciones" aria-labelledby="titulo-observaciones-endoso">
+                <h2 id="titulo-observaciones-endoso" class="campo__etiqueta">{{ t('detalle.observaciones.etiquetaRegistradas') }}</h2>
+                <p class="observaciones__registradas">{{ d.decision?.observaciones ?? d.solicitud.motivo }}</p>
+                <p class="observaciones__ayuda">{{ t('detalle.observaciones.ayuda') }}</p>
+              </section>
+            }
+          </div>
+
+          <aside class="cuerpo__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-poliza-endoso">
+              <h2 id="titulo-poliza-endoso" class="seccion__titulo">{{ t('detalle.poliza.titulo') }}</h2>
+              <dl class="datos">
+                <div>
+                  <dt>{{ t('detalle.poliza.estado') }}</dt>
+                  <dd>
+                    <app-insignia-estado [tono]="d.poliza.vigente ? 'exito' : 'neutro'">
+                      {{ d.poliza.vigente ? t('detalle.poliza.activa') : t('detalle.poliza.noVigente') }}
+                    </app-insignia-estado>
+                  </dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.poliza.valorAsegurado') }}</dt>
+                  <dd>{{ d.poliza.valorAsegurado | formatoMoneda: d.poliza.moneda }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.poliza.prima') }}</dt>
+                  <dd>{{ d.poliza.prima | formatoMoneda: d.poliza.moneda }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t('detalle.poliza.endososPrevios') }}</dt>
+                  <dd>
+                    <a class="enlace" [routerLink]="['/originacion/polizas', d.poliza.polizaId, 'endosos']"
+                      >{{ endososPrevios(d)
+                      }}<span class="visualmente-oculto"> · {{ t('detalle.poliza.verHistorial', { poliza: d.poliza.polizaId }) }}</span></a
+                    >
+                  </dd>
+                </div>
+              </dl>
+            </section>
+
+            @if (panel(d); as p) {
+              <section class="recuadro" aria-labelledby="titulo-panel-endoso">
+                <h2 id="titulo-panel-endoso" class="seccion__titulo">{{ p.titulo }}</h2>
+                <p>{{ p.texto }}</p>
+              </section>
+            }
+          </aside>
+        </div>
+      }
+    }
+  }
+</div>

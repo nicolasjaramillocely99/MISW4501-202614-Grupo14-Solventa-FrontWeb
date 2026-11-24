@@ -26,6 +26,36 @@ export interface GuionSiniestros {
   radicaciones: RespuestaSimulada[];
   detalle: RespuestaSimulada;
   listado: RespuestaSimulada[];
+  /**
+   * `GET /v1/claims/{id}/history` (A8, HU-W2.1-02). Por omisión, el historial del caso de `detalle`: su radicación y,
+   * si ya no está activo, el cambio a su estado.
+   */
+  historial?: RespuestaSimulada;
+}
+
+/** El historial mínimo de un caso: su radicación y, si cambió, el paso a su estado actual. */
+export function historialDe(caso: Record<string, unknown>): Record<string, unknown> {
+  const estado = caso['status'] as string;
+  const radicado = caso['filed_at'] as string;
+  const cambios: Record<string, unknown>[] = [{ id: 1, status: 'active', previous_status: null, changed_at: radicado }];
+  if (estado !== 'active') {
+    cambios.push({ id: 2, status: estado, previous_status: 'active', changed_at: radicado });
+  }
+  return {
+    claim_id: caso['claim_id'],
+    filing_number: caso['filing_number'],
+    status: estado,
+    last_changed_at: radicado,
+    changes: cambios,
+    reviews: [],
+    last_return: null,
+    resubmissions: [],
+    requirements: [],
+    decision: null,
+    provider: null,
+    stale: false,
+    as_of: radicado,
+  };
 }
 
 /** Peticiones que recibió el gateway simulado. */
@@ -183,6 +213,11 @@ export class RadicacionSiniestroPagina {
         llamadas.listados.push(searchParams.toString());
         const indice = Math.min(llamadas.listados.length - 1, guion.listado.length - 1);
         await responder(ruta, guion.listado[indice]);
+      } else if (pathname.endsWith('/history') && metodo === 'GET') {
+        await responder(
+          ruta,
+          guion.historial ?? { estado: 200, cuerpo: historialDe(guion.detalle.cuerpo as Record<string, unknown>) },
+        );
       } else if (metodo === 'GET') {
         llamadas.detalles.push(pathname);
         await responder(ruta, guion.detalle);

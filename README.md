@@ -26,6 +26,7 @@ Tomado de [Definición de frameworks y ambientes](https://github.com/leonelparra
 | Estilos | SCSS con los tokens del sistema de diseño | — |
 | Internacionalización | Transloco (diccionarios JSON cargados en tiempo de ejecución) + API `Intl` del navegador | 8.4 |
 | Iconografía | Lucide (`@lucide/angular`) | 1.53 |
+| Mapas | Leaflet + teselas de OpenStreetMap (carga perezosa; asignación del prestador, HU-W2.3-01) | 1.9 |
 | Pruebas unitarias y de componente | Vitest + Testing Library (`@testing-library/angular`, `jest-dom`, `user-event`) | 4 / 19.5 |
 | Pruebas extremo a extremo | Playwright (Chrome de referencia) | 1.64 |
 | Accesibilidad | axe-core sobre Playwright | 4.13 |

@@ -1,0 +1,136 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-cerrar-caso"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'siniestros.intervencion'"
+>
+  @if (abierto()) {
+    <form class="modal__contenido" (submit)="enviar($event)" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-cerrar-caso" class="modal__titulo">
+          {{ t('cerrarCaso.titulo', { radicado: radicado() }) }}
+        </h2>
+        <button
+          type="button"
+          class="modal__cerrar"
+          [attr.aria-label]="t('cerrarCaso.cerrar')"
+          [disabled]="cerrando()"
+          (click)="pedirCierre()"
+        >
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">{{ t('cerrarCaso.texto') }}</p>
+
+      @if (faltantes().length > 0) {
+        <div class="aviso aviso--advertencia" role="alert">
+          <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+          <p>{{ t('cerrarCaso.faltan', { pasos: listaFaltantes(t) }) }}</p>
+        </div>
+      } @else {
+        <div class="campo">
+          <label class="campo__etiqueta" for="cierre-resultado">{{
+            t('cerrarCaso.resultado')
+          }}</label>
+          <select
+            id="cierre-resultado"
+            class="campo__control"
+            required
+            [value]="resultado()"
+            [attr.aria-invalid]="errorDe('result') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('result') ? 'cierre-resultado-error' : null"
+            (change)="elegir($any($event.target).value)"
+          >
+            <option value="">{{ t('cerrarCaso.elegir') }}</option>
+            @for (r of resultados; track r) {
+              <option [value]="r">{{ t('resultados.' + r) }}</option>
+            }
+          </select>
+          @if (errorDe('result'); as codigo) {
+            <p id="cierre-resultado-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="cierre-fecha">{{ t('cerrarCaso.fecha') }}</label>
+          <input
+            id="cierre-fecha"
+            class="campo__control"
+            type="datetime-local"
+            required
+            [max]="ahora()"
+            [value]="fecha()"
+            [attr.aria-invalid]="errorDe('closed_at') ? 'true' : null"
+            [attr.aria-describedby]="errorDe('closed_at') ? 'cierre-fecha-error' : null"
+            (input)="cambiarFecha($any($event.target).value)"
+          />
+          @if (errorDe('closed_at'); as codigo) {
+            <p id="cierre-fecha-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="cierre-observaciones">{{
+            t('cerrarCaso.observaciones')
+          }}</label>
+          <textarea
+            id="cierre-observaciones"
+            class="campo__control campo__control--area"
+            rows="3"
+            [attr.maxlength]="maxObservaciones"
+            [value]="observaciones()"
+            [attr.aria-invalid]="errorDe('notes') ? 'true' : null"
+            [attr.aria-describedby]="
+              errorDe('notes') ? 'cierre-observaciones-error' : 'cierre-observaciones-ayuda'
+            "
+            (input)="cambiarObservaciones($any($event.target).value)"
+          ></textarea>
+          @if (errorDe('notes'); as codigo) {
+            <p id="cierre-observaciones-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+          } @else {
+            <p id="cierre-observaciones-ayuda" class="modal__texto">
+              {{ t('cerrarCaso.ayudaObservaciones') }}
+            </p>
+          }
+        </div>
+
+        <div class="campo">
+          <label class="confirmacion">
+            <input
+              type="checkbox"
+              [checked]="confirmado()"
+              [attr.aria-invalid]="errorDe('confirmacion') ? 'true' : null"
+              [attr.aria-describedby]="errorDe('confirmacion') ? 'cierre-confirmacion-error' : null"
+              (change)="confirmar($any($event.target).checked)"
+            />
+            {{ t('cerrarCaso.confirmo') }}
+          </label>
+          @if (errorDe('confirmacion'); as codigo) {
+            <p id="cierre-confirmacion-error" class="campo__error">{{ t('campos.' + codigo) }}</p>
+          }
+        </div>
+      }
+
+      <div class="modal__acciones">
+        <button
+          type="button"
+          class="boton boton--secundario"
+          [disabled]="cerrando()"
+          (click)="pedirCierre()"
+        >
+          {{ t('cerrarCaso.cancelar') }}
+        </button>
+        <button
+          type="submit"
+          class="boton boton--primario"
+          [disabled]="cerrando() || faltantes().length > 0"
+        >
+          {{ cerrando() ? t('cerrarCaso.cerrando') : t('cerrarCaso.confirmar') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

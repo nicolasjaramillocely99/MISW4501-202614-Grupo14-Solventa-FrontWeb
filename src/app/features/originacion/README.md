@@ -27,18 +27,19 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [A1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=17-266) | Mis pólizas | `/originacion/polizas` | Asegurado | HU-W1.5-02, HU-W1.6-02 | S2 |
-| [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02 | S3 |
-| [O4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4018) | Historial de endosos de la póliza | `/originacion/polizas/:id/endosos` | Analista de operaciones | HU-W1.4-03 | Could (fuera de alcance) |
+| [A1](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=17-266) | Mis pólizas | `/originacion/polizas` | Asegurado | HU-W1.5-02, HU-W1.6-02, HU-W1.6-01 | S2 |
+| [A2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-304), [A2b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=19-666) | Detalle de la póliza (y cancelada por no pago) | `/originacion/polizas/:id` | Asegurado | HU-W1.6-02, HU-W1.4-01, HU-W1.6-01 | S3 |
+| [O4](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=39-4018) | Historial de endosos de la póliza | `/originacion/polizas/:id/endosos` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
 
 ### `endosos/` — F1.4 · Gestión de modificaciones y endosos
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [O2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3012) | Bandeja de endosos | `/originacion/endosos` | Analista de operaciones | HU-W1.4-02 | S3 |
-| [A11](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=291-6869) | Mis solicitudes | `/originacion/solicitudes` | Asegurado | HU-W1.4-01 | S3 |
-| [O3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3402), [O3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=836-9166) | Detalle del endoso (y validación fallida) | `/originacion/endosos/:id` | Analista de operaciones | HU-W1.4-02 | S3 |
-| [A3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-529), [A3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-866) | Solicitud de modificación (autogestión) | `/originacion/polizas/:id/modificar` | Asegurado | HU-W1.4-01 | S3 |
+| [O2](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3012) | Bandeja de endosos | `/originacion/endosos` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
+| [A11](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=291-6869) | Mis solicitudes | `/originacion/solicitudes` | Asegurado | HU-W1.4-01 | S3 (implementada) |
+| [O3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=34-3402), [O3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=836-9166) | Detalle del endoso (y validación fallida) | `/originacion/endosos/:id` | Analista de operaciones | HU-W1.4-02 | S3 (implementada) |
+| [A3](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-529) | Solicitud de modificación (autogestión) | `/originacion/polizas/:id/modificar` | Asegurado | HU-W1.4-01 | S3 (implementada) |
+| [A3b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=20-866) | Solicitud radicada y su estado | `/originacion/solicitudes/:id` | Asegurado | HU-W1.4-01 | S3 (implementada) |
 
 ### `renovaciones/` — F1.5 · Renovación de pólizas
 
@@ -52,7 +53,7 @@
 
 | Figma | Pantalla | Ruta propuesta | Roles | Historias | Sprint |
 |---|---|---|---|---|---|
-| [A5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-972), [A5b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-1211) | Cancelación con reembolso prorrateado | `/originacion/polizas/:id/cancelar` | Asegurado | HU-W1.6-01 | S3 |
+| [A5](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-972), [A5b](https://www.figma.com/design/ZBPl5l9oXTPlfiOHrzCM2M/Solventa-%25E2%2580%2594-Prototipo-S7-%25E2%2580%2594-Pantallas?node-id=21-1211) | Cancelación con reembolso prorrateado (A5b se ve en el detalle de la póliza) | `/originacion/polizas/:id/cancelar`; A5b en `/originacion/polizas/:id` | Asegurado | HU-W1.6-01 | S3 (implementada) |
 
 ### `emisiones/` — F1.3 · Monitoreo de emisiones y excepciones de cobro
 
@@ -177,10 +178,202 @@ rechazado la solicitud se conserva y se reutiliza `FormularioMedioPagoComponent`
 - Se contrastó con las capturas de A1, A4 y A4b del prototipo. Diferencias: **sin el botón «Hablar con un asesor»** (no hay canal de contacto en el
   sistema), **sin la fila de deducible** (el contrato no la trae), título genérico «Renovar póliza» (no hay producto) y el cobro se hace **al
   aceptar**, como pide el criterio 2 (A4b lo muestra «programado» para el fin de la vigencia). En A1 faltan el producto, el filtro por producto, la
-  tarjeta de siniestros en curso, las pólizas canceladas («Cancelada», «No pago») y «Ver detalle» (A2, HU-W1.6-02), que no existen en el contrato.
+  tarjeta de siniestros en curso y la cancelación voluntaria («Cancelada», HU-W1.6-01), que no existían en el contrato. «No pago» y «Ver detalle» llegaron con HU-W1.6-02 y «Cancelada» con HU-W1.6-01.
 - **No hay mockup** de «fuera de la ventana», «pago rechazado», «sin medio de pago» ni «no renovada» (la wiki ya lo anotaba): se diseñaron desde los
   criterios con los mismos componentes de A4.
 - E2E: `e2e/flujos/cotizacion-emision/renovacion.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
+
+**Pólizas próximas a vencer (HU-W1.5-01)** — `renovaciones/polizas-por-vencer.page.ts` (`PolizasPorVencerPage`, S6), ruta
+`/originacion/renovaciones` en `originacion.routes.ts` (bloque `renovaciones` con `rolGuard('asesor')`; el ítem «Renovaciones» del menú
+del asesor ya existía). Contrato: `docs/contratos/HU-W1.5-01-api.md` del backend (`openapi.yaml` v0.14.0). Cliente:
+`core/api/originacion/polizas-por-vencer.modelos.ts` y `OriginacionApiService.listarPolizasPorVencer` (`GET /v1/policies/expiring`).
+
+- **S6:** título «Renovaciones», tarjeta «Vencen en N días» (las pólizas con el periodo abierto que vencen dentro de la ventana de
+  renovación, sin los filtros), filtros «Vencen desde», «Hasta» y «Estado» con etiqueta permanente, conteo «N resultados» y la tabla
+  Póliza · Cliente (nombre y documento) · Producto · Vence · Prima · Estado · acción. Las fechas son días civiles de Colombia, como el
+  filtro del backend.
+- **Filtro en la URL** (`renovaciones/modelos/filtro-por-vencer.ts`): `?desde=&hasta=&estado=&pagina=`. Sin rango, el backend aplica la
+  ventana de renovación desde hoy (`RENEWAL_WINDOW_DAYS` de HU-W1.5-02) y los campos muestran el rango aplicado; cambiar un filtro vuelve
+  a la página 1, paginar lo conserva y recargar lo mantiene. «Hasta» anterior a «Vencen desde» se avisa en el campo y no se consulta.
+- **Estados:** *Por vencer* (sin renovación del periodo) y *Renovación en curso* (renovación aceptada y en cobro); un estado que el cliente
+  no conoce se muestra con una insignia neutra (el contrato es ampliable para HU-W1.6-02).
+- **Acciones (CA-4):** *Renovar* solo cuando el backend dice `can_renew` (dentro de la ventana de renovación) y *Ver* en la renovación en
+  curso; los dos llevan a `/originacion/renovaciones/:id` con el `policy_id`, la renovación asistida de HU-W1.5-03, que agrega su hijo
+  `:id` al mismo bloque de rutas. Fuera de la ventana la fila dice «Renovable desde el …».
+- **Sin resultados (CA-3):** la tabla conserva los encabezados y muestra «Sin pólizas por vencer en el rango» con el rango y el estado
+  aplicados y «Limpiar filtros», que vuelve al rango por defecto. Error del servicio con «Reintentar»; 401 y 403 los resuelve el interceptor.
+  Paginación «Anterior / Siguiente» de 20 filas, solo con más de una página.
+- **Diferencias con el frame S6, por datos que no existen todavía:** sin el filtro «Producto» (originación solo emite pólizas de vida: la columna dice «Vida») y el documento sin el tipo
+  (la póliza no lo guarda). Las pólizas del núcleo de pólizas (Autos, Hogar, Viaje) no se listan: originación no las renueva.
+- E2E: `e2e/flujos/originacion/polizas-por-vencer.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado) y
+  el humo `e2e/nube/polizas-por-vencer.spec.ts` (proyecto `nube`).
+
+**Solicitud de modificación del asegurado (HU-W1.4-01)** — `endosos/solicitar-modificacion.page.ts` (`SolicitarModificacionPage`,
+A3), `endosos/solicitud-modificacion.page.ts` (`SolicitudModificacionPage`, A3b) y `endosos/mis-solicitudes.page.ts`
+(`MisSolicitudesPage`, A11), rutas `/originacion/polizas/:id/modificar`, `/originacion/solicitudes/:id` y `/originacion/solicitudes`
+en `originacion.routes.ts` (`rolGuard('asegurado')`; el menú del asegurado ya tenía «Mis solicitudes»). Contrato:
+`docs/contratos/HU-W1.4-01-api.md` del backend (servicio `origination`, `openapi.yaml` v0.16.0).
+
+- Llama a `OriginacionApiService`: `consultarCondicionesVigentes`, `radicarSolicitudModificacion`, `listarMisSolicitudes` y
+  `consultarSolicitudModificacion`. Los errores llegan como `ErrorSolicitudModificacion` con el código estable del contrato;
+  `validation_failed` trae **todos** los campos y `change_request_open` la solicitud abierta. Los modelos
+  (`core/api/originacion/solicitud-modificacion.modelos.ts`) proyectan el estado que ve el asegurado: `not_applied` sin motivo es
+  «En revisión» y con motivo «Rechazada» (ajuste A-1); HU-W1.4-02 puede reutilizarlos.
+- **A3:** «Tipo de cambio» (beneficiarios, sumas aseguradas, datos personales) y la captura de cada uno en `endosos/componentes/`
+  (`tipo-cambio`, `cambio-beneficiarios` con el beneficiario oneroso «No modificable», `cambio-suma-asegurada`,
+  `cambio-datos-personales` con el correo de contacto de la póliza), con `resumen-cambio` y `antes-de-radicar` a la derecha. Las
+  reglas de la captura (`endosos/modelos/validaciones-cambio.ts`) son las mismas del servicio y usan sus nombres de campo, así que un
+  `422` se pinta igual que un error propio; «Radicar solicitud» sigue deshabilitado mientras haya errores o se envíe. Un tipo con una
+  solicitud abierta queda bloqueado con «Ver solicitud»; una póliza no vigente (también la cancelada por no pago de HU-W1.6-02,
+  ajuste A-9) no deja radicar. El regreso va a «Mis pólizas» (decisión D-12).
+- **A3b:** identificador, insignia (`componentes/estado-solicitud`) y pasos Radicada → En revisión → Aplicada o Rechazada, tipo,
+  tiempo estimado o fecha de la decisión y «Radicada por … · portal web». «Tu solicitud quedó radicada» solo al venir de radicar;
+  rechazada muestra el motivo y «Radicar una nueva».
+- **A11:** indicadores (en revisión, aplicadas este año, rechazadas) sin los filtros, filtros Estado, Póliza y Desde en la URL
+  (`endosos/modelos/filtro-solicitudes.ts`), tabla con «Ver detalle», paginación, vacío y error.
+- **A1:** «Solicitar modificación» en cada póliza en vigor de «Mis pólizas»; no en una cancelada por no pago (ajuste A-9).
+- **A2 (ajuste A-10):** en el detalle de una póliza que no está cancelada, «Solicitar modificación» lleva a A3; la tarjeta
+  «Beneficiarios» muestra los vigentes con el oneroso (`consultarCondicionesVigentes`, con los formatos de A3 de
+  `endosos/modelos/formato-beneficiario.ts`) y su «Modificar» también lleva a A3 (A3 no elige el tipo por la URL); «Mis solicitudes»
+  muestra las cinco más recientes de la póliza con su estado (`listarMisSolicitudes` con la póliza) y «Ver todas» abre A11 filtrada
+  por ella (`?poliza=`). Cada tarjeta tiene su carga, su error con «Reintentar» y su texto vacío. Una póliza cancelada no muestra ni
+  consulta nada de esto.
+- Textos en `originacion.solicitudes.*`. E2E: `e2e/flujos/originacion/solicitud-modificacion.spec.ts` (API Gateway y Cognito
+  simulados con `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/solicitud-modificacion.spec.ts`.
+- **Fuera:** revisar y aplicar la solicitud y el correo del resultado (HU-W1.4-02), adjuntar soportes y las pólizas del núcleo
+  (Autos, Hogar: originación no puede cambiarlas).
+
+**Endosos del analista de operaciones (HU-W1.4-02)** — `endosos/bandeja-endosos.page.ts` (`BandejaEndososPage`, O2),
+`endosos/detalle-endoso.page.ts` (`DetalleEndosoPage`, O3 y O3b) y `polizas/historial-endosos.page.ts` (`HistorialEndososPage`, O4),
+rutas `/originacion/endosos` y `/originacion/endosos/:id` (bloque `endosos`, `rolGuard('operaciones')`) y
+`/originacion/polizas/:id/endosos` (`canActivate: [rolGuard('operaciones')]`, declarada antes del bloque `polizas` del asegurado para
+que la resuelva primero). En el menú de operaciones, «Endosos» queda activo también en el historial (`tambienEn`). Contrato:
+`docs/contratos/HU-W1.4-02-api.md` del backend (servicio `origination`, `openapi.yaml` v0.19.0).
+
+- Llama a `OriginacionApiService`: `listarSolicitudesEndoso`, `iniciarRevisionEndoso`, `consultarSolicitudEndoso`, `aplicarEndoso`,
+  `rechazarSolicitudEndoso`, `devolverSolicitudEndoso` y `consultarHistorialEndosos`. Los errores llegan como `ErrorEndoso` con el
+  código estable del contrato (`request_already_decided` y `not_returnable` traen el estado que dejó el otro analista;
+  `validation_unverifiable`, las validaciones sin respuesta). Los modelos (`core/api/originacion/endosos.modelos.ts`) reutilizan los
+  tipos de la solicitud de HU-W1.4-01.
+- **O2 · Bandeja:** tres indicadores (pendientes y cuántas llevan más de 24 h; aplicados hoy y su tiempo medio; rechazados o no
+  aplicados en 7 días y el motivo más frecuente), filtros «Tipo de cambio», «Estado» («Pendientes» por defecto) y «Radicada desde» en la
+  URL (`endosos/modelos/filtro-endosos.ts`), conteo, tabla con el titular y su documento, paginación de 20 filas, vacío, sin resultados y
+  error. *Revisar* toma la solicitud radicada (pasa a «En revisión») y abre el detalle; *Continuar* abre una en revisión o una no aplicada
+  sin devolver; *Ver*, lo decidido.
+- **O3 · Detalle:** «Cambio solicitado» con el valor anterior y el nuevo (`endosos/componentes/tabla-cambios`: cada beneficiario y el
+  oneroso «Sin cambio»; el valor asegurado con la prima mensual que recalcula el motor; cada dato de contacto), «Validaciones de negocio»
+  con «Cumple», «No cumple» o «No verificable» (`endosos/componentes/lista-validaciones`), el panel «Póliza» con «Endosos previos»
+  enlazado al historial y el panel «Al aplicar». Los textos del cambio y de las validaciones se arman con funciones puras
+  (`endosos/modelos/formato-endoso.ts`) que también usa el historial. *Aplicar endoso* deja la solicitud aplicada con su número o
+  registra el intento no aplicado; *Rechazar* exige observaciones de 10 a 500 caracteres, visibles para el asegurado. Un `503` avisa qué
+  validación no se pudo verificar y no cambia nada; un `409` avisa que otro analista ya decidió (o que otro endoso de la póliza se aplicó
+  antes) y recarga el detalle.
+- **O3b · No aplicado:** alerta con la validación que no se cumple, panel «Por qué no se aplicó», *Volver a la bandeja* y *Devolver al
+  asegurado* con observaciones obligatorias. Lo decidido (aplicada, rechazada o devuelta) se ve en solo lectura con el autor, la fecha y
+  las observaciones.
+- **O4 · Historial:** «Solo lectura», el conteo, el aviso «Registro inmutable» y la tabla con los endosos aplicados y los intentos no
+  aplicados (fecha y hora, número o «No aplicado», qué cambió con la solicitud de origen y la validación que falló, valor anterior y
+  nuevo, quién y su rol); una póliza sin endosos muestra el historial vacío sin errores.
+- Textos en `originacion.endosos.*`. E2E: `e2e/flujos/originacion/endosos.spec.ts` (API Gateway con estado y Cognito simulados con
+  `page.route`, axe-core en cada estado) y el humo de solo lectura `e2e/nube/endosos.spec.ts`.
+- **Fuera:** «Exportar» de la bandeja y del historial (decisión D-11), el cobro de la diferencia de prima de una nueva suma asegurada y
+  la fila «Emisión inicial» del historial (la emisión no es un endoso).
+
+**Cancelación de póliza por incumplimiento de pago (HU-W1.6-02)** — `polizas/detalle-poliza.page.ts` (`DetallePolizaPage`, A2 y A2b),
+ruta `/originacion/polizas/:id` (bloque `polizas`, `rolGuard('asegurado')`), los cambios de A1 y de S6. Contrato:
+`docs/contratos/HU-W1.6-02-api.md` del backend (`openapi.yaml` 0.17.0). Cliente: `core/api/originacion/pago-poliza.modelos.ts` (pago,
+cancelación y meses de la prima), `detalle-poliza.modelos.ts` y `OriginacionApiService.consultarPoliza` (`GET /v1/policies/{id}`).
+
+- **Reglas (del backend):** la prima es mensual; cada cuota vence el día del mes en que empezó la vigencia; 30 días de gracia con
+  cobertura y tres cobros (días 1, 8 y 15); el día 31 la póliza se cancela sin reembolso y se avisa por correo y *push* (no SMS).
+- **Estado de la póliza** (`polizas/modelos/estado-poliza.ts`, compartido por A1 y A2): *No pago* (cancelada) pesa más que todo; luego la
+  renovación; luego *Pago pendiente* (cuota en gracia), que pesa más que *Por vencer* porque se cancela antes. *Pago pendiente* cuenta
+  como activa.
+- **A1:** las insignias *Pago pendiente* y *No pago*, un aviso de la póliza en gracia con la fecha de cancelación, la vigencia de una
+  cancelada hasta el día de la cancelación con «Cancelada por no pago · sin reembolso», el número de póliza enlazado al detalle y
+  «Ver detalle» cuando no hay renovación que ofrecer.
+- **A2:** resumen (prima mensual, valor asegurado, vigencia, estado de pago con el próximo cobro y medio de pago), coberturas e
+  historial de cobros. En gracia, un aviso con el próximo cobro y la fecha de cancelación.
+- **A2b:** aviso de la cancelación, «Detalle de la cancelación» (fecha, motivo con la cuota, reembolso *No aplica*, último pago, periodo de
+  gracia y aviso enviado), coberturas *sin vigencia*, historial (cancelación, cuota rechazada con sus intentos y motivo, pagos) y
+  «¿Qué puedo hacer?».
+- **S6 (asesor):** la tarjeta «Canceladas por no pago» con el contador de los últimos 30 días, el estado *Cancelada por no pago* en el
+  filtro y en la fila, sin vencimiento («—») ni acción.
+- **Botones del prototipo:** todos en la interfaz. «Descargar póliza» y «Condiciones particulares» descargan el documento contractual
+  (HU-W1.3-03); los que no tienen historia (condiciones generales, certificado, «Hablar con un asesor», «Solicitar nueva
+  cotización») quedan deshabilitados con «Disponible próximamente»; «Cancelar póliza» lo conecta HU-W1.6-01 (en su sección). «Solicitar modificación», «Beneficiarios» y «Mis solicitudes» los
+  conecta HU-W1.4-01 (ajuste A-10, en su sección). La
+  notificación dice «Correo y push», no «Correo y SMS». En S6 la fila cancelada no tiene «Ver»: la renovación asistida no aplica a ella.
+- E2E: `e2e/flujos/originacion/cancelacion-no-pago.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada estado).
+
+**Cancelación de póliza con reembolso prorrateado (HU-W1.6-01)** — `cancelaciones/cancelar-poliza.page.ts` (`CancelarPolizaPage`,
+A5), ruta `/originacion/polizas/:id/cancelar` (bloque `polizas`, antes de `:id`, `rolGuard('asegurado')`), y
+`cancelaciones/componentes/detalle-cancelacion/` (`DetalleCancelacionComponent`, A5b), que muestra el detalle de la póliza
+(`/originacion/polizas/:id`) cuando la cancelación fue a solicitud del asegurado. Contrato: `docs/contratos/HU-W1.6-01-api.md` del backend
+(`openapi.yaml` 0.20.0), con la regla del cálculo. Cliente: `core/api/originacion/cancelacion.modelos.ts` (cotización, solicitud, reembolso
+y errores) y `OriginacionApiService.cotizarCancelacion` y `cancelarPoliza`; `CancelacionPoliza` (`pago-poliza.modelos.ts`) es una unión por
+motivo: `non_payment` (HU-W1.6-02) o `insured_request`.
+
+- **A5:** antes de confirmar (CA-1), «Cálculo del reembolso» con la prima pagada del mes en curso y su periodo, los días no utilizados
+  («14 de 30»), el prorrateo, el método (el medio de pago de la emisión), la fecha efectiva («Hoy, …, al final del día») y el plazo, y la
+  tarjeta «Monto a reembolsar». El motivo de la lista (`cancelaciones/modelos/motivos-cancelacion.ts`) y la casilla «Entiendo que la
+  cancelación es definitiva…» habilitan «Confirmar cancelación», que envía el monto que vio el asegurado (CA-2) y vuelve al detalle.
+  «Conservar mi póliza» vuelve al detalle sin cambios y «¿Prefieres otra opción?» lleva a A3.
+- **Estados de A5 en la misma página:** reembolso 0 con la cuota del mes en gracia («No aplica»), bloqueada por una renovación en curso,
+  póliza no vigente, monto cambiado (`409 refund_changed`: muestra el nuevo y desmarca la casilla), cobro de la cuota en curso
+  (`409 payment_in_progress`), error al calcular con «Reintentar» y póliza ya cancelada (va al detalle).
+- **A5b:** aviso «Cancelación registrada», «Detalle del reembolso» (monto, método, referencia `REF-…`, fecha de la cancelación con hora,
+  motivo y estado del reembolso: *En proceso*, *Reembolsado*, *No se pudo procesar* o *Sin reembolso*) y «Estado de la póliza» (la
+  cobertura terminó, los documentos siguen disponibles, no se reactiva). Sin «Descargar constancia» ni correo.
+- **A1:** estado nuevo *Cancelada* (insignia gris), «Cancelada a solicitud · reembolso $ …» en la fila y la vigencia hasta la fecha
+  efectiva; *Cancelada* también en el filtro.
+- **A2:** «Cancelar póliza» pasa de deshabilitado a enlace hacia A5.
+- E2E: `e2e/flujos/originacion/cancelacion-reembolso.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada
+  estado) y `e2e/nube/cancelacion.spec.ts` (portal desplegado, solo con `E2E_NUBE=1`).
+
+**Renovación asistida con recotización (HU-W1.5-03)** — `renovaciones/renovacion-asistida.page.ts` (`RenovacionAsistidaPage`, S7 y S7b),
+ruta `/originacion/renovaciones/:id` (el `policy_id`) en el bloque `renovaciones` de `originacion.routes.ts` (`rolGuard('asesor')`). Se
+entra desde S6 por «Renovar» o «Ver». Contrato: `docs/contratos/HU-W1.5-03-api.md` del backend (`openapi.yaml` v0.15.0). Cliente:
+`core/api/originacion/renovacion-asistida.modelos.ts` y los métodos `consultarRenovacionAsistida`, `recotizarRenovacion`,
+`enviarCodigoRenovacion` y `formalizarRenovacion` de `OriginacionApiService`; la póliza nueva usa `consultarEmisionContractual` y
+`descargarDocumentoContractual`. Todo sale del `GET`, así que la pantalla funciona al recargarse.
+
+- **S7 · Renovación asistida:** encabezado con «← Renovaciones», el título con la póliza, «Vence el …», el titular, su documento y el
+  producto; «Recotizar» (se desactiva mientras recotiza, sin doble envío) y «Formalizar renovación». Debajo, el comparativo de la
+  vigencia actual con la recotizada (`componentes/comparativo-condiciones/`: prima con su variación, vigencia, valor asegurado, descuento
+  por buena experiencia y coberturas, «Sin cambios» si coinciden) y la aceptación del cliente (`componentes/aceptacion-cliente/`). A la
+  derecha, «Nueva prima mensual» y el panel «Recotización» (`componentes/trazabilidad-recotizacion/`): cada fuente con su estado y
+  latencia, el motor de rating con su versión y sus factores, y la nota del perfil usado.
+- **Aceptación del cliente (CA-2):** los tres medios de HU-W1.1-03 (llamada grabada, firma remota con su referencia, o código de
+  confirmación que el servicio envía al titular por correo: «Enviar código», hasta tres envíos, y el campo de 6 dígitos), la fecha y hora
+  (ni futura ni anterior a la recotización) y la casilla «El cliente aceptó las condiciones recotizadas y autorizó el cobro con su medio de
+  pago registrado». «Formalizar renovación» solo se habilita con la recotización vigente y la aceptación completa; los errores por campo
+  y los del código se muestran junto al campo. Los campos tienen al menos 232 px para que los controles nativos de medio y de fecha se
+  lean completos: a 1440 px la referencia (o el código) baja a una segunda fila.
+- **Consentimiento (D-8 y D-13 c):** en una póliza del canal embebido, `audit` lo verifica al recotizar: sin consentimiento activo, aviso
+  «El cliente revocó su autorización de Open Finance»; si `audit` no responde, «No pudimos verificar la autorización del cliente» y
+  «Reintentar». En una póliza vendida por un asesor se muestra la casilla «El cliente autorizó consultar sus datos financieros para esta
+  renovación» (`componentes/consentimiento-asesor/`) y «Recotizar» espera a que se marque; viaja como `consent_affirmed: true`.
+- **Modo degradado (CA-5, D-7):** con el último perfil en caché, insignia «Modo degradado», aviso con la fecha del perfil y la fuente
+  «No disponible»; sin un perfil reciente, el aviso del perfil actuarial base.
+- **Otros estados de S7:** sin medio de pago registrado (no se formaliza; el cliente puede renovar desde su portal), recotización vencida
+  (24 horas) o reemplazada por una más reciente, y «no disponible» (antes de la ventana, con la ventana cerrada o no renovada).
+- **S7b · Renovación formalizada (CA-3, CA-4):** «renovada el … por <nombre del asesor>» o, si su cuenta no tiene nombre, su correo;
+  «Aceptación registrada» y «Trazabilidad de la recotización» en solo lectura y el panel «Emisión de la renovación»
+  (`componentes/estado-cobro-renovacion/`: cobro con la fecha de confirmación, certificado con la vigencia de la póliza nueva y
+  notificación). La pantalla sigue la renovación cada 2 s hasta que la póliza queda renovada (con «Ver certificado» de la póliza nueva)
+  o el pago falla. En una póliza vendida por un asesor dice «Consentimiento afirmado por <quien afirmó> el <fecha>», con el nombre (o
+  el correo) que se guardó al recotizar, aunque haya formalizado otro asesor.
+- **«Ver» (01·D-3 a+):** la renovación en curso con el estado del cobro; si el pago falló, la fecha del rechazo y hasta cuándo puede
+  reintentar el cliente con otro medio desde su portal. Si la renovó el asegurado, solo lectura con la prima y las condiciones que aceptó
+  (`renewal.terms` del `GET`) y su cobro, sin el panel de la recotización.
+- **Regreso:** «← Renovaciones» y «Volver a renovaciones» vuelven atrás para conservar el filtro del listado; si se entró directo por la
+  URL, abren `/originacion/renovaciones`.
+- Textos en `originacion.renovacionAsistida.*`; fechas en días civiles de Colombia (`renovaciones/modelos/presentacion-renovacion.ts`).
+- **Diferencias con los frames S7 y S7b, por datos que originación no tiene:** el producto es siempre vida hipotecario (sin placa de
+  autos), el motor muestra su versión `v1` y sus factores (no reglas numeradas) y el valor asegurado no cambia al recotizar.
+- E2E: `e2e/flujos/cotizacion-emision/renovacion-asistida.spec.ts` (API Gateway y Cognito simulados con `page.route`, axe-core en cada
+  estado; entra desde S6 por «Renovar» y «Ver») y el humo `e2e/nube/renovacion-asistida.spec.ts` (proyecto `nube`).
 
 ## Cómo trabajar una historia de este dominio
 

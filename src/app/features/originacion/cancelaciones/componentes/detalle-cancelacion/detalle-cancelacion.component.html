@@ -1,0 +1,90 @@
+<ng-container *transloco="let t; prefix: 'originacion.cancelacion'">
+  @let c = cancelacion();
+  @let r = reembolso();
+  <div class="aviso" [class.aviso--exito]="!fallido()" [class.aviso--advertencia]="fallido()" role="status">
+    @if (fallido()) {
+      <svg lucideTriangleAlert [size]="20" aria-hidden="true"></svg>
+    } @else {
+      <svg lucideCircleCheck [size]="20" aria-hidden="true"></svg>
+    }
+    <div>
+      <p class="aviso__titulo">{{ t('detalle.registrada') }}</p>
+      <p>
+        @if (r && r.monto > 0) {
+          {{
+            t('detalle.aviso.' + c.reembolso, {
+              monto: (r.monto | formatoMoneda: r.moneda),
+              medio: r.medio?.tipo === 'card' ? t('detalle.tarjeta', { marca: (r.medio.marca ?? '' | titlecase), ultimos: r.medio.ultimosCuatro ?? '' }) : t('detalle.pse'),
+              referencia: r.referencia ?? '',
+            })
+          }}
+        } @else {
+          {{ t('detalle.aviso.not_applicable') }}
+        }
+      </p>
+    </div>
+  </div>
+
+  <div class="cuerpo">
+    <section class="tarjeta" aria-labelledby="titulo-detalle-reembolso">
+      <h2 id="titulo-detalle-reembolso" class="seccion__titulo">{{ t('detalle.titulo') }}</h2>
+      <dl class="datos">
+        <div>
+          <dt>{{ t('detalle.monto') }}</dt>
+          <dd class="datos__destacado">{{ (r?.monto ?? 0) | formatoMoneda: c.moneda }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.metodo') }}</dt>
+          <dd>
+            @if (r?.medio; as m) {
+              {{ m.tipo === 'card' ? t('detalle.tarjeta', { marca: (m.marca ?? '' | titlecase), ultimos: m.ultimosCuatro ?? '' }) : t('detalle.pse') }}
+            } @else {
+              {{ t('detalle.noAplica') }}
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.referencia') }}</dt>
+          <dd>{{ r?.referencia ?? t('detalle.noAplica') }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.fecha') }}</dt>
+          <dd>{{ fechaHora(c.efectivaEn) }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.motivo') }}</dt>
+          <dd>
+            {{ t('motivos.' + c.motivoAsegurado.codigo) }}
+            @if (c.motivoAsegurado.comentarios; as comentarios) {
+              <span class="texto-suave">{{ comentarios }}</span>
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.estadoReembolso') }}</dt>
+          <dd>
+            <app-insignia-estado [tono]="tono()">{{ t('detalle.estados.' + c.reembolso) }}</app-insignia-estado>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="tarjeta" aria-labelledby="titulo-estado-poliza">
+      <h2 id="titulo-estado-poliza" class="seccion__titulo">{{ t('detalle.poliza.titulo') }}</h2>
+      <dl class="datos datos--columna">
+        <div>
+          <dt>{{ t('detalle.poliza.cobertura') }}</dt>
+          <dd>{{ t('detalle.poliza.hasta', { fecha: fechaHora(c.efectivaEn) }) }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.poliza.documentos') }}</dt>
+          <dd>{{ t('detalle.poliza.documentosTexto') }}</dd>
+        </div>
+        <div>
+          <dt>{{ t('detalle.poliza.reactivacion') }}</dt>
+          <dd>{{ t('detalle.poliza.reactivacionTexto') }}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</ng-container>

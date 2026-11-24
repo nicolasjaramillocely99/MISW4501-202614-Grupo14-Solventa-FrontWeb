@@ -9,7 +9,50 @@
     </a>
   </header>
 
+  @if (resumen(); as r) {
+    <ul class="indicadores" [attr.aria-label]="t('misSiniestros.indicadores.etiqueta')">
+      <li class="indicador">
+        <p class="indicador__titulo">{{ t('misSiniestros.indicadores.enCurso') }}</p>
+        <p class="indicador__valor">{{ r.enCurso }}</p>
+        <p class="indicador__detalle">{{ detalleEnCurso(t, r) || t('misSiniestros.indicadores.ninguno') }}</p>
+      </li>
+      <li class="indicador">
+        <p class="indicador__titulo">{{ t('misSiniestros.indicadores.pagados') }}</p>
+        <p class="indicador__valor">{{ r.pagadosAnio.casos }}</p>
+        <p class="indicador__detalle">
+          {{
+            r.pagadosAnio.casos > 0
+              ? (r.pagadosAnio.montoMinor / 100 | formatoMoneda: r.pagadosAnio.moneda ?? 'COP')
+              : t('misSiniestros.indicadores.ninguno')
+          }}
+        </p>
+      </li>
+      <li class="indicador" [class.indicador--pendiente]="r.pendientes.length > 0">
+        <p class="indicador__titulo">{{ t('misSiniestros.indicadores.pendiente') }}</p>
+        <p class="indicador__valor">{{ r.pendientes.length }}</p>
+        <p class="indicador__detalle">
+          @if (r.pendientes[0]; as primero) {
+            <a [routerLink]="['/siniestros', primero.id, 'corregir']">{{
+              t('misSiniestros.indicadores.corregir', { radicado: primero.numeroRadicado })
+            }}</a>
+          } @else {
+            {{ t('misSiniestros.indicadores.nada') }}
+          }
+        </p>
+      </li>
+    </ul>
+  }
+
   <div class="filtros" role="group" [attr.aria-label]="t('misSiniestros.filtros.etiqueta')">
+    <div class="campo">
+      <label class="campo__etiqueta" for="filtro-etapa">{{ t('misSiniestros.filtros.etapa') }}</label>
+      <select id="filtro-etapa" #controlEtapa class="campo__control" (change)="filtrar('estado', controlEtapa.value)">
+        <option value="" [selected]="!filtro().estado">{{ t('misSiniestros.filtros.todas') }}</option>
+        @for (etapa of etapas; track etapa) {
+          <option [value]="etapa" [selected]="etapa === filtro().estado">{{ t('estados.' + etapa) }}</option>
+        }
+      </select>
+    </div>
     @if (polizas().length > 0) {
       <div class="campo">
         <label class="campo__etiqueta" for="filtro-poliza">{{ t('misSiniestros.filtros.poliza') }}</label>
@@ -28,16 +71,31 @@
         #controlDesde
         class="campo__control"
         type="date"
-        aria-describedby="filtro-desde-ayuda"
+        [max]="hoy"
+        [attr.aria-invalid]="desdeFutura() ? true : null"
+        [attr.aria-describedby]="desdeFutura() ? 'filtro-desde-error filtro-desde-ayuda' : 'filtro-desde-ayuda'"
         [value]="filtro().desde"
         (change)="filtrar('desde', controlDesde.value)"
       />
+      @if (desdeFutura()) {
+        <p id="filtro-desde-error" class="campo__error">{{ t('misSiniestros.filtros.desdeFutura') }}</p>
+      }
       <p id="filtro-desde-ayuda" class="campo__ayuda">{{ t('misSiniestros.filtros.desdeAyuda') }}</p>
     </div>
     @if (fase() === 'lista') {
-      <p class="filtros__conteo" role="status">
-        {{ casos().length === 1 ? t('misSiniestros.conteoUno') : t('misSiniestros.conteo', { cantidad: casos().length }) }}
-      </p>
+      <div class="filtros__conteo">
+        <p role="status">
+          {{ casos().length === 1 ? t('misSiniestros.conteoUno') : t('misSiniestros.conteo', { cantidad: casos().length }) }}
+        </p>
+        @if (leidoEn(); as leido) {
+          <p class="filtros__actualizado">
+            {{ t('misSiniestros.actualizado', { hora: (leido | formatoFechaHora) }) }}
+            <button type="button" class="enlace" (click)="actualizar()">
+              <svg lucideRefreshCw [size]="16" aria-hidden="true"></svg>{{ t('misSiniestros.actualizar') }}
+            </button>
+          </p>
+        }
+      </div>
     }
   </div>
 

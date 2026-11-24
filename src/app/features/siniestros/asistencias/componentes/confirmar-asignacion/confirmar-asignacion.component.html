@@ -1,0 +1,45 @@
+<dialog
+  #dialogo
+  class="modal"
+  aria-labelledby="titulo-confirmar-asignacion"
+  (cancel)="alCancelarNativo($event)"
+  (close)="alCerrar()"
+  *transloco="let t; prefix: 'siniestros.asignacion.confirmacion'"
+>
+  @if (candidato(); as c) {
+    <form class="modal__contenido" (submit)="enviar($event)" novalidate>
+      <header class="modal__encabezado">
+        <h2 id="titulo-confirmar-asignacion" class="modal__titulo">
+          {{ t('titulo', { nombre: c.nombre }) }}
+        </h2>
+        <button
+          type="button"
+          class="modal__cerrar"
+          [attr.aria-label]="t('cerrar')"
+          [disabled]="asignando()"
+          (click)="pedirCierre()"
+        >
+          <svg lucideX [size]="20" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <p class="modal__texto">
+        {{ t('texto', { distancia: (c.distanciaKm | formatoNumero: 1) }) }}
+      </p>
+
+      <div class="modal__acciones">
+        <button
+          type="button"
+          class="boton boton--secundario"
+          [disabled]="asignando()"
+          (click)="pedirCierre()"
+        >
+          {{ t('cancelar') }}
+        </button>
+        <button type="submit" class="boton boton--primario" [disabled]="asignando()">
+          {{ asignando() ? t('asignando') : t('confirmar') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

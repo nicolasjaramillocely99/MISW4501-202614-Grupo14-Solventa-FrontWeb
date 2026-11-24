@@ -1,0 +1,39 @@
+// O9b · Llamada en curso: título con el cronómetro a la derecha, como el mockup.
+.llamada {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+}
+
+.llamada--en-curso {
+  border-left: 4px solid var(--color-azul-700);
+}
+
+.llamada__encabezado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  color: var(--color-azul-700);
+}
+
+.llamada__titulo {
+  flex: 1;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--color-texto-primario);
+}
+
+.llamada__cronometro {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-azul-900);
+}
+
+.llamada__texto {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

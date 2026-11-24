@@ -11,24 +11,18 @@ import { FormatoFechaPipe } from '@shared/pipes/formato-fecha.pipe';
 import { FormatoMonedaPipe } from '@shared/pipes/formato-moneda.pipe';
 import { InsigniaEstadoComponent, TonoInsignia } from '@shared/ui/insignia-estado/insignia-estado.component';
 
+import {
+  ESTADOS_ACTIVOS,
+  ESTADOS_POLIZA,
+  EstadoPoliza,
+  estadoDePoliza,
+  finDeVigencia,
+  tonoDePoliza,
+} from './modelos/estado-poliza';
+
+export type { EstadoPoliza } from './modelos/estado-poliza';
+
 export type FasePolizas = 'cargando' | 'listo' | 'error';
-
-/** Estado con el que se pinta una póliza en el listado. */
-export type EstadoPoliza = 'vigente' | 'porVencer' | 'enRenovacion' | 'renovada' | 'noRenovada' | 'finalizada';
-
-const ESTADOS: readonly EstadoPoliza[] = ['vigente', 'porVencer', 'enRenovacion', 'renovada', 'noRenovada', 'finalizada'];
-
-/** Estados de una póliza que sigue dando cobertura: son las «activas» del resumen. */
-const ACTIVAS: readonly EstadoPoliza[] = ['vigente', 'porVencer', 'enRenovacion'];
-
-const TONO_POR_ESTADO: Readonly<Record<EstadoPoliza, TonoInsignia>> = {
-  vigente: 'exito',
-  porVencer: 'advertencia',
-  enRenovacion: 'informacion',
-  renovada: 'exito',
-  noRenovada: 'error',
-  finalizada: 'neutro',
-};
 
 const MS_POR_DIA = 86_400_000;
 
@@ -37,8 +31,12 @@ const MS_POR_DIA = 86_400_000;
  * asegurado con su vigencia y, dentro de la ventana de renovación, la entrada a «Renovar póliza» (A4). Solo
  * ofrece renovar cuando el backend dice `can_renew`: fuera de la ventana la opción no existe (criterio 3).
  *
- * Es la versión del listado que permite el contrato de hoy: sin producto, sin siniestros en curso y sin el
- * detalle de la póliza (A2, HU-W1.6-02). Ruta: `/originacion/polizas`. Exige la sesión del asegurado.
+ * Cada póliza en vigor ofrece además «Solicitar modificación» (HU-W1.4-01, A3), que también está en el detalle de la póliza
+ * (A2, ajuste A-10); una cancelada por no pago no la ofrece (ajuste A-9).
+ *
+ * HU-W1.6-02: el estado del pago (una cuota en gracia es «Pago pendiente» y avisa cuándo se cancela; una póliza
+ * cancelada es «No pago», sin reembolso) y el enlace al detalle (A2 y A2b). Sin producto ni siniestros en curso, que
+ * el contrato no trae. Ruta: `/originacion/polizas`. Exige la sesión del asegurado.
  */
 @Component({
   selector: 'app-mis-polizas-page',
@@ -61,14 +59,21 @@ export class MisPolizasPage implements OnInit {
   private readonly api = inject(OriginacionApiService);
   private readonly destruccion = inject(DestroyRef);
 
-  protected readonly estados = ESTADOS;
+  protected readonly estados = ESTADOS_POLIZA;
+  protected readonly finDeVigencia = finDeVigencia;
   protected readonly fase = signal<FasePolizas>('cargando');
   protected readonly polizas = signal<PolizaListada[]>([]);
   protected readonly filtro = new FormControl<EstadoPoliza | ''>('', { nonNullable: true });
   private readonly estadoElegido = signal<EstadoPoliza | ''>('');
 
   protected readonly titular = computed(() => this.polizas()[0]?.titular ?? '');
-  protected readonly activas = computed(() => this.polizas().filter((p) => ACTIVAS.includes(this.estado(p))));
+  protected readonly activas = computed(() => this.polizas().filter((p) => ESTADOS_ACTIVOS.includes(this.estado(p))));
+  /** Pólizas con una cuota vencida sin pago (en gracia), la que se cancela primero arriba. */
+  protected readonly pagosPendientes = computed(() =>
+    this.polizas()
+      .filter((p) => this.estado(p) === 'pagoPendiente' && p.pago?.pendiente)
+      .sort((a, b) => (a.pago?.pendiente?.cancelaEn ?? '').localeCompare(b.pago?.pendiente?.cancelaEn ?? '')),
+  );
   /** Pólizas en su ventana de renovación (por vencer), la más próxima primero. */
   protected readonly porVencer = computed(() =>
     this.polizas()
@@ -104,25 +109,25 @@ export class MisPolizasPage implements OnInit {
       });
   }
 
-  /** Estado de una póliza: el de su renovación si la hay; si no, si está por vencer, vigente o finalizada. */
+  /** Estado de una póliza: cancelada, el de su renovación, pago pendiente, por vencer, vigente o finalizada. */
   protected estado(poliza: PolizaListada): EstadoPoliza {
-    switch (poliza.renovacion?.estado) {
-      case 'accepted':
-        return 'enRenovacion';
-      case 'renewed':
-        return 'renovada';
-      case 'not_renewed':
-        return 'noRenovada';
-      default:
-        break;
+    return estadoDePoliza(poliza);
+  }
+
+  /**
+   * La póliza está en vigor ahora (empezó, no ha terminado y no fue cancelada, por no pago o a solicitud): solo sobre ella se puede
+   * solicitar una modificación (HU-W1.4-01, «Solicitar modificación» lleva a A3). La cancelación de HU-W1.6-02 no cambia
+   * las fechas de la cobertura, así que cuenta aparte, como en el servicio (ajuste A-9).
+   */
+  protected vigenteAhora(poliza: PolizaListada): boolean {
+    if (poliza.cancelacion) {
+      return false;
     }
-    if (poliza.puedeRenovar) {
-      return 'porVencer';
-    }
-    return new Date(poliza.vigenciaHasta).getTime() > Date.now() ? 'vigente' : 'finalizada';
+    const ahora = Date.now();
+    return new Date(poliza.vigenciaDesde).getTime() <= ahora && ahora < new Date(poliza.vigenciaHasta).getTime();
   }
 
   protected tono(poliza: PolizaListada): TonoInsignia {
-    return TONO_POR_ESTADO[this.estado(poliza)];
+    return tonoDePoliza(this.estado(poliza));
   }
 }

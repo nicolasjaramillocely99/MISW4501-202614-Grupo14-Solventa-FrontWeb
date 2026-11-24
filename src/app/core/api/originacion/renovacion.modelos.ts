@@ -1,6 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Cobro, CobroDto, MedioDePago, MedioDePagoDto, mapearCobro } from './cobro.modelos';
+import {
+  CancelacionPoliza,
+  CancelacionPolizaDto,
+  PagoPoliza,
+  PagoPolizaDto,
+  mapearCancelacion,
+  mapearPago,
+} from './pago-poliza.modelos';
 
 /**
  * Modelos de las pólizas del asegurado y su renovación en línea (HU-W1.5-02), tipados según
@@ -62,6 +70,10 @@ export interface PolizaListada extends Poliza {
   ventana: VentanaRenovacion;
   puedeRenovar: boolean;
   renovacion: ResumenRenovacion | null;
+  /** Cómo está la prima mensual (HU-W1.6-02); `null` si el backend no lo dice. */
+  pago: PagoPoliza | null;
+  /** La cancelación por no pago (HU-W1.6-02); `null` si no se canceló. */
+  cancelacion: CancelacionPoliza | null;
 }
 
 /** Un lado de la comparación de A4: la vigencia actual o la renovación. */
@@ -140,6 +152,9 @@ export interface PolizaListadaDto extends PolizaDto {
   renewal_window: VentanaDto;
   can_renew: boolean;
   renewal: ResumenRenovacionDto | null;
+  /** Desde 0.17.0 (HU-W1.6-02); opcionales para leer respuestas anteriores. */
+  payment?: PagoPolizaDto | null;
+  cancellation?: CancelacionPolizaDto | null;
 }
 
 /**
@@ -226,10 +241,12 @@ export function mapearPolizaListada(dto: PolizaListadaDto): PolizaListada {
     ventana: mapearVentana(dto.renewal_window),
     puedeRenovar: dto.can_renew,
     renovacion: dto.renewal ? mapearResumenRenovacion(dto.renewal) : null,
+    pago: mapearPago(dto.payment),
+    cancelacion: mapearCancelacion(dto.cancellation),
   };
 }
 
-function mapearCondiciones(dto: CondicionesPolizaDto): CondicionesPoliza {
+export function mapearCondiciones(dto: CondicionesPolizaDto): CondicionesPoliza {
   return {
     prima: dto.premium,
     moneda: dto.currency,

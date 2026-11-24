@@ -1,0 +1,22 @@
+@use '../modal';
+
+.campo__control--area {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.confirmacion {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+  min-height: 44px;
+  cursor: pointer;
+
+  input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--color-azul-700);
+  }
+}

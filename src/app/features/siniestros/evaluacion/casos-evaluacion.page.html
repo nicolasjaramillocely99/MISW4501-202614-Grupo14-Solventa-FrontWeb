@@ -32,6 +32,53 @@
   </div>
 
   <section id="panel-cola" role="tabpanel" [attr.aria-labelledby]="'pestana-' + lista()" [attr.aria-busy]="fase() === 'cargando'">
+    @if (esCola()) {
+      <!-- HU-W2.2-02: indicadores de toda la cola y filtros (O5). -->
+      <app-indicadores-triage
+        [estado]="estadoPolitica()"
+        [politica]="politica()"
+        [conteos]="conteos()"
+        [tiempoMedioDias]="resumen()?.tiempoMedioDias ?? null"
+        [diasVentana]="resumen()?.diasVentana ?? 30"
+        (reintentar)="cargarPolitica()"
+      />
+      <div class="filtros">
+        <div class="campo">
+          <label class="campo__etiqueta" for="filtro-nivel">{{ t('casosEvaluacion.filtros.prioridad') }}</label>
+          <select id="filtro-nivel" class="campo__control" [value]="filtro().nivel ?? ''" (change)="filtrar('nivel', $event)">
+            <option value="">{{ t('casosEvaluacion.filtros.todas') }}</option>
+            @for (n of niveles; track n) {
+              <option [value]="n">{{ n === 'none' ? t('casosEvaluacion.sinPrioridad') : t('casosEvaluacion.triage', { nivel: n }) }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="filtro-estado">{{ t('casosEvaluacion.filtros.estado') }}</label>
+          <select id="filtro-estado" class="campo__control" [value]="filtro().estado ?? ''" (change)="filtrar('estado', $event)">
+            <option value="">{{ t('casosEvaluacion.filtros.todos') }}</option>
+            @for (e of estados; track e) {
+              <option [value]="e">{{ t('estados.' + e) }}</option>
+            }
+          </select>
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="filtro-producto">{{ t('casosEvaluacion.filtros.producto') }}</label>
+          <select id="filtro-producto" class="campo__control" [value]="filtro().ramo ?? ''" (change)="filtrar('ramo', $event)">
+            <option value="">{{ t('casosEvaluacion.filtros.todos') }}</option>
+            @for (r of ramos; track r) {
+              <option [value]="r">{{ t('casosEvaluacion.filtros.ramos.' + r) }}</option>
+            }
+          </select>
+        </div>
+        @if (resumen(); as r) {
+          <p class="filtros__meta" role="status">
+            {{ t('casosEvaluacion.enCola', { casos: r.coinciden }) }} ·
+            {{ t('casosEvaluacion.actualizado', { segundos: segundosDesdeActualizacion() }) }}
+          </p>
+        }
+      </div>
+    }
+
     @switch (fase()) {
       @case ('cargando') {
         <p class="estado" role="status">{{ t('casosEvaluacion.cargando') }}</p>
@@ -62,6 +109,9 @@
                 <tr>
                   <th scope="col">{{ t('casosEvaluacion.columnas.prioridad') }}</th>
                   <th scope="col">{{ t('casosEvaluacion.columnas.radicado') }}</th>
+                  @if (esCola()) {
+                    <th scope="col">{{ t('casosEvaluacion.columnas.asegurado') }}</th>
+                  }
                   <th scope="col">{{ t('casosEvaluacion.columnas.producto') }}</th>
                   <th scope="col" class="tabla__numero">{{ t('casosEvaluacion.columnas.montoEstimado') }}</th>
                   <th scope="col">{{ t('casosEvaluacion.columnas.estado') }}</th>
@@ -78,6 +128,16 @@
                       </app-insignia-estado>
                     </td>
                     <td class="tabla__identificador">{{ caso.numeroRadicado }}</td>
+                    @if (esCola()) {
+                      <td>
+                        @if (asegurado(caso); as a) {
+                          <span class="tabla__principal">{{ a.nombreCompleto }}</span>
+                          <span class="tabla__secundario">{{ a.tipoDocumento }} {{ a.documento }}</span>
+                        } @else {
+                          <span class="tabla__secundario">{{ t('casosEvaluacion.sinAsegurado') }}</span>
+                        }
+                      </td>
+                    }
                     <td>{{ producto(t, caso) }}</td>
                     <td class="tabla__numero">
                       {{ caso.montoEstimado === null ? t('casosEvaluacion.sinMonto') : (caso.montoEstimado | formatoMoneda: 'COP') }}
